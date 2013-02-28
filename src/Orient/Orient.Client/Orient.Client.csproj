@@ -39,12 +39,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\OrientClient.cs" />
+    <Compile Include="API\OClient.cs" />
+    <Compile Include="Protocol\Connection.cs" />
+    <Compile Include="API\ODatabaseType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Protocol\DatabasePool.cs" />
+    <Compile Include="Protocol\DataItem.cs" />
+    <Compile Include="Protocol\IOperation.cs" />
+    <Compile Include="Protocol\OperationMode.cs" />
+    <Compile Include="Protocol\Request.cs" />
+    <Compile Include="Protocol\Response.cs" />
+    <Compile Include="Protocol\ResponseStatus.cs" />
+    <Compile Include="Protocol\Serializers\BinarySerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Protocol\Operations\" />
-    <Folder Include="Protocol\Serializer\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
