@@ -14,7 +14,7 @@ namespace Orient.Client.Protocol
         internal string UserPassword { get; set; }
         internal int PoolSize { get; private set; }
         internal string Alias { get; set; }
-        internal int CurrentPoolSize { get { return _connections.Count; } }
+        internal int CurrentSize { get { return _connections.Count; } }
 
         internal DatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias)
         {
@@ -31,10 +31,20 @@ namespace Orient.Client.Protocol
 
             for (int i = 0; i < poolSize; i++)
             {
-                Connection connection = new Connection(Hostname, Port, true);
+                Connection connection = new Connection(Hostname, Port, databaseName, databaseType, userName, userPassword, alias, true);
 
                 _connections.Enqueue(connection);
             }
+        }
+
+        internal Connection DequeueConnection()
+        {
+            return _connections.Dequeue();
+        }
+
+        internal void EnqueueConnection(Connection connection)
+        {
+            _connections.Enqueue(connection);
         }
     }
 }

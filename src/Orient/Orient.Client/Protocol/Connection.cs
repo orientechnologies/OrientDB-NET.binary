@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using Orient.Client.Protocol.Operations;
 using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol
 {
-    internal class Connection
+    internal class Connection : IDisposable
     {
         private TcpClient _socket;
         private NetworkStream _networkStream;
@@ -14,6 +16,8 @@ namespace Orient.Client.Protocol
 
         internal string Hostname { get; set; }
         internal int Port { get; set; }
+
+        internal string Alias { get; set; }
         internal bool IsReusable { get; set; }
         internal short ProtocolVersion { get; set; }
         internal int SessionId { get; private set; }
@@ -29,43 +33,26 @@ namespace Orient.Client.Protocol
                 return false;
             }
         }
+        internal ResponseDataObject DataObject { get; set; }
 
-        internal Connection(string hostname, int port, bool isReusable)
+        internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, string alias, bool isReusable)
         {
             Hostname = hostname;
             Port = port;
+            Alias = alias;
             IsReusable = isReusable;
             ProtocolVersion = 0;
             SessionId = -1;
+
+            Initialize(databaseName, databaseType, userName, userPassword);
         }
 
-        internal short Initialize()
-        {
-            _readBuffer = new byte[1024];
-
-            try
-            {
-                _socket = new TcpClient(Hostname, Port);
-            }
-            catch (SocketException ex)
-            {
-                throw new Exception(ex.Message, ex.InnerException);
-            }
-
-            _networkStream = _socket.GetStream();
-            _networkStream.Read(_readBuffer, 0, 2);
-
-            ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
-
-            return ProtocolVersion;
-        }
-
-        internal object ExecuteOperation<T>(T operation)
+        internal ResponseDataObject ExecuteOperation<T>(T operation)
         {
             Request request = ((IOperation)operation).Request(SessionId);
             byte[] buffer;
 
-            foreach (DataItem item in request.DataItems)
+            foreach (RequestDataItem item in request.DataItems)
             {
                 switch (item.Type)
                 {
@@ -84,10 +71,13 @@ namespace Orient.Client.Protocol
                     case "bytes":
                     case "string":
                     case "strings":
-                        buffer = new byte[4 + item.Data.Length];
-                        Buffer.BlockCopy(BinarySerializer.ToArray(item.Data.Length), 0, buffer, 0, 4);
-                        Buffer.BlockCopy(item.Data, 0, buffer, 4, item.Data.Length);
-                        Send(buffer);
+                        //buffer = new byte[4 + item.Data.Length];
+                        //Buffer.BlockCopy(BinarySerializer.ToArray(item.Data.Length), 0, buffer, 0, 4);
+                        //Buffer.BlockCopy(item.Data, 0, buffer, 4, item.Data.Length);
+                        //Send(buffer);
+
+                        Send(BinarySerializer.ToArray(item.Data.Length));
+                        Send(item.Data);
                         break;
                     default:
                         break;
@@ -130,7 +120,42 @@ namespace Orient.Client.Protocol
             _socket = null;
         }
 
+        public void Dispose()
+        {
+            Close();
+        }
+
         #region Private methods
+
+        private void Initialize(string databaseName, ODatabaseType databaseType, string userName, string userPassword)
+        {
+            _readBuffer = new byte[OClient.BufferLenght];
+
+            // initiate socket connection
+            try
+            {
+                _socket = new TcpClient(Hostname, Port);
+            }
+            catch (SocketException ex)
+            {
+                throw new Exception(ex.Message, ex.InnerException);
+            }
+
+            _networkStream = _socket.GetStream();
+            _networkStream.Read(_readBuffer, 0, 2);
+
+            ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
+
+            // execute db_open operation
+            DbOpen operation = new DbOpen();
+            operation.DatabaseName = databaseName;
+            operation.DatabaseType = databaseType;
+            operation.UserName = userName;
+            operation.UserPassword = userPassword;
+
+            DataObject = ExecuteOperation<DbOpen>(operation);
+            SessionId = DataObject.Get<int>("SessionId");
+        }
 
         private void Send(byte[] rawData)
         {
@@ -142,7 +167,7 @@ namespace Orient.Client.Protocol
 
         private byte[] Receive()
         {
-            IEnumerable<byte> buffer = new List<byte>();
+            MemoryStream memoryStream = new MemoryStream();
 
             if ((_networkStream != null) && _networkStream.CanRead)
             {
@@ -150,12 +175,20 @@ namespace Orient.Client.Protocol
                 {
                     int bytesRead = _networkStream.Read(_readBuffer, 0, _readBuffer.Length);
 
-                    buffer = buffer.Concat(_readBuffer.Take(bytesRead));
+                    memoryStream.Write(_readBuffer, 0, bytesRead);
                 }
                 while (_networkStream.DataAvailable);
             }
 
-            return buffer.ToArray();
+            return memoryStream.ToArray();
+        }
+
+        private byte[] Combine(byte[] first, byte[] second)
+        {
+            byte[] ret = new byte[first.Length + second.Length];
+            Buffer.BlockCopy(first, 0, ret, 0, first.Length);
+            Buffer.BlockCopy(second, 0, ret, first.Length, second.Length);
+            return ret;
         }
 
         private void ParseResponseError(Response response)
