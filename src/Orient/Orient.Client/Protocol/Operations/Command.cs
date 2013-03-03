@@ -83,8 +83,7 @@ namespace Orient.Client.Protocol.Operations
             }
 
             // operation specific fields
-            byte foo = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray());
-            PayloadStatus payloadStatus = (PayloadStatus)foo;
+            PayloadStatus payloadStatus = (PayloadStatus)BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray());
             dataObject.Set("PayloadStatus", payloadStatus);
             offset += 1;
 
@@ -181,6 +180,8 @@ namespace Orient.Client.Protocol.Operations
                             string recordContent = BinarySerializer.ToString(response.Data.Skip(offset).Take(recordLength).ToArray());
                             offset += recordLength;
 
+                            content.Add(string.Format("{0}:{1}:{2}:{3}:{4}:{5}", classId, wut, clusterId, clusterPosition, wut2, recordContent));
+
                             /*contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
                             offset += 4;
                             string record2 = BinarySerializer.ToString(response.Data.Skip(offset).Take(contentLength).ToArray());
@@ -190,9 +191,7 @@ namespace Orient.Client.Protocol.Operations
                             offset += 4;
 
                             string type2 = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray()).ToString();
-                            offset += 1;*/
-
-                            content.Add(string.Format("{0}:{1}:{2}:{3}:{4}:{5}", classId, wut, clusterId, clusterPosition, wut2, recordContent));
+                            offset += 1;*/ 
                         }
                         break;
                     default:
