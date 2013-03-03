@@ -14,7 +14,8 @@ namespace Orient.Console
         static void Main(string[] args)
         {
             OClient.CreateDatabasePool(
-                "127.0.0.1",
+                //"127.0.0.1",
+                "vps-04-ubuntu-server.developmententity.sk",
                 2424,
                 "tinkerpop",
                 ODatabaseType.Graph,
@@ -78,6 +79,8 @@ namespace Orient.Console
                 //List<string> result = database.Command("select name from OGraphVertex where in[0].label = 'followed_by' and in[0].out.name = 'JAM'");
                 //List<string> result = database.Command("select from OGraphVertex limit 20");
                 List<string> result = database.Command("select from OGraphEdge limit 20");
+
+                database.Close();
                 tps++;
 
                 TimeSpan dif = DateTime.Now - start;
