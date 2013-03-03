@@ -18,7 +18,7 @@ namespace Orient.Client
         {
             _syncRoot = new object();
             _databasePools = new List<DatabasePool>();
-            BufferLenght = 1024 + 10;
+            BufferLenght = 1024;
         }
 
         public static void CreateDatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias)
