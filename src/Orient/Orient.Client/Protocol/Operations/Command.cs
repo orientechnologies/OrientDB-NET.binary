@@ -26,17 +26,15 @@ namespace Orient.Client.Protocol.Operations
             {
                 // idempotent command (e.g. select)
                 case CommandClassType.Idempotent:
-                    //className = "q";
-                    //className = "com.orientechnologies.orient.core.sql.query.OSQLSynchQuery";
                     className = "com.orientechnologies.orient.core.sql.query.OSQLSynchQuery";
                     break;
                 // non-idempotent command (e.g. insert)
                 case CommandClassType.NonIdempotent:
-                    className = "c";
+                    className = "com.orientechnologies.orient.core.sql.OCommandSQL";
                     break;
                 // script command
                 case CommandClassType.Script:
-                    className = "s";
+                    className = "com.orientechnologies.orient.core.command.script.OCommandScript";
                     break;
                 default:
                     break;
