@@ -2,7 +2,7 @@
 
 namespace Orient.Client.Protocol
 {
-    internal class ResponseDataObject : Dictionary<string, object>
+    internal class DataObject : Dictionary<string, object>
     {
         internal T Get<T>(string fieldPath) where T : new()
         {
@@ -12,7 +12,7 @@ namespace Orient.Client.Protocol
             {
                 var fields = fieldPath.Split('.');
                 int iteration = 1;
-                ResponseDataObject innerObject = this;
+                DataObject innerObject = this;
 
                 foreach (var field in fields)
                 {
@@ -24,7 +24,7 @@ namespace Orient.Client.Protocol
 
                     if (innerObject.ContainsKey(field))
                     {
-                        innerObject = (ResponseDataObject)innerObject[field];
+                        innerObject = (DataObject)innerObject[field];
                         iteration++;
                     }
                     else
@@ -50,7 +50,7 @@ namespace Orient.Client.Protocol
             {
                 var fields = fieldPath.Split('.');
                 int iteration = 1;
-                ResponseDataObject innerObject = this;
+                DataObject innerObject = this;
 
                 foreach (var field in fields)
                 {
@@ -69,7 +69,7 @@ namespace Orient.Client.Protocol
 
                     if (innerObject.ContainsKey(field))
                     {
-                        innerObject = (ResponseDataObject)innerObject[field];
+                        innerObject = (DataObject)innerObject[field];
                         iteration++;
                     }
                     else
@@ -99,7 +99,7 @@ namespace Orient.Client.Protocol
             {
                 var fields = fieldPath.Split('.');
                 int iteration = 1;
-                ResponseDataObject innerObject = this;
+                DataObject innerObject = this;
 
                 foreach (var field in fields)
                 {
@@ -111,7 +111,7 @@ namespace Orient.Client.Protocol
 
                     if (innerObject.ContainsKey(field))
                     {
-                        innerObject = (ResponseDataObject)innerObject[field];
+                        innerObject = (DataObject)innerObject[field];
                         iteration++;
                     }
                     else

@@ -43,6 +43,9 @@
     <Compile Include="API\OCluster.cs" />
     <Compile Include="API\OClusterType.cs" />
     <Compile Include="API\ODatabase.cs" />
+    <Compile Include="API\ORecord.cs" />
+    <Compile Include="API\ORecordType.cs" />
+    <Compile Include="API\ORID.cs" />
     <Compile Include="Protocol\Connection.cs" />
     <Compile Include="API\ODatabaseType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -60,9 +63,10 @@
     <Compile Include="Protocol\Operations\OperationType.cs" />
     <Compile Include="Protocol\Request.cs" />
     <Compile Include="Protocol\Response.cs" />
-    <Compile Include="Protocol\ResponseDataObject.cs" />
+    <Compile Include="Protocol\DataObject.cs" />
     <Compile Include="Protocol\ResponseStatus.cs" />
     <Compile Include="Protocol\Serializers\BinarySerializer.cs" />
+    <Compile Include="Protocol\Serializers\RecordSerializer.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

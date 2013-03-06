@@ -17,7 +17,7 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ResponseDataObject Response(Response response)
+        public DataObject Response(Response response)
         {
             // there are no specific response fields which have to be processed for this operation
 

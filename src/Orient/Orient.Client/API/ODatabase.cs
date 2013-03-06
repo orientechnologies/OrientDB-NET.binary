@@ -33,7 +33,7 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.Idempotent;
             operation.CommandPayload = payload;
 
-            ResponseDataObject dataObject = _connection.ExecuteOperation<Command>(operation);
+            DataObject dataObject = _connection.ExecuteOperation<Command>(operation);
 
             return dataObject.Get<List<string>>("Content");
         }

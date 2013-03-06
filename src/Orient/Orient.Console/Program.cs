@@ -14,8 +14,8 @@ namespace Orient.Console
         static void Main(string[] args)
         {
             OClient.CreateDatabasePool(
-                //"127.0.0.1",
-                "vps-04-ubuntu-server.developmententity.sk",
+                "127.0.0.1",
+                //"vps-04-ubuntu-server.developmententity.sk",
                 2424,
                 "tinkerpop",
                 ODatabaseType.Graph,
@@ -26,8 +26,8 @@ namespace Orient.Console
             );
 
             //TestConnection();
-            //TestQuery();
-            TestLoad();
+            TestQuery();
+            //TestLoad();
 
             System.Console.ReadLine();
         }

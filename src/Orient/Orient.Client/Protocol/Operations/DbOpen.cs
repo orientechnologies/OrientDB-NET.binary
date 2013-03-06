@@ -32,11 +32,11 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ResponseDataObject Response(Response response)
+        public DataObject Response(Response response)
         {
             // start from this position since standard fields (status, session ID) has been already parsed
             int offset = 5;
-            ResponseDataObject dataObject = new ResponseDataObject();
+            DataObject dataObject = new DataObject();
 
             if (response == null)
             {
