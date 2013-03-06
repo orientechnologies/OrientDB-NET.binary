@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
+using Orient.Client.Protocol;
 using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
@@ -69,11 +70,11 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ResponseDataObject Response(Response response)
+        public DataObject Response(Response response)
         {
             // start from this position since standard fields (status, session ID) has been already parsed
             int offset = 5;
-            ResponseDataObject dataObject = new ResponseDataObject();
+            DataObject dataObject = new DataObject();
             
             if (response == null)
             {
@@ -125,11 +126,12 @@ namespace Orient.Client.Protocol.Operations
 
                 switch (payloadStatus)
                 {
-                    case PayloadStatus.NullResult:
+                    case PayloadStatus.NullResult: // 'n'
                         // TODO:
                         break;
-                    case PayloadStatus.SingleRecord:
-                        contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
+                    case PayloadStatus.SingleRecord: // 'r'
+                        // TODO:
+                        /*contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
                         offset += 4;
                         // HACK:
                         string record = BinarySerializer.ToString(response.Data.Skip(offset).Take(contentLength).ToArray());
@@ -141,55 +143,68 @@ namespace Orient.Client.Protocol.Operations
                         string type = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray()).ToString();
                         offset += 1;
 
-                        content.Add(record + ";" + version + ";" + type);
+                        content.Add(record + ";" + version + ";" + type);*/
                         break;
-                    case PayloadStatus.SerializedResult:
-                        contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
+                    case PayloadStatus.SerializedResult: // 'a'
+                        // TODO:
+                        /*contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
                         offset += 4;
                         string serialized = BinarySerializer.ToString(response.Data.Skip(offset).Take(contentLength).ToArray());
                         offset += contentLength;
 
-                        content.Add(serialized);
+                        content.Add(serialized);*/
                         break;
-                    case PayloadStatus.RecordCollection:
+                    case PayloadStatus.RecordCollection: // 'l'
                         int recordsCount = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
                         offset += 4;
 
                         for (int i = 0; i < recordsCount; i++)
                         {
-                            string classId = BinarySerializer.ToShort(response.Data.Skip(offset).Take(2).ToArray()).ToString();
+                            short classId = BinarySerializer.ToShort(response.Data.Skip(offset).Take(2).ToArray());
                             offset += 2;
 
-                            string wut = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray()).ToString();
-                            offset += 1;
+                            if (classId == -2) // NULL
+                            {
+                            }
+                            else if (classId == -3) // record id
+                            {
+                            }
+                            else
+                            {
+                                ORecord record = new ORecord();
+                                record.ClassId = classId;
 
-                            string clusterId = BinarySerializer.ToShort(response.Data.Skip(offset).Take(2).ToArray()).ToString();
-                            offset += 2;
+                                string rec = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray()).ToString();
+                                offset += 1;
 
-                            string clusterPosition = BinarySerializer.ToLong(response.Data.Skip(offset).Take(8).ToArray()).ToString();
-                            offset += 8;
+                                record.ORID.ClusterId = BinarySerializer.ToShort(response.Data.Skip(offset).Take(2).ToArray());
+                                offset += 2;
 
-                            string wut2 = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray()).ToString();
-                            offset += 4;
+                                record.ORID.ClusterPosition = BinarySerializer.ToLong(response.Data.Skip(offset).Take(8).ToArray());
+                                offset += 8;
 
-                            int recordLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
-                            offset += 4;
+                                record.Version = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
+                                offset += 4;
 
-                            string recordContent = BinarySerializer.ToString(response.Data.Skip(offset).Take(recordLength).ToArray());
-                            offset += recordLength;
+                                int recordLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
+                                offset += 4;
 
-                            content.Add(string.Format("{0}:{1}:{2}:{3}:{4}:{5}", classId, wut, clusterId, clusterPosition, wut2, recordContent));
+                                string recordContent = BinarySerializer.ToString(response.Data.Skip(offset).Take(recordLength).ToArray());
+                                offset += recordLength;
 
-                            /*contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
-                            offset += 4;
-                            string record2 = BinarySerializer.ToString(response.Data.Skip(offset).Take(contentLength).ToArray());
-                            offset += contentLength;
+                                content.Add(string.Format("{0}:{1} {2} v{3}: {4}", record.ClassId, rec, record.ORID, record.Version, recordContent));
 
-                            string version2 = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray()).ToString();
-                            offset += 4;
+                                /*contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
+                                offset += 4;
+                                string record2 = BinarySerializer.ToString(response.Data.Skip(offset).Take(contentLength).ToArray());
+                                offset += contentLength;
 
-                            string type2 = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray()).ToString();
-                            offset += 1;*/ 
+                                string version2 = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray()).ToString();
+                                offset += 4;
+
+                                string type2 = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray()).ToString();
+                                offset += 1;*/
+                            }
                         }
                         break;
                     default:
