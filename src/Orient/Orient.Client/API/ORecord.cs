@@ -1,20 +1,31 @@
-﻿using Orient.Client.Protocol.Serializers;
+﻿using Orient.Client.Protocol;
+using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client
 {
     public class ORecord
     {
+        internal DataObject DataObject { get; set; }
+
         public ORID ORID { get; set; }
         public ORecordType Type { get; set; }
         public int Version { get; set; }
         public short ClassId { get; set; }
         public string ClassName { get; set; }
-        //public byte[] Content { get; set; }
-        //public Dictionary<string, object> Fields { get; set; }
 
         public ORecord()
         {
             ORID = new ORID();
+            DataObject = new DataObject();
+        }
+
+        public ORecord(ORID orid, int version, ORecordType type, short classId)
+        {
+            ORID = orid;
+            Version = version;
+            Type = type;
+            ClassId = classId;
+            DataObject = new DataObject();
         }
 
         /*public ORecord()
