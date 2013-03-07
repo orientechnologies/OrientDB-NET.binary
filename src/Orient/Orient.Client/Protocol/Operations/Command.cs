@@ -158,6 +158,8 @@ namespace Orient.Client.Protocol.Operations
                         int recordsCount = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
                         offset += 4;
 
+                        List<ORecord> records = new List<ORecord>();
+
                         for (int i = 0; i < recordsCount; i++)
                         {
                             short classId = BinarySerializer.ToShort(response.Data.Skip(offset).Take(2).ToArray());
@@ -171,48 +173,40 @@ namespace Orient.Client.Protocol.Operations
                             }
                             else
                             {
-                                ORecord record = new ORecord();
-                                record.ClassId = classId;
-
-                                string rec = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray()).ToString();
+                                ORecordType type = (ORecordType)BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray());
                                 offset += 1;
 
-                                record.ORID.ClusterId = BinarySerializer.ToShort(response.Data.Skip(offset).Take(2).ToArray());
+                                ORID orid = new ORID();
+                                orid.ClusterId = BinarySerializer.ToShort(response.Data.Skip(offset).Take(2).ToArray());
                                 offset += 2;
 
-                                record.ORID.ClusterPosition = BinarySerializer.ToLong(response.Data.Skip(offset).Take(8).ToArray());
+                                orid.ClusterPosition = BinarySerializer.ToLong(response.Data.Skip(offset).Take(8).ToArray());
                                 offset += 8;
 
-                                record.Version = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
+                                int version = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
                                 offset += 4;
 
                                 int recordLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
                                 offset += 4;
 
-                                string recordContent = BinarySerializer.ToString(response.Data.Skip(offset).Take(recordLength).ToArray());
+                                byte[] rawRecord = response.Data.Skip(offset).Take(recordLength).ToArray();
                                 offset += recordLength;
 
-                                content.Add(string.Format("{0}:{1} {2} v{3}: {4}", record.ClassId, rec, record.ORID, record.Version, recordContent));
+                                ORecord record = RecordSerializer.ToRecord(orid, version, type, classId, rawRecord);
 
-                                /*contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
-                                offset += 4;
-                                string record2 = BinarySerializer.ToString(response.Data.Skip(offset).Take(contentLength).ToArray());
-                                offset += contentLength;
-
-                                string version2 = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray()).ToString();
-                                offset += 4;
-
-                                string type2 = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray()).ToString();
-                                offset += 1;*/
+                                records.Add(record);
+                                //content.Add(string.Format("{0}:{1} {2} v{3}: {4}", record.ClassId, rec, record.ORID, record.Version, recordContent));
                             }
                         }
+
+                        dataObject.Set("Content", records);
                         break;
                     default:
                         break;
                 }
             }
 
-            dataObject.Set("Content", content);
+            //dataObject.Set("Content", content);
             
             return dataObject;
         }
