@@ -6,10 +6,6 @@ namespace Orient.Client
     public class OProperty : Attribute
     {
         public string MapTo { get; set; }
-
-        public OProperty(string mapTo)
-        {
-            MapTo = mapTo;
-        }
+        public OType Type { get; set; }
     }
 }

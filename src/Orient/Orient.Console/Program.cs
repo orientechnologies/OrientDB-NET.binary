@@ -99,17 +99,22 @@ namespace Orient.Console
 
     class Vertex
     {
-        [OProperty("name")]
+        [OProperty(MapTo = "name")]
         public string Name { get; set; }
-        [OProperty("song_type")]
+
+        [OProperty(MapTo = "song_type")]
         public string SongType { get; set; }
-        [OProperty("performances")]
+
+        [OProperty(MapTo = "performances")]
         public int Performances { get; set; }
-        [OProperty("type")]
+
+        [OProperty(MapTo = "type")]
         public string Type { get; set; }
-        [OProperty("in")]
+
+        [OProperty(MapTo = "in")]
         public List<ORID> In { get; set; }
-        [OProperty("out")]
+
+        [OProperty(MapTo = "out")]
         public List<ORID> Out { get; set; }
     }
 }
