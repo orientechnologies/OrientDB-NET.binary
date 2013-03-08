@@ -44,7 +44,7 @@ namespace Orient.Client.Protocol
             return value;
         }
 
-        public void Set<T>(string fieldPath, T value)
+        internal void Set<T>(string fieldPath, T value)
         {
             if (fieldPath.Contains("."))
             {
@@ -91,7 +91,7 @@ namespace Orient.Client.Protocol
             }
         }
 
-        public bool Has(string fieldPath)
+        internal bool Has(string fieldPath)
         {
             bool contains = false;
 
