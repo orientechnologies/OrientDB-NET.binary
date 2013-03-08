@@ -19,11 +19,11 @@ namespace Orient.Client
             return _connection.DataObject.Get<List<OCluster>>("Clusters");
         }
 
-        public List<string> Command(string query)
+        public List<ORecord> Query(string sql)
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;
-            payload.Text = query;
+            payload.Text = sql;
             payload.NonTextLimit = -1;
             payload.FetchPlan = "*:0";
             payload.SerializedParams = new byte[] { 0 };
@@ -35,7 +35,7 @@ namespace Orient.Client
 
             DataObject dataObject = _connection.ExecuteOperation<Command>(operation);
 
-            return dataObject.Get<List<string>>("Content");
+            return dataObject.Get<List<ORecord>>("Content");
         }
 
         public void Close()
