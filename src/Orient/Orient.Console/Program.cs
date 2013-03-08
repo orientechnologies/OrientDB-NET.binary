@@ -43,9 +43,10 @@ namespace Orient.Console
         {
             ODatabase database = new ODatabase(_alias);
 
-            foreach (string s in database.Command("select from OGraphEdge limit 20"))
+            foreach (ORecord record in database.Query("select from OGraphVertex limit 20"))
             {
-                System.Console.WriteLine(s);
+                Vertex v = record.To<Vertex>();
+                System.Console.WriteLine(v.Name);
             }
             //System.Console.WriteLine(database.Command("select from OGraphVertex limit 1").Count);
         }
@@ -76,9 +77,9 @@ namespace Orient.Console
             {
                 ODatabase database = new ODatabase(_alias);
 
-                //List<string> result = database.Command("select name from OGraphVertex where in[0].label = 'followed_by' and in[0].out.name = 'JAM'");
-                //List<string> result = database.Command("select from OGraphVertex limit 20");
-                List<string> result = database.Command("select from OGraphEdge limit 20");
+                //List<ORecord> result = database.Query("select name from OGraphVertex where in[0].label = 'followed_by' and in[0].out.name = 'JAM'");
+                //List<ORecord> result = database.Query("select from OGraphVertex limit 20");
+                List<ORecord> result = database.Query("select from OGraphEdge limit 20");
 
                 database.Close();
                 tps++;
@@ -94,5 +95,21 @@ namespace Orient.Console
 
             return tps;
         }
+    }
+
+    class Vertex
+    {
+        [OProperty("name")]
+        public string Name { get; set; }
+        [OProperty("song_type")]
+        public string SongType { get; set; }
+        [OProperty("performances")]
+        public int Performances { get; set; }
+        [OProperty("type")]
+        public string Type { get; set; }
+        [OProperty("in")]
+        public List<ORID> In { get; set; }
+        [OProperty("out")]
+        public List<ORID> Out { get; set; }
     }
 }
