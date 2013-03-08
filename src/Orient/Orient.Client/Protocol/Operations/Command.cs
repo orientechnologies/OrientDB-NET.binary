@@ -86,8 +86,6 @@ namespace Orient.Client.Protocol.Operations
             dataObject.Set("PayloadStatus", payloadStatus);
             offset += 1;
 
-            List<string> content = new List<string>();
-
             if (OperationMode == OperationMode.Asynchronous)
             {
                 while (payloadStatus != PayloadStatus.NoRemainingRecords)
@@ -95,7 +93,8 @@ namespace Orient.Client.Protocol.Operations
                     switch (payloadStatus)
                     {
                         case PayloadStatus.ResultSet:
-                            int contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
+                            // TODO:
+                            /*int contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
                             offset += 4;
                             // HACK:
                             string record = BinarySerializer.ToString(response.Data.Skip(offset).Take(contentLength).ToArray());
@@ -107,7 +106,7 @@ namespace Orient.Client.Protocol.Operations
                             string type = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray()).ToString();
                             offset += 1;
 
-                            content.Add(record + ";" + version + ";" + type);
+                            content.Add(record + ";" + version + ";" + type);*/
                             break;
                         case PayloadStatus.PreFetched:
                             // TODO:
@@ -195,7 +194,6 @@ namespace Orient.Client.Protocol.Operations
                                 ORecord record = RecordSerializer.ToRecord(orid, version, type, classId, rawRecord);
 
                                 records.Add(record);
-                                //content.Add(string.Format("{0}:{1} {2} v{3}: {4}", record.ClassId, rec, record.ORID, record.Version, recordContent));
                             }
                         }
 
@@ -205,8 +203,6 @@ namespace Orient.Client.Protocol.Operations
                         break;
                 }
             }
-
-            //dataObject.Set("Content", content);
             
             return dataObject;
         }
