@@ -135,13 +135,12 @@ namespace Orient.Client.Protocol.Operations
                         break;
                     case PayloadStatus.SerializedResult: // 'a'
                         // TODO:
-                        /*contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
+                        contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
                         offset += 4;
                         string serialized = BinarySerializer.ToString(response.Data.Skip(offset).Take(contentLength).ToArray());
                         offset += contentLength;
 
-                        content.Add(serialized);*/
-                        string foo1 = BinarySerializer.ToString(response.Data);
+                        dataObject.Set("Content", serialized);
                         break;
                     case PayloadStatus.RecordCollection: // 'l'
                         int recordsCount = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
