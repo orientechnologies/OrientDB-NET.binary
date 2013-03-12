@@ -17,7 +17,8 @@ namespace Orient.Console
                 "127.0.0.1",
                 //"vps-04-ubuntu-server.developmententity.sk",
                 2424,
-                "tinkerpop",
+                //"tinkerpop",
+                "test",
                 ODatabaseType.Graph,
                 "admin",
                 "admin",
@@ -43,12 +44,20 @@ namespace Orient.Console
         {
             ODatabase database = new ODatabase(_alias);
 
-            foreach (ORecord record in database.Query("select from OGraphVertex limit 20"))
+            /*foreach (ORecord record in database.Query("select from OGraphVertex limit 20", "*:1"))
             {
-                Vertex v = record.To<Vertex>();
-                System.Console.WriteLine(v.Name);
+                Ve v = record.To<Ve>();
+                System.Console.WriteLine(v.Title);
             }
-            //System.Console.WriteLine(database.Command("select from OGraphVertex limit 1").Count);
+
+            /*foreach (ORecord record in database.Query("select from OGraphEdge limit 20", "*:2"))
+            {
+                Ed e = record.To<Ed>();
+                System.Console.WriteLine(e.Label);
+            }*/
+
+            //object foo = database.Command("create vertex OGraphVertex set title = \"whoa\"");
+            object foo = database.Command("delete vertex #8:8");
         }
 
         static void TestLoad()
@@ -116,5 +125,17 @@ namespace Orient.Console
 
         [OProperty(MapTo = "out")]
         public List<ORID> Out { get; set; }
+    }
+
+    class Ve
+    {
+        [OProperty(MapTo = "title")]
+        public string Title { get; set; }
+    }
+
+    class Ed
+    {
+        [OProperty(MapTo = "label")]
+        public string Label { get; set; }
     }
 }
