@@ -151,40 +151,6 @@ namespace Orient.Client.Protocol.Operations
 
                         for (int i = 0; i < recordsCount; i++)
                         {
-                            /*short classId = BinarySerializer.ToShort(response.Data.Skip(offset).Take(2).ToArray());
-                            offset += 2;
-
-                            if (classId == -2) // NULL
-                            {
-                            }
-                            else if (classId == -3) // record id
-                            {
-                            }
-                            else
-                            {
-                                ORecordType type = (ORecordType)BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray());
-                                offset += 1;
-
-                                ORID orid = new ORID();
-                                orid.ClusterId = BinarySerializer.ToShort(response.Data.Skip(offset).Take(2).ToArray());
-                                offset += 2;
-
-                                orid.ClusterPosition = BinarySerializer.ToLong(response.Data.Skip(offset).Take(8).ToArray());
-                                offset += 8;
-
-                                int version = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
-                                offset += 4;
-
-                                int recordLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
-                                offset += 4;
-
-                                byte[] rawRecord = response.Data.Skip(offset).Take(recordLength).ToArray();
-                                offset += recordLength;
-
-                                ORecord record = RecordSerializer.ToRecord(orid, version, type, classId, rawRecord);
-
-                                records.Add(record);
-                            }*/
                             records.Add(ParseRecord(ref offset, response.Data));
                         }
 
@@ -209,6 +175,15 @@ namespace Orient.Client.Protocol.Operations
             }
             else if (classId == -3) // record id
             {
+                ORID orid = new ORID();
+                orid.ClusterId = BinarySerializer.ToShort(data.Skip(offset).Take(2).ToArray());
+                offset += 2;
+
+                orid.ClusterPosition = BinarySerializer.ToLong(data.Skip(offset).Take(8).ToArray());
+                offset += 8;
+
+                record = new ORecord();
+                record.ORID = orid;
             }
             else
             {
