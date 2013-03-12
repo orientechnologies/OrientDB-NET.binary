@@ -519,25 +519,62 @@ namespace Orient.Client.Protocol.Serializers
             // move to the inside of embedded document (go past starting bracket character)
             i++;
 
-            // create new dictionary which would hold K/V pairs of embedded document
-            DataObject embeddedDataObject = new DataObject();
 
-            if (dataObject[fieldName] == null)
+            if ((recordString.Length > 15) && (recordString.Substring(i, 15).Equals("ORIDs@pageSize:")))
             {
-                dataObject[fieldName] = embeddedDataObject;
+                OLinkCollection linkCollection = new OLinkCollection();
+                i = ParseLinkCollection(i, recordString, linkCollection);
+                dataObject[fieldName] = linkCollection;
             }
             else
             {
-                ((List<object>)dataObject[fieldName]).Add(embeddedDataObject);
-            }
+                // create new dictionary which would hold K/V pairs of embedded document
+                DataObject embeddedDataObject = new DataObject();
 
-            // start parsing field names until the closing bracket of embedded document is reached
-            while (recordString[i] != ')')
-            {
-                i = ParseFieldName(i, recordString, embeddedDataObject);
+                if (dataObject[fieldName] == null) // embedded object
+                {
+                    dataObject[fieldName] = embeddedDataObject;
+                }
+                else // collection of embedded objects
+                {
+                    ((List<object>)dataObject[fieldName]).Add(embeddedDataObject);
+                }
+
+                // start parsing field names until the closing bracket of embedded document is reached
+                while (recordString[i] != ')')
+                {
+                    i = ParseFieldName(i, recordString, embeddedDataObject);
+                }
             }
 
             // move past close bracket of embedded document
+            i++;
+
+            return i;
+        }
+
+        private static int ParseLinkCollection(int i, string recordString, OLinkCollection linkCollection)
+        {
+            // move to the start of pageSize value
+            i += 15;
+
+            int index = recordString.IndexOf(',', i);
+
+            linkCollection.PageSize = int.Parse(recordString.Substring(i, index - i));
+
+            // move to root value
+            i = index + 6;
+            index = recordString.IndexOf(',', i);
+            
+            linkCollection.Root = new ORID(recordString.Substring(i, index - i));
+
+            // move to keySize value
+            i = index + 9;
+            index = recordString.IndexOf(')', i);
+
+            linkCollection.KeySize = int.Parse(recordString.Substring(i, index - i));
+
+            // move past close bracket of link collection
             i++;
 
             return i;
