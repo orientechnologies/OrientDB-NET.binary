@@ -127,7 +127,7 @@ namespace Orient.Client.Protocol.Operations
                 switch (payloadStatus)
                 {
                     case PayloadStatus.NullResult: // 'n'
-                        // TODO:
+                        // nothing to do
                         break;
                     case PayloadStatus.SingleRecord: // 'r'
                         ORecord record = ParseRecord(ref offset, response.Data);

@@ -43,7 +43,7 @@ namespace Orient.Client
             return dataObject.Get<List<ORecord>>("Content");
         }
 
-        public object Command(string sql)
+        public OCommandResult Command(string sql)
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;
@@ -58,8 +58,8 @@ namespace Orient.Client
             operation.CommandPayload = payload;
 
             DataObject dataObject = _connection.ExecuteOperation<Command>(operation);
-
-            return dataObject.Get<List<ORecord>>("Content");
+            
+            return new OCommandResult(dataObject);
         }
 
         public void Close()

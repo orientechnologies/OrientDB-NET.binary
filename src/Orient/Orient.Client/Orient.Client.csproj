@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\OCommandResult.cs" />
     <Compile Include="API\OProperty.cs" />
     <Compile Include="API\OClient.cs" />
     <Compile Include="API\OCluster.cs" />

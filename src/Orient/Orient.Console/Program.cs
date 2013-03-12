@@ -56,8 +56,8 @@ namespace Orient.Console
                 System.Console.WriteLine(e.Label);
             }*/
 
-            //object foo = database.Command("create vertex OGraphVertex set title = \"whoa\"");
-            object foo = database.Command("delete vertex #8:8");
+            ORecord rec = database.Command("create vertex OGraphVertex set title = \"whoa\"").ToSingle();
+            object foo = database.Command("delete vertex " + rec.ORID.ToString());
         }
 
         static void TestLoad()
