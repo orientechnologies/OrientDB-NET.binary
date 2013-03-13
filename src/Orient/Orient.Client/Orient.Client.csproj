@@ -48,7 +48,7 @@
     <Compile Include="API\ORecord.cs" />
     <Compile Include="API\ORecordType.cs" />
     <Compile Include="API\ORID.cs" />
-    <Compile Include="API\OType.cs" />
+    <Compile Include="API\Types\OType.cs" />
     <Compile Include="API\Types\OLinkCollection.cs" />
     <Compile Include="API\Types\OLinkSet.cs" />
     <Compile Include="Protocol\Connection.cs" />
