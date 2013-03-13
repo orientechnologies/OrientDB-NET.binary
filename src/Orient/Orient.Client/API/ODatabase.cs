@@ -34,7 +34,7 @@ namespace Orient.Client
             payload.SerializedParams = new byte[] { 0 };
 
             Command operation = new Command();
-            operation.OperationMode = OperationMode.Synchronous;
+            operation.OperationMode = OperationMode.Asynchronous;
             operation.ClassType = CommandClassType.Idempotent;
             operation.CommandPayload = payload;
 

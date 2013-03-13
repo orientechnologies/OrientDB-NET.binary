@@ -31,6 +31,8 @@ namespace Orient.Console
             //TestLoad();
 
             System.Console.ReadLine();
+
+            TestQuery();
         }
 
         static void TestConnection()
@@ -44,7 +46,9 @@ namespace Orient.Console
         {
             ODatabase database = new ODatabase(_alias);
 
-            /*foreach (ORecord record in database.Query("select from OGraphVertex limit 20", "*:1"))
+            List<ORecord> records = database.Query("select from OGraphVertex where title = \"server 1\"", "*:2");
+
+            foreach (ORecord record in records)
             {
                 Ve v = record.To<Ve>();
                 System.Console.WriteLine(v.Title);
@@ -56,8 +60,8 @@ namespace Orient.Console
                 System.Console.WriteLine(e.Label);
             }*/
 
-            ORecord rec = database.Command("create vertex OGraphVertex set title = \"whoa\"").ToSingle();
-            object foo = database.Command("delete vertex " + rec.ORID.ToString());
+            //ORecord rec = database.Command("create vertex OGraphVertex set title = \"whoa\"").ToSingle();
+            //object foo = database.Command("delete vertex " + rec.ORID.ToString());
         }
 
         static void TestLoad()
@@ -108,34 +112,34 @@ namespace Orient.Console
 
     class Vertex
     {
-        [OProperty(MapTo = "name")]
+        [OProperty(MappedTo = "name")]
         public string Name { get; set; }
 
-        [OProperty(MapTo = "song_type")]
+        [OProperty(MappedTo = "song_type")]
         public string SongType { get; set; }
 
-        [OProperty(MapTo = "performances")]
+        [OProperty(MappedTo = "performances")]
         public int Performances { get; set; }
 
-        [OProperty(MapTo = "type")]
+        [OProperty(MappedTo = "type")]
         public string Type { get; set; }
 
-        [OProperty(MapTo = "in")]
+        [OProperty(MappedTo = "in")]
         public List<ORID> In { get; set; }
 
-        [OProperty(MapTo = "out")]
+        [OProperty(MappedTo = "out")]
         public List<ORID> Out { get; set; }
     }
 
     class Ve
     {
-        [OProperty(MapTo = "title")]
+        [OProperty(MappedTo = "title")]
         public string Title { get; set; }
     }
 
     class Ed
     {
-        [OProperty(MapTo = "label")]
+        [OProperty(MappedTo = "label")]
         public string Label { get; set; }
     }
 }
