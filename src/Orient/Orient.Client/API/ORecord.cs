@@ -75,7 +75,7 @@ namespace Orient.Client
 
                 if (oProperty != null)
                 {
-                    propertyName = oProperty.MapTo;
+                    propertyName = oProperty.MappedTo;
                 }
 
                 string fieldPath = path + (path != "" ? "." : "") + propertyName;
