@@ -88,29 +88,20 @@ namespace Orient.Client.Protocol.Operations
 
             if (OperationMode == OperationMode.Asynchronous)
             {
+                List<ORecord> records = new List<ORecord>();
+
                 while (payloadStatus != PayloadStatus.NoRemainingRecords)
                 {
+                    ORecord record = ParseRecord(ref offset, response.Data);
+
                     switch (payloadStatus)
                     {
                         case PayloadStatus.ResultSet:
-                            // TODO:
-                            /*int contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
-                            offset += 4;
-                            // HACK:
-                            string record = BinarySerializer.ToString(response.Data.Skip(offset).Take(contentLength).ToArray());
-                            offset += contentLength;
-
-                            string version = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray()).ToString();
-                            offset += 4;
-
-                            string type = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray()).ToString();
-                            offset += 1;
-
-                            content.Add(record + ";" + version + ";" + type);*/
+                            records.Add(record);
                             break;
                         case PayloadStatus.PreFetched:
-                            // TODO:
-                            int x = 4;
+                            // TODO: client cache
+                            records.Add(record);
                             break;
                         default:
                             break;
@@ -119,6 +110,8 @@ namespace Orient.Client.Protocol.Operations
                     payloadStatus = (PayloadStatus)BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray());
                     offset += 1;
                 }
+
+                dataObject.Set("Content", records);
             }
             else
             {
@@ -134,7 +127,7 @@ namespace Orient.Client.Protocol.Operations
                         dataObject.Set("Content", record);
                         break;
                     case PayloadStatus.SerializedResult: // 'a'
-                        // TODO:
+                        // TODO: how to handle result
                         contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
                         offset += 4;
                         string serialized = BinarySerializer.ToString(response.Data.Skip(offset).Take(contentLength).ToArray());
