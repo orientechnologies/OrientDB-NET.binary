@@ -8,7 +8,7 @@
         DB_CREATE = 4,
         DB_CLOSE = 5,
         DB_EXIST = 6,
-        DB_DELETE = 7,
+        DB_DROP = 7,
         DB_SIZE	= 8,
         DB_COUNTRECORDS = 9,
         DATACLUSTER_ADD = 10,
