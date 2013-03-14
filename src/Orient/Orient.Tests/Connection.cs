@@ -12,11 +12,15 @@ namespace Orient.Tests
         private static string _password = "admin";
         private static int _poolSize = 10;
 
+        private static string _rootUserName = "root";
+        private static string _rootUserParssword = "D348621FCC37E9B0007147DBC2EF3DFAEA6402CAEC594BF8491C79D595CEEAF4";
+        private static OServer _server;
+
         public static string DatabaseAlias = "tinkerpop";
 
-        public Connection()
+        private Connection()
         {
-            OClient.CreateDatabasePool(
+            /*OClient.CreateDatabasePool(
                 _hostname,
                 _port,
                 _databaseName,
@@ -25,12 +29,24 @@ namespace Orient.Tests
                 _password,
                 _poolSize,
                 DatabaseAlias
-            );
+            );*/
+
+            _server = new OServer(_hostname, _port, _rootUserName, _rootUserParssword);
         }
 
         public static ODatabase GetDatabase(string alias)
         {
             return new ODatabase(alias);
+        }
+
+        public static OServer GetServer()
+        {
+            return _server;
+        }
+
+        public void Dispose()
+        {
+            _server.Dispose();
         }
     }
 }
