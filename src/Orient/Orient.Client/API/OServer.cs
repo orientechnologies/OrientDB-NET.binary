@@ -35,7 +35,7 @@ namespace Orient.Client
             return dataObject.Get<bool>("Exists");
         }
 
-        public void DeleteDatabase(string databaseName)
+        public void DropDatabase(string databaseName)
         {
             DbDrop operation = new DbDrop();
             operation.DatabaseName = databaseName;
