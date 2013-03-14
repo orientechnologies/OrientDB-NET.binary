@@ -16,6 +16,7 @@ namespace Orient.Client.Protocol
 
         internal string Hostname { get; set; }
         internal int Port { get; set; }
+        internal ConnectionType Type { get; private set; }
 
         internal string Alias { get; set; }
         internal bool IsReusable { get; set; }
@@ -39,12 +40,25 @@ namespace Orient.Client.Protocol
         {
             Hostname = hostname;
             Port = port;
+            Type = ConnectionType.Database;
             Alias = alias;
             IsReusable = isReusable;
             ProtocolVersion = 0;
             SessionId = -1;
 
-            Initialize(databaseName, databaseType, userName, userPassword);
+            InitializeDatabaseConnection(databaseName, databaseType, userName, userPassword);
+        }
+
+        internal Connection(string hostname, int port, string userName, string userPassword)
+        {
+            Hostname = hostname;
+            Port = port;
+            Type = ConnectionType.Server;
+            IsReusable = false;
+            ProtocolVersion = 0;
+            SessionId = -1;
+
+            InitializeServerConnection(userName, userPassword);
         }
 
         internal DataObject ExecuteOperation<T>(T operation)
@@ -127,7 +141,7 @@ namespace Orient.Client.Protocol
 
         #region Private methods
 
-        private void Initialize(string databaseName, ODatabaseType databaseType, string userName, string userPassword)
+        private void InitializeDatabaseConnection(string databaseName, ODatabaseType databaseType, string userName, string userPassword)
         {
             _readBuffer = new byte[OClient.BufferLenght];
 
@@ -154,6 +168,34 @@ namespace Orient.Client.Protocol
             operation.UserPassword = userPassword;
 
             DataObject = ExecuteOperation<DbOpen>(operation);
+            SessionId = DataObject.Get<int>("SessionId");
+        }
+
+        private void InitializeServerConnection(string userName, string userPassword)
+        {
+            _readBuffer = new byte[OClient.BufferLenght];
+
+            // initiate socket connection
+            try
+            {
+                _socket = new TcpClient(Hostname, Port);
+            }
+            catch (SocketException ex)
+            {
+                throw new Exception(ex.Message, ex.InnerException);
+            }
+
+            _networkStream = _socket.GetStream();
+            _networkStream.Read(_readBuffer, 0, 2);
+
+            ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
+
+            // execute connect operation
+            Connect operation = new Connect();
+            operation.UserName = userName;
+            operation.UserPassword = userPassword;
+
+            DataObject = ExecuteOperation<Connect>(operation);
             SessionId = DataObject.Get<int>("SessionId");
         }
 
