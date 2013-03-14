@@ -70,8 +70,6 @@ namespace Orient.Client
             }
             else
             {
-                Close();
-
                 _connection.Dispose();
             }
         }
