@@ -26,7 +26,7 @@ namespace Orient.Client.Protocol.Operations
         public DataObject Response(Response response)
         {
             // start from this position since standard fields (status, session ID) has been already parsed
-            int offset = 5;
+            //int offset = 5;
             DataObject dataObject = new DataObject();
 
             if (response == null)
