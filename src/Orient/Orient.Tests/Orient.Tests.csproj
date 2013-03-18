@@ -51,7 +51,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Connection.cs" />
-    <Compile Include="Server\ServerOperations.cs" />
+    <Compile Include="Server\ServerOperationsTests.cs" />
     <Compile Include="SQL\CreateClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
