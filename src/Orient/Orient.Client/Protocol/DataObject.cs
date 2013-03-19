@@ -4,6 +4,46 @@ namespace Orient.Client.Protocol
 {
     internal class DataObject : Dictionary<string, object>
     {
+        internal string Get(string fieldPath)
+        {
+            string value = null;
+
+            if (fieldPath.Contains("."))
+            {
+                var fields = fieldPath.Split('.');
+                int iteration = 1;
+                DataObject innerObject = this;
+
+                foreach (var field in fields)
+                {
+                    if (iteration == fields.Length)
+                    {
+                        value = (string)innerObject[field];
+                        break;
+                    }
+
+                    if (innerObject.ContainsKey(field))
+                    {
+                        innerObject = (DataObject)innerObject[field];
+                        iteration++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                if (this.ContainsKey(fieldPath))
+                {
+                    value = (string)this[fieldPath];
+                }
+            }
+
+            return value;
+        }
+
         internal T Get<T>(string fieldPath) where T : new()
         {
             T value = new T();

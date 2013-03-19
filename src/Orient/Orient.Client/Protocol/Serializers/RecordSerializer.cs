@@ -325,7 +325,7 @@ namespace Orient.Client.Protocol.Serializers
             }
             else
             {
-                ((List<object>)dataObject[fieldName]).Add(value);
+                ((List<string>)dataObject[fieldName]).Add(value);
             }
 
             // move past the closing quote character
@@ -353,7 +353,7 @@ namespace Orient.Client.Protocol.Serializers
             }
             else
             {
-                ((List<object>)dataObject[fieldName]).Add(new ORID(orid));
+                ((List<ORID>)dataObject[fieldName]).Add(new ORID(orid));
             }
 
             return i;
@@ -585,29 +585,33 @@ namespace Orient.Client.Protocol.Serializers
             // move to the first element of this collection
             i++;
 
-            dataObject[fieldName] = new List<object>();
-
             while (recordString[i] != ']')
             {
                 // check what follows after parsed field name and start parsing underlying type
                 switch (recordString[i])
                 {
                     case '"':
+                        dataObject[fieldName] = new List<string>();
                         i = ParseString(i, recordString, dataObject, fieldName);
                         break;
                     case '#':
+                        dataObject[fieldName] = new List<ORID>();
                         i = ParseRecordID(i, recordString, dataObject, fieldName);
                         break;
                     case '(':
+                        dataObject[fieldName] = new List<object>();
                         i = ParseEmbeddedDocument(i, recordString, dataObject, fieldName);
                         break;
                     case '{':
+                        dataObject[fieldName] = new List<object>();
                         i = ParseMap(i, recordString, dataObject, fieldName);
                         break;
                     case ',':
+                        dataObject[fieldName] = new List<object>();
                         i++;
                         break;
                     default:
+                        dataObject[fieldName] = new List<object>();
                         i = ParseValue(i, recordString, dataObject, fieldName);
                         break;
                 }

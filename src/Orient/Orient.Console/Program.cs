@@ -46,12 +46,16 @@ namespace Orient.Console
         {
             ODatabase database = new ODatabase(_alias);
 
-            List<ORecord> records = database.Query("select from OGraphVertex where title = \"server 1\"", "*:2");
+            //List<ORecord> records = database.Query("select from OGraphVertex where title = \"server 1\"", "*:2");
+            List<ORecord> records = database.Query("select in.in.@rid as inVs, in.out.@rid as outVs, title from OGraphVertex where @rid = #8:0");
 
             foreach (ORecord record in records)
             {
-                Ve v = record.To<Ve>();
-                System.Console.WriteLine(v.Title);
+                //Ve v = record.To<Ve>();
+                List<ORID> orids = record.GetField<List<ORID>>("inVs");
+
+                System.Console.WriteLine(orids);
+                //System.Console.WriteLine(v.Title);
             }
 
             /*foreach (ORecord record in database.Query("select from OGraphEdge limit 20", "*:2"))

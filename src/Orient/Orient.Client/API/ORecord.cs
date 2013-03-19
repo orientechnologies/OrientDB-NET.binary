@@ -38,12 +38,17 @@ namespace Orient.Client
             return DataObject.Has(fieldPath);
         }
 
+        public string GetField(string fieldPath)
+        {
+            return DataObject.Get(fieldPath);
+        }
+
         public T GetField<T>(string fieldPath) where T : new()
         {
             return DataObject.Get<T>(fieldPath);
         }
 
-        public void Set<T>(string fieldPath, T value)
+        public void SetField<T>(string fieldPath, T value)
         {
             DataObject.Set<T>(fieldPath, value);
         }
