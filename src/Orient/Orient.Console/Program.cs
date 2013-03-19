@@ -18,7 +18,7 @@ namespace Orient.Console
                 //"vps-04-ubuntu-server.developmententity.sk",
                 2424,
                 //"tinkerpop",
-                "test",
+                "test001",
                 ODatabaseType.Graph,
                 "admin",
                 "admin",
@@ -31,8 +31,6 @@ namespace Orient.Console
             //TestLoad();
 
             System.Console.ReadLine();
-
-            TestQuery();
         }
 
         static void TestConnection()
@@ -47,12 +45,16 @@ namespace Orient.Console
             ODatabase database = new ODatabase(_alias);
 
             //List<ORecord> records = database.Query("select from OGraphVertex where title = \"server 1\"", "*:2");
-            List<ORecord> records = database.Query("select in.in.@rid as inVs, in.out.@rid as outVs, title from OGraphVertex where @rid = #8:0");
+            //List<ORecord> records = database.Query("select in.in.@rid as inVs, in.out.@rid as outVs, title from OGraphVertex where @rid = #8:0");
+            List<ORecord> records = database.Query("select out.in as outEdgesInVertices," +
+                    " title," +
+                    " @rid" +
+                    " from #8:0");
 
             foreach (ORecord record in records)
             {
                 //Ve v = record.To<Ve>();
-                List<ORID> orids = record.GetField<List<ORID>>("inVs");
+                List<ORID> orids = record.GetField<List<ORID>>("outEdgesInVertices");
 
                 System.Console.WriteLine(orids);
                 //System.Console.WriteLine(v.Title);
