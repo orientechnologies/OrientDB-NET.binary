@@ -44,5 +44,23 @@ namespace Orient.Client
         {
             return RID;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // if parameter cannot be cast to ORID return false.
+            ORID orid = obj as ORID;
+            
+            if ((System.Object)orid == null)
+            {
+                return false;
+            }
+
+            return (this.ToString() == orid.ToString());
+        }
     }
 }
