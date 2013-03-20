@@ -49,5 +49,72 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(record.GetField("salary_cloned"), null);
             Assert.AreEqual(record.GetField<float>("salary"), 120.3f);
         }
+
+        [TestMethod]
+        public void ShouldDeserializeDocComplexExample()
+        {
+            string recordString = 
+                "name:\"ORole\"," + 
+                "id:0," +
+                "defaultClusterId:3," +
+                "clusterIds:[3]," +
+                "properties:[" +
+                    "(name:\"mode\",type:17,offset:0,mandatory:false,notNull:false,min:,max:,linkedClass:,linkedType:,index:)," +
+                    "(name:\"rules\",type:12,offset:1,mandatory:false,notNull:false,min:,max:,linkedClass:,linkedType:17,index:)" +
+                "]";
+
+            ORecord record = new ORecord();
+            record.FromString(recordString);
+
+            // check for fields existence
+            Assert.AreEqual(record.HasField("name"), true);
+            Assert.AreEqual(record.HasField("id"), true);
+            Assert.AreEqual(record.HasField("defaultClusterId"), true);
+            Assert.AreEqual(record.HasField("clusterIds"), true);
+            Assert.AreEqual(record.HasField("properties"), true);
+
+            Assert.AreEqual(record.GetField("name"), "ORole");
+            Assert.AreEqual(record.GetField<int>("id"), 0);
+            Assert.AreEqual(record.GetField<int>("defaultClusterId"), 3);
+
+
+            Assert.AreEqual(record.GetField<List<int>>("clusterIds").Count, 1);
+            Assert.AreEqual(record.GetField<List<int>>("clusterIds")[0], 3);
+
+            List<DocComplexExampleEmbedded> loadedProperties = record.GetField<List<DocComplexExampleEmbedded>>("properties");
+            List<DocComplexExampleEmbedded> properties = new List<DocComplexExampleEmbedded>();
+            properties.Add(new DocComplexExampleEmbedded() { name = "mode", type = 17, offset = 0, mandatory = false, notNull = false, min = null, max = null, linkedClass = null, linkedType = null, index = null });
+            properties.Add(new DocComplexExampleEmbedded() { name = "rules", type = 12, offset = 1, mandatory = false, notNull = false, min = null, max = null, linkedClass = null, linkedType = 17, index = null });
+
+            Assert.AreEqual(loadedProperties.Count, properties.Count);
+
+            for (int i = 0; i < loadedProperties.Count; i++)
+            {
+                Assert.AreEqual(loadedProperties[i].name, properties[i].name);
+                Assert.AreEqual(loadedProperties[i].type, properties[i].type);
+                Assert.AreEqual(loadedProperties[i].offset, properties[i].offset);
+                Assert.AreEqual(loadedProperties[i].mandatory, properties[i].mandatory);
+                Assert.AreEqual(loadedProperties[i].notNull, properties[i].notNull);
+                Assert.AreEqual(loadedProperties[i].min, properties[i].min);
+                Assert.AreEqual(loadedProperties[i].max, properties[i].max);
+                Assert.AreEqual(loadedProperties[i].linkedClass, properties[i].linkedClass);
+                Assert.AreEqual(loadedProperties[i].linkedType, properties[i].linkedType);
+                Assert.AreEqual(loadedProperties[i].index, properties[i].index);
+            }
+        }
+    }
+
+    class DocComplexExampleEmbedded
+    {
+        public string name { get; set; }
+        public int type { get; set; }
+        public int offset { get; set; }
+        public bool mandatory { get; set; }
+        public bool notNull { get; set; }
+        public int? min { get; set; }
+        public int? max { get; set; }
+        public object linkedClass { get; set; }
+        public int? linkedType { get; set; }
+        public int? index { get; set; }
     }
 }
