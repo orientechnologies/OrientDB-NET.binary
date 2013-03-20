@@ -350,7 +350,7 @@ namespace Orient.Client.Protocol.Serializers
             }
             else
             {
-                ((List<string>)dataObject[fieldName]).Add(value);
+                ((List<object>)dataObject[fieldName]).Add(value);
             }
 
             // move past the closing quote character
@@ -378,7 +378,7 @@ namespace Orient.Client.Protocol.Serializers
             }
             else
             {
-                ((List<ORID>)dataObject[fieldName]).Add(new ORID(orid));
+                ((List<object>)dataObject[fieldName]).Add(new ORID(orid));
             }
 
             return i;
@@ -610,56 +610,35 @@ namespace Orient.Client.Protocol.Serializers
             // move to the first element of this collection
             i++;
 
+            if (dataObject[fieldName] == null)
+            {
+                dataObject[fieldName] = new List<object>();
+            }
+
             while (recordString[i] != ']')
             {
                 // check what follows after parsed field name and start parsing underlying type
                 switch (recordString[i])
                 {
                     case '"':
-                        if (dataObject[fieldName] == null)
-                        {
-                            dataObject[fieldName] = new List<string>();
-                        }
                         i = ParseString(i, recordString, dataObject, fieldName);
                         break;
                     case '#':
-                        if (dataObject[fieldName] == null)
-                        {
-                            dataObject[fieldName] = new List<ORID>();
-                        }
                         i = ParseRecordID(i, recordString, dataObject, fieldName);
                         break;
                     case '(':
-                        if (dataObject[fieldName] == null)
-                        {
-                            dataObject[fieldName] = new List<object>();
-                        }
                         i = ParseEmbeddedDocument(i, recordString, dataObject, fieldName);
                         break;
                     case '{':
-                        if (dataObject[fieldName] == null)
-                        {
-                            dataObject[fieldName] = new List<object>();
-                        }
                         i = ParseMap(i, recordString, dataObject, fieldName);
                         break;
                     case ',':
                         i++;
                         break;
                     default:
-                        if (dataObject[fieldName] == null)
-                        {
-                            dataObject[fieldName] = new List<object>();
-                        }
                         i = ParseValue(i, recordString, dataObject, fieldName);
                         break;
                 }
-            }
-
-            // if the collection was empty
-            if (dataObject[fieldName] == null)
-            {
-                dataObject[fieldName] = new List<object>();
             }
 
             // move past closing bracket of collection
