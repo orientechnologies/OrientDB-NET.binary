@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Orient.Client.Protocol
 {
@@ -58,7 +61,33 @@ namespace Orient.Client.Protocol
                 {
                     if (iteration == fields.Length)
                     {
-                        value = (T)innerObject[field];
+                        // if value is collection type, get element type and enumerate over its elements
+                        if (value is IList)
+                        {
+                            Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
+                            IEnumerator enumerator = ((IEnumerable)innerObject[fieldPath]).GetEnumerator();
+
+                            while (enumerator.MoveNext())
+                            {
+                                // if current element is DataObject type which is dictionary<string, object>
+                                // map its dictionary data to element instance
+                                if (enumerator.Current is DataObject)
+                                {
+                                    var instance = Activator.CreateInstance(elementType);
+                                    ((DataObject)enumerator.Current).MapData(instance);
+
+                                    ((IList)value).Add(instance);
+                                }
+                                else
+                                {
+                                    ((IList)value).Add(enumerator.Current);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            value = (T)innerObject[fieldPath];
+                        }
                         break;
                     }
 
@@ -77,7 +106,33 @@ namespace Orient.Client.Protocol
             {
                 if (this.ContainsKey(fieldPath))
                 {
-                    value = (T)this[fieldPath];
+                    // if value is collection type, get element type and enumerate over its elements
+                    if (value is IList)
+                    {
+                        Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
+                        IEnumerator enumerator = ((IEnumerable)this[fieldPath]).GetEnumerator();
+                        
+                        while (enumerator.MoveNext())
+                        {
+                            // if current element is DataObject type which is dictionary<string, object>
+                            // map its dictionary data to element instance
+                            if (enumerator.Current is DataObject)
+                            {
+                                var instance = Activator.CreateInstance(elementType);
+                                ((DataObject)enumerator.Current).MapData(instance);
+
+                                ((IList)value).Add(instance);
+                            }
+                            else
+                            {
+                                ((IList)value).Add(enumerator.Current);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        value = (T)this[fieldPath];
+                    }
                 }
             }
 
@@ -166,6 +221,21 @@ namespace Orient.Client.Protocol
             }
 
             return contains;
+        }
+
+        internal void MapData(object obj)
+        {
+            Type objType = obj.GetType();
+
+            foreach (KeyValuePair<string, object> item in this)
+            {
+                PropertyInfo property = objType.GetProperty(item.Key);
+                
+                if (property != null)
+                {
+                    property.SetValue(obj, item.Value, null);
+                }
+            }
         }
     }
 }
