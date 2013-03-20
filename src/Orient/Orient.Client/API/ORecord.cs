@@ -69,6 +69,19 @@ namespace Orient.Client
             return genericObject;
         }
 
+        public void FromString(string recordString)
+        {
+            ORecord record =  RecordSerializer.ToRecord(recordString);
+            
+            DataObject = record.DataObject;
+
+            ORID = record.ORID;
+            Type = record.Type;
+            Version = record.Version;
+            ClassId = record.ClassId;
+            ClassName = record.ClassName;
+        }
+
         private T ToObject<T>(T genericObject, string path) where T : class, new()
         {
             Type genericObjectType = genericObject.GetType();

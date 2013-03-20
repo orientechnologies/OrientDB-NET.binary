@@ -81,6 +81,31 @@ namespace Orient.Client.Protocol.Serializers
             return record;
         }
 
+        internal static ORecord ToRecord(string recordString)
+        {
+            ORecord record = new ORecord();
+
+            int atIndex = recordString.IndexOf('@');
+            int colonIndex = recordString.IndexOf(':');
+            int index = 0;
+
+            // parse class name
+            if ((atIndex != -1) && (atIndex < colonIndex))
+            {
+                record.ClassName = recordString.Substring(0, atIndex);
+                index = atIndex + 1;
+            }
+
+            // start document parsing with first field name
+            do
+            {
+                index = ParseFieldName(index, recordString, record.DataObject);
+            }
+            while (index < recordString.Length);
+
+            return record;
+        }
+
         #region Serialization private methods
 
         /*private static string SerializeObject(object objectToSerialize, PropertyInfo[] properties)
@@ -631,7 +656,13 @@ namespace Orient.Client.Protocol.Serializers
                 }
             }
 
-            // move past close bracket of collection
+            // if the collection was empty
+            if (dataObject[fieldName] == null)
+            {
+                dataObject[fieldName] = new List<object>();
+            }
+
+            // move past closing bracket of collection
             i++;
 
             return i;
