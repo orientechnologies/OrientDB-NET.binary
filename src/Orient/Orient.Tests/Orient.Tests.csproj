@@ -50,7 +50,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Connection.cs" />
+    <Compile Include="TestConnection.cs" />
+    <Compile Include="Serialization\RecordDeserializationTests.cs" />
     <Compile Include="Server\ServerOperationsTests.cs" />
     <Compile Include="SQL\CreateClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -61,6 +62,7 @@
       <Name>Orient.Client</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

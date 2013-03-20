@@ -2,7 +2,7 @@
 
 namespace Orient.Tests
 {
-    public static class Connection
+    public static class TestConnection
     {
         private static string _hostname = "127.0.0.1";
         private static int _port = 2424;
@@ -18,7 +18,7 @@ namespace Orient.Tests
         public static ODatabaseType GlobalTestDatabaseType { get; private set; }
         public static string GlobalTestDatabaseAlias { get; private set; }
 
-        static Connection()
+        static TestConnection()
         {
             _server = new OServer(_hostname, _port, _rootUserName, _rootUserParssword);
 
@@ -27,9 +27,9 @@ namespace Orient.Tests
             GlobalTestDatabaseAlias = "globalTestDatabaseForNetDriver001Alias";
         }
 
-        public static void CreateDatabase(string name, ODatabaseType type, string alias)
+        public static void CreateTestDatabase(string name, ODatabaseType type, string alias)
         {
-            DropDatabase(name);
+            DropTestDatabase(name);
 
             _server.CreateDatabase(name, type, OStorageType.Remote);
 
@@ -45,12 +45,7 @@ namespace Orient.Tests
             );
         }
 
-        public static ODatabase GetDatabase(string alias)
-        {
-            return new ODatabase(alias);
-        }
-
-        public static void DropDatabase(string name)
+        public static void DropTestDatabase(string name)
         {
             if (_server.DatabaseExist(name))
             {

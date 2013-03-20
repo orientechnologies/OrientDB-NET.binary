@@ -9,10 +9,10 @@ namespace Orient.Tests.Server
     {
         public ServerOperationsTests()
         {
-            Connection.CreateDatabase(
-                Connection.GlobalTestDatabaseName,
-                Connection.GlobalTestDatabaseType,
-                Connection.GlobalTestDatabaseAlias
+            TestConnection.CreateTestDatabase(
+                TestConnection.GlobalTestDatabaseName,
+                TestConnection.GlobalTestDatabaseType,
+                TestConnection.GlobalTestDatabaseAlias
             );
         }
 
@@ -20,7 +20,7 @@ namespace Orient.Tests.Server
         public void ShouldCreateAndDeleteDatabase()
         {
             string databaseName = "thisIsTestDatabaseForNetDriver";
-            OServer server = Connection.GetServer();
+            OServer server = TestConnection.GetServer();
 
             bool exists = server.DatabaseExist(databaseName);
 
@@ -45,7 +45,7 @@ namespace Orient.Tests.Server
 
         public void Dispose()
         {
-            Connection.DropDatabase(Connection.GlobalTestDatabaseName);
+            TestConnection.DropTestDatabase(TestConnection.GlobalTestDatabaseName);
         }
     }
 }
