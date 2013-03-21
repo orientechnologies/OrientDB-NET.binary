@@ -30,7 +30,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(record.HasField("salary"), true);
 
             // check for fields values
-            Assert.AreEqual(record.GetField("nick"), "ThePresident");
+            Assert.AreEqual(record.GetField<string>("nick"), "ThePresident");
 
             Assert.AreEqual(record.GetField<List<object>>("follows").Count, new List<object>().Count);
 
@@ -42,11 +42,11 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(recordFollowers[0], followers[0]);
             Assert.AreEqual(recordFollowers[1], followers[1]);
             
-            Assert.AreEqual(record.GetField("name"), "Barack");
-            Assert.AreEqual(record.GetField("surname"), "Obama");
+            Assert.AreEqual(record.GetField<string>("name"), "Barack");
+            Assert.AreEqual(record.GetField<string>("surname"), "Obama");
             Assert.AreEqual(record.GetField<ORID>("location"), new ORID("#3:2"));
-            Assert.AreEqual(record.GetField("invitedBy"), null);
-            Assert.AreEqual(record.GetField("salary_cloned"), null);
+            Assert.AreEqual(record.GetField<string>("invitedBy"), null);
+            Assert.AreEqual(record.GetField<string>("salary_cloned"), null);
             Assert.AreEqual(record.GetField<float>("salary"), 120.3f);
         }
 
@@ -73,11 +73,10 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(record.HasField("clusterIds"), true);
             Assert.AreEqual(record.HasField("properties"), true);
 
-            Assert.AreEqual(record.GetField("name"), "ORole");
+            // check for fields values
+            Assert.AreEqual(record.GetField<string>("name"), "ORole");
             Assert.AreEqual(record.GetField<int>("id"), 0);
             Assert.AreEqual(record.GetField<int>("defaultClusterId"), 3);
-
-
             Assert.AreEqual(record.GetField<List<int>>("clusterIds").Count, 1);
             Assert.AreEqual(record.GetField<List<int>>("clusterIds")[0], 3);
 
@@ -101,6 +100,30 @@ namespace Orient.Tests.Serialization
                 Assert.AreEqual(loadedProperties[i].linkedType, properties[i].linkedType);
                 Assert.AreEqual(loadedProperties[i].index, properties[i].index);
             }
+        }
+
+        [TestMethod]
+        public void ShouldDeserializeDocBinary()
+        {
+            string recordString = "single:_AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGx_,embedded:(binary:_AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGx_),array:[_AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGx_,_AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGx_]";
+
+            ORecord record = new ORecord();
+            record.FromString(recordString);
+
+            // check for fields existence
+            Assert.AreEqual(record.HasField("single"), true);
+            Assert.AreEqual(record.HasField("embedded"), true);
+            Assert.AreEqual(record.HasField("embedded.binary"), true);
+            Assert.AreEqual(record.HasField("array"), true);
+
+            // check for fields values
+            Assert.AreEqual(record.GetField<byte[]>("single").GetType(), typeof(byte[]));
+            Assert.AreEqual(record.GetField<byte[]>("embedded.binary").GetType(), typeof(byte[]));
+
+            List<byte[]> array = record.GetField<List<byte[]>>("array");
+            Assert.AreEqual(array.Count, 2);
+            Assert.AreEqual(array[0].GetType(), typeof(byte[]));
+            Assert.AreEqual(array[0].GetType(), typeof(byte[]));
         }
     }
 
