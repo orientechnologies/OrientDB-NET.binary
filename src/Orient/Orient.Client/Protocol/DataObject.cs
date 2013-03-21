@@ -7,49 +7,19 @@ namespace Orient.Client.Protocol
 {
     internal class DataObject : Dictionary<string, object>
     {
-        internal string Get(string fieldPath)
+        internal T Get<T>(string fieldPath)
         {
-            string value = null;
+            Type type = typeof(T);
+            T value;
 
-            if (fieldPath.Contains("."))
+            if (type.IsPrimitive || type.IsArray || (type.Name == "String"))
             {
-                var fields = fieldPath.Split('.');
-                int iteration = 1;
-                DataObject innerObject = this;
-
-                foreach (var field in fields)
-                {
-                    if (iteration == fields.Length)
-                    {
-                        value = (string)innerObject[field];
-                        break;
-                    }
-
-                    if (innerObject.ContainsKey(field))
-                    {
-                        innerObject = (DataObject)innerObject[field];
-                        iteration++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                value = default(T);
             }
             else
             {
-                if (this.ContainsKey(fieldPath))
-                {
-                    value = (string)this[fieldPath];
-                }
+                value = (T)Activator.CreateInstance(type);
             }
-
-            return value;
-        }
-
-        internal T Get<T>(string fieldPath) where T : new()
-        {
-            T value = new T();
 
             if (fieldPath.Contains("."))
             {
@@ -65,7 +35,7 @@ namespace Orient.Client.Protocol
                         if (value is IList)
                         {
                             Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
-                            IEnumerator enumerator = ((IEnumerable)innerObject[fieldPath]).GetEnumerator();
+                            IEnumerator enumerator = ((IEnumerable)innerObject[field]).GetEnumerator();
 
                             while (enumerator.MoveNext())
                             {
@@ -86,7 +56,7 @@ namespace Orient.Client.Protocol
                         }
                         else
                         {
-                            value = (T)innerObject[fieldPath];
+                            value = (T)innerObject[field];
                         }
                         break;
                     }

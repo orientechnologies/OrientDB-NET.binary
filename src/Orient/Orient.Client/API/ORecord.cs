@@ -38,12 +38,7 @@ namespace Orient.Client
             return DataObject.Has(fieldPath);
         }
 
-        public string GetField(string fieldPath)
-        {
-            return DataObject.Get(fieldPath);
-        }
-
-        public T GetField<T>(string fieldPath) where T : new()
+        public T GetField<T>(string fieldPath)
         {
             return DataObject.Get<T>(fieldPath);
         }
