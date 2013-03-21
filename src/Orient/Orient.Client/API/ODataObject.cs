@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Orient.Client.Protocol
+namespace Orient.Client
 {
-    internal class DataObject : Dictionary<string, object>
+    public class ODataObject : Dictionary<string, object>
     {
-        internal T Get<T>(string fieldPath)
+        public T Get<T>(string fieldPath)
         {
             Type type = typeof(T);
             T value;
@@ -25,7 +25,7 @@ namespace Orient.Client.Protocol
             {
                 var fields = fieldPath.Split('.');
                 int iteration = 1;
-                DataObject innerObject = this;
+                ODataObject innerObject = this;
 
                 foreach (var field in fields)
                 {
@@ -41,10 +41,10 @@ namespace Orient.Client.Protocol
                             {
                                 // if current element is DataObject type which is dictionary<string, object>
                                 // map its dictionary data to element instance
-                                if (enumerator.Current is DataObject)
+                                if (enumerator.Current is ODataObject)
                                 {
                                     var instance = Activator.CreateInstance(elementType);
-                                    ((DataObject)enumerator.Current).MapData(instance);
+                                    ((ODataObject)enumerator.Current).MapData(ref instance);
 
                                     ((IList)value).Add(instance);
                                 }
@@ -63,7 +63,7 @@ namespace Orient.Client.Protocol
 
                     if (innerObject.ContainsKey(field))
                     {
-                        innerObject = (DataObject)innerObject[field];
+                        innerObject = (ODataObject)innerObject[field];
                         iteration++;
                     }
                     else
@@ -86,10 +86,10 @@ namespace Orient.Client.Protocol
                         {
                             // if current element is DataObject type which is dictionary<string, object>
                             // map its dictionary data to element instance
-                            if (enumerator.Current is DataObject)
+                            if (enumerator.Current is ODataObject)
                             {
                                 var instance = Activator.CreateInstance(elementType);
-                                ((DataObject)enumerator.Current).MapData(instance);
+                                ((ODataObject)enumerator.Current).MapData(ref instance);
 
                                 ((IList)value).Add(instance);
                             }
@@ -109,13 +109,13 @@ namespace Orient.Client.Protocol
             return value;
         }
 
-        internal void Set<T>(string fieldPath, T value)
+        public void Set<T>(string fieldPath, T value)
         {
             if (fieldPath.Contains("."))
             {
                 var fields = fieldPath.Split('.');
                 int iteration = 1;
-                DataObject innerObject = this;
+                ODataObject innerObject = this;
 
                 foreach (var field in fields)
                 {
@@ -134,7 +134,7 @@ namespace Orient.Client.Protocol
 
                     if (innerObject.ContainsKey(field))
                     {
-                        innerObject = (DataObject)innerObject[field];
+                        innerObject = (ODataObject)innerObject[field];
                         iteration++;
                     }
                     else
@@ -156,7 +156,7 @@ namespace Orient.Client.Protocol
             }
         }
 
-        internal bool Has(string fieldPath)
+        public bool Has(string fieldPath)
         {
             bool contains = false;
 
@@ -164,7 +164,7 @@ namespace Orient.Client.Protocol
             {
                 var fields = fieldPath.Split('.');
                 int iteration = 1;
-                DataObject innerObject = this;
+                ODataObject innerObject = this;
 
                 foreach (var field in fields)
                 {
@@ -176,7 +176,7 @@ namespace Orient.Client.Protocol
 
                     if (innerObject.ContainsKey(field))
                     {
-                        innerObject = (DataObject)innerObject[field];
+                        innerObject = (ODataObject)innerObject[field];
                         iteration++;
                     }
                     else
@@ -193,17 +193,24 @@ namespace Orient.Client.Protocol
             return contains;
         }
 
-        internal void MapData(object obj)
+        public void MapData(ref object obj)
         {
-            Type objType = obj.GetType();
-
-            foreach (KeyValuePair<string, object> item in this)
+            if (obj is Dictionary<string, object>)
             {
-                PropertyInfo property = objType.GetProperty(item.Key);
-                
-                if (property != null)
+                obj = this;
+            }
+            else
+            {
+                Type objType = obj.GetType();
+
+                foreach (KeyValuePair<string, object> item in this)
                 {
-                    property.SetValue(obj, item.Value, null);
+                    PropertyInfo property = objType.GetProperty(item.Key);
+
+                    if (property != null)
+                    {
+                        property.SetValue(obj, item.Value, null);
+                    }
                 }
             }
         }

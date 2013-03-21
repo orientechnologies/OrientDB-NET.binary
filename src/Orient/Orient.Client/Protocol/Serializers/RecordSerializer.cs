@@ -238,7 +238,7 @@ namespace Orient.Client.Protocol.Serializers
 
         #region Deserialization private methods
 
-        private static int ParseFieldName(int i, string recordString, DataObject dataObject)
+        private static int ParseFieldName(int i, string recordString, ODataObject dataObject)
         {
             int startIndex = i;
 
@@ -312,7 +312,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseString(int i, string recordString, DataObject dataObject, string fieldName)
+        private static int ParseString(int i, string recordString, ODataObject dataObject, string fieldName)
         {
             // move to the inside of string
             i++;
@@ -359,7 +359,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseRecordID(int i, string recordString, DataObject dataObject, string fieldName)
+        private static int ParseRecordID(int i, string recordString, ODataObject dataObject, string fieldName)
         {
             int startIndex = i;
 
@@ -384,7 +384,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseMap(int i, string recordString, DataObject dataObject, string fieldName)
+        private static int ParseMap(int i, string recordString, ODataObject dataObject, string fieldName)
         {
             int startIndex = i;
             int nestingLevel = 1;
@@ -443,7 +443,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseValue(int i, string recordString, DataObject dataObject, string fieldName)
+        private static int ParseValue(int i, string recordString, ODataObject dataObject, string fieldName)
         {
             int startIndex = i;
 
@@ -539,13 +539,13 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseEmbeddedDocument(int i, string recordString, DataObject dataObject, string fieldName)
+        private static int ParseEmbeddedDocument(int i, string recordString, ODataObject dataObject, string fieldName)
         {
             // move to the inside of embedded document (go past starting bracket character)
             i++;
 
 
-            if ((recordString.Length > 15) && (recordString.Substring(i, 15).Equals("ORIDs@pageSize:")))
+            if ((i < 15) && (recordString.Length > 15) && (recordString.Substring(i, 15).Equals("ORIDs@pageSize:")))
             {
                 OLinkCollection linkCollection = new OLinkCollection();
                 i = ParseLinkCollection(i, recordString, linkCollection);
@@ -554,7 +554,7 @@ namespace Orient.Client.Protocol.Serializers
             else
             {
                 // create new dictionary which would hold K/V pairs of embedded document
-                DataObject embeddedDataObject = new DataObject();
+                ODataObject embeddedDataObject = new ODataObject();
 
                 if (dataObject[fieldName] == null) // embedded object
                 {
@@ -605,7 +605,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseCollection(int i, string recordString, DataObject dataObject, string fieldName)
+        private static int ParseCollection(int i, string recordString, ODataObject dataObject, string fieldName)
         {
             // move to the first element of this collection
             i++;

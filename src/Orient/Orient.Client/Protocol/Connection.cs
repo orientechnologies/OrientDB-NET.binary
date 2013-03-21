@@ -34,7 +34,7 @@ namespace Orient.Client.Protocol
                 return false;
             }
         }
-        internal DataObject DataObject { get; set; }
+        internal ODataObject DataObject { get; set; }
 
         internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, string alias, bool isReusable)
         {
@@ -61,7 +61,7 @@ namespace Orient.Client.Protocol
             InitializeServerConnection(userName, userPassword);
         }
 
-        internal DataObject ExecuteOperation<T>(T operation)
+        internal ODataObject ExecuteOperation<T>(T operation)
         {
             Request request = ((IOperation)operation).Request(SessionId);
             byte[] buffer;

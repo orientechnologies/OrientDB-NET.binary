@@ -38,7 +38,7 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.Idempotent;
             operation.CommandPayload = payload;
 
-            DataObject dataObject = _connection.ExecuteOperation<Command>(operation);
+            ODataObject dataObject = _connection.ExecuteOperation<Command>(operation);
 
             return dataObject.Get<List<ORecord>>("Content");
         }
@@ -57,7 +57,7 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.NonIdempotent;
             operation.CommandPayload = payload;
 
-            DataObject dataObject = _connection.ExecuteOperation<Command>(operation);
+            ODataObject dataObject = _connection.ExecuteOperation<Command>(operation);
             
             return new OCommandResult(dataObject);
         }

@@ -6,9 +6,9 @@ namespace Orient.Client
 {
     public class OCommandResult
     {
-        private DataObject _dataObject;
+        private ODataObject _dataObject;
 
-        internal OCommandResult(DataObject dataObject)
+        internal OCommandResult(ODataObject dataObject)
         {
             _dataObject = dataObject;
         }

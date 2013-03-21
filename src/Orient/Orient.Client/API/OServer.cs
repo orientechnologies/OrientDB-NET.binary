@@ -20,7 +20,7 @@ namespace Orient.Client
             operation.DatabaseType = databaseType;
             operation.StorageType = storageType;
 
-            DataObject dataObject = _connection.ExecuteOperation<DbCreate>(operation);
+            ODataObject dataObject = _connection.ExecuteOperation<DbCreate>(operation);
 
             return dataObject.Get<bool>("IsCreated");
         }
@@ -30,7 +30,7 @@ namespace Orient.Client
             DbExist operation = new DbExist();
             operation.DatabaseName = databaseName;
 
-            DataObject dataObject = _connection.ExecuteOperation<DbExist>(operation);
+            ODataObject dataObject = _connection.ExecuteOperation<DbExist>(operation);
 
             return dataObject.Get<bool>("Exists");
         }
@@ -40,7 +40,7 @@ namespace Orient.Client
             DbDrop operation = new DbDrop();
             operation.DatabaseName = databaseName;
 
-            DataObject dataObject = _connection.ExecuteOperation<DbDrop>(operation);
+            ODataObject dataObject = _connection.ExecuteOperation<DbDrop>(operation);
         }
 
         public void Close()

@@ -10,7 +10,7 @@ namespace Orient.Client
 {
     public class ORecord
     {
-        internal DataObject DataObject { get; set; }
+        internal ODataObject DataObject { get; set; }
 
         public ORID ORID { get; set; }
         public ORecordType Type { get; set; }
@@ -21,7 +21,7 @@ namespace Orient.Client
         public ORecord()
         {
             ORID = new ORID();
-            DataObject = new DataObject();
+            DataObject = new ODataObject();
         }
 
         public ORecord(ORID orid, int version, ORecordType type, short classId)
@@ -30,7 +30,7 @@ namespace Orient.Client
             Version = version;
             Type = type;
             ClassId = classId;
-            DataObject = new DataObject();
+            DataObject = new ODataObject();
         }
 
         public bool HasField(string fieldPath)
