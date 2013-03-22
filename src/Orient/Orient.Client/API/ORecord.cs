@@ -24,6 +24,11 @@ namespace Orient.Client
             DataObject = new ODataObject();
         }
 
+        public ORecord(string recordString)
+        {
+            Deserialize(recordString);
+        }
+
         public ORecord(ORID orid, int version, ORecordType type, short classId)
         {
             ORID = orid;
@@ -64,7 +69,7 @@ namespace Orient.Client
             return genericObject;
         }
 
-        public void FromString(string recordString)
+        public void Deserialize(string recordString)
         {
             ORecord record =  RecordSerializer.ToRecord(recordString);
             

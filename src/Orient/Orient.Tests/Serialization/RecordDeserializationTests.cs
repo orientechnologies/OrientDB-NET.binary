@@ -13,8 +13,7 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "Profile@nick:\"ThePresident\",follows:[],followers:[#10:5,#10:6],name:\"Barack\",surname:\"Obama\",location:#3:2,invitedBy:,salary_cloned:,salary:120.3f";
 
-            ORecord record = new ORecord();
-            record.FromString(recordString);
+            ORecord record = new ORecord(recordString);
 
             Assert.AreEqual(record.ClassName, "Profile");
 
@@ -63,8 +62,7 @@ namespace Orient.Tests.Serialization
                     "(name:\"rules\",type:12,offset:1,mandatory:false,notNull:false,min:,max:,linkedClass:,linkedType:17,index:)" +
                 "]";
 
-            ORecord record = new ORecord();
-            record.FromString(recordString);
+            ORecord record = new ORecord(recordString);
 
             // check for fields existence
             Assert.AreEqual(record.HasField("name"), true);
@@ -107,8 +105,7 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "single:_AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGx_,embedded:(binary:_AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGx_),array:[_AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGx_,_AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGx_]";
 
-            ORecord record = new ORecord();
-            record.FromString(recordString);
+            ORecord record = new ORecord(recordString);
 
             // check for fields existence
             Assert.AreEqual(record.HasField("single"), true);
@@ -131,8 +128,7 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "datetime:1296279468000t,date:1306281600000a,embedded:(datetime:1296279468000t,date:1306281600000a),array:[1296279468000t,1306281600000a]";
 
-            ORecord record = new ORecord();
-            record.FromString(recordString);
+            ORecord record = new ORecord(recordString);
 
             // check for fields existence
             Assert.AreEqual(record.HasField("datetime"), true);
@@ -158,8 +154,7 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "singleT:true,singleF:false,embedded:(singleT:true,singleF:false),array:[true,false]";
 
-            ORecord record = new ORecord();
-            record.FromString(recordString);
+            ORecord record = new ORecord(recordString);
 
             // check for fields existence
             Assert.AreEqual(record.HasField("singleT"), true);
@@ -185,8 +180,7 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "nick:,embedded:(nick:,joe:),joe:";
 
-            ORecord record = new ORecord();
-            record.FromString(recordString);
+            ORecord record = new ORecord(recordString);
 
             // check for fields existence
             Assert.AreEqual(record.HasField("nick"), true);
@@ -206,8 +200,7 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "byte:123b,short:23456s,int:1543345,long:13243432455l,float:1234.432f,double:123123.4324d,bigdecimal:300.5c,embedded:(byte:123b,short:23456s,int:1543345,long:13243432455l,float:1234.432f,double:123123.4324d,bigdecimal:300.5c),array:[123b,23456s,1543345,13243432455l,1234.432f,123123.4324d,300.5c]";
 
-            ORecord record = new ORecord();
-            record.FromString(recordString);
+            ORecord record = new ORecord(recordString);
 
             // check for fields existence
             Assert.AreEqual(record.HasField("byte"), true);
@@ -258,8 +251,7 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "simple:\"whoa this is awesome\",singleQuoted:\"a" + "\\" + "\"\",doubleQuoted:\"" + "\\" + "\"adsf" + "\\" + "\"\",twoBackslashes:\"" + "\\a" + "\\a" + "\"";
 
-            ORecord record = new ORecord();
-            record.FromString(recordString);
+            ORecord record = new ORecord(recordString);
 
             // check for fields existence
             Assert.AreEqual(record.HasField("simple"), true);
@@ -279,8 +271,7 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "array:[(joe1:\"js1\"),(joe2:\"js2\"),(joe3:\"js3\")]";
 
-            ORecord record = new ORecord();
-            record.FromString(recordString);
+            ORecord record = new ORecord(recordString);
 
             // check for fields existence
             Assert.AreEqual(record.HasField("array"), true);
@@ -298,8 +289,7 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "array:[(zak1:(nick:[(joe1:\"js1\"),(joe2:\"js2\"),(joe3:\"js3\")])),(zak2:(nick:[(joe4:\"js4\"),(joe5:\"js5\"),(joe6:\"js6\")]))]";
 
-            ORecord record = new ORecord();
-            record.FromString(recordString);
+            ORecord record = new ORecord(recordString);
 
             // check for fields existence
             Assert.AreEqual(record.HasField("array"), true);
@@ -326,8 +316,7 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "single:#10:12345,collection:[#11:123,#22:1234,#33:1234567]";
 
-            ORecord record = new ORecord();
-            record.FromString(recordString);
+            ORecord record = new ORecord(recordString);
 
             // check for fields existence
             Assert.AreEqual(record.HasField("single"), true);
