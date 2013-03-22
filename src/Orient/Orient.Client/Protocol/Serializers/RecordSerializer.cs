@@ -9,50 +9,10 @@ namespace Orient.Client.Protocol.Serializers
 {
     internal static class RecordSerializer
     {
-        /*internal static byte[] ToArray(object objectToSerialize, Type objectType) 
+        internal static string ToString(string className, ODataObject dataObject)
         {
-            string serializedString = objectType.Name + "@";
-
-            serializedString += SerializeObject(objectToSerialize, objectType.GetProperties(BindingFlags.Public | BindingFlags.Instance));
-
-            return Encoding.UTF8.GetBytes(serializedString);
+            return className + "@" + SerializeDataObject(dataObject);
         }
-
-        internal static ORecord ToRecord(DtoRecord record)
-        {
-            ORecord deserializedRecord = new ORecord(record);
-
-            if (record.Type != ORecordType.Document)
-            {
-                return deserializedRecord;
-            }
-
-            string recordString = BinarySerializer.ToString(record.Content).Trim();
-
-            int atIndex = recordString.IndexOf('@');
-            int colonIndex = recordString.IndexOf(':');
-            int index = 0;
-
-            // parse class name
-            if ((atIndex != -1) && (atIndex < colonIndex))
-            {
-                deserializedRecord.Class = recordString.Substring(0, atIndex);
-                index = atIndex + 1;
-            }
-            else
-            {
-                deserializedRecord.Class = "";
-            }
-
-            // start document parsing with first field name
-            do
-            {
-                index = ParseFieldName(index, recordString, deserializedRecord.Fields);
-            }
-            while (index < recordString.Length);
-
-            return deserializedRecord;
-        }*/
 
         internal static ORecord ToRecord(ORID orid, int version, ORecordType type, short classId, byte[] rawRecord)
         {
@@ -108,20 +68,21 @@ namespace Orient.Client.Protocol.Serializers
 
         #region Serialization private methods
 
-        /*private static string SerializeObject(object objectToSerialize, PropertyInfo[] properties)
+        private static string SerializeDataObject(ODataObject dataObject)
         {
             string serializedString = "";
 
-            if ((properties != null) && (properties.Length > 0))
+            if (dataObject.Keys.Count > 0)
             {
-                for (int i = 0; i < properties.Length; i++)
+                int iteration = 0;
+
+                foreach (KeyValuePair<string, object> field in dataObject)
                 {
-                    PropertyInfo property = properties[i];
+                    serializedString += field.Key + ":";
+                    serializedString += SerializeValue(field.Value);
+                    iteration++;
 
-                    serializedString += property.Name + ":";
-                    serializedString += SerializeValue(property.GetValue(objectToSerialize, null));
-
-                    if (i < (properties.Length - 1))
+                    if (iteration < dataObject.Keys.Count)
                     {
                         serializedString += ",";
                     }
@@ -219,10 +180,10 @@ namespace Orient.Client.Protocol.Serializers
                         {
                             serializedString += ((ORID)value).RID;
                         }
-                        else if (valueType.IsClass)
+                        else if (valueType.IsClass && (valueType.Name == "ODataObject"))
                         {
                             serializedString += "(";
-                            serializedString += SerializeObject(value, valueType.GetProperties());
+                            serializedString += SerializeDataObject((ODataObject)value);
                             serializedString += ")";
                         }
                         break;
@@ -232,7 +193,7 @@ namespace Orient.Client.Protocol.Serializers
             }
 
             return serializedString;
-        }*/
+        }
 
         #endregion
 

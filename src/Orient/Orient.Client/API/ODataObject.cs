@@ -135,12 +135,15 @@ namespace Orient.Client
                     if (innerObject.ContainsKey(field))
                     {
                         innerObject = (ODataObject)innerObject[field];
-                        iteration++;
                     }
                     else
                     {
-                        break;
+                        ODataObject temoObject = new ODataObject();
+                        innerObject.Add(field, temoObject);
+                        innerObject = temoObject;
                     }
+
+                    iteration++;
                 }
             }
             else

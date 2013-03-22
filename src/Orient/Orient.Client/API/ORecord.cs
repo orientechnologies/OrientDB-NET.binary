@@ -69,6 +69,11 @@ namespace Orient.Client
             return genericObject;
         }
 
+        public string Serialize()
+        {
+            return RecordSerializer.ToString(ClassName, DataObject);
+        }
+
         public void Deserialize(string recordString)
         {
             ORecord record =  RecordSerializer.ToRecord(recordString);
@@ -266,27 +271,6 @@ namespace Orient.Client
             }
 
             return genericObject;
-        }
-
-        /*public static byte[] Serialize<T>(T o)
-        {
-            return RecordSerializer.ToArray(o, o.GetType());
-        }
-
-        // for testing parser logic
-        private void Deserialize()
-        {
-            DtoRecord record = new DtoRecord();
-            record.Type = Type;
-            record.Content = Content;
-
-            if (Type == ORecordType.Document)
-            {
-                ORecord deserializedRecord = RecordSerializer.DeserializeRecord(record);
-
-                Class = deserializedRecord.Class;
-                Fields = deserializedRecord.Fields;
-            }
         }*/
     }
 }
