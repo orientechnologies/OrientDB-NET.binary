@@ -50,6 +50,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Serialization\RecordSerializationTests.cs" />
     <Compile Include="TestConnection.cs" />
     <Compile Include="Serialization\RecordDeserializationTests.cs" />
     <Compile Include="Server\ServerOperationsTests.cs" />
