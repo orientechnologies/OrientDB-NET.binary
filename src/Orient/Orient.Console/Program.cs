@@ -46,17 +46,24 @@ namespace Orient.Console
 
             //List<ORecord> records = database.Query("select from OGraphVertex where title = \"server 1\"", "*:2");
             //List<ORecord> records = database.Query("select in.in.@rid as inVs, in.out.@rid as outVs, title from OGraphVertex where @rid = #8:0");
-            List<ORecord> records = database.Query("select out.in as outEdgesInVertices," +
-                    " title," +
-                    " @rid" +
-                    " from #8:0");
+            List<ORecord> records = database.Query(
+                "select " +
+                " out.in as neighborRIDs," +
+                //" out.in.type as neighborTypes," +
+                //" out.in.state as neighborStates," +
+                " title," +
+                " @rid" +
+                " from #8:0"
+            );
 
             foreach (ORecord record in records)
             {
                 //Ve v = record.To<Ve>();
-                List<ORID> orids = record.GetField<List<ORID>>("outEdgesInVertices");
+                List<ORID> orids = record.GetField<List<ORID>>("neighborRIDs");
+                List<string> types = record.GetField<List<string>>("neighborTypes");
+                List<int> states = record.GetField<List<int>>("neighborStates");
 
-                System.Console.WriteLine(orids);
+                System.Console.WriteLine("{0} - {1} {2} {3}", record.GetField<string>("title"), orids.Count, types.Count, states.Count);
                 //System.Console.WriteLine(v.Title);
             }
 
