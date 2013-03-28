@@ -37,6 +37,14 @@ namespace Orient.Client.Protocol
             }
         }
 
+        internal void DropConnections()
+        {
+            foreach (Connection connection in _connections)
+            {
+                connection.Dispose();
+            }
+        }
+
         internal Connection DequeueConnection()
         {
             return _connections.Dequeue();

@@ -31,6 +31,21 @@ namespace Orient.Client
             }
         }
 
+        public static void DropDatabasePool(string alias)
+        {
+            lock (_syncRoot)
+            {
+                if (_databasePools.Exists(db => db.Alias == alias))
+                {
+                    DatabasePool pool = _databasePools.Find(db => db.Alias == alias);
+
+                    pool.DropConnections();
+
+                    _databasePools.Remove(pool);
+                }
+            }
+        }
+
         internal static Connection ReleaseConnection(string alias)
         {
             lock (_syncRoot)
