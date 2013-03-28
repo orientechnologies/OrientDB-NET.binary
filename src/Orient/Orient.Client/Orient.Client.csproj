@@ -39,7 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\OCommandResult.cs" />
+    <Compile Include="API\Sql\OSQL.cs" />
+    <Compile Include="API\Sql\OSqlCreate.cs" />
+    <Compile Include="API\Sql\OCommandResult.cs" />
     <Compile Include="API\OProperty.cs" />
     <Compile Include="API\OClient.cs" />
     <Compile Include="API\OCluster.cs" />
@@ -58,6 +60,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\ConnectionType.cs" />
     <Compile Include="Protocol\DatabasePool.cs" />
+    <Compile Include="Protocol\Q.cs" />
     <Compile Include="Protocol\Operations\Connect.cs" />
     <Compile Include="Protocol\Operations\DbCreate.cs" />
     <Compile Include="Protocol\Operations\DbDrop.cs" />

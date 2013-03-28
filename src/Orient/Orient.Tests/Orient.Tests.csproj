@@ -54,7 +54,7 @@
     <Compile Include="TestConnection.cs" />
     <Compile Include="Serialization\RecordDeserializationTests.cs" />
     <Compile Include="Server\ServerOperationsTests.cs" />
-    <Compile Include="SQL\CreateClass.cs" />
+    <Compile Include="SQL\SqlCreateTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
