@@ -8,7 +8,7 @@ namespace Orient.Tests
         private static int _port = 2424;
         private static string _username = "admin";
         private static string _password = "admin";
-        private static int _poolSize = 10;
+        private static int _poolSize = 3;
 
         private static string _rootUserName = "root";
         private static string _rootUserParssword = "D348621FCC37E9B0007147DBC2EF3DFAEA6402CAEC594BF8491C79D595CEEAF4";
@@ -27,30 +27,38 @@ namespace Orient.Tests
             GlobalTestDatabaseAlias = "globalTestDatabaseForNetDriver001Alias";
         }
 
-        public static void CreateTestDatabase(string name, ODatabaseType type, string alias)
+        public static void CreateTestDatabase()
         {
-            DropTestDatabase(name);
+            DropTestDatabase();
 
-            _server.CreateDatabase(name, type, OStorageType.Local);
+            _server.CreateDatabase(GlobalTestDatabaseName, GlobalTestDatabaseType, OStorageType.Local);
+        }
 
+        public static void DropTestDatabase()
+        {
+            if (_server.DatabaseExist(GlobalTestDatabaseName))
+            {
+                _server.DropDatabase(GlobalTestDatabaseName);
+            }
+        }
+
+        public static void CreateTestPool()
+        {
             OClient.CreateDatabasePool(
                 _hostname,
                 _port,
-                name,
-                type,
+                GlobalTestDatabaseName,
+                GlobalTestDatabaseType,
                 _username,
                 _password,
                 _poolSize,
-                alias
+                GlobalTestDatabaseAlias
             );
         }
 
-        public static void DropTestDatabase(string name)
+        public static void DropTestPool()
         {
-            if (_server.DatabaseExist(name))
-            {
-                _server.DropDatabase(name);
-            }
+            OClient.DropDatabasePool(GlobalTestDatabaseAlias);
         }
 
         public static OServer GetServer()

@@ -5,17 +5,8 @@ using Orient.Client;
 namespace Orient.Tests.Server
 {
     [TestClass]
-    public class ServerOperationsTests : IDisposable
+    public class ServerOperationsTests
     {
-        public ServerOperationsTests()
-        {
-            TestConnection.CreateTestDatabase(
-                TestConnection.GlobalTestDatabaseName,
-                TestConnection.GlobalTestDatabaseType,
-                TestConnection.GlobalTestDatabaseAlias
-            );
-        }
-
         [TestMethod]
         public void ShouldCreateAndDeleteDatabase()
         {
@@ -41,11 +32,6 @@ namespace Orient.Tests.Server
                     Assert.AreEqual(exists, false);
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            TestConnection.DropTestDatabase(TestConnection.GlobalTestDatabaseName);
         }
     }
 }
