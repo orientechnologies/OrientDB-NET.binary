@@ -13,6 +13,11 @@ namespace Orient.Client
             _dataObject = dataObject;
         }
 
+        public ODataObject ToDataObject()
+        {
+            return _dataObject;
+        }
+
         public ORecord ToSingle()
         {
             ORecord record = null;
