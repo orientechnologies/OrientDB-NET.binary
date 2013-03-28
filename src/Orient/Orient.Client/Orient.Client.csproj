@@ -39,9 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\Sql\OSQL.cs" />
-    <Compile Include="API\Sql\OSqlCreate.cs" />
-    <Compile Include="API\Sql\OCommandResult.cs" />
+    <Compile Include="API\Query\OSQL.cs" />
+    <Compile Include="API\Query\OSqlCreate.cs" />
+    <Compile Include="API\Query\OCommandResult.cs" />
     <Compile Include="API\OProperty.cs" />
     <Compile Include="API\OClient.cs" />
     <Compile Include="API\OCluster.cs" />
