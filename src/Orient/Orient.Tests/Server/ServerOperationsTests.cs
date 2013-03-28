@@ -28,7 +28,7 @@ namespace Orient.Tests.Server
 
             if (!exists)
             {
-                bool isCreated = server.CreateDatabase(databaseName, ODatabaseType.Graph, OStorageType.Remote);
+                bool isCreated = server.CreateDatabase(databaseName, ODatabaseType.Graph, OStorageType.Local);
 
                 Assert.AreEqual(isCreated, true);
 

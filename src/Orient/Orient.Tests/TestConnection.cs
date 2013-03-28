@@ -31,7 +31,7 @@ namespace Orient.Tests
         {
             DropTestDatabase(name);
 
-            _server.CreateDatabase(name, type, OStorageType.Remote);
+            _server.CreateDatabase(name, type, OStorageType.Local);
 
             OClient.CreateDatabasePool(
                 _hostname,
