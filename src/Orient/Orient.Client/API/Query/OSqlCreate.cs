@@ -18,7 +18,7 @@ namespace Orient.Client
             return Class(className, extends, null);
         }
 
-        public string Class(string className, string extends, string cluster)
+        public string Class(string className, string extends, short? cluster)
         {
             string sql = string.Join(" ", Q.Create, Q.Class, className);
 
@@ -27,7 +27,7 @@ namespace Orient.Client
                 sql += string.Join(" ", "", Q.Extends, extends);
             }
 
-            if (!string.IsNullOrEmpty(cluster))
+            if (cluster.HasValue)
             {
                 sql += string.Join(" ", "", Q.Cluster, cluster);
             }
