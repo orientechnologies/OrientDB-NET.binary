@@ -52,6 +52,7 @@
     <Compile Include="API\ORID.cs" />
     <Compile Include="API\OServer.cs" />
     <Compile Include="API\OStorageType.cs" />
+    <Compile Include="API\SQL\OSqlCreate.cs" />
     <Compile Include="API\Types\OType.cs" />
     <Compile Include="API\Types\OLinkCollection.cs" />
     <Compile Include="API\Types\OLinkSet.cs" />
