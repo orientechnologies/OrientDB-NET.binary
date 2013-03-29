@@ -2,7 +2,7 @@
 using System.Linq;
 using Orient.Client.Protocol;
 
-namespace Orient.Client
+namespace Orient.Client.Sql
 {
     public class OCommandResult
     {
