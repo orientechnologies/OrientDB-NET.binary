@@ -8,8 +8,17 @@ namespace Orient.Client
     {
         private ODataObject _dataObject;
 
+        public string Sql { get; internal set; }
+
         internal OCommandResult(ODataObject dataObject)
         {
+            Sql = "";
+            _dataObject = dataObject;
+        }
+
+        internal OCommandResult(string sql, ODataObject dataObject)
+        {
+            Sql = sql;
             _dataObject = dataObject;
         }
 
