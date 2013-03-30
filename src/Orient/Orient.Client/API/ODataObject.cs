@@ -217,5 +217,105 @@ namespace Orient.Client
                 }
             }
         }
+
+        public static ODataObject ToDataObject<T>(T genericObject)
+        {
+            ODataObject dataObject = new ODataObject();
+            Type genericObjectType = genericObject.GetType();
+
+            // TODO: recursive mapping of nested objects
+            foreach (PropertyInfo propertyInfo in genericObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                string propertyName = propertyInfo.Name;
+                bool isSerializable = true;
+                OProperty oProperty = propertyInfo.GetCustomAttribute<OProperty>();
+
+                if (oProperty != null)
+                {
+                    propertyName = oProperty.MappedTo;
+                    isSerializable = oProperty.Serializable;
+                }
+
+                if (isSerializable)
+                {
+                    dataObject.Set(propertyName, propertyInfo.GetValue(genericObject, null));
+                }
+
+                /*if ((propertyInfo.PropertyType.IsArray || propertyInfo.PropertyType.IsGenericType))
+                {
+                    object propertyValue = propertyInfo.GetValue(propertyName);
+
+                    IList collection = (IList)propertyValue;
+
+                    if (collection.Count > 0)
+                    {
+                        // create instance of property type
+                        object collectionInstance = Activator.CreateInstance(propertyInfo.PropertyType, collection.Count);
+
+                        for (int i = 0; i < collection.Count; i++)
+                        {
+                            // collection is simple array
+                            if (propertyInfo.PropertyType.IsArray)
+                            {
+                                ((object[])collectionInstance)[i] = collection[i];
+                            }
+                            // collection is generic
+                            else if (propertyInfo.PropertyType.IsGenericType && (propertyValue is IEnumerable))
+                            {
+                                Type elementType = collection[i].GetType();
+
+                                // generic collection consists of basic types or ORIDs
+                                if (elementType.IsPrimitive ||
+                                    (elementType == typeof(string)) ||
+                                    (elementType == typeof(DateTime)) ||
+                                    (elementType == typeof(decimal)) ||
+                                    (elementType == typeof(ORID)))
+                                {
+                                    ((IList)collectionInstance).Add(collection[i]);
+                                }
+                                // generic collection consists of generic type which should be parsed
+                                else
+                                {
+                                    // create instance object based on first element of generic collection
+                                    object instance = Activator.CreateInstance(propertyInfo.PropertyType.GetGenericArguments().First(), null);
+
+                                    ((IList)collectionInstance).Add(ToObject(instance, fieldPath));
+                                }
+                            }
+                            else
+                            {
+                                object v = Activator.CreateInstance(collection[i].GetType(), collection[i]);
+
+                                ((IList)collectionInstance).Add(v);
+                            }
+                        }
+
+                        propertyInfo.SetValue(genericObject, collectionInstance, null);
+                    }
+                }
+                // property is class except the string or ORID type since string and ORID values are parsed differently
+                else if (propertyInfo.PropertyType.IsClass &&
+                    (propertyInfo.PropertyType.Name != "String") &&
+                    (propertyInfo.PropertyType.Name != "ORID"))
+                {
+                    // create object instance of embedded class
+                    object instance = Activator.CreateInstance(propertyInfo.PropertyType);
+
+                    propertyInfo.SetValue(genericObject, ToObject(instance, fieldPath), null);
+                }
+                // property is basic type
+                else
+                {
+                    if (DataObject.Has(fieldPath))
+                    {
+                        object propertyValue = DataObject.Get<object>(fieldPath);
+
+                        propertyInfo.SetValue(genericObject, propertyValue, null);
+                    }
+                }*/
+            }
+
+            return dataObject;
+        }
     }
 }
