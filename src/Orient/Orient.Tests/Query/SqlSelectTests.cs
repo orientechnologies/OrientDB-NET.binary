@@ -9,7 +9,7 @@ namespace Orient.Tests.Sql
     public class SqlSelectTests
     {
         [TestMethod]
-        public void TestMethod1()
+        public void ShouldSelectUntyped()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
@@ -25,19 +25,81 @@ namespace Orient.Tests.Sql
                     fields2.Set<string>("foo", "foo string value2");
                     fields2.Set<int>("bar", 54321);
 
-                    database.Create.Class(className).Extends("OGraphVertex").Run();
+                    // create test class
+                    database
+                        .Create.Class("TestVertexClass")
+                        .Extends("OGraphVertex")
+                        .Run();
 
-                    //database.Create.Vertex(className, fields1);
-                    //database.Create.Vertex(className, fields2);
+                    // load database with some testing data
+                    database
+                        .Create.Vertex(className)
+                        .Set(fields1)
+                        .Run();
 
-                    /*List<ORecord> result = database.SQL
-                        .Select("foo")
-                        .From(className)
-                        .ToList();*/
-                    List<ORecord> result = database.SQL
-                        .Select("foo")
+                    database
+                        .Create.Vertex(className)
+                        .Set(fields2)
+                        .Run();
+
+                    // perform simple select
+                    List<ORecord> result = database
+                        .Select("foo", "bar")
+                        .From("TestVertexClass")
+                        .Run();
+
+                    Assert.AreEqual(result.Count, 2);
+                    Assert.AreEqual(result[0].GetField<string>("foo"), fields1.Get<string>("foo"));
+                    Assert.AreEqual(result[0].GetField<int>("bar"), fields1.Get<int>("bar"));
+                    Assert.AreEqual(result[1].GetField<string>("foo"), fields2.Get<string>("foo"));
+                    Assert.AreEqual(result[1].GetField<int>("bar"), fields2.Get<int>("bar"));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldSelectTyped()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    TestVertexClass obj1 = new TestVertexClass();
+                    obj1.Foo = "foo string value1";
+                    obj1.Bar = 12345;
+
+                    TestVertexClass obj2 = new TestVertexClass();
+                    obj2.Foo = "foo string value2";
+                    obj2.Bar = 54321;
+
+                    // create test class
+                    database
+                        .Create.Class<TestVertexClass>()
+                        .Extends("OGraphVertex")
+                        .Run();
+
+                    // load database with some testing data
+                    database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj1)
+                        .Run();
+
+                    database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj2)
+                        .Run();
+
+                    // perform simple select
+                    List<ORecord> result = database
+                        .Select("Foo", "Bar")
                         .From<TestVertexClass>()
-                        .ToList();
+                        .Run();
+
+                    Assert.AreEqual(result.Count, 2);
+                    Assert.AreEqual(result[0].GetField<string>("Foo"), obj1.Foo);
+                    Assert.AreEqual(result[0].GetField<int>("Bar"), obj1.Bar);
+                    Assert.AreEqual(result[1].GetField<string>("Foo"), obj2.Foo);
+                    Assert.AreEqual(result[1].GetField<int>("Bar"), obj2.Bar);
                 }
             }
         }
