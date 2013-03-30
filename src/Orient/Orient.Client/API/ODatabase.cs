@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Orient.Client.Sql;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
@@ -10,13 +9,12 @@ namespace Orient.Client
     {
         private Connection _connection;
 
-        public Sql.OSqlCreate Create { get; private set; }
+        public OSqlCreate Create { get { return new OSqlCreate(_connection); } }
+        public OSqlSelect SQL { get { return new OSqlSelect(_connection); } }
 
         public ODatabase(string alias)
         {
             _connection = OClient.ReleaseConnection(alias);
-
-            Create = new Sql.OSqlCreate(_connection);
         }
 
         public List<OCluster> GetClusters()
