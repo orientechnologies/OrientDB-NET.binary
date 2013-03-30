@@ -2,7 +2,7 @@
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
-namespace Orient.Client.Sql
+namespace Orient.Client
 {
     public class OSqlCreate
     {
@@ -13,190 +13,70 @@ namespace Orient.Client.Sql
             _connection = connection;
         }
 
-        // syntax: CREATE CLASS <class> [EXTENDS <super-class>] [CLUSTER <clusterId>*]
         #region Class
 
-        public short Class(string className)
+        public OSqlCreateClass Class<T>()
         {
-            return Class(className, null, null);
+            return Class(typeof(T).Name);
         }
 
-        public short Class(string className, string extends)
+        public OSqlCreateClass Class(string className)
         {
-            return Class(className, extends, null);
-        }
-
-        public short Class(string className, string extends, short? clusterId)
-        {
-            string sql = string.Join(" ", Q.Create, Q.Class, className);
-
-            if (!string.IsNullOrEmpty(extends))
-            {
-                sql += string.Join(" ", "", Q.Extends, extends);
-            }
-
-            if (clusterId.HasValue)
-            {
-                sql += string.Join(" ", "", Q.Cluster, clusterId.Value);
-            }
-
-            OCommandResult commandResult = Execute(sql);
-
-            return short.Parse(commandResult.ToDataObject().Get<string>("Content"));
+            return new OSqlCreateClass(_connection, className);
         }
 
         #endregion
 
-        // syntax CREATE CLUSTER <name> <type> [DATASEGMENT <data-segment>|default] [LOCATION <path>|default] [POSITION <position>|append]
         #region Cluster
 
-        public short Cluster(string clusterName, OClusterType clusterType)
+        public OSqlCreateCluster Cluster<T>(OClusterType clusterType)
         {
-            string sql = string.Join(" ", Q.Create, Q.Cluster, clusterName, clusterType.ToString().ToUpper());
+            return Cluster(typeof(T).Name, clusterType);
+        }
 
-            OCommandResult commandResult = Execute(sql);
-
-            return short.Parse(commandResult.ToDataObject().Get<string>("Content"));
+        public OSqlCreateCluster Cluster(string clusterName, OClusterType clusterType)
+        {
+            return new OSqlCreateCluster(_connection, clusterName, clusterType);
         }
 
         #endregion
 
-        // syntax: CREATE EDGE [<class>] [CLUSTER <cluster>] FROM <rid>|(<query>)|[<rid>]* TO <rid>|(<query>)|[<rid>]* [SET <field> = <expression>[,]*]
         #region Edge
 
-        public ORecord Edge(string className, ORID from, ORID to)
+        public OSqlCreateEdge Edge<T>()
         {
-            return Edge(className, null, from, to, null);
+            return Edge(typeof(T).Name);
         }
 
-        public ORecord Edge(string className, ORID from, ORID to, ODataObject fields)
+        public OSqlCreateEdge Edge(string className)
         {
-            return Edge(className, null, from, to, fields);
-        }
-
-        public ORecord Edge(string className, string cluster, ORID from, ORID to)
-        {
-            return Edge(className, cluster, from, to, null);
-        }
-
-        public ORecord Edge(string className, string cluster, ORID from, ORID to, ODataObject fields)
-        {
-            string sql = string.Join(" ", Q.Create, Q.Edge, className);
-
-            if (!string.IsNullOrEmpty(cluster))
-            {
-                sql += string.Join(" ", "", Q.Cluster, cluster);
-            }
-
-            sql += string.Join(" ", "", Q.From, from.ToString(), Q.To, to.ToString());
-
-            if ((fields != null) && (fields.Count > 0))
-            {
-                sql += string.Join(" ", "", Q.Set);
-                int iteration = 0;
-
-                // TODO: go also through embedded fields
-                foreach (KeyValuePair<string, object> field in fields)
-                {
-                    sql += string.Join(" ", "", field.Key, "=");
-
-                    if (field.Value is string)
-                    {
-                        sql += string.Join(" ", "", "'" + field.Value + "'");
-                    }
-                    else
-                    {
-                        sql += string.Join(" ", "", field.Value.ToString());
-                    }
-
-                    iteration++;
-
-                    if (iteration < fields.Count)
-                    {
-                        sql += ",";
-                    }
-                }
-            }
-
-            OCommandResult commandResult = Execute(sql);
-
-            return commandResult.ToSingle();
+            return new OSqlCreateEdge(_connection, className);
         }
 
         #endregion
 
-        // syntax: CREATE VERTEX [<class>] [CLUSTER <cluster>] [SET <field> = <expression>[,]*]
         #region Vertex
 
-        public ORecord Vertex(string className, ODataObject fields)
+        public OSqlCreateVertex Vertex<T>()
         {
-            return Vertex(className, null, fields);
+            return Vertex(typeof(T).Name);
         }
 
-        public ORecord Vertex(string className, string cluster)
+        public OSqlCreateVertex Vertex(string className)
         {
-            return Vertex(className, cluster, null);
+            return new OSqlCreateVertex(_connection, className);
         }
 
-        public ORecord Vertex(string className, string cluster, ODataObject fields)
+        /*public T Vertex<T>(T obj) where T: class, new()
         {
-            string sql = string.Join(" ", Q.Create, Q.Vertex, className);
-
-            if (!string.IsNullOrEmpty(cluster))
-            {
-                sql += string.Join(" ", "", Q.Cluster, cluster);
-            }
-
-            if ((fields != null) && (fields.Count > 0))
-            {
-                sql += string.Join(" ", "", Q.Set);
-                int iteration = 0;
-
-                // TODO: go also through embedded fields
-                foreach (KeyValuePair<string, object> field in fields)
-                {
-                    sql += string.Join(" ", "", field.Key, "=");
-
-                    if (field.Value is string)
-                    {
-                        sql += string.Join(" ", "", "'" + field.Value + "'");
-                    }
-                    else
-                    {
-                        sql += string.Join(" ", "", field.Value.ToString());
-                    }
-
-                    iteration++;
-
-                    if (iteration < fields.Count)
-                    {
-                        sql += ",";
-                    }
-                }
-            }
-
-            OCommandResult commandResult = Execute(sql);
-
-            return commandResult.ToSingle();
+            return Vertex(typeof(T).Name, null, ODataObject.MapData(obj)).To<T>();
         }
+
+        public T Vertex<T>(string cluster, T obj) where T : class, new()
+        {
+            return Vertex(typeof(T).Name, cluster, ODataObject.MapData(obj)).To<T>();
+        }*/
 
         #endregion
-
-        private OCommandResult Execute(string sql)
-        {
-            CommandPayload payload = new CommandPayload();
-            payload.Type = CommandPayloadType.Sql;
-            payload.Text = sql;
-            payload.NonTextLimit = -1;
-            payload.FetchPlan = "";
-            payload.SerializedParams = new byte[] { 0 };
-
-            Command operation = new Command();
-            operation.OperationMode = OperationMode.Synchronous;
-            operation.ClassType = CommandClassType.NonIdempotent;
-            operation.CommandPayload = payload;
-
-            return new OCommandResult(sql, _connection.ExecuteOperation<Command>(operation));
-        }
     }
 }

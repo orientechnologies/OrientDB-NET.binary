@@ -51,6 +51,12 @@
     <Compile Include="API\OServer.cs" />
     <Compile Include="API\OStorageType.cs" />
     <Compile Include="API\Query\OSqlCreate.cs" />
+    <Compile Include="API\Query\OSqlCreateClass.cs" />
+    <Compile Include="API\Query\OSqlCreateCluster.cs" />
+    <Compile Include="API\Query\OSqlCreateEdge.cs" />
+    <Compile Include="API\Query\OSqlCreateVertex.cs" />
+    <Compile Include="API\Query\OSqlSelect.cs" />
+    <Compile Include="API\Query\SqlQuery.cs" />
     <Compile Include="API\Types\OType.cs" />
     <Compile Include="API\Types\OLinkCollection.cs" />
     <Compile Include="API\Types\OLinkSet.cs" />
