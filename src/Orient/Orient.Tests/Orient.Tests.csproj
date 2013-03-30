@@ -50,6 +50,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Query\SqlSelectTests.cs" />
     <Compile Include="Serialization\RecordSerializationTests.cs" />
     <Compile Include="TestConnection.cs" />
     <Compile Include="Serialization\RecordDeserializationTests.cs" />
@@ -57,6 +58,8 @@
     <Compile Include="Query\SqlCreateTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestDatabaseContext.cs" />
+    <Compile Include="TestEdgeClass.cs" />
+    <Compile Include="TestVertexClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orient.Client\Orient.Client.csproj">
