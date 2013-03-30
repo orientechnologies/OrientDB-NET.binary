@@ -11,6 +11,7 @@ namespace Orient.Client.Protocol
         internal static string Edge = "EDGE";
         internal static string Extends = "EXTENDS";
         internal static string From = "FROM";
+        internal static string Select = "SELECT";
         internal static string Set = "SET";
         internal static string To = "TO";
         internal static string Vertex = "VERTEX";
