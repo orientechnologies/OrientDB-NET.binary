@@ -10,7 +10,6 @@ namespace Orient.Client
         private Connection _connection;
 
         public OSqlCreate Create { get { return new OSqlCreate(_connection); } }
-        public OSqlSelect SQL { get { return new OSqlSelect(_connection); } }
 
         public ODatabase(string alias)
         {
@@ -20,6 +19,26 @@ namespace Orient.Client
         public List<OCluster> GetClusters()
         {
             return _connection.DataObject.Get<List<OCluster>>("Clusters");
+        }
+
+        public OSqlSelect Select(params string[] projections)
+        {
+            int iteration = 0;
+            string sql = Q.Select;
+
+            foreach (string projection in projections)
+            {
+                sql += string.Join(" ", "", projection);
+
+                iteration++;
+
+                if (iteration < projections.Length)
+                {
+                    sql += string.Join(" ", ",");
+                }
+            }
+
+            return new OSqlSelect(_connection, sql);
         }
 
         public List<ORecord> Query(string sql)
