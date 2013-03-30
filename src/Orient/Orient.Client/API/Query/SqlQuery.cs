@@ -14,6 +14,12 @@ namespace Orient.Client
             HasSet = false;
         }
 
+        internal SqlQuery(string sql)
+        {
+            Value = sql;
+            HasSet = false;
+        }
+
         internal SqlQuery(params string[] values)
         {
             Join(values);
