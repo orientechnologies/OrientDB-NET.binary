@@ -5,8 +5,10 @@ namespace Orient.Client.Protocol
     internal static class Q
     {
         internal static string _ = " ";
+        internal static string As = "AS";
         internal static string Class = "CLASS";
         internal static string Cluster = "CLUSTER";
+        internal static string Comma = ",";
         internal static string Create = "CREATE";
         internal static string Edge = "EDGE";
         internal static string Extends = "EXTENDS";

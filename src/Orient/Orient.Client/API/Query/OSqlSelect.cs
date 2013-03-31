@@ -17,6 +17,20 @@ namespace Orient.Client
             _sqlQuery = new SqlQuery(sql);
         }
 
+        public OSqlSelect As(string alias)
+        {
+            _sqlQuery.Join("", Q.As, alias);
+
+            return this;
+        }
+
+        public OSqlSelect And(string projection)
+        {
+            _sqlQuery.Join(Q.Comma, projection);
+
+            return this;
+        }
+
         public OSqlSelect From<T>()
         {
             return From(typeof(T).Name);

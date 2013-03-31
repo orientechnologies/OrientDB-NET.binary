@@ -141,5 +141,53 @@ namespace Orient.Tests.Sql
                 }
             }
         }
+
+        [TestMethod]
+        public void ShouldSelectAsAnd()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    TestVertexClass obj1 = new TestVertexClass();
+                    obj1.Foo = "foo string value1";
+                    obj1.Bar = 12345;
+
+                    TestVertexClass obj2 = new TestVertexClass();
+                    obj2.Foo = "foo string value2";
+                    obj2.Bar = 54321;
+
+                    // create test class
+                    database
+                        .Create.Class<TestVertexClass>()
+                        .Extends("OGraphVertex")
+                        .Run();
+
+                    // load database with some testing data
+                    database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj1)
+                        .Run();
+
+                    database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj2)
+                        .Run();
+
+                    // perform simple select
+                    List<ORecord> result = database
+                        .Select("Foo").As("CustomFoo")
+                        .And("Bar").As("CustomBar")
+                        .From<TestVertexClass>()
+                        .Run();
+
+                    Assert.AreEqual(result.Count, 2);
+                    Assert.AreEqual(result[0].GetField<string>("CustomFoo"), obj1.Foo);
+                    Assert.AreEqual(result[0].GetField<int>("CustomBar"), obj1.Bar);
+                    Assert.AreEqual(result[1].GetField<string>("CustomFoo"), obj2.Foo);
+                    Assert.AreEqual(result[1].GetField<int>("CustomBar"), obj2.Bar);
+                }
+            }
+        }
     }
 }

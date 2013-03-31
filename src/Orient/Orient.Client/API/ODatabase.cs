@@ -21,6 +21,13 @@ namespace Orient.Client
             return _connection.DataObject.Get<List<OCluster>>("Clusters");
         }
 
+        public OSqlSelect Select(string projection)
+        {
+            string sql = string.Join(" ", Q.Select, projection);
+
+            return new OSqlSelect(_connection, sql);
+        }
+
         public OSqlSelect Select(params string[] projections)
         {
             int iteration = 0;
@@ -34,7 +41,7 @@ namespace Orient.Client
 
                 if (iteration < projections.Length)
                 {
-                    sql += string.Join(" ", ",");
+                    sql += string.Join(" ", Q.Comma);
                 }
             }
 
