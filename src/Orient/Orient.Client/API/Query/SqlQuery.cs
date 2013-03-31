@@ -5,18 +5,19 @@ namespace Orient.Client
 {
     internal class SqlQuery
     {
-        internal string Value { get; set; }
+        private string _value;
+
         internal bool HasSet { get; set; }
 
         internal SqlQuery()
         {
-            Value = "";
+            _value = "";
             HasSet = false;
         }
 
         internal SqlQuery(string sql)
         {
-            Value = sql;
+            _value = sql;
             HasSet = false;
         }
 
@@ -28,7 +29,23 @@ namespace Orient.Client
 
         internal void Join(params string[] values)
         {
-            Value += string.Join(" ", values);
+            _value += string.Join(" ", values);
+        }
+
+        internal static string ToString(object value)
+        {
+            string sql = "";
+
+            if (value is string)
+            {
+                sql = string.Join(" ", "'" + value + "'");
+            }
+            else
+            {
+                sql = string.Join(" ", value.ToString());
+            }
+
+            return sql;
         }
 
         internal void SetField<T>(string fieldName, T fieldValue)
@@ -81,6 +98,11 @@ namespace Orient.Client
             {
                 SetField(field.Key, field.Value);
             }
+        }
+
+        public override string ToString()
+        {
+            return _value;
         }
     }
 }
