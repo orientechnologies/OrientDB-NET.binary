@@ -177,7 +177,7 @@ namespace Orient.Tests.Sql
                     // perform simple select
                     List<ORecord> result = database
                         .Select("Foo").As("CustomFoo")
-                        .And("Bar").As("CustomBar")
+                        .Also("Bar").As("CustomBar")
                         .From<TestVertexClass>()
                         .Run();
 
@@ -186,6 +186,59 @@ namespace Orient.Tests.Sql
                     Assert.AreEqual(result[0].GetField<int>("CustomBar"), obj1.Bar);
                     Assert.AreEqual(result[1].GetField<string>("CustomFoo"), obj2.Foo);
                     Assert.AreEqual(result[1].GetField<int>("CustomBar"), obj2.Bar);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldSelectWhereStrings()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    string sqlWhereEquals = database
+                        .Select()
+                        .From<TestVertexClass>()
+                        .Where("Foo").Equals(123)
+                        .ToString();
+
+                    Assert.AreEqual(sqlWhereEquals, "SELECT FROM TestVertexClass WHERE Foo = 123");
+
+                    string sqlWhereNotEquals = database
+                        .Select()
+                        .From<TestVertexClass>()
+                        .Where("Foo").NotEquals("whoa")
+                        .ToString();
+
+                    Assert.AreEqual(sqlWhereNotEquals, "SELECT FROM TestVertexClass WHERE Foo != 'whoa'");
+
+                    string sqlWhereLesserGreater = database
+                        .Select()
+                        .From<TestVertexClass>()
+                        .Where("Foo").Lesser(1)
+                        .And("Bar").LesserEqual(2)
+                        .Or("Baz").Greater(3)
+                        .Or("Gar").GreaterEqual(4)
+                        .ToString();
+
+                    Assert.AreEqual(sqlWhereLesserGreater, "SELECT FROM TestVertexClass WHERE Foo < 1 AND Bar <= 2 OR Baz > 3 OR Gar >= 4");
+
+                    string sqlWhereLike = database
+                        .Select()
+                        .From<TestVertexClass>()
+                        .Where("Foo").Like("whoa%")
+                        .ToString();
+
+                    Assert.AreEqual(sqlWhereLike, "SELECT FROM TestVertexClass WHERE Foo LIKE 'whoa%'");
+
+                    string sqlWhereIsNull = database
+                        .Select()
+                        .From<TestVertexClass>()
+                        .Where("Foo").IsNull()
+                        .ToString();
+
+                    Assert.AreEqual(sqlWhereIsNull, "SELECT FROM TestVertexClass WHERE Foo IS NULL");
                 }
             }
         }
