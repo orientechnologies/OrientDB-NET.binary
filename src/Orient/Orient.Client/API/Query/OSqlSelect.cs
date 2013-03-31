@@ -22,6 +22,13 @@ namespace Orient.Client
             return From(typeof(T).Name);
         }
 
+        public OSqlSelect From(ORID orid)
+        {
+            _sqlQuery.Join("", Q.From, orid.ToString());
+
+            return this;
+        }
+
         public OSqlSelect From(string target)
         {
             _sqlQuery.Join("", Q.From, target);

@@ -105,5 +105,41 @@ namespace Orient.Tests.Sql
                 }
             }
         }
+
+        [TestMethod]
+        public void ShouldSelectFromORID()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    TestVertexClass obj = new TestVertexClass();
+                    obj.Foo = "foo string value1";
+                    obj.Bar = 12345;
+
+                    // create test class
+                    database
+                        .Create.Class<TestVertexClass>()
+                        .Extends("OGraphVertex")
+                        .Run();
+
+                    // load database with some testing data
+                    ORecord vertex = database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj)
+                        .Run();
+
+                    // perform simple select
+                    List<TestVertexClass> result = database
+                        .Select()
+                        .From(vertex.ORID)
+                        .Run<TestVertexClass>();
+
+                    Assert.AreEqual(result.Count, 1);
+                    Assert.AreEqual(result[0].Foo, obj.Foo);
+                    Assert.AreEqual(result[0].Bar, obj.Bar);
+                }
+            }
+        }
     }
 }
