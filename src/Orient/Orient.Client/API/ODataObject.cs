@@ -109,7 +109,7 @@ namespace Orient.Client
             return value;
         }
 
-        public void Set<T>(string fieldPath, T value)
+        public ODataObject Set<T>(string fieldPath, T value)
         {
             if (fieldPath.Contains("."))
             {
@@ -157,6 +157,8 @@ namespace Orient.Client
                     this.Add(fieldPath, value);
                 }
             }
+
+            return this;
         }
 
         public bool Has(string fieldPath)

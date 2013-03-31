@@ -18,12 +18,14 @@ namespace Orient.Tests.Sql
                     string className = "TestVertexClass";
 
                     ODataObject fields1 = new ODataObject();
-                    fields1.Set<string>("foo", "foo string value1");
-                    fields1.Set<int>("bar", 12345);
+                    fields1
+                        .Set<string>("foo", "foo string value1")
+                        .Set<int>("bar", 12345);
 
                     ODataObject fields2 = new ODataObject();
-                    fields2.Set<string>("foo", "foo string value2");
-                    fields2.Set<int>("bar", 54321);
+                    fields2
+                        .Set<string>("foo", "foo string value2")
+                        .Set<int>("bar", 54321);
 
                     // create test class
                     database
