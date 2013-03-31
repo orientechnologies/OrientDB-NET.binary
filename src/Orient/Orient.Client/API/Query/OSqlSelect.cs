@@ -38,9 +38,7 @@ namespace Orient.Client
 
         public OSqlSelect From(ORID orid)
         {
-            _sqlQuery.Join("", Q.From, orid.ToString());
-
-            return this;
+            return From(orid.ToString());
         }
 
         public OSqlSelect From(string target)
