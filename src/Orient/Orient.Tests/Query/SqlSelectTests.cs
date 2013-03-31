@@ -90,16 +90,16 @@ namespace Orient.Tests.Sql
                         .Run();
 
                     // perform simple select
-                    List<ORecord> result = database
+                    List<TestVertexClass> result = database
                         .Select("Foo", "Bar")
                         .From<TestVertexClass>()
-                        .Run();
+                        .Run<TestVertexClass>();
 
                     Assert.AreEqual(result.Count, 2);
-                    Assert.AreEqual(result[0].GetField<string>("Foo"), obj1.Foo);
-                    Assert.AreEqual(result[0].GetField<int>("Bar"), obj1.Bar);
-                    Assert.AreEqual(result[1].GetField<string>("Foo"), obj2.Foo);
-                    Assert.AreEqual(result[1].GetField<int>("Bar"), obj2.Bar);
+                    Assert.AreEqual(result[0].Foo, obj1.Foo);
+                    Assert.AreEqual(result[0].Bar, obj1.Bar);
+                    Assert.AreEqual(result[1].Foo, obj2.Foo);
+                    Assert.AreEqual(result[1].Bar, obj2.Bar);
                 }
             }
         }

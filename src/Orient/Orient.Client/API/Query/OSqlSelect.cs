@@ -29,6 +29,19 @@ namespace Orient.Client
             return this;
         }
 
+        public List<T> Run<T>() where T: class, new()
+        {
+            List<T> result = new List<T>();
+            List<ORecord> records = Run("*:0");
+
+            foreach (ORecord record in records)
+            {
+                result.Add(record.To<T>());
+            }
+
+            return result;
+        }
+
         public List<ORecord> Run()
         {
             return Run("*:0");
