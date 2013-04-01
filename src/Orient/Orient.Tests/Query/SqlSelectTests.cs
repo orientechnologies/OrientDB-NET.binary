@@ -240,13 +240,21 @@ namespace Orient.Tests.Sql
 
                     Assert.AreEqual(sqlWhereIsNull, "SELECT FROM TestVertexClass WHERE Foo IS NULL");
 
-                    string sqlWhereContains = database
+                    string sqlWhereContains1 = database
+                        .Select()
+                        .From<TestVertexClass>()
+                        .Where("Foo").Contains("Luke")
+                        .ToString();
+
+                    Assert.AreEqual(sqlWhereContains1, "SELECT FROM TestVertexClass WHERE Foo CONTAINS 'Luke'");
+
+                    string sqlWhereContains2 = database
                         .Select()
                         .From<TestVertexClass>()
                         .Where("Foo").Contains("name", "Luke")
                         .ToString();
 
-                    Assert.AreEqual(sqlWhereContains, "SELECT FROM TestVertexClass WHERE Foo CONTAINS (name = 'Luke')");
+                    Assert.AreEqual(sqlWhereContains2, "SELECT FROM TestVertexClass WHERE Foo CONTAINS (name = 'Luke')");
                 }
             }
         }

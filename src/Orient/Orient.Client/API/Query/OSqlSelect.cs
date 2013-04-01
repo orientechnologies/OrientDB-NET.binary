@@ -135,6 +135,13 @@ namespace Orient.Client
             return this;
         }
 
+        public OSqlSelect Contains<T>(T item)
+        {
+            _sqlQuery.Join("", Q.Contains, SqlQuery.ToString(item));
+
+            return this;
+        }
+
         public OSqlSelect Contains<T>(string field, T item)
         {
             _sqlQuery.Join("", Q.Contains, "(" + field, Q.Equals, SqlQuery.ToString(item) + ")");
