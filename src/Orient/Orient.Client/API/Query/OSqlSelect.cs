@@ -19,16 +19,23 @@ namespace Orient.Client
 
         #region SELECT statement
 
-        public OSqlSelect As(string alias)
+        public OSqlSelect Also(string projection)
         {
-            _sqlQuery.Join("", Q.As, alias);
+            _sqlQuery.Join(Q.Comma, projection);
 
             return this;
         }
 
-        public OSqlSelect Also(string projection)
+        public OSqlSelect First()
         {
-            _sqlQuery.Join(Q.Comma, projection);
+            _sqlQuery.Surround("first");
+
+            return this;
+        }
+
+        public OSqlSelect As(string alias)
+        {
+            _sqlQuery.Join("", Q.As, alias);
 
             return this;
         }
@@ -142,9 +149,9 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlSelect Contains<T>(string field, T item)
+        public OSqlSelect Contains<T>(string field, T value)
         {
-            _sqlQuery.Join("", Q.Contains, "(" + field, Q.Equals, SqlQuery.ToString(item) + ")");
+            _sqlQuery.Join("", Q.Contains, "(" + field, Q.Equals, SqlQuery.ToString(value) + ")");
 
             return this;
         }

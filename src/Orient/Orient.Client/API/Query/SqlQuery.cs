@@ -28,6 +28,16 @@ namespace Orient.Client
             HasSet = false;
         }
 
+        internal void Surround(string prefix)
+        {
+            int lastSpaceIndex = _value.LastIndexOf(' ');
+
+            if (lastSpaceIndex != -1)
+            {
+                _value = _value.Insert(lastSpaceIndex + 1, prefix + "(") + ")";
+            }
+        }
+
         internal void Join(params string[] values)
         {
             _value += string.Join(" ", values);
