@@ -214,6 +214,12 @@ namespace Orient.Tests.Sql
                     fields.Set<string>("foo", "foo string value");
                     fields.Set<int>("bar", 12345);
 
+                    List<string> options = new List<string>();
+                    options.Add("option1");
+                    options.Add("option2");
+
+                    fields.Set<List<string>>("options", options);
+
                     // create test class for vertex
                     database
                         .Create.Class("TestVertexClass")
@@ -228,9 +234,15 @@ namespace Orient.Tests.Sql
 
                     Assert.AreEqual(loadedVertex1.HasField("foo"), true);
                     Assert.AreEqual(loadedVertex1.HasField("bar"), true);
+                    Assert.AreEqual(loadedVertex1.HasField("options"), true);
 
                     Assert.AreEqual(loadedVertex1.GetField<string>("foo"), fields.Get<string>("foo"));
                     Assert.AreEqual(loadedVertex1.GetField<int>("bar"), fields.Get<int>("bar"));
+
+                    List<string> loadedOptions = loadedVertex1.GetField<List<string>>("options");
+                    Assert.AreEqual(loadedOptions.Count, options.Count);
+                    Assert.AreEqual(loadedOptions[0], options[0]);
+                    Assert.AreEqual(loadedOptions[1], options[1]);
 
                     // create test vertex using multiple set statements
                     ORecord loadedVertex2 = database

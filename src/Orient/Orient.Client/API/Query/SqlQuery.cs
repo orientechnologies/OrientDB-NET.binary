@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Orient.Client.Protocol;
 
 namespace Orient.Client
@@ -32,22 +33,6 @@ namespace Orient.Client
             _value += string.Join(" ", values);
         }
 
-        internal static string ToString(object value)
-        {
-            string sql = "";
-
-            if (value is string)
-            {
-                sql = string.Join(" ", "'" + value + "'");
-            }
-            else
-            {
-                sql = string.Join(" ", value.ToString());
-            }
-
-            return sql;
-        }
-
         internal void SetField<T>(string fieldName, T fieldValue)
         {
             if (HasSet)
@@ -68,6 +53,26 @@ namespace Orient.Client
             else if (fieldValue is string)
             {
                 Join("", "'" + fieldValue + "'");
+            }
+            else if (fieldValue is IList)
+            {
+                Join("", "[");
+                IList collection = (IList)fieldValue;
+                int iteration = 0;
+
+                foreach (object item in collection)
+                {
+                    Join(SqlQuery.ToString(item));
+
+                    iteration++;
+
+                    if (iteration < collection.Count)
+                    {
+                        Join(Q.Comma, "");
+                    }
+                }
+
+                Join("]");
             }
             else
             {
@@ -103,6 +108,22 @@ namespace Orient.Client
         public override string ToString()
         {
             return _value;
+        }
+
+        internal static string ToString(object value)
+        {
+            string sql = "";
+
+            if (value is string)
+            {
+                sql = string.Join(" ", "'" + value + "'");
+            }
+            else
+            {
+                sql = string.Join(" ", value.ToString());
+            }
+
+            return sql;
         }
     }
 }
