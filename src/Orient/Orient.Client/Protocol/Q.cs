@@ -11,6 +11,7 @@ namespace Orient.Client.Protocol
         internal static string Class = "CLASS";
         internal static string Cluster = "CLUSTER";
         internal static string Comma = ",";
+        internal static string Contains = "CONTAINS";
         internal static string Create = "CREATE";
         internal static string Edge = "EDGE";
         internal static string Equals = "=";
