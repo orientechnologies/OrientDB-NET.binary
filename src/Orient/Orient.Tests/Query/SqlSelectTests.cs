@@ -66,7 +66,7 @@ namespace Orient.Tests.Sql
                     List<ORecord> result = database
                         .Select("foo", "bar")
                         .From("TestVertexClass")
-                        .Run();
+                        .ToList();
 
                     Assert.AreEqual(result.Count, 2);
                     Assert.AreEqual(result[0].GetField<string>("foo"), fields1.Get<string>("foo"));
@@ -113,7 +113,7 @@ namespace Orient.Tests.Sql
                     List<TestVertexClass> result = database
                         .Select("Foo", "Bar")
                         .From<TestVertexClass>()
-                        .Run<TestVertexClass>();
+                        .ToList<TestVertexClass>();
 
                     Assert.AreEqual(result.Count, 2);
                     Assert.AreEqual(result[0].Foo, obj1.Foo);
@@ -151,7 +151,7 @@ namespace Orient.Tests.Sql
                     List<TestVertexClass> result = database
                         .Select()
                         .From(vertex.ORID)
-                        .Run<TestVertexClass>();
+                        .ToList<TestVertexClass>();
 
                     Assert.AreEqual(result.Count, 1);
                     Assert.AreEqual(result[0].Foo, obj.Foo);
@@ -197,7 +197,7 @@ namespace Orient.Tests.Sql
                         .Select("Foo").As("CustomFoo")
                         .Also("Bar").As("CustomBar")
                         .From<TestVertexClass>()
-                        .Run();
+                        .ToList();
 
                     Assert.AreEqual(result.Count, 2);
                     Assert.AreEqual(result[0].GetField<string>("CustomFoo"), obj1.Foo);

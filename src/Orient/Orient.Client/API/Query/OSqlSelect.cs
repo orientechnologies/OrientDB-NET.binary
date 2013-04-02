@@ -192,12 +192,12 @@ namespace Orient.Client
 
         #endregion
 
-        #region Run overloads
+        #region ToList overloads
 
-        public List<T> Run<T>() where T: class, new()
+        public List<T> ToList<T>() where T : class, new()
         {
             List<T> result = new List<T>();
-            List<ORecord> records = Run("*:0");
+            List<ORecord> records = ToList("*:0");
 
             foreach (ORecord record in records)
             {
@@ -207,12 +207,12 @@ namespace Orient.Client
             return result;
         }
 
-        public List<ORecord> Run()
+        public List<ORecord> ToList()
         {
-            return Run("*:0");
+            return ToList("*:0");
         }
 
-        public List<ORecord> Run(string fetchPlan)
+        public List<ORecord> ToList(string fetchPlan)
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;
