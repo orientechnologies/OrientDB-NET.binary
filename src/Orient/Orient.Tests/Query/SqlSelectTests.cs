@@ -9,24 +9,6 @@ namespace Orient.Tests.Query
     public class SqlSelectTests
     {
         [TestMethod]
-        public void ShouldGenerateSelectStrings()
-        {
-            using (TestDatabaseContext testContext = new TestDatabaseContext())
-            {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
-                {
-                    string sqlSelectAlsoFirstAs = database
-                        .Select("Foo")
-                        .Also("Bar.in").First().As("BarIn")
-                        .From<TestVertexClass>()
-                        .ToString();
-
-                    Assert.AreEqual(sqlSelectAlsoFirstAs, "SELECT Foo, first(Bar.in) AS BarIn FROM TestVertexClass");
-                }
-            }
-        }
-
-        [TestMethod]
         public void ShouldSelectUntyped()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())

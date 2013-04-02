@@ -21,21 +21,21 @@ namespace Orient.Client
             return _connection.DataObject.Get<List<OCluster>>("Clusters");
         }
 
+        #region Select
+
         public OSqlSelect Select(string projection)
         {
-            OSqlSelect selectQuery = new OSqlSelect(_connection);
-            selectQuery.Select(projection);
-
-            return selectQuery;
+            return new OSqlSelect(_connection).Select(projection);
         }
 
         public OSqlSelect Select(params string[] projections)
         {
-            OSqlSelect selectQuery = new OSqlSelect(_connection);
-            selectQuery.Select(projections);
-
-            return selectQuery;
+            return new OSqlSelect(_connection).Select(projections);
         }
+
+        #endregion
+
+        #region Query
 
         public List<ORecord> Query(string sql)
         {
@@ -60,6 +60,8 @@ namespace Orient.Client
 
             return dataObject.Get<List<ORecord>>("Content");
         }
+
+        #endregion
 
         public OCommandResult Command(string sql)
         {

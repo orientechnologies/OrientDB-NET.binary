@@ -11,13 +11,18 @@ namespace Orient.Client
         private Connection _connection;
         private SqlQuery _sqlQuery;
 
+        public OSqlSelect()
+        {
+            _sqlQuery = new SqlQuery();
+        }
+
         internal OSqlSelect(Connection connection)
         {
             _connection = connection;
             _sqlQuery = new SqlQuery();
         }
 
-        #region SELECT statement
+        #region Select
 
         public OSqlSelect Select(string projection)
         {
@@ -76,17 +81,7 @@ namespace Orient.Client
 
         #endregion
 
-        #region FROM statement
-
-        public OSqlSelect From<T>()
-        {
-            return From(typeof(T).Name);
-        }
-
-        public OSqlSelect From(ORID orid)
-        {
-            return From(orid.ToString());
-        }
+        #region From
 
         public OSqlSelect From(string target)
         {
@@ -95,9 +90,19 @@ namespace Orient.Client
             return this;
         }
 
+        public OSqlSelect From(ORID orid)
+        {
+            return From(orid.ToString());
+        }
+
+        public OSqlSelect From<T>()
+        {
+            return From(typeof(T).Name);
+        }
+
         #endregion
 
-        #region WHERE statement
+        #region Where
 
         public OSqlSelect Where(string field)
         {
@@ -192,7 +197,7 @@ namespace Orient.Client
 
         #endregion
 
-        #region ToList overloads
+        #region ToList
 
         public List<T> ToList<T>() where T : class, new()
         {
