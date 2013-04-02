@@ -67,16 +67,6 @@ namespace Orient.Client
             return new OSqlCreateVertex(_connection, className);
         }
 
-        /*public T Vertex<T>(T obj) where T: class, new()
-        {
-            return Vertex(typeof(T).Name, null, ODataObject.MapData(obj)).To<T>();
-        }
-
-        public T Vertex<T>(string cluster, T obj) where T : class, new()
-        {
-            return Vertex(typeof(T).Name, cluster, ODataObject.MapData(obj)).To<T>();
-        }*/
-
         #endregion
     }
 }

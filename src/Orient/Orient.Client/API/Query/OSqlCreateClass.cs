@@ -53,5 +53,10 @@ namespace Orient.Client
 
             return short.Parse(result.ToDataObject().Get<string>("Content"));
         }
+
+        public override string ToString()
+        {
+            return _sqlQuery.ToString();
+        }
     }
 }

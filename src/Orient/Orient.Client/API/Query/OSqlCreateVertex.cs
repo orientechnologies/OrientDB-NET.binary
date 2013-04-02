@@ -56,5 +56,10 @@ namespace Orient.Client
 
             return result.ToSingle();
         }
+
+        public override string ToString()
+        {
+            return _sqlQuery.ToString();
+        }
     }
 }
