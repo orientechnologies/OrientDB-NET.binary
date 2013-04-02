@@ -38,6 +38,20 @@ namespace Orient.Client
             return this;
         }
 
+        public OSqlCreateVertex Also<T>(string fieldName, T fieldValue)
+        {
+            _sqlQuery.SetField<T>(fieldName, fieldValue);
+
+            return this;
+        }
+
+        public OSqlCreateVertex Also<T>(T obj)
+        {
+            _sqlQuery.SetFields(obj);
+
+            return this;
+        }
+
         public ORecord Run()
         {
             CommandPayload payload = new CommandPayload();

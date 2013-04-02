@@ -57,6 +57,20 @@ namespace Orient.Client
             return this;
         }
 
+        public OSqlCreateEdge Also<T>(string fieldName, T fieldValue)
+        {
+            _sqlQuery.SetField<T>(fieldName, fieldValue);
+
+            return this;
+        }
+
+        public OSqlCreateEdge Also<T>(T obj)
+        {
+            _sqlQuery.SetFields(obj);
+
+            return this;
+        }
+
         public ORecord Run()
         {
             CommandPayload payload = new CommandPayload();
