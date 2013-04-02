@@ -23,29 +23,18 @@ namespace Orient.Client
 
         public OSqlSelect Select(string projection)
         {
-            string sql = string.Join(" ", Q.Select, projection);
+            OSqlSelect selectQuery = new OSqlSelect(_connection);
+            selectQuery.Select(projection);
 
-            return new OSqlSelect(_connection, sql);
+            return selectQuery;
         }
 
         public OSqlSelect Select(params string[] projections)
         {
-            int iteration = 0;
-            string sql = Q.Select;
+            OSqlSelect selectQuery = new OSqlSelect(_connection);
+            selectQuery.Select(projections);
 
-            foreach (string projection in projections)
-            {
-                sql += string.Join(" ", "", projection);
-
-                iteration++;
-
-                if (iteration < projections.Length)
-                {
-                    sql += string.Join(" ", Q.Comma);
-                }
-            }
-
-            return new OSqlSelect(_connection, sql);
+            return selectQuery;
         }
 
         public List<ORecord> Query(string sql)

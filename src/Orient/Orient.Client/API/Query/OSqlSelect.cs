@@ -11,13 +11,40 @@ namespace Orient.Client
         private Connection _connection;
         private SqlQuery _sqlQuery;
 
-        internal OSqlSelect(Connection connection, string sql)
+        internal OSqlSelect(Connection connection)
         {
             _connection = connection;
-            _sqlQuery = new SqlQuery(sql);
+            _sqlQuery = new SqlQuery();
         }
 
         #region SELECT statement
+
+        public OSqlSelect Select(string projection)
+        {
+            _sqlQuery.Join(Q.Select, projection);
+
+            return this;
+        }
+
+        public OSqlSelect Select(params string[] projections)
+        {
+            int iteration = 0;
+            _sqlQuery.Join(Q.Select);
+
+            foreach (string projection in projections)
+            {
+                _sqlQuery.Join("", projection);
+
+                iteration++;
+
+                if (iteration < projections.Length)
+                {
+                    _sqlQuery.Join(Q.Comma);
+                }
+            }
+
+            return this;
+        }
 
         public OSqlSelect Also(string projection)
         {
@@ -29,6 +56,13 @@ namespace Orient.Client
         public OSqlSelect First()
         {
             _sqlQuery.Surround("first");
+
+            return this;
+        }
+
+        public OSqlSelect Nth(int index)
+        {
+            _sqlQuery.Join("[" + index + "]");
 
             return this;
         }
