@@ -43,7 +43,7 @@ namespace Orient.Tests.Sql
 
                     short classId2 = database
                         .Create.Class<TestVertexClass2>()
-                        .Extends("OGraphVertex")
+                        .Extends<OGraphVertex>()
                         .Run();
                     Assert.AreEqual(classId2, classId1 + 1);
                 }
@@ -171,15 +171,15 @@ namespace Orient.Tests.Sql
                     // create test class for edges
                     database
                         .Create.Class<TestEdgeClass>()
-                        .Extends("OGraphEdge")
+                        .Extends<OGraphEdge>()
                         .Run();
 
                     // create test vertices which will be connected by edge
                     ORecord vertex1 = database
-                        .Create.Vertex("OGraphVertex")
+                        .Create.Vertex<OGraphVertex>()
                         .Run();
                     ORecord vertex2 = database
-                        .Create.Vertex("OGraphVertex")
+                        .Create.Vertex<OGraphVertex>()
                         .Run();
 
                     // connect previous vertices with edge
@@ -274,7 +274,7 @@ namespace Orient.Tests.Sql
                     // create test class for vertex
                     database
                         .Create.Class<TestVertexClass>()
-                        .Extends("OGraphVertex")
+                        .Extends<OGraphVertex>()
                         .Run();
 
                     // create test vertex from previously created class
