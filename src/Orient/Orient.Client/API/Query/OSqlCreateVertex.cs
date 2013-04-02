@@ -11,11 +11,34 @@ namespace Orient.Client
         private Connection _connection;
         private SqlQuery _sqlQuery;
 
-        internal OSqlCreateVertex(Connection connection, string className)
+        public OSqlCreateVertex()
+        {
+            _sqlQuery = new SqlQuery();
+        }
+
+        internal OSqlCreateVertex(Connection connection)
         {
             _connection = connection;
-            _sqlQuery = new SqlQuery(Q.Create, Q.Vertex, className);
+            _sqlQuery = new SqlQuery();
         }
+
+        #region Vertex
+
+        public OSqlCreateVertex Vertex(string className)
+        {
+            _sqlQuery.Join(Q.Create, Q.Vertex, className);
+
+            return this;
+        }
+
+        public OSqlCreateVertex Vertex<T>()
+        {
+            return Vertex(typeof(T).Name);
+        }
+
+        #endregion
+
+        #region Cluster
 
         public OSqlCreateVertex Cluster(string clusterName)
         {
@@ -23,6 +46,15 @@ namespace Orient.Client
 
             return this;
         }
+
+        public OSqlCreateVertex Cluster<T>()
+        {
+            return Cluster(typeof(T).Name);
+        }
+
+        #endregion
+
+        #region Set
 
         public OSqlCreateVertex Set<T>(string fieldName, T fieldValue)
         {
@@ -38,6 +70,10 @@ namespace Orient.Client
             return this;
         }
 
+        #endregion
+
+        #region Also
+
         public OSqlCreateVertex Also<T>(string fieldName, T fieldValue)
         {
             _sqlQuery.SetField<T>(fieldName, fieldValue);
@@ -51,6 +87,8 @@ namespace Orient.Client
 
             return this;
         }
+
+        #endregion
 
         public ORecord Run()
         {

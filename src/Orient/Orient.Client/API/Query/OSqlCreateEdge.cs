@@ -11,16 +11,34 @@ namespace Orient.Client
         private Connection _connection;
         private SqlQuery _sqlQuery;
 
-        internal OSqlCreateEdge(Connection connection, string className)
+        public OSqlCreateEdge()
         {
-            _connection = connection;
-            _sqlQuery = new SqlQuery(Q.Create, Q.Edge, className);
+            _sqlQuery = new SqlQuery();
         }
 
-        public OSqlCreateEdge Cluster<T>()
+        internal OSqlCreateEdge(Connection connection)
         {
-            return Cluster(typeof(T).Name);
+            _connection = connection;
+            _sqlQuery = new SqlQuery();
         }
+
+        #region Edge
+
+        public OSqlCreateEdge Edge(string className)
+        {
+            _sqlQuery.Join(Q.Create, Q.Edge, className);
+
+            return this;
+        }
+
+        public OSqlCreateEdge Edge<T>()
+        {
+            return Edge(typeof(T).Name);
+        }
+
+        #endregion
+
+        #region Cluster
 
         public OSqlCreateEdge Cluster(string clusterName)
         {
@@ -28,6 +46,13 @@ namespace Orient.Client
 
             return this;
         }
+
+        public OSqlCreateEdge Cluster<T>()
+        {
+            return Cluster(typeof(T).Name);
+        }
+
+        #endregion
 
         public OSqlCreateEdge From(ORID from)
         {
@@ -43,6 +68,8 @@ namespace Orient.Client
             return this;
         }
 
+        #region Set
+
         public OSqlCreateEdge Set<T>(string fieldName, T fieldValue)
         {
             _sqlQuery.SetField<T>(fieldName, fieldValue);
@@ -57,6 +84,10 @@ namespace Orient.Client
             return this;
         }
 
+        #endregion
+
+        #region Also
+
         public OSqlCreateEdge Also<T>(string fieldName, T fieldValue)
         {
             _sqlQuery.SetField<T>(fieldName, fieldValue);
@@ -70,6 +101,8 @@ namespace Orient.Client
 
             return this;
         }
+
+        #endregion
 
         public ORecord Run()
         {

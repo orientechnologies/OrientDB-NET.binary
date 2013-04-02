@@ -10,11 +10,32 @@ namespace Orient.Client
         private Connection _connection;
         private SqlQuery _sqlQuery;
 
-        internal OSqlCreateCluster(Connection connection, string clusterName, OClusterType clusterType)
+        public OSqlCreateCluster()
+        {
+            _sqlQuery = new SqlQuery();
+        }
+
+        internal OSqlCreateCluster(Connection connection)
         {
             _connection = connection;
-            _sqlQuery = new SqlQuery(Q.Create, Q.Cluster, clusterName, clusterType.ToString().ToUpper());
+            _sqlQuery = new SqlQuery();
         }
+
+        #region Cluster
+
+        public OSqlCreateCluster Cluster(string clusterName, OClusterType clusterType)
+        {
+            _sqlQuery.Join(Q.Create, Q.Cluster, clusterName, clusterType.ToString().ToUpper());
+
+            return this;
+        }
+
+        public OSqlCreateCluster Cluster<T>(OClusterType clusterType)
+        {
+            return Cluster(typeof(T).Name, clusterType);
+        }
+
+        #endregion
 
         public short Run()
         {

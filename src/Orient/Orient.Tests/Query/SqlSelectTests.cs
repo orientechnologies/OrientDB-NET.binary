@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Orient.Client;
 
-namespace Orient.Tests.Sql
+namespace Orient.Tests.Query
 {
     [TestClass]
     public class SqlSelectTests

@@ -10,16 +10,34 @@ namespace Orient.Client
         private Connection _connection;
         private SqlQuery _sqlQuery;
 
-        internal OSqlCreateClass(Connection connection, string className)
+        public OSqlCreateClass()
         {
-            _connection = connection;
-            _sqlQuery = new SqlQuery(Q.Create, Q.Class, className);
+            _sqlQuery = new SqlQuery();
         }
 
-        public OSqlCreateClass Extends<T>()
+        internal OSqlCreateClass(Connection connection)
         {
-            return Extends(typeof(T).Name);
+            _connection = connection;
+            _sqlQuery = new SqlQuery();
         }
+
+        #region Class
+
+        public OSqlCreateClass Class(string className)
+        {
+            _sqlQuery.Join(Q.Create, Q.Class, className);
+
+            return this;
+        }
+
+        public OSqlCreateClass Class<T>()
+        {
+            return Class(typeof(T).Name);
+        }
+
+        #endregion
+
+        #region Extends
 
         public OSqlCreateClass Extends(string superClass)
         {
@@ -27,6 +45,13 @@ namespace Orient.Client
 
             return this;
         }
+
+        public OSqlCreateClass Extends<T>()
+        {
+            return Extends(typeof(T).Name);
+        }
+
+        #endregion
 
         public OSqlCreateClass Cluster(short clusterId)
         {

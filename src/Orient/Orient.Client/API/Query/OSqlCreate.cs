@@ -15,56 +15,56 @@ namespace Orient.Client
 
         #region Class
 
+        public OSqlCreateClass Class(string className)
+        {
+            return new OSqlCreateClass(_connection).Class(className);
+        }
+
         public OSqlCreateClass Class<T>()
         {
             return Class(typeof(T).Name);
-        }
-
-        public OSqlCreateClass Class(string className)
-        {
-            return new OSqlCreateClass(_connection, className);
         }
 
         #endregion
 
         #region Cluster
 
+        public OSqlCreateCluster Cluster(string clusterName, OClusterType clusterType)
+        {
+            return new OSqlCreateCluster(_connection).Cluster(clusterName, clusterType);
+        }
+
         public OSqlCreateCluster Cluster<T>(OClusterType clusterType)
         {
             return Cluster(typeof(T).Name, clusterType);
-        }
-
-        public OSqlCreateCluster Cluster(string clusterName, OClusterType clusterType)
-        {
-            return new OSqlCreateCluster(_connection, clusterName, clusterType);
         }
 
         #endregion
 
         #region Edge
 
+        public OSqlCreateEdge Edge(string className)
+        {
+            return new OSqlCreateEdge(_connection).Edge(className);
+        }
+
         public OSqlCreateEdge Edge<T>()
         {
             return Edge(typeof(T).Name);
-        }
-
-        public OSqlCreateEdge Edge(string className)
-        {
-            return new OSqlCreateEdge(_connection, className);
         }
 
         #endregion
 
         #region Vertex
 
+        public OSqlCreateVertex Vertex(string className)
+        {
+            return new OSqlCreateVertex(_connection).Vertex(className);
+        }
+
         public OSqlCreateVertex Vertex<T>()
         {
             return Vertex(typeof(T).Name);
-        }
-
-        public OSqlCreateVertex Vertex(string className)
-        {
-            return new OSqlCreateVertex(_connection, className);
         }
 
         #endregion

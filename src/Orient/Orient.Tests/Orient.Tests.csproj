@@ -51,6 +51,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Query\SqlSelectTests.cs" />
+    <Compile Include="Query\SqlGenerateCreateQueryTests.cs" />
     <Compile Include="Serialization\RecordSerializationTests.cs" />
     <Compile Include="TestConnection.cs" />
     <Compile Include="Serialization\RecordDeserializationTests.cs" />
