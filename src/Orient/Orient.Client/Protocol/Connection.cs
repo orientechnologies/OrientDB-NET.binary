@@ -34,7 +34,7 @@ namespace Orient.Client.Protocol
                 return false;
             }
         }
-        internal ODataObject DataObject { get; set; }
+        internal ODocument Document { get; set; }
 
         internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, string alias, bool isReusable)
         {
@@ -61,7 +61,7 @@ namespace Orient.Client.Protocol
             InitializeServerConnection(userName, userPassword);
         }
 
-        internal ODataObject ExecuteOperation<T>(T operation)
+        internal ODocument ExecuteOperation<T>(T operation)
         {
             Request request = ((IOperation)operation).Request(SessionId);
             byte[] buffer;
@@ -167,8 +167,8 @@ namespace Orient.Client.Protocol
             operation.UserName = userName;
             operation.UserPassword = userPassword;
 
-            DataObject = ExecuteOperation<DbOpen>(operation);
-            SessionId = DataObject.Get<int>("SessionId");
+            Document = ExecuteOperation<DbOpen>(operation);
+            SessionId = Document.GetField<int>("SessionId");
         }
 
         private void InitializeServerConnection(string userName, string userPassword)
@@ -195,8 +195,8 @@ namespace Orient.Client.Protocol
             operation.UserName = userName;
             operation.UserPassword = userPassword;
 
-            DataObject = ExecuteOperation<Connect>(operation);
-            SessionId = DataObject.Get<int>("SessionId");
+            Document = ExecuteOperation<Connect>(operation);
+            SessionId = Document.GetField<int>("SessionId");
         }
 
         private void Send(byte[] rawData)

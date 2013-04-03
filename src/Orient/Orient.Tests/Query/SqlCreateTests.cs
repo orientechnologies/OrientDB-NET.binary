@@ -97,9 +97,9 @@ namespace Orient.Tests.Query
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
-                    ODataObject fields = new ODataObject();
-                    fields.Set<string>("foo", "foo string value");
-                    fields.Set<int>("bar", 12345);
+                    ODocument document = new ODocument();
+                    document.SetField("foo", "foo string value");
+                    document.SetField("bar", 12345);
 
                     // create test class for edges
                     database
@@ -110,11 +110,11 @@ namespace Orient.Tests.Query
                     // create test vertices which will be connected by edge
                     ORecord vertex1 = database
                         .Create.Vertex("OGraphVertex")
-                        .Set(fields)
+                        .Set(document)
                         .Run();
                     ORecord vertex2 = database
                         .Create.Vertex("OGraphVertex")
-                        .Set(fields)
+                        .Set(document)
                         .Run();
 
                     // connect previous vertices with edge
@@ -122,7 +122,7 @@ namespace Orient.Tests.Query
                         .Create.Edge("TestEdgeClass")
                         .From(vertex1.ORID)
                         .To(vertex2.ORID)
-                        .Set(fields)
+                        .Set(document)
                         .Run();
 
                     Assert.AreEqual(edge1.HasField("in"), true);
@@ -132,8 +132,8 @@ namespace Orient.Tests.Query
 
                     Assert.AreEqual(edge1.GetField<ORID>("out"), vertex1.ORID);
                     Assert.AreEqual(edge1.GetField<ORID>("in"), vertex2.ORID);
-                    Assert.AreEqual(edge1.GetField<string>("foo"), fields.Get<string>("foo"));
-                    Assert.AreEqual(edge1.GetField<int>("bar"), fields.Get<int>("bar"));
+                    Assert.AreEqual(edge1.GetField<string>("foo"), document.GetField<string>("foo"));
+                    Assert.AreEqual(edge1.GetField<int>("bar"), document.GetField<int>("bar"));
 
                     // connect previous vertices with another edge using multiple set statements
                     ORecord edge2 = database
@@ -210,15 +210,15 @@ namespace Orient.Tests.Query
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
-                    ODataObject fields = new ODataObject();
-                    fields.Set<string>("foo", "foo string value");
-                    fields.Set<int>("bar", 12345);
+                    ODocument document = new ODocument();
+                    document.SetField("foo", "foo string value");
+                    document.SetField("bar", 12345);
 
                     List<string> options = new List<string>();
                     options.Add("option1");
                     options.Add("option2");
 
-                    fields.Set<List<string>>("options", options);
+                    document.SetField("options", options);
 
                     // create test class for vertex
                     database
@@ -229,15 +229,15 @@ namespace Orient.Tests.Query
                     // create test vertex from previously created class
                     ORecord loadedVertex1 = database
                         .Create.Vertex("TestVertexClass")
-                        .Set(fields)
+                        .Set(document)
                         .Run();
 
                     Assert.AreEqual(loadedVertex1.HasField("foo"), true);
                     Assert.AreEqual(loadedVertex1.HasField("bar"), true);
                     Assert.AreEqual(loadedVertex1.HasField("options"), true);
 
-                    Assert.AreEqual(loadedVertex1.GetField<string>("foo"), fields.Get<string>("foo"));
-                    Assert.AreEqual(loadedVertex1.GetField<int>("bar"), fields.Get<int>("bar"));
+                    Assert.AreEqual(loadedVertex1.GetField<string>("foo"), document.GetField<string>("foo"));
+                    Assert.AreEqual(loadedVertex1.GetField<int>("bar"), document.GetField<int>("bar"));
 
                     List<string> loadedOptions = loadedVertex1.GetField<List<string>>("options");
                     Assert.AreEqual(loadedOptions.Count, options.Count);

@@ -17,15 +17,15 @@ namespace Orient.Tests.Query
                 {
                     string className = "TestVertexClass";
 
-                    ODataObject fields1 = new ODataObject();
-                    fields1
-                        .Set<string>("foo", "foo string value1")
-                        .Set<int>("bar", 12345);
+                    ODocument document1 = new ODocument();
+                    document1
+                        .SetField("foo", "foo string value1")
+                        .SetField("bar", 12345);
 
-                    ODataObject fields2 = new ODataObject();
-                    fields2
-                        .Set<string>("foo", "foo string value2")
-                        .Set<int>("bar", 54321);
+                    ODocument document2 = new ODocument();
+                    document2
+                        .SetField("foo", "foo string value2")
+                        .SetField("bar", 54321);
 
                     // create test class
                     database
@@ -36,12 +36,12 @@ namespace Orient.Tests.Query
                     // load database with some testing data
                     database
                         .Create.Vertex(className)
-                        .Set(fields1)
+                        .Set(document1)
                         .Run();
 
                     database
                         .Create.Vertex(className)
-                        .Set(fields2)
+                        .Set(document2)
                         .Run();
 
                     // perform simple select
@@ -51,10 +51,10 @@ namespace Orient.Tests.Query
                         .ToList();
 
                     Assert.AreEqual(result.Count, 2);
-                    Assert.AreEqual(result[0].GetField<string>("foo"), fields1.Get<string>("foo"));
-                    Assert.AreEqual(result[0].GetField<int>("bar"), fields1.Get<int>("bar"));
-                    Assert.AreEqual(result[1].GetField<string>("foo"), fields2.Get<string>("foo"));
-                    Assert.AreEqual(result[1].GetField<int>("bar"), fields2.Get<int>("bar"));
+                    Assert.AreEqual(result[0].GetField<string>("foo"), document1.GetField<string>("foo"));
+                    Assert.AreEqual(result[0].GetField<int>("bar"), document1.GetField<int>("bar"));
+                    Assert.AreEqual(result[1].GetField<string>("foo"), document2.GetField<string>("foo"));
+                    Assert.AreEqual(result[1].GetField<int>("bar"), document2.GetField<int>("bar"));
                 }
             }
         }

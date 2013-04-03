@@ -19,7 +19,7 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODataObject Response(Response response)
+        public ODocument Response(Response response)
         {
             // there are no specific response fields processing for this operation
 

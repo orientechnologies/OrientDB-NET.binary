@@ -6,29 +6,29 @@ namespace Orient.Client
 {
     public class OCommandResult
     {
-        private ODataObject _dataObject;
+        private ODocument _document;
 
-        internal OCommandResult(ODataObject dataObject)
+        internal OCommandResult(ODocument document)
         {
-            _dataObject = dataObject;
+            _document = document;
         }
 
-        public ODataObject ToDataObject()
+        public ODocument ToDocument()
         {
-            return _dataObject;
+            return _document;
         }
 
         public ORecord ToSingle()
         {
             ORecord record = null;
 
-            switch (_dataObject.Get<PayloadStatus>("PayloadStatus"))
+            switch (_document.GetField<PayloadStatus>("PayloadStatus"))
             {
                 case PayloadStatus.SingleRecord:
-                    record = _dataObject.Get<ORecord>("Content");
+                    record = _document.GetField<ORecord>("Content");
                     break;
                 case PayloadStatus.RecordCollection:
-                    record = _dataObject.Get<List<ORecord>>("Content").FirstOrDefault();
+                    record = _document.GetField<List<ORecord>>("Content").FirstOrDefault();
                     break;
                 default:
                     break;
@@ -39,7 +39,7 @@ namespace Orient.Client
 
         public List<ORecord> ToList()
         {
-            return _dataObject.Get<List<ORecord>>("Content");
+            return _document.GetField<List<ORecord>>("Content");
         }
     }
 }

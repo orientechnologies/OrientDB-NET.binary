@@ -23,27 +23,27 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODataObject Response(Response response)
+        public ODocument Response(Response response)
         {
             // start from this position since standard fields (status, session ID) has been already parsed
             //int offset = 5;
-            ODataObject dataObject = new ODataObject();
+            ODocument document = new ODocument();
 
             if (response == null)
             {
-                return dataObject;
+                return document;
             }
 
             if (response.Status == ResponseStatus.OK)
             {
-                dataObject.Set("IsCreated", true);
+                document.SetField("IsCreated", true);
             }
             else
             {
-                dataObject.Set("IsCreated", true);
+                document.SetField("IsCreated", true);
             }
 
-            return dataObject;
+            return document;
         }
     }
 }

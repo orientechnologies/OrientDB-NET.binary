@@ -62,5 +62,10 @@ namespace Orient.Client
 
             return (this.ToString() == orid.ToString());
         }
+
+        public override int GetHashCode()
+        {
+            return (int)ClusterId + (int)ClusterPosition;
+        }
     }
 }

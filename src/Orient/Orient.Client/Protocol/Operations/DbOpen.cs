@@ -32,22 +32,22 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODataObject Response(Response response)
+        public ODocument Response(Response response)
         {
             // start from this position since standard fields (status, session ID) has been already parsed
             int offset = 5;
-            ODataObject dataObject = new ODataObject();
+            ODocument document = new ODocument();
 
             if (response == null)
             {
-                return dataObject;
+                return document;
             }
 
             // operation specific fields
-            dataObject.Set("SessionId", BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray()));
+            document.SetField("SessionId", BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray()));
             offset += 4;
             short clusterCount = BinarySerializer.ToShort(response.Data.Skip(offset).Take(2).ToArray());
-            dataObject.Set("ClusterCount", clusterCount);
+            document.SetField("ClusterCount", clusterCount);
             offset += 2;
 
             if (clusterCount > 0)
@@ -80,16 +80,16 @@ namespace Orient.Client.Protocol.Operations
                     clusters.Add(cluster);
                 }
 
-                dataObject.Set("Clusters", clusters);
+                document.SetField("Clusters", clusters);
             }
 
             int clusterConfigLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
             offset += 4;
 
-            dataObject.Set("ClusterConfig", response.Data.Skip(offset).Take(clusterConfigLength).ToArray());
+            document.SetField("ClusterConfig", response.Data.Skip(offset).Take(clusterConfigLength).ToArray());
             offset += clusterConfigLength;
 
-            return dataObject;
+            return document;
         }
     }
 }

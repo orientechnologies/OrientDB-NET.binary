@@ -14,7 +14,7 @@ namespace Orient.Client.Protocol
         internal static string Contains = "CONTAINS";
         internal static string Create = "CREATE";
         internal static string Edge = "EDGE";
-        internal static string Equals = "=";
+        internal static new string Equals = "=";
         internal static string Extends = "EXTENDS";
         internal static string From = "FROM";
         internal static string Greater = ">";

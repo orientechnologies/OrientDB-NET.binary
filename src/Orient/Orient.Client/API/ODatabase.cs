@@ -18,7 +18,7 @@ namespace Orient.Client
 
         public List<OCluster> GetClusters()
         {
-            return _connection.DataObject.Get<List<OCluster>>("Clusters");
+            return _connection.Document.GetField<List<OCluster>>("Clusters");
         }
 
         #region Select
@@ -56,9 +56,9 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.Idempotent;
             operation.CommandPayload = payload;
 
-            ODataObject dataObject = _connection.ExecuteOperation<Command>(operation);
+            ODocument document = _connection.ExecuteOperation<Command>(operation);
 
-            return dataObject.Get<List<ORecord>>("Content");
+            return document.GetField<List<ORecord>>("Content");
         }
 
         #endregion
@@ -77,9 +77,9 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.NonIdempotent;
             operation.CommandPayload = payload;
 
-            ODataObject dataObject = _connection.ExecuteOperation<Command>(operation);
-            
-            return new OCommandResult(dataObject);
+            ODocument document = _connection.ExecuteOperation<Command>(operation);
+
+            return new OCommandResult(document);
         }
 
         public void Close()

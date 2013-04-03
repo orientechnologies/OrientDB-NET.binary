@@ -70,20 +70,20 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODataObject Response(Response response)
+        public ODocument Response(Response response)
         {
             // start from this position since standard fields (status, session ID) has been already parsed
             int offset = 5;
-            ODataObject dataObject = new ODataObject();
+            ODocument document = new ODocument();
             
             if (response == null)
             {
-                return dataObject;
+                return document;
             }
 
             // operation specific fields
             PayloadStatus payloadStatus = (PayloadStatus)BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray());
-            dataObject.Set("PayloadStatus", payloadStatus);
+            document.SetField("PayloadStatus", payloadStatus);
             offset += 1;
 
             if (OperationMode == OperationMode.Asynchronous)
@@ -111,7 +111,7 @@ namespace Orient.Client.Protocol.Operations
                     offset += 1;
                 }
 
-                dataObject.Set("Content", records);
+                document.SetField("Content", records);
             }
             else
             {
@@ -124,7 +124,7 @@ namespace Orient.Client.Protocol.Operations
                         break;
                     case PayloadStatus.SingleRecord: // 'r'
                         ORecord record = ParseRecord(ref offset, response.Data);
-                        dataObject.Set("Content", record);
+                        document.SetField("Content", record);
                         break;
                     case PayloadStatus.SerializedResult: // 'a'
                         // TODO: how to handle result
@@ -133,7 +133,7 @@ namespace Orient.Client.Protocol.Operations
                         string serialized = BinarySerializer.ToString(response.Data.Skip(offset).Take(contentLength).ToArray());
                         offset += contentLength;
 
-                        dataObject.Set("Content", serialized);
+                        document.SetField("Content", serialized);
                         break;
                     case PayloadStatus.RecordCollection: // 'l'
                         int recordsCount = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
@@ -146,14 +146,14 @@ namespace Orient.Client.Protocol.Operations
                             records.Add(ParseRecord(ref offset, response.Data));
                         }
 
-                        dataObject.Set("Content", records);
+                        document.SetField("Content", records);
                         break;
                     default:
                         break;
                 }
             }
-            
-            return dataObject;
+
+            return document;
         }
 
         private ORecord ParseRecord(ref int offset, byte[] data)

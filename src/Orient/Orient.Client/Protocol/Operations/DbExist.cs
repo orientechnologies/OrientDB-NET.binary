@@ -20,15 +20,15 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODataObject Response(Response response)
+        public ODocument Response(Response response)
         {
             // start from this position since standard fields (status, session ID) has been already parsed
             int offset = 5;
-            ODataObject dataObject = new ODataObject();
+            ODocument document = new ODocument();
 
             if (response == null)
             {
-                return dataObject;
+                return document;
             }
 
             // operation specific fields
@@ -37,14 +37,14 @@ namespace Orient.Client.Protocol.Operations
 
             if (existByte == 0)
             {
-                dataObject.Set("Exists", false);
+                document.SetField("Exists", false);
             }
             else
             {
-                dataObject.Set("Exists", true);
+                document.SetField("Exists", true);
             }
 
-            return dataObject;
+            return document;
         }
     }
 }

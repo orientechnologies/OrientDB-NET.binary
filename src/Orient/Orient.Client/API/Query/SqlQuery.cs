@@ -97,19 +97,19 @@ namespace Orient.Client
 
         internal void SetFields<T>(T obj)
         {
-            ODataObject fields;
+            ODocument document;
 
-            if (obj is ODataObject)
+            if (obj is ODocument)
             {
-                fields = obj as ODataObject;
+                document = obj as ODocument;
             }
             else
             {
-                fields = ODataObject.ToDataObject<T>(obj);
+                document = ODocument.ToDocument<T>(obj);
             }
 
             // TODO: go also through embedded fields
-            foreach (KeyValuePair<string, object> field in fields)
+            foreach (KeyValuePair<string, object> field in document)
             {
                 SetField(field.Key, field.Value);
             }

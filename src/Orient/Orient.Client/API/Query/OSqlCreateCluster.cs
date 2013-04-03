@@ -53,7 +53,7 @@ namespace Orient.Client
 
             OCommandResult result = new OCommandResult(_connection.ExecuteOperation<Command>(operation));
 
-            return short.Parse(result.ToDataObject().Get<string>("Content"));
+            return short.Parse(result.ToDocument().GetField<string>("Content"));
         }
 
         public override string ToString()

@@ -277,11 +277,11 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(record.HasField("array"), true);
 
             // check for fields values
-            List<ODataObject> array = record.GetField<List<ODataObject>>("array");
+            List<ODocument> array = record.GetField<List<ODocument>>("array");
             Assert.AreEqual(array.Count, 3);
-            Assert.AreEqual(array[0].Get<string>("joe1"), "js1");
-            Assert.AreEqual(array[1].Get<string>("joe2"), "js2");
-            Assert.AreEqual(array[2].Get<string>("joe3"), "js3");
+            Assert.AreEqual(array[0].GetField<string>("joe1"), "js1");
+            Assert.AreEqual(array[1].GetField<string>("joe2"), "js2");
+            Assert.AreEqual(array[2].GetField<string>("joe3"), "js3");
         }
 
         [TestMethod]
@@ -295,20 +295,20 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(record.HasField("array"), true);
 
             // check for fields values
-            List<ODataObject> arrayOfZaks = record.GetField<List<ODataObject>>("array");
+            List<ODocument> arrayOfZaks = record.GetField<List<ODocument>>("array");
             Assert.AreEqual(arrayOfZaks.Count, 2);
 
-            List<ODataObject> arrayOfJoes1 = arrayOfZaks[0].Get<List<ODataObject>>("zak1.nick");
+            List<ODocument> arrayOfJoes1 = arrayOfZaks[0].GetField<List<ODocument>>("zak1.nick");
             Assert.AreEqual(arrayOfJoes1.Count, 3);
-            Assert.AreEqual(arrayOfJoes1[0].Get<string>("joe1"), "js1");
-            Assert.AreEqual(arrayOfJoes1[1].Get<string>("joe2"), "js2");
-            Assert.AreEqual(arrayOfJoes1[2].Get<string>("joe3"), "js3");
+            Assert.AreEqual(arrayOfJoes1[0].GetField<string>("joe1"), "js1");
+            Assert.AreEqual(arrayOfJoes1[1].GetField<string>("joe2"), "js2");
+            Assert.AreEqual(arrayOfJoes1[2].GetField<string>("joe3"), "js3");
 
-            List<ODataObject> arrayOfJoes2 = arrayOfZaks[1].Get<List<ODataObject>>("zak2.nick");
+            List<ODocument> arrayOfJoes2 = arrayOfZaks[1].GetField<List<ODocument>>("zak2.nick");
             Assert.AreEqual(arrayOfJoes2.Count, 3);
-            Assert.AreEqual(arrayOfJoes2[0].Get<string>("joe4"), "js4");
-            Assert.AreEqual(arrayOfJoes2[1].Get<string>("joe5"), "js5");
-            Assert.AreEqual(arrayOfJoes2[2].Get<string>("joe6"), "js6");
+            Assert.AreEqual(arrayOfJoes2[0].GetField<string>("joe4"), "js4");
+            Assert.AreEqual(arrayOfJoes2[1].GetField<string>("joe5"), "js5");
+            Assert.AreEqual(arrayOfJoes2[2].GetField<string>("joe6"), "js6");
         }
 
         [TestMethod]

@@ -10,7 +10,7 @@ namespace Orient.Client
 {
     public class ORecord
     {
-        internal ODataObject DataObject { get; set; }
+        internal ODocument Document { get; set; }
 
         public ORID ORID { get; set; }
         public ORecordType Type { get; set; }
@@ -21,7 +21,7 @@ namespace Orient.Client
         public ORecord()
         {
             ORID = new ORID();
-            DataObject = new ODataObject();
+            Document = new ODocument();
         }
 
         public ORecord(string recordString)
@@ -35,22 +35,22 @@ namespace Orient.Client
             Version = version;
             Type = type;
             ClassId = classId;
-            DataObject = new ODataObject();
+            Document = new ODocument();
         }
 
         public bool HasField(string fieldPath)
         {
-            return DataObject.Has(fieldPath);
+            return Document.HasField(fieldPath);
         }
 
         public T GetField<T>(string fieldPath)
         {
-            return DataObject.Get<T>(fieldPath);
+            return Document.GetField<T>(fieldPath);
         }
 
         public void SetField<T>(string fieldPath, T value)
         {
-            DataObject.Set<T>(fieldPath, value);
+            Document.SetField<T>(fieldPath, value);
         }
 
         public override string ToString()
@@ -71,14 +71,14 @@ namespace Orient.Client
 
         public string Serialize()
         {
-            return RecordSerializer.ToString(ClassName, DataObject);
+            return RecordSerializer.ToString(ClassName, Document);
         }
 
         public void Deserialize(string recordString)
         {
             ORecord record =  RecordSerializer.ToRecord(recordString);
-            
-            DataObject = record.DataObject;
+
+            Document = record.Document;
 
             ORID = record.ORID;
             Type = record.Type;
@@ -105,9 +105,9 @@ namespace Orient.Client
 
                 if ((propertyInfo.PropertyType.IsArray || propertyInfo.PropertyType.IsGenericType))
                 {
-                    if (DataObject.Has(fieldPath))
+                    if (Document.HasField(fieldPath))
                     {
-                        object propertyValue = DataObject.Get<object>(fieldPath);
+                        object propertyValue = Document.GetField<object>(fieldPath);
 
                         IList collection = (IList)propertyValue;
 
@@ -171,9 +171,9 @@ namespace Orient.Client
                 // property is basic type
                 else
                 {
-                    if (DataObject.Has(fieldPath))
+                    if (Document.HasField(fieldPath))
                     {
-                        object propertyValue = DataObject.Get<object>(fieldPath);
+                        object propertyValue = Document.GetField<object>(fieldPath);
 
                         propertyInfo.SetValue(genericObject, propertyValue, null);
                     }
