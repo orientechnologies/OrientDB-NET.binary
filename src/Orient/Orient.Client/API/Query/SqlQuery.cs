@@ -9,23 +9,21 @@ namespace Orient.Client
         private string _value;
 
         internal bool HasSet { get; set; }
+        internal bool HasAdd { get; set; }
 
         internal SqlQuery()
         {
             _value = "";
-            HasSet = false;
         }
 
         internal SqlQuery(string sql)
         {
             _value = sql;
-            HasSet = false;
         }
 
         internal SqlQuery(params string[] values)
         {
             Join(values);
-            HasSet = false;
         }
 
         internal void Surround(string prefix)
@@ -42,6 +40,77 @@ namespace Orient.Client
         {
             _value += string.Join(" ", values);
         }
+
+        #region Where with conditions
+
+        internal void Where(string field)
+        {
+            Join("", Q.Where, field);
+        }
+
+        internal void And(string field)
+        {
+            Join("", Q.And, field);
+        }
+
+        internal void Or(string field)
+        {
+            Join("", Q.Or, field);
+        }
+
+        internal void Equals<T>(T item)
+        {
+            Join("", Q.Equals, SqlQuery.ToString(item));
+        }
+
+        internal void NotEquals<T>(T item)
+        {
+            Join("", Q.NotEquals, SqlQuery.ToString(item));
+        }
+
+        internal void Lesser<T>(T item)
+        {
+            Join("", Q.Lesser, SqlQuery.ToString(item));
+        }
+
+        internal void LesserEqual<T>(T item)
+        {
+            Join("", Q.LesserEqual, SqlQuery.ToString(item));
+        }
+
+        internal void Greater<T>(T item)
+        {
+            Join("", Q.Greater, SqlQuery.ToString(item));
+        }
+
+        internal void GreaterEqual<T>(T item)
+        {
+            Join("", Q.GreaterEqual, SqlQuery.ToString(item));
+        }
+
+        internal void Like<T>(T item)
+        {
+            Join("", Q.Like, SqlQuery.ToString(item));
+        }
+
+        internal void IsNull()
+        {
+            Join("", Q.Is, Q.Null);
+        }
+
+        internal void Contains<T>(T item)
+        {
+            Join("", Q.Contains, SqlQuery.ToString(item));
+        }
+
+        internal void Contains<T>(string field, T value)
+        {
+            Join("", Q.Contains, "(" + field, Q.Equals, SqlQuery.ToString(value) + ")");
+        }
+
+        #endregion
+
+        #region SetField(s)
 
         internal void SetField<T>(string fieldName, T fieldValue)
         {
@@ -115,6 +184,10 @@ namespace Orient.Client
             }
         }
 
+        #endregion
+
+        #region ToString
+
         public override string ToString()
         {
             return _value;
@@ -135,5 +208,7 @@ namespace Orient.Client
 
             return sql;
         }
+
+        #endregion
     }
 }

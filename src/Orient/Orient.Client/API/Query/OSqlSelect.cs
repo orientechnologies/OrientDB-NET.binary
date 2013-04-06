@@ -102,95 +102,95 @@ namespace Orient.Client
 
         #endregion
 
-        #region Where
+        #region Where with conditions
 
         public OSqlSelect Where(string field)
         {
-            _sqlQuery.Join("", Q.Where, field);
+            _sqlQuery.Where(field);
 
             return this;
         }
 
         public OSqlSelect And(string field)
         {
-            _sqlQuery.Join("", Q.And, field);
+            _sqlQuery.And(field);
 
             return this;
         }
 
         public OSqlSelect Or(string field)
         {
-            _sqlQuery.Join("", Q.Or, field);
+            _sqlQuery.Or(field);
 
             return this;
         }
 
         public OSqlSelect Equals<T>(T item)
         {
-            _sqlQuery.Join("", Q.Equals, SqlQuery.ToString(item));
+            _sqlQuery.Equals<T>(item);
 
             return this;
         }
 
         public OSqlSelect NotEquals<T>(T item)
         {
-            _sqlQuery.Join("", Q.NotEquals, SqlQuery.ToString(item));
+            _sqlQuery.NotEquals<T>(item);
 
             return this;
         }
 
         public OSqlSelect Lesser<T>(T item)
         {
-            _sqlQuery.Join("", Q.Lesser, SqlQuery.ToString(item));
+            _sqlQuery.Lesser<T>(item);
 
             return this;
         }
 
         public OSqlSelect LesserEqual<T>(T item)
         {
-            _sqlQuery.Join("", Q.LesserEqual, SqlQuery.ToString(item));
+            _sqlQuery.LesserEqual<T>(item);
 
             return this;
         }
 
         public OSqlSelect Greater<T>(T item)
         {
-            _sqlQuery.Join("", Q.Greater, SqlQuery.ToString(item));
+            _sqlQuery.Greater<T>(item);
 
             return this;
         }
 
         public OSqlSelect GreaterEqual<T>(T item)
         {
-            _sqlQuery.Join("", Q.GreaterEqual, SqlQuery.ToString(item));
+            _sqlQuery.GreaterEqual<T>(item);
 
             return this;
         }
 
         public OSqlSelect Like<T>(T item)
         {
-            _sqlQuery.Join("", Q.Like, SqlQuery.ToString(item));
+            _sqlQuery.Like<T>(item);
 
             return this;
         }
 
         public OSqlSelect IsNull()
         {
-            _sqlQuery.Join("", Q.Is, Q.Null);
+            _sqlQuery.IsNull();
 
             return this;
         }
 
         public OSqlSelect Contains<T>(T item)
         {
-            _sqlQuery.Join("", Q.Contains, SqlQuery.ToString(item));
+            _sqlQuery.Contains<T>(item);
 
             return this;
         }
 
         public OSqlSelect Contains<T>(string field, T value)
         {
-            _sqlQuery.Join("", Q.Contains, "(" + field, Q.Equals, SqlQuery.ToString(value) + ")");
+            _sqlQuery.Contains<T>(field, value);
 
             return this;
         }
