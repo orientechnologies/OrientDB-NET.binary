@@ -5,6 +5,7 @@ namespace Orient.Client.Protocol
     internal static class Q
     {
         internal static string _ = " ";
+        internal static string Add = "ADD";
         internal static string And = "AND";
         internal static string As = "AS";
         internal static string Between = "BETWEEN";
@@ -24,12 +25,16 @@ namespace Orient.Client.Protocol
         internal static string Lesser = "<";
         internal static string LesserEqual = "<=";
         internal static string Like = "LIKE";
+        internal static string Limit = "LIMIT";
         internal static string NotEquals = "!=";
         internal static string Null = "NULL";
         internal static string Or = "OR";
+        internal static string Put = "PUT";
+        internal static string Remove = "REMOVE";
         internal static string Select = "SELECT";
         internal static string Set = "SET";
         internal static string To = "TO";
+        internal static string Update = "UPDATE";
         internal static string Vertex = "VERTEX";
         internal static string Where = "WHERE";
     }
