@@ -58,6 +58,7 @@
     <Compile Include="API\Query\OSqlCreateEdge.cs" />
     <Compile Include="API\Query\OSqlCreateVertex.cs" />
     <Compile Include="API\Query\OSqlSelect.cs" />
+    <Compile Include="API\Query\OSqlUpdate.cs" />
     <Compile Include="API\Query\SqlQuery.cs" />
     <Compile Include="API\Types\OType.cs" />
     <Compile Include="API\Types\OLinkCollection.cs" />
