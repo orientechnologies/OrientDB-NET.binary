@@ -60,6 +60,13 @@ namespace Orient.Client
 
         #endregion
 
+        public OSqlUpdate Record(ORID orid)
+        {
+            _sqlQuery.Join(Q.Update, orid.ToString());
+
+            return this;
+        }
+
         #region Set
 
         public OSqlUpdate Set<T>(string fieldName, T fieldValue)
@@ -103,9 +110,9 @@ namespace Orient.Client
 
         public OSqlUpdate Remove(string fieldName)
         {
-            if (!_hasAdd)
+            if (!_hasRemove)
             {
-                _hasAdd = true;
+                _hasRemove = true;
                 _sqlQuery.Join("", Q.Remove);
             }
             else
@@ -114,6 +121,16 @@ namespace Orient.Client
             }
 
             _sqlQuery.Join("", fieldName);
+
+            return this;
+        }
+
+        public OSqlUpdate Remove(params string[] fieldNames)
+        {
+            foreach (string fieldName in fieldNames)
+            {
+                Remove(fieldName);
+            }
 
             return this;
         }
@@ -220,6 +237,25 @@ namespace Orient.Client
             _sqlQuery.Join("", Q.Limit, maxRecords.ToString());
 
             return this;
+        }
+
+        public int Run()
+        {
+            CommandPayload payload = new CommandPayload();
+            payload.Type = CommandPayloadType.Sql;
+            payload.Text = _sqlQuery.ToString();
+            payload.NonTextLimit = -1;
+            payload.FetchPlan = "";
+            payload.SerializedParams = new byte[] { 0 };
+
+            Command operation = new Command();
+            operation.OperationMode = OperationMode.Synchronous;
+            operation.ClassType = CommandClassType.NonIdempotent;
+            operation.CommandPayload = payload;
+
+            OCommandResult result = new OCommandResult(_connection.ExecuteOperation<Command>(operation));
+
+            return int.Parse(result.ToDocument().GetField<string>("Content"));
         }
 
         public override string ToString()
