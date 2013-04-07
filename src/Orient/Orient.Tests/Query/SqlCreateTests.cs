@@ -141,7 +141,7 @@ namespace Orient.Tests.Query
                         .From(vertex2.ORID)
                         .To(vertex1.ORID)
                         .Set("foo", "foo string value2")
-                        .Also("bar", 54321)
+                        .Set("bar", 54321)
                         .Run();
 
                     Assert.AreEqual(edge2.HasField("in"), true);
@@ -248,7 +248,7 @@ namespace Orient.Tests.Query
                     ORecord loadedVertex2 = database
                         .Create.Vertex("TestVertexClass")
                         .Set("foo", "foo string value2")
-                        .Also("bar", 54321)
+                        .Set("bar", 54321)
                         .Run();
 
                     Assert.AreEqual(loadedVertex2.HasField("foo"), true);

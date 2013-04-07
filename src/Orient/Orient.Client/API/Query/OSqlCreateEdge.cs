@@ -86,24 +86,6 @@ namespace Orient.Client
 
         #endregion
 
-        #region Also
-
-        public OSqlCreateEdge Also<T>(string fieldName, T fieldValue)
-        {
-            _sqlQuery.SetField<T>(fieldName, fieldValue);
-
-            return this;
-        }
-
-        public OSqlCreateEdge Also<T>(T obj)
-        {
-            _sqlQuery.SetFields(obj);
-
-            return this;
-        }
-
-        #endregion
-
         public ORecord Run()
         {
             CommandPayload payload = new CommandPayload();

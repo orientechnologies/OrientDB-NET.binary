@@ -55,7 +55,7 @@ namespace Orient.Tests.Query
                 .From(new ORID(8, 0))
                 .To(new ORID(8, 1))
                 .Set("Foo", "foo string value")
-                .Also("Bar", 12345)
+                .Set("Bar", 12345)
                 .ToString();
 
             TestEdgeClass testObj = new TestEdgeClass();
@@ -88,7 +88,7 @@ namespace Orient.Tests.Query
                 .Vertex("TestVertexClass")
                 .Cluster("OGraphVertex")
                 .Set("Foo", "foo string value")
-                .Also("Bar", 12345)
+                .Set("Bar", 12345)
                 .ToString();
 
             TestVertexClass testObj = new TestVertexClass();
