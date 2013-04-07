@@ -236,6 +236,93 @@ namespace Orient.Tests.Query
             }
         }
 
+        [TestMethod]
+        public void ShouldUpdateRemoveField()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    database
+                         .Create.Class<TestVertexClass>()
+                         .Extends<OGraphVertex>()
+                         .Run();
 
+                    TestVertexClass obj1 = new TestVertexClass();
+                    obj1.Foo = "foo string value 1";
+                    obj1.Bar = 12345;
+
+                    ORecord createdRecord1 = database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj1)
+                        .Run();
+
+                    Assert.AreEqual(createdRecord1.GetField<string>("Foo"), obj1.Foo);
+                    Assert.AreEqual(createdRecord1.GetField<int>("Bar"), obj1.Bar);
+
+                    int recordsUpdated = database
+                        .Update.Record(createdRecord1.ORID)
+                        .Remove("Bar")
+                        .Run();
+
+                    Assert.AreEqual(recordsUpdated, 1);
+
+                    List<ORecord> updatedRecords = database
+                        .Select()
+                        .From<TestVertexClass>()
+                        .ToList();
+
+                    Assert.AreEqual(updatedRecords.Count, 1);
+                    Assert.AreEqual(updatedRecords[0].GetField<string>("Foo"), obj1.Foo);
+                    Assert.AreEqual(updatedRecords[0].HasField("Bar"), false);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldUpdateRemoveCollectionItem()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    database
+                        .Create.Class<TestVertexClass>()
+                        .Extends<OGraphVertex>()
+                        .Run();
+
+                    ODocument document = new ODocument();
+                    document.SetField<List<string>>("FooCollection", new List<string> { "foo 1", "foo 2" });
+
+                    ORecord createdRecord1 = database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(document)
+                        .Run();
+
+                    List<string> fooCollection = createdRecord1.GetField<List<string>>("FooCollection");
+
+                    Assert.AreEqual(fooCollection.Count, 2);
+
+                    int recordsUpdated = database
+                        .Update.Record(createdRecord1.ORID)
+                        .Remove("FooCollection", "foo 1")
+                        .Run();
+
+                    Assert.AreEqual(recordsUpdated, 1);
+
+                    List<ORecord> updatedRecords = database
+                        .Select()
+                        .From<TestVertexClass>()
+                        .ToList();
+
+                    Assert.AreEqual(updatedRecords.Count, 1);
+
+                    fooCollection = updatedRecords[0].GetField<List<string>>("FooCollection");
+
+                    Assert.AreEqual(fooCollection.Count, 1);
+                    Assert.AreEqual(fooCollection[0], "foo 2");
+                }
+            }
+        }
     }
 }

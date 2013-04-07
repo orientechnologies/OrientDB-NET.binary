@@ -125,12 +125,19 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlUpdate Remove(params string[] fieldNames)
+        public OSqlUpdate Remove<T>(string fieldName, T collectionValue)
         {
-            foreach (string fieldName in fieldNames)
+            if (!_hasRemove)
             {
-                Remove(fieldName);
+                _hasRemove = true;
+                _sqlQuery.Join("", Q.Remove);
             }
+            else
+            {
+                _sqlQuery.Join(Q.Comma);
+            }
+
+            _sqlQuery.Join("", fieldName, Q.Equals, SqlQuery.ToString(collectionValue));
 
             return this;
         }

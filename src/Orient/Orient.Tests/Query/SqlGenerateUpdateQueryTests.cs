@@ -96,7 +96,8 @@ namespace Orient.Tests.Query
 
             string generatedTypedQuery = new OSqlUpdate()
                 .Class<TestVertexClass>()
-                .Remove("foo", "bar")
+                .Remove("foo")
+                .Remove("bar")
                 .ToString();
 
             string query =
