@@ -10,6 +10,7 @@ namespace Orient.Client
         private Connection _connection;
 
         public OSqlCreate Create { get { return new OSqlCreate(_connection); } }
+        public OSqlUpdate Update { get { return new OSqlUpdate(_connection); } }
 
         public ODatabase(string alias)
         {
