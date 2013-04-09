@@ -21,6 +21,8 @@ namespace Orient.Client.Protocol
         internal static string Greater = ">";
         internal static string GreaterEqual = ">=";
         internal static string In = "IN";
+        internal static string Insert = "INSERT";
+        internal static string Into = "INTO";
         internal static string Is = "IS";
         internal static string Lesser = "<";
         internal static string LesserEqual = "<=";
@@ -35,6 +37,7 @@ namespace Orient.Client.Protocol
         internal static string Set = "SET";
         internal static string To = "TO";
         internal static string Update = "UPDATE";
+        internal static string Values = "VALUES";
         internal static string Vertex = "VERTEX";
         internal static string Where = "WHERE";
     }
