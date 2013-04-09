@@ -2,11 +2,21 @@
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
-// syntax: UPDATE <class>|cluster:<cluster>> SET|INCREMENT [= <field-value>](<field-name>)[<field-name> = <field-value>](,)* [<conditions>] (WHERE) [<max-records>](LIMIT)
+// syntax: 
+// UPDATE <class>|cluster:<cluster>> 
+// SET|INCREMENT [= <field-value>](<field-name>)[<field-name> = <field-value>](,)* 
+// [<conditions>] (WHERE) 
+// [<max-records>](LIMIT)
+
 // collections: 
-// UPDATE <class>|cluster:<cluster>> [[<field-name> = <field-value>](ADD|REMOVE])[<field-name> = <field-value>](,)* [<conditions>](WHERE)
+// UPDATE <class>|cluster:<cluster>> 
+// [[<field-name> = <field-value>](ADD|REMOVE])[<field-name> = <field-value>](,)* 
+// [<conditions>](WHERE)
+
 // maps:
-// UPDATE <class>|cluster:<cluster>> [[<field-name> = <map-key> [,<map-value>]](PUT|REMOVE])[<field-name> = <map-key> [,<map-value>]](,)* [<conditions>](WHERE)
+// UPDATE <class>|cluster:<cluster>> 
+// [[<field-name> = <map-key> [,<map-value>]](PUT|REMOVE])[<field-name> = <map-key> [,<map-value>]](,)* 
+// [<conditions>](WHERE)
 
 namespace Orient.Client
 {
