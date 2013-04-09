@@ -12,23 +12,23 @@ namespace Orient.Tests.Query
         {
             string generatedUntypedQuery = new OSqlInsert()
                 .Into("TestVertexClass")
-                .Set("foo", "new string value")
-                .Set("bar", 54321)
+                .Set("Foo", "new string value")
+                .Set("Bar", 54321)
                 .ToString();
 
-            ODocument document = new ODocument();
-            document.SetField("foo", "new string value");
-            document.SetField("bar", 54321);
+            TestVertexClass obj = new TestVertexClass();
+            obj.Foo = "new string value";
+            obj.Bar = 54321;
 
             string generatedTypedQuery = new OSqlInsert()
                 .Into<TestVertexClass>()
-                .Set(document)
+                .Set(obj)
                 .ToString();
 
             string query =
                 "INSERT INTO TestVertexClass " +
-                "SET foo = 'new string value', " +
-                "bar = 54321";
+                "SET Foo = 'new string value', " +
+                "Bar = 54321";
 
             Assert.AreEqual(generatedUntypedQuery, query);
             Assert.AreEqual(generatedTypedQuery, query);
@@ -40,25 +40,25 @@ namespace Orient.Tests.Query
             string generatedUntypedQuery = new OSqlInsert()
                 .Into("TestVertexClass")
                 .Cluster("TestCluster")
-                .Set("foo", "new string value")
-                .Set("bar", 54321)
+                .Set("Foo", "new string value")
+                .Set("Bar", 54321)
                 .ToString();
 
-            ODocument document = new ODocument();
-            document.SetField("foo", "new string value");
-            document.SetField("bar", 54321);
+            TestVertexClass obj = new TestVertexClass();
+            obj.Foo = "new string value";
+            obj.Bar = 54321;
 
             string generatedTypedQuery = new OSqlInsert()
                 .Into<TestVertexClass>()
                 .Cluster("TestCluster")
-                .Set(document)
+                .Set(obj)
                 .ToString();
 
             string query =
                 "INSERT INTO TestVertexClass " +
                 "CLUSTER TestCluster " +
-                "SET foo = 'new string value', " +
-                "bar = 54321";
+                "SET Foo = 'new string value', " +
+                "Bar = 54321";
 
             Assert.AreEqual(generatedUntypedQuery, query);
             Assert.AreEqual(generatedTypedQuery, query);
