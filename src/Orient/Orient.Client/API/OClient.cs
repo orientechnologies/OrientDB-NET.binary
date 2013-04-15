@@ -68,15 +68,18 @@ namespace Orient.Client
                 {
                     DatabasePool pool = _databasePools.Find(db => db.Alias == alias);
 
-                    // deque free database connection if the pool has one
-                    if (pool.CurrentSize > 0)
+                    if (pool != null)
                     {
-                        connection = pool.DequeueConnection();
-                    }
-                    // if the pool is empty - create new dedicated database connection
-                    else if (pool.CurrentSize == 0)
-                    {
-                        connection = new Connection(pool.Hostname, pool.Port, pool.DatabaseName, pool.DatabaseType, pool.UserName, pool.UserPassword, alias, false);
+                        // deque free database connection if the pool has one
+                        if (pool.CurrentSize > 0)
+                        {
+                            connection = pool.DequeueConnection();
+                        }
+                        // if the pool is empty - create new dedicated database connection
+                        else if (pool.CurrentSize == 0)
+                        {
+                            connection = new Connection(pool.Hostname, pool.Port, pool.DatabaseName, pool.DatabaseType, pool.UserName, pool.UserPassword, alias, true);                     
+                        }
                     }
                 }
 
@@ -88,10 +91,15 @@ namespace Orient.Client
         {
             lock (_syncRoot)
             {
-                if (_databasePools.Exists(db => db.Alias == connection.Alias) && connection.IsReusable)
-                {
-                    DatabasePool pool = _databasePools.Find(q => q.Alias == connection.Alias);
+                DatabasePool pool = _databasePools.Find(q => q.Alias == connection.Alias);
 
+                // enqueue the connection back if it's active, reusable and the pool size is not full
+                // otherwise dispose it
+                if ((pool != null) && 
+                    (pool.CurrentSize < pool.PoolSize) &&
+                    connection.IsActive &&
+                    connection.IsReusable)
+                {
                     pool.EnqueueConnection(connection);
                 }
                 else
