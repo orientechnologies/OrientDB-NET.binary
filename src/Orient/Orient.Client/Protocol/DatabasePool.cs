@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Orient.Client.Protocol
 {
@@ -14,7 +15,13 @@ namespace Orient.Client.Protocol
         internal string UserPassword { get; set; }
         internal int PoolSize { get; private set; }
         internal string Alias { get; set; }
-        internal int CurrentSize { get { return _connections.Count; } }
+        internal int CurrentSize 
+        { 
+            get 
+            {
+                return _connections.Where(con => con.IsActive == true).Count(); 
+            } 
+        }
 
         internal DatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias)
         {
