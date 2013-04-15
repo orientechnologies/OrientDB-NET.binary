@@ -7,6 +7,7 @@ namespace Orient.Client
 {
     public class ODatabase : IDisposable
     {
+        private bool _containsConnection;
         private Connection _connection;
 
         public OSqlCreate Create { get { return new OSqlCreate(_connection); } }
@@ -16,6 +17,7 @@ namespace Orient.Client
         public ODatabase(string alias)
         {
             _connection = OClient.ReleaseConnection(alias);
+            _containsConnection = true;
         }
 
         public List<OCluster> GetClusters()
@@ -86,13 +88,18 @@ namespace Orient.Client
 
         public void Close()
         {
-            if (_connection.IsReusable)
+            if (_containsConnection)
             {
-                OClient.ReturnConnection(_connection);
-            }
-            else
-            {
-                _connection.Dispose();
+                if (_connection.IsReusable)
+                {
+                    OClient.ReturnConnection(_connection);
+                }
+                else
+                {
+                    _connection.Dispose();
+                }
+
+                _containsConnection = false;
             }
         }
 

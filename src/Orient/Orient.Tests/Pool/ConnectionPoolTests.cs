@@ -8,7 +8,7 @@ namespace Orient.Tests.Pool
     public class ConnectionPoolTests
     {
         [TestMethod]
-        public void ShouldCreateConnectionPool()
+        public void ShouldRetrieveAndReturnDatabaseFromPool()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
@@ -27,6 +27,39 @@ namespace Orient.Tests.Pool
 
                 Assert.AreEqual(
                     OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias), 
+                    TestConnection.GlobalTestDatabasePoolSize
+                );
+            }
+        }
+
+        [TestMethod]
+        public void ShouldReturnDatabaseToPoolAfterCloseAndDisposeCall()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                Assert.AreEqual(
+                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias),
+                    TestConnection.GlobalTestDatabasePoolSize
+                );
+
+                ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias);
+
+                Assert.AreEqual(
+                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias),
+                    TestConnection.GlobalTestDatabasePoolSize - 1
+                );
+
+                database.Close();
+
+                Assert.AreEqual(
+                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias),
+                    TestConnection.GlobalTestDatabasePoolSize
+                );
+
+                database.Dispose();
+
+                Assert.AreEqual(
+                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias),
                     TestConnection.GlobalTestDatabasePoolSize
                 );
             }
