@@ -10,7 +10,7 @@ namespace Orient.Client
         internal static string ClientID { get { return "null"; } }
 
         public static string DriverName { get { return "OrientDB-NET.binary"; } }
-        public static string DriverVersion { get { return "0.1.0"; } }
+        public static string DriverVersion { get { return "0.1.1"; } }
         public static short ProtocolVersion { get { return 13; } }
         public static int BufferLenght { get; set; }
 
