@@ -26,6 +26,13 @@ namespace Orient.Client.Protocol
         {
             get
             {
+                // If the socket has been closed by your own actions (disposing the socket, 
+                // calling methods to disconnect), Socket.Connected will return false. If 
+                // the socket has been disconnected by other means, the property will return 
+                // true until the next attempt to send or receive information.
+                // more info: http://stackoverflow.com/questions/2661764/how-to-check-if-a-socket-is-connected-disconnected-in-c
+                // why not to use socket.Poll solution: it fails when the socket is being initialized
+                // and introduces additional delay for connection check
                 if ((_socket != null) && _socket.Connected)
                 {
                     return true;
