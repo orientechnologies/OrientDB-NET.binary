@@ -1,12 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Orient.Console
 {
-    class TestDatabaseContext
+    public class TestDatabaseContext : IDisposable
     {
+        public TestDatabaseContext()
+        {
+            TestConnection.CreateTestDatabase();
+            TestConnection.CreateTestPool();
+        }
+
+        public void Dispose()
+        {
+            TestConnection.DropTestPool();
+            TestConnection.DropTestDatabase();
+        }
     }
 }

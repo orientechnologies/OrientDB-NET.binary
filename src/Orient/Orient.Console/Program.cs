@@ -9,31 +9,83 @@ namespace Orient.Console
 {
     class Program
     {
-        static string _alias = "tinkerpop";
-
         static void Main(string[] args)
         {
-            OClient.CreateDatabasePool(
-                "127.0.0.1",
-                //"vps-04-ubuntu-server.developmententity.sk",
-                2424,
-                //"tinkerpop",
-                "test001",
-                ODatabaseType.Graph,
-                "admin",
-                "admin",
-                10,
-                _alias
-            );
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                bool exit = false;
 
-            //TestConnection();
-            TestQuery();
-            //TestLoad();
 
-            System.Console.ReadLine();
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    database
+                        .Create.Class("TestClass")
+                        .Extends<OGraphVertex>()
+                        .Run();
+
+                    database
+                        .Create.Vertex("TestClass")
+                        .Set("foo", "foo string value 1")
+                        .Set("bar", 123)
+                        .Run();
+
+                    database
+                        .Create.Vertex("TestClass")
+                        .Set("foo", "foo string value 2")
+                        .Set("bar", 1233)
+                        .Run();
+                }
+
+                while (!exit)
+                {
+                    System.Console.WriteLine(
+                        "Current pool size: {0} @ {1} : {2}", 
+                        OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias), 
+                        DateTime.Now.ToString(),
+                        Query().Count
+                    );
+
+                    string line = System.Console.ReadLine();
+
+                    if (line.Equals("exit"))
+                    {
+                        exit = true;
+                    }
+                }
+            }
         }
 
-        static void TestConnection()
+        static List<ORecord> Query()
+        {
+            List<ORecord> records;
+
+            try
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    records = database
+                        .Select()
+                        .From("TestClass")
+                        .ToList();
+                    using (ODatabase database1 = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                    {
+                        List<ORecord> records2 = database1
+                            .Select()
+                            .From("TestClass")
+                            .ToList();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                System.Console.WriteLine(e.Message);
+                records = new List<ORecord>();
+            }
+
+            return records;
+        }
+
+        /*static void TestConnection()
         {
             ODatabase database = new ODatabase(_alias);
 
@@ -67,11 +119,11 @@ namespace Orient.Console
                 //System.Console.WriteLine(v.Title);
             }
 
-            /*foreach (ORecord record in database.Query("select from OGraphEdge limit 20", "*:2"))
-            {
-                Ed e = record.To<Ed>();
-                System.Console.WriteLine(e.Label);
-            }*/
+            //foreach (ORecord record in database.Query("select from OGraphEdge limit 20", "*:2"))
+            //{
+            //    Ed e = record.To<Ed>();
+            //    System.Console.WriteLine(e.Label);
+            //}
 
             //ORecord rec = database.Command("create vertex OGraphVertex set title = \"whoa\"").ToSingle();
             //object foo = database.Command("delete vertex " + rec.ORID.ToString());
@@ -120,7 +172,7 @@ namespace Orient.Console
             while (running);
 
             return tps;
-        }
+        }*/
     }
 
     class Vertex
