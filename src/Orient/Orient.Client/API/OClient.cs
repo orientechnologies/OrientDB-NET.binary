@@ -46,6 +46,18 @@ namespace Orient.Client
             }
         }
 
+        public static int DatabasePoolCurrentSize(string alias)
+        {
+            if (_databasePools.Exists(db => db.Alias == alias))
+            {
+                DatabasePool pool = _databasePools.Find(db => db.Alias == alias);
+
+                return pool.CurrentSize;
+            }
+
+            return -1;
+        }
+
         internal static Connection ReleaseConnection(string alias)
         {
             lock (_syncRoot)
