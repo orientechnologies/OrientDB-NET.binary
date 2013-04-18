@@ -48,9 +48,11 @@ namespace Orient.Client
             return Document.GetField<T>(fieldPath);
         }
 
-        public void SetField<T>(string fieldPath, T value)
+        public ORecord SetField<T>(string fieldPath, T value)
         {
             Document.SetField<T>(fieldPath, value);
+
+            return this;
         }
 
         public ODocument ToDocument()
