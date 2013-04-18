@@ -189,6 +189,68 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
+        public void ShouldUpdateRecord()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    database
+                        .Create.Class<TestVertexClass>()
+                        .Extends<OGraphVertex>()
+                        .Run();
+
+                    TestVertexClass obj1 = new TestVertexClass();
+                    obj1.Foo = "foo string value 1";
+                    obj1.Bar = 12345;
+
+                    ORecord createdRecord1 = database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj1)
+                        .Run();
+
+                    Assert.AreEqual(createdRecord1.GetField<string>("Foo"), obj1.Foo);
+                    Assert.AreEqual(createdRecord1.GetField<int>("Bar"), obj1.Bar);
+
+                    TestVertexClass obj2 = new TestVertexClass();
+                    obj2.Foo = "foo string value 2";
+                    obj2.Bar = 123456;
+
+                    ORecord createdRecord2 = database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj2)
+                        .Run();
+
+                    Assert.AreEqual(createdRecord2.GetField<string>("Foo"), obj2.Foo);
+                    Assert.AreEqual(createdRecord2.GetField<int>("Bar"), obj2.Bar);
+
+                    createdRecord1
+                        .SetField("Foo", "new string value")
+                        .SetField("Bar", 54321)
+                        .SetField("Baz", "baz string value");
+
+                    int recordsUpdated = database
+                        .Update.Record(createdRecord1)
+                        .Run();
+
+                    Assert.AreEqual(recordsUpdated, 1);
+
+                    List<ORecord> updatedRecords = database
+                        .Select()
+                        .From<TestVertexClass>()
+                        .ToList();
+
+                    Assert.AreEqual(updatedRecords.Count, 2);
+                    Assert.AreEqual(updatedRecords[0].GetField<string>("Foo"), "new string value");
+                    Assert.AreEqual(updatedRecords[0].GetField<int>("Bar"), 54321);
+                    Assert.AreEqual(updatedRecords[0].GetField<string>("Baz"), "baz string value");
+                    Assert.AreEqual(updatedRecords[1].GetField<string>("Foo"), obj2.Foo);
+                    Assert.AreEqual(updatedRecords[1].GetField<int>("Bar"), obj2.Bar);
+                }
+            }
+        }
+
+        [TestMethod]
         public void ShouldUpdateAdd()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
