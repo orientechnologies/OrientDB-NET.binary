@@ -53,6 +53,11 @@ namespace Orient.Client
             Document.SetField<T>(fieldPath, value);
         }
 
+        public ODocument ToDocument()
+        {
+            return Document;
+        }
+
         public override string ToString()
         {
             string record = string.Format("{0}, {1}, v{2}, {3} ({4})", ORID.ToString(), Type, Version, ClassName, ClassId);
