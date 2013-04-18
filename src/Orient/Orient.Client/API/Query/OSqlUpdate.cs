@@ -77,6 +77,14 @@ namespace Orient.Client
             return this;
         }
 
+        public OSqlUpdate Record(ORecord record)
+        {
+            _sqlQuery.Join(Q.Update, record.ORID.ToString());
+            _sqlQuery.SetFields(record.ToDocument());
+
+            return this;
+        }
+
         #region Set
 
         public OSqlUpdate Set<T>(string fieldName, T fieldValue)
