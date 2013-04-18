@@ -159,7 +159,7 @@ namespace Orient.Client.Protocol
             }
             catch (SocketException ex)
             {
-                throw new Exception(ex.Message, ex.InnerException);
+                throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
 
             _networkStream = _socket.GetStream();
@@ -189,7 +189,7 @@ namespace Orient.Client.Protocol
             }
             catch (SocketException ex)
             {
-                throw new Exception(ex.Message, ex.InnerException);
+                throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
 
             _networkStream = _socket.GetStream();
@@ -210,7 +210,14 @@ namespace Orient.Client.Protocol
         {
             if ((_networkStream != null) && _networkStream.CanWrite)
             {
-                _networkStream.Write(rawData, 0, rawData.Length);
+                try
+                {
+                    _networkStream.Write(rawData, 0, rawData.Length);
+                }
+                catch (Exception ex)
+                {
+                    throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                }
             }
         }
 
@@ -220,13 +227,20 @@ namespace Orient.Client.Protocol
 
             if ((_networkStream != null) && _networkStream.CanRead)
             {
-                do
+                try
                 {
-                    int bytesRead = _networkStream.Read(_readBuffer, 0, _readBuffer.Length);
+                    do
+                    {
+                        int bytesRead = _networkStream.Read(_readBuffer, 0, _readBuffer.Length);
 
-                    memoryStream.Write(_readBuffer, 0, bytesRead);
+                        memoryStream.Write(_readBuffer, 0, bytesRead);
+                    }
+                    while (_networkStream.DataAvailable);
                 }
-                while (_networkStream.DataAvailable);
+                catch (Exception ex)
+                {
+                    throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                }
             }
 
             return memoryStream.ToArray();
@@ -262,7 +276,7 @@ namespace Orient.Client.Protocol
                 offset += 1;
             }
 
-            throw new Exception(exceptionString);
+            throw new OException(OExceptionType.Operation, exceptionString);
         }
 
         #endregion

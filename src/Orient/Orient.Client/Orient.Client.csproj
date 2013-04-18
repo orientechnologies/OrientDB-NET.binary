@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\Exceptions\OException.cs" />
+    <Compile Include="API\Exceptions\OExceptionType.cs" />
     <Compile Include="API\OGraphEdge.cs" />
     <Compile Include="API\OGraphVertex.cs" />
     <Compile Include="API\Query\OCommandResult.cs" />
