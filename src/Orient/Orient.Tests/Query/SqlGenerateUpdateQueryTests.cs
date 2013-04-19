@@ -35,6 +35,46 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
+        public void ShouldGenerateUpdateRecordSetQuery()
+        {
+            ODocument vertex = new ODocument()
+                .SetField("@ORID", new ORID(8, 0));
+
+            string generatedQuery = new OSqlUpdate()
+                .Record(vertex)
+                .Set("foo", "new string value")
+                .Set("bar", 54321)
+                .ToString();
+
+            string query =
+                "UPDATE #8:0 " +
+                "SET foo = 'new string value', " +
+                "bar = 54321";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
+        public void ShouldGenerateUpdateDocumentQuery()
+        {
+            ODocument vertex = new ODocument()
+                .SetField("@ORID", new ORID(8, 0))
+                .SetField("foo", "new string value")
+                .SetField("bar", 54321);
+
+            string generatedQuery = new OSqlUpdate()
+                .Document(vertex)
+                .ToString();
+
+            string query =
+                "UPDATE #8:0 " +
+                "SET foo = 'new string value', " +
+                "bar = 54321";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
         public void ShouldGenerateUpdateClusterSetQuery()
         {
             string generatedUntypedQuery = new OSqlUpdate()

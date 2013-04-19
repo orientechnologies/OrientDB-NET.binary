@@ -70,6 +70,8 @@ namespace Orient.Client
 
         #endregion
 
+        #region Record
+
         public OSqlUpdate Record(ORID orid)
         {
             _sqlQuery.Join(Q.Update, orid.ToString());
@@ -77,7 +79,7 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlUpdate Document(ODocument document)
+        public OSqlUpdate Record(ODocument document)
         {
             if (!document.HasField("@ORID"))
             {
@@ -85,6 +87,16 @@ namespace Orient.Client
             }
 
             _sqlQuery.Join(Q.Update, document.GetField<ORID>("@ORID").ToString());
+
+            return this;
+        }
+
+        #endregion
+
+        public OSqlUpdate Document(ODocument document)
+        {
+            Record(document);
+
             _sqlQuery.SetFields(document);
 
             return this;
