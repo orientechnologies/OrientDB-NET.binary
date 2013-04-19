@@ -14,7 +14,7 @@ namespace Orient.Client.Protocol.Serializers
             return className + "@" + SerializeDocument(document);
         }
 
-        internal static ORecord ToRecord(ORID orid, int version, ORecordType type, short classId, byte[] rawRecord)
+        /*internal static ORecord ToRecord(ORID orid, int version, ORecordType type, short classId, byte[] rawRecord)
         {
             ORecord record = new ORecord(orid, version, type, classId);
 
@@ -39,9 +39,9 @@ namespace Orient.Client.Protocol.Serializers
             while (index < recordString.Length);
 
             return record;
-        }
+        }*/
 
-        internal static ORecord ToRecord(string recordString)
+        /*internal static ORecord ToRecord(string recordString)
         {
             ORecord record = new ORecord();
 
@@ -64,7 +64,67 @@ namespace Orient.Client.Protocol.Serializers
             while (index < recordString.Length);
 
             return record;
+        }*/
+
+        #region Deserialize
+
+        internal static ODocument Deserialize(ORID orid, int version, ORecordType type, short classId, byte[] rawRecord)
+        {
+            ODocument document = new ODocument()
+                .SetField("@ORID", orid)
+                .SetField("@Version", version)
+                .SetField("@Type", type)
+                .SetField("@ClassId", classId);
+
+            string recordString = BinarySerializer.ToString(rawRecord).Trim();
+
+            int atIndex = recordString.IndexOf('@');
+            int colonIndex = recordString.IndexOf(':');
+            int index = 0;
+
+            // parse class name
+            if ((atIndex != -1) && (atIndex < colonIndex))
+            {
+                document.SetField("@ClassName", recordString.Substring(0, atIndex));
+                index = atIndex + 1;
+            }
+
+            // start document parsing with first field name
+            do
+            {
+                index = ParseFieldName(index, recordString, document);
+            }
+            while (index < recordString.Length);
+
+            return document;
         }
+
+        internal static ODocument Deserialize(string recordString)
+        {
+            ODocument document = new ODocument();
+
+            int atIndex = recordString.IndexOf('@');
+            int colonIndex = recordString.IndexOf(':');
+            int index = 0;
+
+            // parse class name
+            if ((atIndex != -1) && (atIndex < colonIndex))
+            {
+                document.SetField("@ClassName", recordString.Substring(0, atIndex));
+                index = atIndex + 1;
+            }
+
+            // start document parsing with first field name
+            do
+            {
+                index = ParseFieldName(index, recordString, document);
+            }
+            while (index < recordString.Length);
+
+            return document;
+        }
+
+        #endregion
 
         #region Serialization private methods
 
