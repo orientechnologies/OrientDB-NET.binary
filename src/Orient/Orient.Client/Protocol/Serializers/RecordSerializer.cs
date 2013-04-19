@@ -9,9 +9,14 @@ namespace Orient.Client.Protocol.Serializers
 {
     internal static class RecordSerializer
     {
-        internal static string ToString(string className, ODocument document)
+        internal static string Serialize(ODocument document)
         {
-            return className + "@" + SerializeDocument(document);
+            if (!document.HasField("@ClassName"))
+            {
+                throw new OException(OExceptionType.Serialization, "Document doesn't contain @ClassName field which is required for serialization.");
+            }
+
+            return document.GetField<string>("@ClassName") + "@" + SerializeDocument(document);
         }
 
         /*internal static ORecord ToRecord(ORID orid, int version, ORecordType type, short classId, byte[] rawRecord)
@@ -138,13 +143,21 @@ namespace Orient.Client.Protocol.Serializers
 
                 foreach (KeyValuePair<string, object> field in document)
                 {
-                    serializedString += field.Key + ":";
-                    serializedString += SerializeValue(field.Value);
+                    // serialize only fields which doesn't start with @ character
+                    if ((field.Key.Length > 0) && (field.Key[0] != '@'))
+                    {
+                        serializedString += field.Key + ":";
+                        serializedString += SerializeValue(field.Value);
+                    }
+
                     iteration++;
 
                     if (iteration < document.Keys.Count)
                     {
-                        serializedString += ",";
+                        if ((field.Key.Length > 0) && (field.Key[0] != '@'))
+                        {
+                            serializedString += ",";
+                        }
                     }
                 }
             }
