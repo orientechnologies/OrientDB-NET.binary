@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client
 {
@@ -209,6 +210,16 @@ namespace Orient.Client
             return genericObject;
         }
 
+        public string Serialize()
+        {
+            return RecordSerializer.Serialize(this);
+        }
+
+        public static ODocument Deserialize(string recordString)
+        {
+            return RecordSerializer.Deserialize(recordString);
+        }
+
         public static ODocument ToDocument<T>(T genericObject)
         {
             ODocument document = new ODocument();
@@ -332,6 +343,7 @@ namespace Orient.Client
             return genericObject;
         }
 
+        // maps ODocument fields to specified object
         private void Map(ref object obj)
         {
             if (obj is Dictionary<string, object>)
