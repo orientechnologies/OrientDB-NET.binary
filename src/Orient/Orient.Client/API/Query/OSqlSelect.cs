@@ -95,6 +95,16 @@ namespace Orient.Client
             return From(orid.ToString());
         }
 
+        public OSqlSelect From(ODocument document)
+        {
+            if (!document.HasField("@ORID"))
+            {
+                throw new OException(OExceptionType.Query, "Document doesn't contain @ORID field which identifies FROM target.");
+            }
+
+            return From(document.GetField<ORID>("@ORID"));
+        }
+
         public OSqlSelect From<T>()
         {
             return From(typeof(T).Name);

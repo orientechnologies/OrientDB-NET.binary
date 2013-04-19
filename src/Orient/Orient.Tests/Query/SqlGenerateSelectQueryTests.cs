@@ -102,5 +102,27 @@ namespace Orient.Tests.Query
             Assert.AreEqual(generatedUntypedQuery, query);
             Assert.AreEqual(generatedTypedQuery, query);
         }
+
+        [TestMethod]
+        public void ShouldGenerateSelectFromDocumentQuery()
+        {
+            ODocument document = new ODocument()
+                .SetField("@ORID", new ORID(8, 0));
+
+            string generatedQuery = new OSqlSelect()
+                .Select("foo", "bar")
+                .From(document)
+                .Where("foo").Equals("english")
+                .And("bar").Equals(123)
+                .ToString();
+
+            string query =
+                "SELECT foo, bar " +
+                "FROM #8:0 " +
+                "WHERE foo = 'english' " +
+                "AND bar = 123";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
     }
 }
