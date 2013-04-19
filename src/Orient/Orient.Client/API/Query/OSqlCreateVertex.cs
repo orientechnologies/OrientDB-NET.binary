@@ -36,6 +36,13 @@ namespace Orient.Client
             return Vertex(typeof(T).Name);
         }
 
+        public OSqlCreateVertex Vertex(ODocument document)
+        {
+            Vertex(document.GetField<string>("@ClassName"));
+
+            return Set(document);
+        }
+
         #endregion
 
         #region Cluster

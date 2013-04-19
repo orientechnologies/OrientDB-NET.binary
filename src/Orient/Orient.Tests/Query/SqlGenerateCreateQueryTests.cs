@@ -141,5 +141,25 @@ namespace Orient.Tests.Query
             Assert.AreEqual(generatedUntypedQuery, query);
             Assert.AreEqual(generatedTypedQuery, query);
         }
+
+        [TestMethod]
+        public void ShouldGenerateCreateVertexDocumentQuery()
+        {
+            ODocument document = new ODocument()
+                .SetField("@ClassName", "TestVertexClass")
+                .SetField("Foo", "foo string value")
+                .SetField("Bar", 12345);
+
+            string generatedQuery = new OSqlCreateVertex()
+                .Vertex(document)
+                .ToString();
+
+            string query =
+                "CREATE VERTEX TestVertexClass " +
+                "SET Foo = 'foo string value', " +
+                "Bar = 12345";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
     }
 }
