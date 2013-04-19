@@ -4,10 +4,10 @@ namespace Orient.Tests
 {
     public class TestEdgeClass
     {
-        [OProperty(MappedTo = "in", Serializable = false)]
+        [OProperty(Alias = "in", Serializable = false)]
         public ORID In { get; set; }
 
-        [OProperty(MappedTo = "out", Serializable = false)]
+        [OProperty(Alias = "out", Serializable = false)]
         public ORID Out { get; set; }
 
         public string Foo { get; set; }
