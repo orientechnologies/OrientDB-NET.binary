@@ -77,10 +77,15 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlUpdate Record(ORecord record)
+        public OSqlUpdate Document(ODocument document)
         {
-            _sqlQuery.Join(Q.Update, record.ORID.ToString());
-            _sqlQuery.SetFields(record.ToDocument());
+            if (!document.HasField("@ORID"))
+            {
+                throw new OException(OExceptionType.Query, "Document doesn't contain @ORID field which identifies record being updated.");
+            }
+
+            _sqlQuery.Join(Q.Update, document.GetField<ORID>("@ORID").ToString());
+            _sqlQuery.SetFields(document);
 
             return this;
         }
