@@ -180,7 +180,11 @@ namespace Orient.Client
             // TODO: go also through embedded fields
             foreach (KeyValuePair<string, object> field in document)
             {
-                SetField(field.Key, field.Value);
+                // set only fields which doesn't start with @ character
+                if ((field.Key.Length > 0) && (field.Key[0] != '@'))
+                {
+                    SetField(field.Key, field.Value);
+                }
             }
         }
 
