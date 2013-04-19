@@ -38,6 +38,11 @@ namespace Orient.Client
 
         public OSqlCreateVertex Vertex(ODocument document)
         {
+            if (!document.HasField("@ClassName"))
+            {
+                throw new OException(OExceptionType.Query, "Document doesn't contain @ClassName field which identifies vertex class.");
+            }
+
             Vertex(document.GetField<string>("@ClassName"));
 
             return Set(document);
