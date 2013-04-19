@@ -25,7 +25,7 @@ namespace Orient.Client
 
         public ORecord(string recordString)
         {
-            Deserialize(recordString);
+            //Deserialize(recordString);
         }
 
         public ORecord(ORID orid, int version, ORecordType type, short classId)
@@ -75,7 +75,7 @@ namespace Orient.Client
             return genericObject;
         }
 
-        public string Serialize()
+        /*public string Serialize()
         {
             return RecordSerializer.ToString(ClassName, Document);
         }
@@ -91,7 +91,7 @@ namespace Orient.Client
             Version = record.Version;
             ClassId = record.ClassId;
             ClassName = record.ClassName;
-        }
+        }*/
 
         private T ToObject<T>(T genericObject, string path) where T : class, new()
         {

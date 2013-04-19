@@ -13,33 +13,33 @@ namespace Orient.Client
             _document = document;
         }
 
-        public ODocument ToDocument()
+        public ODocument ToSingle()
         {
-            return _document;
-        }
-
-        public ORecord ToSingle()
-        {
-            ORecord record = null;
+            ODocument document = null;
 
             switch (_document.GetField<PayloadStatus>("PayloadStatus"))
             {
                 case PayloadStatus.SingleRecord:
-                    record = _document.GetField<ORecord>("Content");
+                    document = _document.GetField<ODocument>("Content");
                     break;
                 case PayloadStatus.RecordCollection:
-                    record = _document.GetField<List<ORecord>>("Content").FirstOrDefault();
+                    document = _document.GetField<List<ODocument>>("Content").FirstOrDefault();
                     break;
                 default:
                     break;
             }
 
-            return record;
+            return document;
         }
 
-        public List<ORecord> ToList()
+        public List<ODocument> ToList()
         {
-            return _document.GetField<List<ORecord>>("Content");
+            return _document.GetField<List<ODocument>>("Content");
+        }
+
+        internal ODocument ToDocument()
+        {
+            return _document;
         }
     }
 }

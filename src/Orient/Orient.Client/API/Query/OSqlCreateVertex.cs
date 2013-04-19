@@ -72,7 +72,7 @@ namespace Orient.Client
 
         #endregion
 
-        public ORecord Run()
+        public ODocument Run()
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;

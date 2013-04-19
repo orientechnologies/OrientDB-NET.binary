@@ -41,12 +41,12 @@ namespace Orient.Client
 
         #region Query
 
-        public List<ORecord> Query(string sql)
+        public List<ODocument> Query(string sql)
         {
             return Query(sql, "*:0");
         }
 
-        public List<ORecord> Query(string sql, string fetchPlan)
+        public List<ODocument> Query(string sql, string fetchPlan)
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;
@@ -62,7 +62,7 @@ namespace Orient.Client
 
             ODocument document = _connection.ExecuteOperation<Command>(operation);
 
-            return document.GetField<List<ORecord>>("Content");
+            return document.GetField<List<ODocument>>("Content");
         }
 
         #endregion

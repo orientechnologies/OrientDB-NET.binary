@@ -202,22 +202,22 @@ namespace Orient.Client
         public List<T> ToList<T>() where T : class, new()
         {
             List<T> result = new List<T>();
-            List<ORecord> records = ToList("*:0");
+            List<ODocument> documents = ToList("*:0");
 
-            foreach (ORecord record in records)
+            foreach (ODocument document in documents)
             {
-                result.Add(record.To<T>());
+                result.Add(document.To<T>());
             }
 
             return result;
         }
 
-        public List<ORecord> ToList()
+        public List<ODocument> ToList()
         {
             return ToList("*:0");
         }
 
-        public List<ORecord> ToList(string fetchPlan)
+        public List<ODocument> ToList(string fetchPlan)
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;

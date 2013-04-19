@@ -74,34 +74,35 @@ namespace Orient.Client.Protocol.Operations
         {
             // start from this position since standard fields (status, session ID) has been already parsed
             int offset = 5;
-            ODocument document = new ODocument();
+            ODocument responseDocument = new ODocument();
             
             if (response == null)
             {
-                return document;
+                return responseDocument;
             }
 
             // operation specific fields
             PayloadStatus payloadStatus = (PayloadStatus)BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray());
-            document.SetField("PayloadStatus", payloadStatus);
             offset += 1;
+
+            responseDocument.SetField("PayloadStatus", payloadStatus);
 
             if (OperationMode == OperationMode.Asynchronous)
             {
-                List<ORecord> records = new List<ORecord>();
+                List<ODocument> documents = new List<ODocument>();
 
                 while (payloadStatus != PayloadStatus.NoRemainingRecords)
                 {
-                    ORecord record = ParseRecord(ref offset, response.Data);
+                    ODocument document = ParseDocument(ref offset, response.Data);
 
                     switch (payloadStatus)
                     {
                         case PayloadStatus.ResultSet:
-                            records.Add(record);
+                            documents.Add(document);
                             break;
                         case PayloadStatus.PreFetched:
                             // TODO: client cache
-                            records.Add(record);
+                            documents.Add(document);
                             break;
                         default:
                             break;
@@ -111,7 +112,7 @@ namespace Orient.Client.Protocol.Operations
                     offset += 1;
                 }
 
-                document.SetField("Content", records);
+                responseDocument.SetField("Content", documents);
             }
             else
             {
@@ -123,42 +124,43 @@ namespace Orient.Client.Protocol.Operations
                         // nothing to do
                         break;
                     case PayloadStatus.SingleRecord: // 'r'
-                        ORecord record = ParseRecord(ref offset, response.Data);
-                        document.SetField("Content", record);
+                        ODocument document = ParseDocument(ref offset, response.Data);
+                        responseDocument.SetField("Content", document);
                         break;
                     case PayloadStatus.SerializedResult: // 'a'
-                        // TODO: how to handle result
+                        // TODO: how to parse result - string?
                         contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
                         offset += 4;
                         string serialized = BinarySerializer.ToString(response.Data.Skip(offset).Take(contentLength).ToArray());
                         offset += contentLength;
 
-                        document.SetField("Content", serialized);
+                        responseDocument.SetField("Content", serialized);
                         break;
                     case PayloadStatus.RecordCollection: // 'l'
                         int recordsCount = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
                         offset += 4;
 
-                        List<ORecord> records = new List<ORecord>();
+                        List<ODocument> documents = new List<ODocument>();
 
                         for (int i = 0; i < recordsCount; i++)
                         {
-                            records.Add(ParseRecord(ref offset, response.Data));
+                            documents.Add(ParseDocument(ref offset, response.Data));
                         }
 
-                        document.SetField("Content", records);
+                        responseDocument.SetField("Content", documents);
                         break;
                     default:
                         break;
                 }
             }
 
-            return document;
+            return responseDocument;
         }
 
-        private ORecord ParseRecord(ref int offset, byte[] data)
+        private ODocument ParseDocument(ref int offset, byte[] data)
         {
-            ORecord record = null;
+            ODocument document = null;
+
             short classId = BinarySerializer.ToShort(data.Skip(offset).Take(2).ToArray());
             offset += 2;
 
@@ -174,8 +176,9 @@ namespace Orient.Client.Protocol.Operations
                 orid.ClusterPosition = BinarySerializer.ToLong(data.Skip(offset).Take(8).ToArray());
                 offset += 8;
 
-                record = new ORecord();
-                record.ORID = orid;
+                document = new ODocument()
+                    .SetField("@ORID", orid)
+                    .SetField("@ClassId", classId);
             }
             else
             {
@@ -198,10 +201,10 @@ namespace Orient.Client.Protocol.Operations
                 byte[] rawRecord = data.Skip(offset).Take(recordLength).ToArray();
                 offset += recordLength;
 
-                record = RecordSerializer.ToRecord(orid, version, type, classId, rawRecord);
+                document = RecordSerializer.Deserialize(orid, version, type, classId, rawRecord);
             }
 
-            return record;
+            return document;
         }
     }
 }
