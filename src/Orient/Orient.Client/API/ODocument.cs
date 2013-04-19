@@ -226,7 +226,7 @@ namespace Orient.Client
             ODocument document = new ODocument();
             Type genericObjectType = genericObject.GetType();
 
-            // TODO: recursive mapping of nested objects
+            // TODO: recursive mapping of nested/embedded objects
             foreach (PropertyInfo propertyInfo in genericObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 string propertyName = propertyInfo.Name;
@@ -235,7 +235,7 @@ namespace Orient.Client
 
                 if (oProperty != null)
                 {
-                    propertyName = oProperty.MappedTo;
+                    propertyName = oProperty.Alias;
                     isSerializable = oProperty.Serializable;
                 }
 

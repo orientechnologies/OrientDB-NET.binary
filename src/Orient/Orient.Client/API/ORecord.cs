@@ -20,7 +20,6 @@ namespace Orient.Client
 
         public ORecord()
         {
-            ORID = new ORID();
             Document = new ODocument();
         }
 
@@ -105,7 +104,7 @@ namespace Orient.Client
 
                 if (oProperty != null)
                 {
-                    propertyName = oProperty.MappedTo;
+                    propertyName = oProperty.Alias;
                 }
 
                 string fieldPath = path + (path != "" ? "." : "") + propertyName;

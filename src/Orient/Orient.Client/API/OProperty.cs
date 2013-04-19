@@ -5,14 +5,15 @@ namespace Orient.Client
     [AttributeUsage(AttributeTargets.Property)]
     public class OProperty : Attribute
     {
-        public string MappedTo { get; set; }
+        public string Alias { get; set; }
         public bool Serializable { get; set; }
         public bool Deserializable { get; set; }
-        public OType Type { get; set; }
+        // TODO:
+        //public OType Type { get; set; }
 
         public OProperty()
         {
-            MappedTo = "";
+            Alias = "";
             Serializable = true;
             Deserializable = true;
         }

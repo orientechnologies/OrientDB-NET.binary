@@ -4,10 +4,10 @@ namespace Orient.Client
 {
     public class OGraphVertex
     {
-        [OProperty(MappedTo = "in")]
+        [OProperty(Alias = "in")]
         public List<ORID> In { get; set; }
 
-        [OProperty(MappedTo = "out")]
+        [OProperty(Alias = "out")]
         public List<ORID> Out { get; set; }
 
         public OGraphVertex()

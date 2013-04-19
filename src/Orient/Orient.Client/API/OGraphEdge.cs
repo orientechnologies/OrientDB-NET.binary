@@ -3,10 +3,10 @@ namespace Orient.Client
 {
     public class OGraphEdge
     {
-        [OProperty(MappedTo = "in")]
+        [OProperty(Alias = "in")]
         public ORID In { get; set; }
 
-        [OProperty(MappedTo = "out")]
+        [OProperty(Alias = "out")]
         public ORID Out { get; set; }
     }
 }
