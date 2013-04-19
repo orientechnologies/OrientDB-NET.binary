@@ -54,6 +54,8 @@ namespace Orient.Client
 
         #endregion
 
+        #region From
+
         public OSqlCreateEdge From(ORID from)
         {
             _sqlQuery.Join("", Q.From, from.ToString());
@@ -61,12 +63,38 @@ namespace Orient.Client
             return this;
         }
 
+        public OSqlCreateEdge From(ODocument document)
+        {
+            if (!document.HasField("@ORID"))
+            {
+                throw new OException(OExceptionType.Query, "Document doesn't contain @ORID field which identifies FROM vertex.");
+            }
+
+            return From(document.GetField<ORID>("@ORID"));
+        }
+
+        #endregion
+
+        #region To
+
         public OSqlCreateEdge To(ORID to)
         {
             _sqlQuery.Join("", Q.To, to.ToString());
 
             return this;
         }
+
+        public OSqlCreateEdge To(ODocument document)
+        {
+            if (!document.HasField("@ORID"))
+            {
+                throw new OException(OExceptionType.Query, "Document doesn't contain @ORID field which identifies TO vertex.");
+            }
+
+            return To(document.GetField<ORID>("@ORID"));
+        }
+
+        #endregion
 
         #region Set
 

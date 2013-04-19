@@ -82,6 +82,37 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
+        public void ShouldGenerateCreateEdgeFromToDocumentQuery()
+        {
+            ODocument vertex1 = new ODocument()
+                .SetField("@ORID", new ORID(8, 0));
+
+            ODocument vertex2 = new ODocument()
+                .SetField("@ORID", new ORID(8, 1));
+
+            TestEdgeClass testObj = new TestEdgeClass();
+            testObj.Foo = "foo string value";
+            testObj.Bar = 12345;
+
+            string generatedQuery = new OSqlCreateEdge()
+                .Edge<TestEdgeClass>()
+                .Cluster<OGraphEdge>()
+                .From(vertex1)
+                .To(vertex2)
+                .Set(testObj)
+                .ToString();
+
+            string query =
+                "CREATE EDGE TestEdgeClass " +
+                "CLUSTER OGraphEdge " +
+                "FROM #8:0 TO #8:1 " +
+                "SET Foo = 'foo string value', " +
+                "Bar = 12345";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
         public void ShouldGenerateCreateVertexQuery()
         {
             string generatedUntypedQuery = new OSqlCreateVertex()
