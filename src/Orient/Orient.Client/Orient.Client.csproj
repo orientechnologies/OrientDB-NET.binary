@@ -50,7 +50,6 @@
     <Compile Include="API\OCluster.cs" />
     <Compile Include="API\OClusterType.cs" />
     <Compile Include="API\ODatabase.cs" />
-    <Compile Include="API\ORecord.cs" />
     <Compile Include="API\ORecordType.cs" />
     <Compile Include="API\ORID.cs" />
     <Compile Include="API\OServer.cs" />
