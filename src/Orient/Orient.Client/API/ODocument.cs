@@ -9,6 +9,80 @@ namespace Orient.Client
 {
     public class ODocument : Dictionary<string, object>
     {
+        #region Properties which holds orient specific fields
+
+        public ORID ORID 
+        { 
+            get 
+            { 
+                if (!this.HasField("@ORID"))
+                {
+                    throw new OException(OExceptionType.Document, "Document doesn't contain @ORID field.");
+                }
+
+                return this.GetField<ORID>("@ORID"); 
+            } 
+            set { this.SetField("@ORID", value); }
+        }
+
+        public int OVersion 
+        {
+            get
+            {
+                if (!this.HasField("@OVersion"))
+                {
+                    throw new OException(OExceptionType.Document, "Document doesn't contain @OVersion field.");
+                }
+
+                return this.GetField<int>("@OVersion");
+            }
+            set { this.SetField("@OVersion", value); }
+        }
+
+        public ORecordType OType
+        {
+            get
+            {
+                if (!this.HasField("@OType"))
+                {
+                    throw new OException(OExceptionType.Document, "Document doesn't contain @OType field.");
+                }
+
+                return this.GetField<ORecordType>("@OType");
+            }
+            set { this.SetField("@OType", value); }
+        }
+
+        public short OClassId
+        {
+            get
+            {
+                if (!this.HasField("@OClassId"))
+                {
+                    throw new OException(OExceptionType.Document, "Document doesn't contain @OClassId field.");
+                }
+
+                return this.GetField<short>("@OClassId");
+            }
+            set { this.SetField("@OClassId", value); }
+        }
+
+        public string OClassName
+        {
+            get
+            {
+                if (!this.HasField("@OClassName"))
+                {
+                    throw new OException(OExceptionType.Document, "Document doesn't contain @OClassName field.");
+                }
+
+                return this.GetField<string>("@OClassName");
+            }
+            set { this.SetField("@OClassName", value); }
+        }
+
+        #endregion
+
         public T GetField<T>(string fieldPath)
         {
             Type type = typeof(T);

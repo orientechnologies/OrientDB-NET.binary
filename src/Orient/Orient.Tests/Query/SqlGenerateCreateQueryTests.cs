@@ -84,11 +84,11 @@ namespace Orient.Tests.Query
         [TestMethod]
         public void ShouldGenerateCreateEdgeFromToDocumentQuery()
         {
-            ODocument vertex1 = new ODocument()
-                .SetField("@ORID", new ORID(8, 0));
+            ODocument vertex1 = new ODocument();
+            vertex1.ORID = new ORID(8, 0);
 
-            ODocument vertex2 = new ODocument()
-                .SetField("@ORID", new ORID(8, 1));
+            ODocument vertex2 = new ODocument();
+            vertex2.ORID = new ORID(8, 1);
 
             TestEdgeClass testObj = new TestEdgeClass();
             testObj.Foo = "foo string value";
@@ -145,8 +145,9 @@ namespace Orient.Tests.Query
         [TestMethod]
         public void ShouldGenerateCreateVertexDocumentQuery()
         {
-            ODocument document = new ODocument()
-                .SetField("@ClassName", "TestVertexClass")
+            ODocument document = new ODocument();
+            document.OClassName = "TestVertexClass";
+            document
                 .SetField("Foo", "foo string value")
                 .SetField("Bar", 12345);
 

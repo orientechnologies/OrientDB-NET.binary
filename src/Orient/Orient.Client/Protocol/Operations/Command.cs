@@ -176,9 +176,9 @@ namespace Orient.Client.Protocol.Operations
                 orid.ClusterPosition = BinarySerializer.ToLong(data.Skip(offset).Take(8).ToArray());
                 offset += 8;
 
-                document = new ODocument()
-                    .SetField("@ORID", orid)
-                    .SetField("@ClassId", classId);
+                document = new ODocument();
+                document.ORID = orid;
+                document.OClassId = classId;
             }
             else
             {

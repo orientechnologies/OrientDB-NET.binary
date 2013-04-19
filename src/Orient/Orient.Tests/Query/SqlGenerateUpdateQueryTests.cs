@@ -37,8 +37,8 @@ namespace Orient.Tests.Query
         [TestMethod]
         public void ShouldGenerateUpdateRecordSetQuery()
         {
-            ODocument vertex = new ODocument()
-                .SetField("@ORID", new ORID(8, 0));
+            ODocument vertex = new ODocument();
+            vertex.ORID = new ORID(8, 0);
 
             string generatedQuery = new OSqlUpdate()
                 .Record(vertex)
@@ -57,8 +57,9 @@ namespace Orient.Tests.Query
         [TestMethod]
         public void ShouldGenerateUpdateDocumentQuery()
         {
-            ODocument vertex = new ODocument()
-                .SetField("@ORID", new ORID(8, 0))
+            ODocument vertex = new ODocument();
+            vertex.ORID = new ORID(8, 0);
+            vertex
                 .SetField("foo", "new string value")
                 .SetField("bar", 54321);
 

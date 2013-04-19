@@ -81,12 +81,7 @@ namespace Orient.Client
 
         public OSqlUpdate Record(ODocument document)
         {
-            if (!document.HasField("@ORID"))
-            {
-                throw new OException(OExceptionType.Query, "Document doesn't contain @ORID field which identifies record being updated.");
-            }
-
-            return Record(document.GetField<ORID>("@ORID"));
+            return Record(document.ORID);
         }
 
         #endregion

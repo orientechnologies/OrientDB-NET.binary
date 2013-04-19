@@ -15,7 +15,7 @@ namespace Orient.Tests.Serialization
 
             ODocument document = ODocument.Deserialize(recordString);
 
-            Assert.AreEqual(document.GetField<string>("@ClassName"), "Profile");
+            Assert.AreEqual(document.OClassName, "Profile");
 
             // check for fields existence
             Assert.AreEqual(document.HasField("nick"), true);

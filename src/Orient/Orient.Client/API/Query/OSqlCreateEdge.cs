@@ -65,12 +65,7 @@ namespace Orient.Client
 
         public OSqlCreateEdge From(ODocument document)
         {
-            if (!document.HasField("@ORID"))
-            {
-                throw new OException(OExceptionType.Query, "Document doesn't contain @ORID field which identifies FROM vertex.");
-            }
-
-            return From(document.GetField<ORID>("@ORID"));
+            return From(document.ORID);
         }
 
         #endregion
@@ -86,12 +81,7 @@ namespace Orient.Client
 
         public OSqlCreateEdge To(ODocument document)
         {
-            if (!document.HasField("@ORID"))
-            {
-                throw new OException(OExceptionType.Query, "Document doesn't contain @ORID field which identifies TO vertex.");
-            }
-
-            return To(document.GetField<ORID>("@ORID"));
+            return To(document.ORID);
         }
 
         #endregion

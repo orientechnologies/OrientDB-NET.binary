@@ -75,11 +75,11 @@ namespace Orient.Client.Protocol.Serializers
 
         internal static ODocument Deserialize(ORID orid, int version, ORecordType type, short classId, byte[] rawRecord)
         {
-            ODocument document = new ODocument()
-                .SetField("@ORID", orid)
-                .SetField("@Version", version)
-                .SetField("@Type", type)
-                .SetField("@ClassId", classId);
+            ODocument document = new ODocument();
+            document.ORID = orid;
+            document.OVersion = version;
+            document.OType = type;
+            document.OClassId = classId;
 
             string recordString = BinarySerializer.ToString(rawRecord).Trim();
 
@@ -90,7 +90,7 @@ namespace Orient.Client.Protocol.Serializers
             // parse class name
             if ((atIndex != -1) && (atIndex < colonIndex))
             {
-                document.SetField("@ClassName", recordString.Substring(0, atIndex));
+                document.OClassName = recordString.Substring(0, atIndex);
                 index = atIndex + 1;
             }
 
@@ -115,7 +115,7 @@ namespace Orient.Client.Protocol.Serializers
             // parse class name
             if ((atIndex != -1) && (atIndex < colonIndex))
             {
-                document.SetField("@ClassName", recordString.Substring(0, atIndex));
+                document.OClassName = recordString.Substring(0, atIndex);
                 index = atIndex + 1;
             }
 

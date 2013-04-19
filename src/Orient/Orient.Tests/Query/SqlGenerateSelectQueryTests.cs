@@ -106,8 +106,8 @@ namespace Orient.Tests.Query
         [TestMethod]
         public void ShouldGenerateSelectFromDocumentQuery()
         {
-            ODocument document = new ODocument()
-                .SetField("@ORID", new ORID(8, 0));
+            ODocument document = new ODocument();
+            document.ORID = new ORID(8, 0);
 
             string generatedQuery = new OSqlSelect()
                 .Select("foo", "bar")
