@@ -108,20 +108,20 @@ namespace Orient.Tests.Query
                         .Run();
 
                     // create test vertices which will be connected by edge
-                    ORecord vertex1 = database
+                    ODocument vertex1 = database
                         .Create.Vertex("OGraphVertex")
                         .Set(document)
                         .Run();
-                    ORecord vertex2 = database
+                    ODocument vertex2 = database
                         .Create.Vertex("OGraphVertex")
                         .Set(document)
                         .Run();
 
                     // connect previous vertices with edge
-                    ORecord edge1 = database
+                    ODocument edge1 = database
                         .Create.Edge("TestEdgeClass")
-                        .From(vertex1.ORID)
-                        .To(vertex2.ORID)
+                        .From(vertex1.GetField<ORID>("@ORID"))
+                        .To(vertex2.GetField<ORID>("@ORID"))
                         .Set(document)
                         .Run();
 
@@ -130,16 +130,16 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(edge1.HasField("foo"), true);
                     Assert.AreEqual(edge1.HasField("bar"), true);
 
-                    Assert.AreEqual(edge1.GetField<ORID>("out"), vertex1.ORID);
-                    Assert.AreEqual(edge1.GetField<ORID>("in"), vertex2.ORID);
+                    Assert.AreEqual(edge1.GetField<ORID>("out"), vertex1.GetField<ORID>("@ORID"));
+                    Assert.AreEqual(edge1.GetField<ORID>("in"), vertex2.GetField<ORID>("@ORID"));
                     Assert.AreEqual(edge1.GetField<string>("foo"), document.GetField<string>("foo"));
                     Assert.AreEqual(edge1.GetField<int>("bar"), document.GetField<int>("bar"));
 
                     // connect previous vertices with another edge using multiple set statements
-                    ORecord edge2 = database
+                    ODocument edge2 = database
                         .Create.Edge("TestEdgeClass")
-                        .From(vertex2.ORID)
-                        .To(vertex1.ORID)
+                        .From(vertex2.GetField<ORID>("@ORID"))
+                        .To(vertex1.GetField<ORID>("@ORID"))
                         .Set("foo", "foo string value2")
                         .Set("bar", 54321)
                         .Run();
@@ -149,8 +149,8 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(edge2.HasField("foo"), true);
                     Assert.AreEqual(edge2.HasField("bar"), true);
 
-                    Assert.AreEqual(edge2.GetField<ORID>("out"), vertex2.ORID);
-                    Assert.AreEqual(edge2.GetField<ORID>("in"), vertex1.ORID);
+                    Assert.AreEqual(edge2.GetField<ORID>("out"), vertex2.GetField<ORID>("@ORID"));
+                    Assert.AreEqual(edge2.GetField<ORID>("in"), vertex1.GetField<ORID>("@ORID"));
                     Assert.AreEqual(edge2.GetField<string>("foo"), "foo string value2");
                     Assert.AreEqual(edge2.GetField<int>("bar"), 54321);
                 }
@@ -175,18 +175,18 @@ namespace Orient.Tests.Query
                         .Run();
 
                     // create test vertices which will be connected by edge
-                    ORecord vertex1 = database
+                    ODocument vertex1 = database
                         .Create.Vertex<OGraphVertex>()
                         .Run();
-                    ORecord vertex2 = database
+                    ODocument vertex2 = database
                         .Create.Vertex<OGraphVertex>()
                         .Run();
 
                     // connect previous vertices with edge
-                    ORecord edge = database
+                    ODocument edge = database
                         .Create.Edge<TestEdgeClass>()
-                        .From(vertex1.ORID)
-                        .To(vertex2.ORID)
+                        .From(vertex1.GetField<ORID>("@ORID"))
+                        .To(vertex2.GetField<ORID>("@ORID"))
                         .Set(testObj)
                         .Run();
 
@@ -195,8 +195,8 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(edge.HasField("Foo"), true);
                     Assert.AreEqual(edge.HasField("Bar"), true);
 
-                    Assert.AreEqual(edge.GetField<ORID>("out"), vertex1.ORID);
-                    Assert.AreEqual(edge.GetField<ORID>("in"), vertex2.ORID);
+                    Assert.AreEqual(edge.GetField<ORID>("out"), vertex1.GetField<ORID>("@ORID"));
+                    Assert.AreEqual(edge.GetField<ORID>("in"), vertex2.GetField<ORID>("@ORID"));
                     Assert.AreEqual(edge.GetField<string>("Foo"), testObj.Foo);
                     Assert.AreEqual(edge.GetField<int>("Bar"), testObj.Bar);
                 }
@@ -227,7 +227,7 @@ namespace Orient.Tests.Query
                         .Run();
 
                     // create test vertex from previously created class
-                    ORecord loadedVertex1 = database
+                    ODocument loadedVertex1 = database
                         .Create.Vertex("TestVertexClass")
                         .Set(document)
                         .Run();
@@ -245,7 +245,7 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(loadedOptions[1], options[1]);
 
                     // create test vertex using multiple set statements
-                    ORecord loadedVertex2 = database
+                    ODocument loadedVertex2 = database
                         .Create.Vertex("TestVertexClass")
                         .Set("foo", "foo string value2")
                         .Set("bar", 54321)
@@ -278,7 +278,7 @@ namespace Orient.Tests.Query
                         .Run();
 
                     // create test vertex from previously created class
-                    ORecord loadedVertex1 = database
+                    ODocument loadedVertex1 = database
                         .Create.Vertex<TestVertexClass>()
                         .Set(testVertex)
                         .Run();

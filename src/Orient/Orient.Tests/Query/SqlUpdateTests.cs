@@ -24,25 +24,25 @@ namespace Orient.Tests.Query
                     obj1.Foo = "foo string value 1";
                     obj1.Bar = 12345;
 
-                    ORecord createdRecord1 = database
+                    ODocument vertex1 = database
                         .Create.Vertex<TestVertexClass>()
                         .Set(obj1)
                         .Run();
 
-                    Assert.AreEqual(createdRecord1.GetField<string>("Foo"), obj1.Foo);
-                    Assert.AreEqual(createdRecord1.GetField<int>("Bar"), obj1.Bar);
+                    Assert.AreEqual(vertex1.GetField<string>("Foo"), obj1.Foo);
+                    Assert.AreEqual(vertex1.GetField<int>("Bar"), obj1.Bar);
 
                     TestVertexClass obj2 = new TestVertexClass();
                     obj2.Foo = "foo string value 2";
                     obj2.Bar = 123456;
 
-                    ORecord createdRecord2 = database
+                    ODocument vertex2 = database
                         .Create.Vertex<TestVertexClass>()
                         .Set(obj2)
                         .Run();
 
-                    Assert.AreEqual(createdRecord2.GetField<string>("Foo"), obj2.Foo);
-                    Assert.AreEqual(createdRecord2.GetField<int>("Bar"), obj2.Bar);
+                    Assert.AreEqual(vertex2.GetField<string>("Foo"), obj2.Foo);
+                    Assert.AreEqual(vertex2.GetField<int>("Bar"), obj2.Bar);
 
                     int recordsUpdated = database
                         .Update.Class<TestVertexClass>()
@@ -51,7 +51,7 @@ namespace Orient.Tests.Query
 
                     Assert.AreEqual(recordsUpdated, 2);
 
-                    List<ORecord> updatedRecords = database
+                    List<ODocument> updatedRecords = database
                         .Select()
                         .From<TestVertexClass>()
                         .ToList();
@@ -83,37 +83,37 @@ namespace Orient.Tests.Query
                     obj1.Foo = "foo string value 1";
                     obj1.Bar = 12345;
 
-                    ORecord createdRecord1 = database
+                    ODocument vertex1 = database
                         .Create.Vertex<TestVertexClass>()
                         .Set(obj1)
                         .Run();
 
-                    Assert.AreEqual(createdRecord1.GetField<string>("Foo"), obj1.Foo);
-                    Assert.AreEqual(createdRecord1.GetField<int>("Bar"), obj1.Bar);
+                    Assert.AreEqual(vertex1.GetField<string>("Foo"), obj1.Foo);
+                    Assert.AreEqual(vertex1.GetField<int>("Bar"), obj1.Bar);
 
                     TestVertexClass obj2 = new TestVertexClass();
                     obj2.Foo = "foo string value 2";
                     obj2.Bar = 123456;
 
-                    ORecord createdRecord2 = database
+                    ODocument vertex2 = database
                         .Create.Vertex<TestVertexClass>()
                         .Set(obj2)
                         .Run();
 
-                    Assert.AreEqual(createdRecord2.GetField<string>("Foo"), obj2.Foo);
-                    Assert.AreEqual(createdRecord2.GetField<int>("Bar"), obj2.Bar);
+                    Assert.AreEqual(vertex2.GetField<string>("Foo"), obj2.Foo);
+                    Assert.AreEqual(vertex2.GetField<int>("Bar"), obj2.Bar);
 
                     int recordsUpdated = database
                         .Update.Class<TestVertexClass>()
                         .Set("Foo", "new string value")
                         .Set("Bar", 54321)
                         .Set("Baz", "baz string value")
-                        .Where("@rid").Equals(createdRecord1.ORID)
+                        .Where("@rid").Equals(vertex1.GetField<ORID>("@ORID"))
                         .Run();
 
                     Assert.AreEqual(recordsUpdated, 1);
 
-                    List<ORecord> updatedRecords = database
+                    List<ODocument> updatedRecords = database
                         .Select()
                         .From<TestVertexClass>()
                         .ToList();
@@ -144,28 +144,28 @@ namespace Orient.Tests.Query
                     obj1.Foo = "foo string value 1";
                     obj1.Bar = 12345;
 
-                    ORecord createdRecord1 = database
+                    ODocument vertex1 = database
                         .Create.Vertex<TestVertexClass>()
                         .Set(obj1)
                         .Run();
 
-                    Assert.AreEqual(createdRecord1.GetField<string>("Foo"), obj1.Foo);
-                    Assert.AreEqual(createdRecord1.GetField<int>("Bar"), obj1.Bar);
+                    Assert.AreEqual(vertex1.GetField<string>("Foo"), obj1.Foo);
+                    Assert.AreEqual(vertex1.GetField<int>("Bar"), obj1.Bar);
 
                     TestVertexClass obj2 = new TestVertexClass();
                     obj2.Foo = "foo string value 2";
                     obj2.Bar = 123456;
 
-                    ORecord createdRecord2 = database
+                    ODocument vertex2 = database
                         .Create.Vertex<TestVertexClass>()
                         .Set(obj2)
                         .Run();
 
-                    Assert.AreEqual(createdRecord2.GetField<string>("Foo"), obj2.Foo);
-                    Assert.AreEqual(createdRecord2.GetField<int>("Bar"), obj2.Bar);
+                    Assert.AreEqual(vertex2.GetField<string>("Foo"), obj2.Foo);
+                    Assert.AreEqual(vertex2.GetField<int>("Bar"), obj2.Bar);
 
                     int recordsUpdated = database
-                        .Update.Record(createdRecord1.ORID)
+                        .Update.Record(vertex1.GetField<ORID>("@ORID"))
                         .Set("Foo", "new string value")
                         .Set("Bar", 54321)
                         .Set("Baz", "baz string value")
@@ -173,7 +173,7 @@ namespace Orient.Tests.Query
 
                     Assert.AreEqual(recordsUpdated, 1);
 
-                    List<ORecord> updatedRecords = database
+                    List<ODocument> updatedRecords = database
                         .Select()
                         .From<TestVertexClass>()
                         .ToList();
@@ -204,38 +204,38 @@ namespace Orient.Tests.Query
                     obj1.Foo = "foo string value 1";
                     obj1.Bar = 12345;
 
-                    ORecord createdRecord1 = database
+                    ODocument vertex1 = database
                         .Create.Vertex<TestVertexClass>()
                         .Set(obj1)
                         .Run();
 
-                    Assert.AreEqual(createdRecord1.GetField<string>("Foo"), obj1.Foo);
-                    Assert.AreEqual(createdRecord1.GetField<int>("Bar"), obj1.Bar);
+                    Assert.AreEqual(vertex1.GetField<string>("Foo"), obj1.Foo);
+                    Assert.AreEqual(vertex1.GetField<int>("Bar"), obj1.Bar);
 
                     TestVertexClass obj2 = new TestVertexClass();
                     obj2.Foo = "foo string value 2";
                     obj2.Bar = 123456;
 
-                    ORecord createdRecord2 = database
+                    ODocument vertex2 = database
                         .Create.Vertex<TestVertexClass>()
                         .Set(obj2)
                         .Run();
 
-                    Assert.AreEqual(createdRecord2.GetField<string>("Foo"), obj2.Foo);
-                    Assert.AreEqual(createdRecord2.GetField<int>("Bar"), obj2.Bar);
+                    Assert.AreEqual(vertex2.GetField<string>("Foo"), obj2.Foo);
+                    Assert.AreEqual(vertex2.GetField<int>("Bar"), obj2.Bar);
 
-                    createdRecord1
+                    vertex1
                         .SetField("Foo", "new string value")
                         .SetField("Bar", 54321)
                         .SetField("Baz", "baz string value");
 
                     int recordsUpdated = database
-                        .Update.Record(createdRecord1)
+                        .Update.Document(vertex1)
                         .Run();
 
                     Assert.AreEqual(recordsUpdated, 1);
 
-                    List<ORecord> updatedRecords = database
+                    List<ODocument> updatedRecords = database
                         .Select()
                         .From<TestVertexClass>()
                         .ToList();
@@ -265,23 +265,23 @@ namespace Orient.Tests.Query
                     ODocument document = new ODocument();
                     document.SetField<List<string>>("FooCollection", new List<string> { "foo 1", "foo 2" });
 
-                    ORecord createdRecord1 = database
+                    ODocument vertex1 = database
                         .Create.Vertex<TestVertexClass>()
                         .Set(document)
                         .Run();
 
-                    List<string> fooCollection = createdRecord1.GetField<List<string>>("FooCollection");
+                    List<string> fooCollection = vertex1.GetField<List<string>>("FooCollection");
                     
                     Assert.AreEqual(fooCollection.Count, 2);
 
                     int recordsUpdated = database
-                        .Update.Record(createdRecord1.ORID)
+                        .Update.Record(vertex1.GetField<ORID>("@ORID"))
                         .Add("FooCollection", "foo 3")
                         .Run();
 
                     Assert.AreEqual(recordsUpdated, 1);
 
-                    List<ORecord> updatedRecords = database
+                    List<ODocument> updatedRecords = database
                         .Select()
                         .From<TestVertexClass>()
                         .ToList();
@@ -314,22 +314,22 @@ namespace Orient.Tests.Query
                     obj1.Foo = "foo string value 1";
                     obj1.Bar = 12345;
 
-                    ORecord createdRecord1 = database
+                    ODocument vertex1 = database
                         .Create.Vertex<TestVertexClass>()
                         .Set(obj1)
                         .Run();
 
-                    Assert.AreEqual(createdRecord1.GetField<string>("Foo"), obj1.Foo);
-                    Assert.AreEqual(createdRecord1.GetField<int>("Bar"), obj1.Bar);
+                    Assert.AreEqual(vertex1.GetField<string>("Foo"), obj1.Foo);
+                    Assert.AreEqual(vertex1.GetField<int>("Bar"), obj1.Bar);
 
                     int recordsUpdated = database
-                        .Update.Record(createdRecord1.ORID)
+                        .Update.Record(vertex1.GetField<ORID>("@ORID"))
                         .Remove("Bar")
                         .Run();
 
                     Assert.AreEqual(recordsUpdated, 1);
 
-                    List<ORecord> updatedRecords = database
+                    List<ODocument> updatedRecords = database
                         .Select()
                         .From<TestVertexClass>()
                         .ToList();
@@ -356,23 +356,23 @@ namespace Orient.Tests.Query
                     ODocument document = new ODocument();
                     document.SetField<List<string>>("FooCollection", new List<string> { "foo 1", "foo 2" });
 
-                    ORecord createdRecord1 = database
+                    ODocument vertex1 = database
                         .Create.Vertex<TestVertexClass>()
                         .Set(document)
                         .Run();
 
-                    List<string> fooCollection = createdRecord1.GetField<List<string>>("FooCollection");
+                    List<string> fooCollection = vertex1.GetField<List<string>>("FooCollection");
 
                     Assert.AreEqual(fooCollection.Count, 2);
 
                     int recordsUpdated = database
-                        .Update.Record(createdRecord1.ORID)
+                        .Update.Record(vertex1.GetField<ORID>("@ORID"))
                         .Remove("FooCollection", "foo 1")
                         .Run();
 
                     Assert.AreEqual(recordsUpdated, 1);
 
-                    List<ORecord> updatedRecords = database
+                    List<ODocument> updatedRecords = database
                         .Select()
                         .From<TestVertexClass>()
                         .ToList();

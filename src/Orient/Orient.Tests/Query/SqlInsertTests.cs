@@ -23,13 +23,13 @@ namespace Orient.Tests.Query
                     document.SetField("foo", "foo string value");
                     document.SetField("bar", 12345);
 
-                    ORecord insertedRecord = database
+                    ODocument insertedDocument = database
                         .Insert.Into("TestClass")
                         .Set(document)
                         .Run();
 
-                    Assert.AreEqual(insertedRecord.GetField<string>("foo"), document.GetField<string>("foo"));
-                    Assert.AreEqual(insertedRecord.GetField<int>("bar"), document.GetField<int>("bar"));
+                    Assert.AreEqual(insertedDocument.GetField<string>("foo"), document.GetField<string>("foo"));
+                    Assert.AreEqual(insertedDocument.GetField<int>("bar"), document.GetField<int>("bar"));
                 }
             }
         }
@@ -54,14 +54,14 @@ namespace Orient.Tests.Query
                     document.SetField("foo", "foo string value");
                     document.SetField("bar", 12345);
 
-                    ORecord insertedRecord = database
+                    ODocument insertedDocument = database
                         .Insert.Into("TestClass")
                         .Cluster("TestCluster")
                         .Set(document)
                         .Run();
 
-                    Assert.AreEqual(insertedRecord.GetField<string>("foo"), document.GetField<string>("foo"));
-                    Assert.AreEqual(insertedRecord.GetField<int>("bar"), document.GetField<int>("bar"));
+                    Assert.AreEqual(insertedDocument.GetField<string>("foo"), document.GetField<string>("foo"));
+                    Assert.AreEqual(insertedDocument.GetField<int>("bar"), document.GetField<int>("bar"));
                 }
             }
         }

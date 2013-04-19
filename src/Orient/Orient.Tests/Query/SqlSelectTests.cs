@@ -45,7 +45,7 @@ namespace Orient.Tests.Query
                         .Run();
 
                     // perform simple select
-                    List<ORecord> result = database
+                    List<ODocument> result = database
                         .Select("foo", "bar")
                         .From("TestVertexClass")
                         .ToList();
@@ -124,7 +124,7 @@ namespace Orient.Tests.Query
                         .Run();
 
                     // load database with some testing data
-                    ORecord vertex = database
+                    ODocument vertex = database
                         .Create.Vertex<TestVertexClass>()
                         .Set(obj)
                         .Run();
@@ -132,7 +132,7 @@ namespace Orient.Tests.Query
                     // perform simple select
                     List<TestVertexClass> result = database
                         .Select()
-                        .From(vertex.ORID)
+                        .From(vertex.GetField<ORID>("@ORID"))
                         .ToList<TestVertexClass>();
 
                     Assert.AreEqual(result.Count, 1);
@@ -175,7 +175,7 @@ namespace Orient.Tests.Query
                         .Run();
 
                     // perform simple select
-                    List<ORecord> result = database
+                    List<ODocument> result = database
                         .Select("Foo").As("CustomFoo")
                         .Also("Bar").As("CustomBar")
                         .From<TestVertexClass>()
