@@ -55,21 +55,21 @@ namespace Orient.Console
             }
         }
 
-        static List<ORecord> Query()
+        static List<ODocument> Query()
         {
-            List<ORecord> records;
+            List<ODocument> documents;
 
             try
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
-                    records = database
+                    documents = database
                         .Select()
                         .From("TestClass")
                         .ToList();
                     using (ODatabase database1 = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                     {
-                        List<ORecord> records2 = database1
+                        List<ODocument> documents2 = database1
                             .Select()
                             .From("TestClass")
                             .ToList();
@@ -79,10 +79,10 @@ namespace Orient.Console
             catch (Exception e)
             {
                 System.Console.WriteLine(e.Message);
-                records = new List<ORecord>();
+                documents = new List<ODocument>();
             }
 
-            return records;
+            return documents;
         }
 
         /*static void TestConnection()
@@ -177,34 +177,34 @@ namespace Orient.Console
 
     class Vertex
     {
-        [OProperty(MappedTo = "name")]
+        [OProperty(Alias = "name")]
         public string Name { get; set; }
 
-        [OProperty(MappedTo = "song_type")]
+        [OProperty(Alias = "song_type")]
         public string SongType { get; set; }
 
-        [OProperty(MappedTo = "performances")]
+        [OProperty(Alias = "performances")]
         public int Performances { get; set; }
 
-        [OProperty(MappedTo = "type")]
+        [OProperty(Alias = "type")]
         public string Type { get; set; }
 
-        [OProperty(MappedTo = "in")]
+        [OProperty(Alias = "in")]
         public List<ORID> In { get; set; }
 
-        [OProperty(MappedTo = "out")]
+        [OProperty(Alias = "out")]
         public List<ORID> Out { get; set; }
     }
 
     class Ve
     {
-        [OProperty(MappedTo = "title")]
+        [OProperty(Alias = "title")]
         public string Title { get; set; }
     }
 
     class Ed
     {
-        [OProperty(MappedTo = "label")]
+        [OProperty(Alias = "label")]
         public string Label { get; set; }
     }
 }
