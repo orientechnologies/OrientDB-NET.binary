@@ -14,13 +14,8 @@ namespace Orient.Client
         public ORID ORID 
         { 
             get 
-            { 
-                if (!this.HasField("@ORID"))
-                {
-                    throw new OException(OExceptionType.Document, "Document doesn't contain @ORID field.");
-                }
-
-                return this.GetField<ORID>("@ORID"); 
+            {
+                return this.HasField("@ORID") ? this.GetField<ORID>("@ORID") : null; 
             } 
             set { this.SetField("@ORID", value); }
         }
@@ -29,11 +24,6 @@ namespace Orient.Client
         {
             get
             {
-                if (!this.HasField("@OVersion"))
-                {
-                    throw new OException(OExceptionType.Document, "Document doesn't contain @OVersion field.");
-                }
-
                 return this.GetField<int>("@OVersion");
             }
             set { this.SetField("@OVersion", value); }
@@ -43,11 +33,6 @@ namespace Orient.Client
         {
             get
             {
-                if (!this.HasField("@OType"))
-                {
-                    throw new OException(OExceptionType.Document, "Document doesn't contain @OType field.");
-                }
-
                 return this.GetField<ORecordType>("@OType");
             }
             set { this.SetField("@OType", value); }
@@ -57,11 +42,6 @@ namespace Orient.Client
         {
             get
             {
-                if (!this.HasField("@OClassId"))
-                {
-                    throw new OException(OExceptionType.Document, "Document doesn't contain @OClassId field.");
-                }
-
                 return this.GetField<short>("@OClassId");
             }
             set { this.SetField("@OClassId", value); }
@@ -71,11 +51,6 @@ namespace Orient.Client
         {
             get
             {
-                if (!this.HasField("@OClassName"))
-                {
-                    throw new OException(OExceptionType.Document, "Document doesn't contain @OClassName field.");
-                }
-
                 return this.GetField<string>("@OClassName");
             }
             set { this.SetField("@OClassName", value); }
