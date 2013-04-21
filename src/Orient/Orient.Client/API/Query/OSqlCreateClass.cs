@@ -1,31 +1,33 @@
 ﻿using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
-// syntax: CREATE CLASS <class> [EXTENDS <super-class>] [CLUSTER <clusterId>*]
+// syntax: 
+// CREATE CLASS <class> 
+// [EXTENDS <super-class>] 
+// [CLUSTER <clusterId>*]
 
 namespace Orient.Client
 {
     public class OSqlCreateClass
     {
+        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery2 _sqlQuery2 = new SqlQuery2();
         private Connection _connection;
-        private SqlQuery _sqlQuery;
 
         public OSqlCreateClass()
         {
-            _sqlQuery = new SqlQuery();
         }
 
         internal OSqlCreateClass(Connection connection)
         {
             _connection = connection;
-            _sqlQuery = new SqlQuery();
         }
 
         #region Class
 
         public OSqlCreateClass Class(string className)
         {
-            _sqlQuery.Join(Q.Create, Q.Class, className);
+            _sqlQuery2.Class(className);
 
             return this;
         }
@@ -41,7 +43,7 @@ namespace Orient.Client
 
         public OSqlCreateClass Extends(string superClass)
         {
-            _sqlQuery.Join("", Q.Extends, superClass);
+            _sqlQuery2.Extends(superClass);
 
             return this;
         }
@@ -55,7 +57,7 @@ namespace Orient.Client
 
         public OSqlCreateClass Cluster(short clusterId)
         {
-            _sqlQuery.Join("", Q.Cluster, clusterId.ToString());
+            _sqlQuery2.Cluster(clusterId.ToString());
 
             return this;
         }
@@ -64,7 +66,7 @@ namespace Orient.Client
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;
-            payload.Text = _sqlQuery.ToString();
+            payload.Text = ToString();
             payload.NonTextLimit = -1;
             payload.FetchPlan = "";
             payload.SerializedParams = new byte[] { 0 };
@@ -81,7 +83,7 @@ namespace Orient.Client
 
         public override string ToString()
         {
-            return _sqlQuery.ToString();
+            return _sqlQuery2.ToString(QueryType.CreateClass);
         }
     }
 }

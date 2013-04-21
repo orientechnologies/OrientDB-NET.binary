@@ -8,45 +8,6 @@ namespace Orient.Tests.Query
     public class SqlGenerateCreateQueryTests
     {
         [TestMethod]
-        public void ShouldGenerateCreateClassQuery()
-        {
-            string generatedUntypedQuery = new OSqlCreateClass()
-                .Class("TestVertexClass")
-                .Extends("OGraphVertex")
-                .ToString();
-
-            string generatedTypedQuery =new OSqlCreateClass()
-                .Class<TestVertexClass>()
-                .Extends<OGraphVertex>()
-                .ToString();
-
-            string query =
-                "CREATE CLASS TestVertexClass " +
-                "EXTENDS OGraphVertex";
-
-            Assert.AreEqual(generatedUntypedQuery, query);
-            Assert.AreEqual(generatedTypedQuery, query);
-        }
-
-        [TestMethod]
-        public void ShouldGenerateCreateClusterQuery()
-        {
-            string generatedUntypedQuery = new OSqlCreateCluster()
-                .Cluster("TestVertexClass", OClusterType.Physical)
-                .ToString();
-
-            string generatedTypedQuery = new OSqlCreateCluster()
-                .Cluster<TestVertexClass>(OClusterType.Physical)
-                .ToString();
-
-            string query =
-                "CREATE CLUSTER TestVertexClass PHYSICAL";
-
-            Assert.AreEqual(generatedUntypedQuery, query);
-            Assert.AreEqual(generatedTypedQuery, query);
-        }
-
-        [TestMethod]
         public void ShouldGenerateCreateEdgeQuery()
         {
             string generatedUntypedQuery = new OSqlCreateEdge()

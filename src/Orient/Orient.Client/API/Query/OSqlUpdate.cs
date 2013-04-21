@@ -22,27 +22,24 @@ namespace Orient.Client
 {
     public class OSqlUpdate
     {
+        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery2 _sqlQuery2 = new SqlQuery2();
         private Connection _connection;
-        private SqlQuery _sqlQuery;
-        private bool _hasAdd;
-        private bool _hasRemove;
 
         public OSqlUpdate()
         {
-            _sqlQuery = new SqlQuery();
         }
 
         internal OSqlUpdate(Connection connection)
         {
             _connection = connection;
-            _sqlQuery = new SqlQuery();
         }
 
         #region Class
 
         public OSqlUpdate Class(string className)
         {
-            _sqlQuery.Join(Q.Update, className);
+            _sqlQuery2.Class(className);
 
             return this;
         }
@@ -58,7 +55,7 @@ namespace Orient.Client
 
         public OSqlUpdate Cluster(string clusterName)
         {
-            _sqlQuery.Join(Q.Update, "cluster:" + clusterName);
+            _sqlQuery2.Cluster("cluster:" + clusterName);
 
             return this;
         }
@@ -74,7 +71,8 @@ namespace Orient.Client
 
         public OSqlUpdate Record(ORID orid)
         {
-            _sqlQuery.Join(Q.Update, orid.ToString());
+            //_sqlQuery.Join(Q.Update, orid.ToString());
+            _sqlQuery2.Record(orid);
 
             return this;
         }
@@ -88,9 +86,17 @@ namespace Orient.Client
 
         public OSqlUpdate Document(ODocument document)
         {
-            Record(document);
+            if (!string.IsNullOrEmpty(document.OClassName))
+            {
+                _sqlQuery2.Class(document.OClassName);
+            }
 
-            _sqlQuery.SetFields(document);
+            if (document.ORID != null)
+            {
+                _sqlQuery2.Record(document.ORID);
+            }
+
+            _sqlQuery2.Set(document);
 
             return this;
         }
@@ -99,73 +105,39 @@ namespace Orient.Client
 
         public OSqlUpdate Set<T>(string fieldName, T fieldValue)
         {
-            _sqlQuery.SetField<T>(fieldName, fieldValue);
+            _sqlQuery2.Set<T>(fieldName, fieldValue);
 
             return this;
         }
 
         public OSqlUpdate Set<T>(T obj)
         {
-            _sqlQuery.SetFields(obj);
+            _sqlQuery2.Set(obj);
 
             return this;
         }
 
         #endregion
-
-        #region Add
 
         public OSqlUpdate Add<T>(string fieldName, T fieldValue)
         {
-            if (!_hasAdd)
-            {
-                _hasAdd = true;
-                _sqlQuery.Join("", Q.Add);
-            }
-            else
-            {
-                _sqlQuery.Join(Q.Comma);
-            }
-
-            _sqlQuery.Join("", fieldName, Q.Equals, SqlQuery.ToString(fieldValue));
+            _sqlQuery2.Add(fieldName, fieldValue);
 
             return this;
         }
-
-        #endregion
 
         #region Remove
 
         public OSqlUpdate Remove(string fieldName)
         {
-            if (!_hasRemove)
-            {
-                _hasRemove = true;
-                _sqlQuery.Join("", Q.Remove);
-            }
-            else
-            {
-                _sqlQuery.Join(Q.Comma);
-            }
-
-            _sqlQuery.Join("", fieldName);
+            _sqlQuery2.Remove(fieldName);
 
             return this;
         }
 
         public OSqlUpdate Remove<T>(string fieldName, T collectionValue)
         {
-            if (!_hasRemove)
-            {
-                _hasRemove = true;
-                _sqlQuery.Join("", Q.Remove);
-            }
-            else
-            {
-                _sqlQuery.Join(Q.Comma);
-            }
-
-            _sqlQuery.Join("", fieldName, Q.Equals, SqlQuery.ToString(collectionValue));
+            _sqlQuery2.Remove(fieldName, collectionValue);
 
             return this;
         }
@@ -176,91 +148,92 @@ namespace Orient.Client
 
         public OSqlUpdate Where(string field)
         {
-            _sqlQuery.Where(field);
+            //_sqlQuery.Where(field);
+            _sqlQuery2.Where(field);
 
             return this;
         }
 
         public OSqlUpdate And(string field)
         {
-            _sqlQuery.And(field);
+            _sqlQuery2.And(field);
 
             return this;
         }
 
         public OSqlUpdate Or(string field)
         {
-            _sqlQuery.Or(field);
+            _sqlQuery2.Or(field);
 
             return this;
         }
 
         public OSqlUpdate Equals<T>(T item)
         {
-            _sqlQuery.Equals<T>(item);
+            _sqlQuery2.Equals<T>(item);
 
             return this;
         }
 
         public OSqlUpdate NotEquals<T>(T item)
         {
-            _sqlQuery.NotEquals<T>(item);
+            _sqlQuery2.NotEquals<T>(item);
 
             return this;
         }
 
         public OSqlUpdate Lesser<T>(T item)
         {
-            _sqlQuery.Lesser<T>(item);
+            _sqlQuery2.Lesser<T>(item);
 
             return this;
         }
 
         public OSqlUpdate LesserEqual<T>(T item)
         {
-            _sqlQuery.LesserEqual<T>(item);
+            _sqlQuery2.LesserEqual<T>(item);
 
             return this;
         }
 
         public OSqlUpdate Greater<T>(T item)
         {
-            _sqlQuery.Greater<T>(item);
+            _sqlQuery2.Greater<T>(item);
 
             return this;
         }
 
         public OSqlUpdate GreaterEqual<T>(T item)
         {
-            _sqlQuery.GreaterEqual<T>(item);
+            _sqlQuery2.GreaterEqual<T>(item);
 
             return this;
         }
 
         public OSqlUpdate Like<T>(T item)
         {
-            _sqlQuery.Like<T>(item);
+            _sqlQuery2.Like<T>(item);
 
             return this;
         }
 
         public OSqlUpdate IsNull()
         {
-            _sqlQuery.IsNull();
+            _sqlQuery2.IsNull();
 
             return this;
         }
 
         public OSqlUpdate Contains<T>(T item)
         {
-            _sqlQuery.Contains<T>(item);
+            _sqlQuery2.Contains<T>(item);
 
             return this;
         }
 
         public OSqlUpdate Contains<T>(string field, T value)
         {
-            _sqlQuery.Contains<T>(field, value);
+            _sqlQuery2.Contains<T>(field, value);
 
             return this;
         }
@@ -278,7 +251,7 @@ namespace Orient.Client
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;
-            payload.Text = _sqlQuery.ToString();
+            payload.Text = ToString();
             payload.NonTextLimit = -1;
             payload.FetchPlan = "";
             payload.SerializedParams = new byte[] { 0 };
@@ -295,7 +268,7 @@ namespace Orient.Client
 
         public override string ToString()
         {
-            return _sqlQuery.ToString();
+            return _sqlQuery2.ToString(QueryType.Update);
         }
     }
 }

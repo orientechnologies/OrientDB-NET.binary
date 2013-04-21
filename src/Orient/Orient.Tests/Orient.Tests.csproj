@@ -58,6 +58,8 @@
     <Compile Include="Query\SqlUpdateTests.cs" />
     <Compile Include="Query\SqlGenerateInsertQueryTests.cs" />
     <Compile Include="Query\SqlInsertTests.cs" />
+    <Compile Include="Query\SqlGenerateCreateClassQueryTests.cs" />
+    <Compile Include="Query\SqlGenerateCreateClusterQueryTests.cs" />
     <Compile Include="Serialization\RecordSerializationTests.cs" />
     <Compile Include="TestConnection.cs" />
     <Compile Include="Serialization\RecordDeserializationTests.cs" />

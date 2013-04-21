@@ -63,6 +63,8 @@
     <Compile Include="API\Query\OSqlSelect.cs" />
     <Compile Include="API\Query\OSqlUpdate.cs" />
     <Compile Include="API\Query\SqlQuery.cs" />
+    <Compile Include="Protocol\Query\QueryCompiler.cs" />
+    <Compile Include="Protocol\Query\SqlQuery2.cs" />
     <Compile Include="API\Types\OType.cs" />
     <Compile Include="API\Types\OLinkCollection.cs" />
     <Compile Include="API\Types\OLinkSet.cs" />
@@ -71,12 +73,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\ConnectionType.cs" />
     <Compile Include="Protocol\DatabasePool.cs" />
-    <Compile Include="Protocol\Q.cs" />
+    <Compile Include="Protocol\Query\Q.cs" />
     <Compile Include="Protocol\Operations\Connect.cs" />
     <Compile Include="Protocol\Operations\DbCreate.cs" />
     <Compile Include="Protocol\Operations\DbDrop.cs" />
     <Compile Include="Protocol\Operations\DbExist.cs" />
     <Compile Include="Protocol\PayloadStatus.cs" />
+    <Compile Include="Protocol\Query\QueryType.cs" />
     <Compile Include="Protocol\RequestDataItem.cs" />
     <Compile Include="Protocol\Operations\IOperation.cs" />
     <Compile Include="Protocol\Operations\OperationMode.cs" />

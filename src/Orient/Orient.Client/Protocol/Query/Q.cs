@@ -32,6 +32,7 @@ namespace Orient.Client.Protocol
         internal static string Null = "NULL";
         internal static string Or = "OR";
         internal static string Put = "PUT";
+        internal static string Record = "RECORD";
         internal static string Remove = "REMOVE";
         internal static string Select = "SELECT";
         internal static string Set = "SET";
