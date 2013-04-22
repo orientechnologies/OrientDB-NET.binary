@@ -2,31 +2,48 @@
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
-// syntax: CREATE EDGE [<class>] [CLUSTER <cluster>] FROM <rid>|(<query>)|[<rid>]* TO <rid>|(<query>)|[<rid>]* [SET <field> = <expression>[,]*]
+// syntax: 
+// CREATE EDGE [<class>] 
+// [CLUSTER <cluster>] 
+// FROM <rid>|(<query>)|[<rid>]* 
+// TO <rid>|(<query>)|[<rid>]* 
+// [SET <field> = <expression>[,]*]
 
 namespace Orient.Client
 {
     public class OSqlCreateEdge
     {
+        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery2 _sqlQuery2 = new SqlQuery2();
         private Connection _connection;
-        private SqlQuery _sqlQuery;
 
         public OSqlCreateEdge()
         {
-            _sqlQuery = new SqlQuery();
         }
 
         internal OSqlCreateEdge(Connection connection)
         {
             _connection = connection;
-            _sqlQuery = new SqlQuery();
         }
 
         #region Edge
 
         public OSqlCreateEdge Edge(string className)
         {
-            _sqlQuery.Join(Q.Create, Q.Edge, className);
+            _sqlQuery2.Edge(className);
+
+            return this;
+        }
+
+        public OSqlCreateEdge Edge(ODocument document)
+        {
+            if (string.IsNullOrEmpty(document.OClassName))
+            {
+                throw new OException(OExceptionType.Query, "Document doesn't contain OClassName value.");
+            }
+
+            _sqlQuery2.Edge(document.OClassName);
+            _sqlQuery2.Set(document);
 
             return this;
         }
@@ -42,7 +59,7 @@ namespace Orient.Client
 
         public OSqlCreateEdge Cluster(string clusterName)
         {
-            _sqlQuery.Join("", Q.Cluster, clusterName);
+            _sqlQuery2.Cluster(clusterName);
 
             return this;
         }
@@ -56,32 +73,46 @@ namespace Orient.Client
 
         #region From
 
-        public OSqlCreateEdge From(ORID from)
+        public OSqlCreateEdge From(ORID orid)
         {
-            _sqlQuery.Join("", Q.From, from.ToString());
+            _sqlQuery2.From(orid);
 
             return this;
         }
 
         public OSqlCreateEdge From(ODocument document)
         {
-            return From(document.ORID);
+            if (document.ORID == null)
+            {
+                throw new OException(OExceptionType.Query, "Document doesn't contain ORID value.");
+            }
+
+            _sqlQuery2.From(document.ORID);
+
+            return this;
         }
 
         #endregion
 
         #region To
 
-        public OSqlCreateEdge To(ORID to)
+        public OSqlCreateEdge To(ORID orid)
         {
-            _sqlQuery.Join("", Q.To, to.ToString());
+            _sqlQuery2.To(orid);
 
             return this;
         }
 
         public OSqlCreateEdge To(ODocument document)
         {
-            return To(document.ORID);
+            if (document.ORID == null)
+            {
+                throw new OException(OExceptionType.Query, "Document doesn't contain ORID value.");
+            }
+
+            _sqlQuery2.To(document.ORID);
+
+            return this;
         }
 
         #endregion
@@ -90,14 +121,14 @@ namespace Orient.Client
 
         public OSqlCreateEdge Set<T>(string fieldName, T fieldValue)
         {
-            _sqlQuery.SetField<T>(fieldName, fieldValue);
+            _sqlQuery2.Set<T>(fieldName, fieldValue);
 
             return this;
         }
 
         public OSqlCreateEdge Set<T>(T obj)
         {
-            _sqlQuery.SetFields(obj);
+            _sqlQuery2.Set(obj);
 
             return this;
         }
@@ -108,7 +139,7 @@ namespace Orient.Client
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;
-            payload.Text = _sqlQuery.ToString();
+            payload.Text = ToString();
             payload.NonTextLimit = -1;
             payload.FetchPlan = "";
             payload.SerializedParams = new byte[] { 0 };
@@ -125,7 +156,7 @@ namespace Orient.Client
 
         public override string ToString()
         {
-            return _sqlQuery.ToString();
+            return _sqlQuery2.ToString(QueryType.CreateEdge);
         }
     }
 }

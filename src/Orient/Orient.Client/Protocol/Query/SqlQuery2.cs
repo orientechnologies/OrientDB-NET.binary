@@ -41,6 +41,21 @@ namespace Orient.Client.Protocol
             _compiler.Unique(Q.Vertex, className);
         }
 
+        internal void Edge(string className)
+        {
+            _compiler.Unique(Q.Edge, className);
+        }
+
+        internal void From(ORID orid)
+        {
+            _compiler.Unique(Q.From, orid.ToString());
+        }
+
+        internal void To(ORID orid)
+        {
+            _compiler.Unique(Q.To, orid.ToString());
+        }
+
         #region Set
 
         internal void Set<T>(string fieldName, T fieldValue)
@@ -268,7 +283,7 @@ namespace Orient.Client.Protocol
                 case QueryType.CreateCluster:
                     return GenerateCreateClusterQuery();
                 case QueryType.CreateEdge:
-                    break;
+                    return GenerateCreateEdgeQuery();
                 case QueryType.CreateVertex:
                     return GenerateCreateVertexQuery();
                 case QueryType.Delete:
@@ -325,6 +340,34 @@ namespace Orient.Client.Protocol
 
             // [POSITION <position>|append]
             // TODO:
+
+            return query;
+        }
+
+        private string GenerateCreateEdgeQuery()
+        {
+            string query = "";
+
+            // CREATE EDGE [<class>] 
+            query += string.Join(" ", Q.Create, Q.Edge, _compiler.Value(Q.Edge));
+
+            // [CLUSTER <cluster>]
+            if (_compiler.HasKey(Q.Cluster))
+            {
+                query += string.Join(" ", "", Q.Cluster, _compiler.Value(Q.Cluster));
+            }
+
+            // FROM <rid>|(<query>)|[<rid>]* 
+            query += string.Join(" ", "", Q.From, _compiler.Value(Q.From));
+
+            // TO <rid>|(<query>)|[<rid>]* 
+            query += string.Join(" ", "", Q.To, _compiler.Value(Q.To));
+
+            // [SET <field> = <expression>[,]*]
+            if (_compiler.HasKey(Q.Set))
+            {
+                query += string.Join(" ", "", Q.Set, _compiler.Value(Q.Set));
+            }
 
             return query;
         }
