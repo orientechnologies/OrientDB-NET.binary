@@ -12,6 +12,8 @@ namespace Orient.Client.Protocol
             _compiler.Unique(Q.Class, className);
         }
 
+        #region Cluster
+
         internal void Cluster(string clusterName)
         {
             _compiler.Unique(Q.Cluster, clusterName);
@@ -22,6 +24,8 @@ namespace Orient.Client.Protocol
             _compiler.Unique(Q.Cluster, clusterName, clustertype.ToString().ToUpper());
         }
 
+        #endregion
+
         internal void Record(ORID orid)
         {
             _compiler.Unique(Q.Record, orid.ToString());
@@ -30,6 +34,11 @@ namespace Orient.Client.Protocol
         internal void Extends(string superClass)
         {
             _compiler.Unique(Q.Extends, superClass);
+        }
+
+        internal void Vertex(string className)
+        {
+            _compiler.Unique(Q.Vertex, className);
         }
 
         #region Set
@@ -258,11 +267,10 @@ namespace Orient.Client.Protocol
                     return GenerateCreateClassQuery();
                 case QueryType.CreateCluster:
                     return GenerateCreateClusterQuery();
-                    break;
                 case QueryType.CreateEdge:
                     break;
                 case QueryType.CreateVertex:
-                    break;
+                    return GenerateCreateVertexQuery();
                 case QueryType.Delete:
                     break;
                 case QueryType.Insert:
@@ -317,6 +325,28 @@ namespace Orient.Client.Protocol
 
             // [POSITION <position>|append]
             // TODO:
+
+            return query;
+        }
+
+        private string GenerateCreateVertexQuery()
+        {
+            string query = "";
+
+            // CREATE VERTEX [<class>] 
+            query += string.Join(" ", Q.Create, Q.Vertex, _compiler.Value(Q.Vertex));
+
+            // [CLUSTER <cluster>]
+            if (_compiler.HasKey(Q.Cluster))
+            {
+                query += string.Join(" ", "", Q.Cluster, _compiler.Value(Q.Cluster));
+            }
+
+            // [SET <field> = <expression>[,]*]
+            if (_compiler.HasKey(Q.Set))
+            {
+                query += string.Join(" ", "", Q.Set, _compiler.Value(Q.Set));
+            }
 
             return query;
         }

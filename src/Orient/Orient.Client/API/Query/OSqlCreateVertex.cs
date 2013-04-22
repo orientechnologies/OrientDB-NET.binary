@@ -2,31 +2,46 @@
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
-// syntax: CREATE VERTEX [<class>] [CLUSTER <cluster>] [SET <field> = <expression>[,]*]
+// syntax: 
+// CREATE VERTEX [<class>] 
+// [CLUSTER <cluster>] 
+// [SET <field> = <expression>[,]*]
 
 namespace Orient.Client
 {
     public class OSqlCreateVertex
     {
+        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery2 _sqlQuery2 = new SqlQuery2();
         private Connection _connection;
-        private SqlQuery _sqlQuery;
 
         public OSqlCreateVertex()
         {
-            _sqlQuery = new SqlQuery();
         }
 
         internal OSqlCreateVertex(Connection connection)
         {
             _connection = connection;
-            _sqlQuery = new SqlQuery();
         }
 
         #region Vertex
 
         public OSqlCreateVertex Vertex(string className)
         {
-            _sqlQuery.Join(Q.Create, Q.Vertex, className);
+            _sqlQuery2.Vertex(className);
+
+            return this;
+        }
+
+        public OSqlCreateVertex Vertex(ODocument document)
+        {
+            if (string.IsNullOrEmpty(document.OClassName))
+            {
+                throw new OException(OExceptionType.Query, "Document doesn't contain OClassName value.");
+            }
+
+            _sqlQuery2.Vertex(document.OClassName);
+            _sqlQuery2.Set(document);
 
             return this;
         }
@@ -36,20 +51,13 @@ namespace Orient.Client
             return Vertex(typeof(T).Name);
         }
 
-        public OSqlCreateVertex Vertex(ODocument document)
-        {
-            Vertex(document.OClassName);
-
-            return Set(document);
-        }
-
         #endregion
 
         #region Cluster
 
         public OSqlCreateVertex Cluster(string clusterName)
         {
-            _sqlQuery.Join("", Q.Cluster, clusterName);
+            _sqlQuery2.Cluster(clusterName);
 
             return this;
         }
@@ -65,14 +73,14 @@ namespace Orient.Client
 
         public OSqlCreateVertex Set<T>(string fieldName, T fieldValue)
         {
-            _sqlQuery.SetField<T>(fieldName, fieldValue);
+            _sqlQuery2.Set<T>(fieldName, fieldValue);
 
             return this;
         }
 
         public OSqlCreateVertex Set<T>(T obj)
         {
-            _sqlQuery.SetFields(obj);
+            _sqlQuery2.Set(obj);
 
             return this;
         }
@@ -83,7 +91,7 @@ namespace Orient.Client
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;
-            payload.Text = _sqlQuery.ToString();
+            payload.Text = ToString();
             payload.NonTextLimit = -1;
             payload.FetchPlan = "";
             payload.SerializedParams = new byte[] { 0 };
@@ -100,7 +108,7 @@ namespace Orient.Client
 
         public override string ToString()
         {
-            return _sqlQuery.ToString();
+            return _sqlQuery2.ToString(QueryType.CreateVertex);
         }
     }
 }

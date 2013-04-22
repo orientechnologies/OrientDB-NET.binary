@@ -74,36 +74,6 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateCreateVertexQuery()
-        {
-            string generatedUntypedQuery = new OSqlCreateVertex()
-                .Vertex("TestVertexClass")
-                .Cluster("OGraphVertex")
-                .Set("Foo", "foo string value")
-                .Set("Bar", 12345)
-                .ToString();
-
-            TestVertexClass testObj = new TestVertexClass();
-            testObj.Foo = "foo string value";
-            testObj.Bar = 12345;
-
-            string generatedTypedQuery = new OSqlCreateVertex()
-                .Vertex<TestVertexClass>()
-                .Cluster<OGraphVertex>()
-                .Set(testObj)
-                .ToString();
-
-            string query =
-                "CREATE VERTEX TestVertexClass " +
-                "CLUSTER OGraphVertex " +
-                "SET Foo = 'foo string value', " +
-                "Bar = 12345";
-
-            Assert.AreEqual(generatedUntypedQuery, query);
-            Assert.AreEqual(generatedTypedQuery, query);
-        }
-
-        [TestMethod]
         public void ShouldGenerateCreateVertexDocumentQuery()
         {
             ODocument document = new ODocument();
