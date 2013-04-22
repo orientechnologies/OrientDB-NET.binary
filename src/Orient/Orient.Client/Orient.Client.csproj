@@ -62,9 +62,8 @@
     <Compile Include="API\Query\OSqlInsert.cs" />
     <Compile Include="API\Query\OSqlSelect.cs" />
     <Compile Include="API\Query\OSqlUpdate.cs" />
-    <Compile Include="API\Query\SqlQuery.cs" />
     <Compile Include="Protocol\Query\QueryCompiler.cs" />
-    <Compile Include="Protocol\Query\SqlQuery2.cs" />
+    <Compile Include="Protocol\Query\SqlQuery.cs" />
     <Compile Include="API\Types\OType.cs" />
     <Compile Include="API\Types\OLinkCollection.cs" />
     <Compile Include="API\Types\OLinkSet.cs" />

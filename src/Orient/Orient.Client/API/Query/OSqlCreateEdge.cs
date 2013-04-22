@@ -14,7 +14,6 @@ namespace Orient.Client
     public class OSqlCreateEdge
     {
         private SqlQuery _sqlQuery = new SqlQuery();
-        private SqlQuery2 _sqlQuery2 = new SqlQuery2();
         private Connection _connection;
 
         public OSqlCreateEdge()
@@ -30,7 +29,7 @@ namespace Orient.Client
 
         public OSqlCreateEdge Edge(string className)
         {
-            _sqlQuery2.Edge(className);
+            _sqlQuery.Edge(className);
 
             return this;
         }
@@ -42,8 +41,8 @@ namespace Orient.Client
                 throw new OException(OExceptionType.Query, "Document doesn't contain OClassName value.");
             }
 
-            _sqlQuery2.Edge(document.OClassName);
-            _sqlQuery2.Set(document);
+            _sqlQuery.Edge(document.OClassName);
+            _sqlQuery.Set(document);
 
             return this;
         }
@@ -59,7 +58,7 @@ namespace Orient.Client
 
         public OSqlCreateEdge Cluster(string clusterName)
         {
-            _sqlQuery2.Cluster(clusterName);
+            _sqlQuery.Cluster(clusterName);
 
             return this;
         }
@@ -75,7 +74,7 @@ namespace Orient.Client
 
         public OSqlCreateEdge From(ORID orid)
         {
-            _sqlQuery2.From(orid);
+            _sqlQuery.From(orid);
 
             return this;
         }
@@ -87,7 +86,7 @@ namespace Orient.Client
                 throw new OException(OExceptionType.Query, "Document doesn't contain ORID value.");
             }
 
-            _sqlQuery2.From(document.ORID);
+            _sqlQuery.From(document.ORID);
 
             return this;
         }
@@ -98,7 +97,7 @@ namespace Orient.Client
 
         public OSqlCreateEdge To(ORID orid)
         {
-            _sqlQuery2.To(orid);
+            _sqlQuery.To(orid);
 
             return this;
         }
@@ -110,7 +109,7 @@ namespace Orient.Client
                 throw new OException(OExceptionType.Query, "Document doesn't contain ORID value.");
             }
 
-            _sqlQuery2.To(document.ORID);
+            _sqlQuery.To(document.ORID);
 
             return this;
         }
@@ -121,14 +120,14 @@ namespace Orient.Client
 
         public OSqlCreateEdge Set<T>(string fieldName, T fieldValue)
         {
-            _sqlQuery2.Set<T>(fieldName, fieldValue);
+            _sqlQuery.Set<T>(fieldName, fieldValue);
 
             return this;
         }
 
         public OSqlCreateEdge Set<T>(T obj)
         {
-            _sqlQuery2.Set(obj);
+            _sqlQuery.Set(obj);
 
             return this;
         }
@@ -156,7 +155,7 @@ namespace Orient.Client
 
         public override string ToString()
         {
-            return _sqlQuery2.ToString(QueryType.CreateEdge);
+            return _sqlQuery.ToString(QueryType.CreateEdge);
         }
     }
 }

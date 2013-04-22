@@ -12,7 +12,6 @@ namespace Orient.Client
     public class OSqlCreateVertex
     {
         private SqlQuery _sqlQuery = new SqlQuery();
-        private SqlQuery2 _sqlQuery2 = new SqlQuery2();
         private Connection _connection;
 
         public OSqlCreateVertex()
@@ -28,7 +27,7 @@ namespace Orient.Client
 
         public OSqlCreateVertex Vertex(string className)
         {
-            _sqlQuery2.Vertex(className);
+            _sqlQuery.Vertex(className);
 
             return this;
         }
@@ -40,8 +39,8 @@ namespace Orient.Client
                 throw new OException(OExceptionType.Query, "Document doesn't contain OClassName value.");
             }
 
-            _sqlQuery2.Vertex(document.OClassName);
-            _sqlQuery2.Set(document);
+            _sqlQuery.Vertex(document.OClassName);
+            _sqlQuery.Set(document);
 
             return this;
         }
@@ -57,7 +56,7 @@ namespace Orient.Client
 
         public OSqlCreateVertex Cluster(string clusterName)
         {
-            _sqlQuery2.Cluster(clusterName);
+            _sqlQuery.Cluster(clusterName);
 
             return this;
         }
@@ -73,14 +72,14 @@ namespace Orient.Client
 
         public OSqlCreateVertex Set<T>(string fieldName, T fieldValue)
         {
-            _sqlQuery2.Set<T>(fieldName, fieldValue);
+            _sqlQuery.Set<T>(fieldName, fieldValue);
 
             return this;
         }
 
         public OSqlCreateVertex Set<T>(T obj)
         {
-            _sqlQuery2.Set(obj);
+            _sqlQuery.Set(obj);
 
             return this;
         }
@@ -108,7 +107,7 @@ namespace Orient.Client
 
         public override string ToString()
         {
-            return _sqlQuery2.ToString(QueryType.CreateVertex);
+            return _sqlQuery.ToString(QueryType.CreateVertex);
         }
     }
 }

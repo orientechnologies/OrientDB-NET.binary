@@ -16,7 +16,6 @@ namespace Orient.Client
     public class OSqlSelect
     {
         private SqlQuery _sqlQuery = new SqlQuery();
-        private SqlQuery2 _sqlQuery2 = new SqlQuery2();
         private Connection _connection;
 
         public OSqlSelect()
@@ -39,14 +38,14 @@ namespace Orient.Client
 
         public OSqlSelect Select(params string[] projections)
         {
-            _sqlQuery2.Select(projections);
+            _sqlQuery.Select(projections);
 
             return this;
         }
 
         public OSqlSelect Also(string projection)
         {
-            _sqlQuery2.Also(projection);
+            _sqlQuery.Also(projection);
 
             return this;
         }
@@ -60,14 +59,14 @@ namespace Orient.Client
 
         public OSqlSelect Nth(int index)
         {
-            _sqlQuery2.Nth(index);
+            _sqlQuery.Nth(index);
 
             return this;
         }
 
         public OSqlSelect As(string alias)
         {
-            _sqlQuery2.As(alias);
+            _sqlQuery.As(alias);
 
             return this;
         }
@@ -78,14 +77,14 @@ namespace Orient.Client
 
         public OSqlSelect From(string target)
         {
-            _sqlQuery2.From(target);
+            _sqlQuery.From(target);
 
             return this;
         }
 
         public OSqlSelect From(ORID orid)
         {
-            _sqlQuery2.From(orid);
+            _sqlQuery.From(orid);
 
             return this;
         }
@@ -97,7 +96,7 @@ namespace Orient.Client
                 throw new OException(OExceptionType.Query, "Document doesn't contain ORID or OClassName value.");
             }
 
-            _sqlQuery2.From(document);
+            _sqlQuery.From(document);
 
             return this;
         }
@@ -113,91 +112,91 @@ namespace Orient.Client
 
         public OSqlSelect Where(string field)
         {
-            _sqlQuery2.Where(field);
+            _sqlQuery.Where(field);
 
             return this;
         }
 
         public OSqlSelect And(string field)
         {
-            _sqlQuery2.And(field);
+            _sqlQuery.And(field);
 
             return this;
         }
 
         public OSqlSelect Or(string field)
         {
-            _sqlQuery2.Or(field);
+            _sqlQuery.Or(field);
 
             return this;
         }
 
         public OSqlSelect Equals<T>(T item)
         {
-            _sqlQuery2.Equals<T>(item);
+            _sqlQuery.Equals<T>(item);
 
             return this;
         }
 
         public OSqlSelect NotEquals<T>(T item)
         {
-            _sqlQuery2.NotEquals<T>(item);
+            _sqlQuery.NotEquals<T>(item);
 
             return this;
         }
 
         public OSqlSelect Lesser<T>(T item)
         {
-            _sqlQuery2.Lesser<T>(item);
+            _sqlQuery.Lesser<T>(item);
 
             return this;
         }
 
         public OSqlSelect LesserEqual<T>(T item)
         {
-            _sqlQuery2.LesserEqual<T>(item);
+            _sqlQuery.LesserEqual<T>(item);
 
             return this;
         }
 
         public OSqlSelect Greater<T>(T item)
         {
-            _sqlQuery2.Greater<T>(item);
+            _sqlQuery.Greater<T>(item);
 
             return this;
         }
 
         public OSqlSelect GreaterEqual<T>(T item)
         {
-            _sqlQuery2.GreaterEqual<T>(item);
+            _sqlQuery.GreaterEqual<T>(item);
 
             return this;
         }
 
         public OSqlSelect Like<T>(T item)
         {
-            _sqlQuery2.Like<T>(item);
+            _sqlQuery.Like<T>(item);
 
             return this;
         }
 
         public OSqlSelect IsNull()
         {
-            _sqlQuery2.IsNull();
+            _sqlQuery.IsNull();
 
             return this;
         }
 
         public OSqlSelect Contains<T>(T item)
         {
-            _sqlQuery2.Contains<T>(item);
+            _sqlQuery.Contains<T>(item);
 
             return this;
         }
 
         public OSqlSelect Contains<T>(string field, T value)
         {
-            _sqlQuery2.Contains<T>(field, value);
+            _sqlQuery.Contains<T>(field, value);
 
             return this;
         }
@@ -206,7 +205,7 @@ namespace Orient.Client
 
         public OSqlSelect Limit(int maxRecords)
         {
-            _sqlQuery2.Limit(maxRecords);
+            _sqlQuery.Limit(maxRecords);
 
             return this;
         }
@@ -254,7 +253,7 @@ namespace Orient.Client
 
         public override string ToString()
         {
-            return _sqlQuery2.ToString(QueryType.Select);
+            return _sqlQuery.ToString(QueryType.Select);
         }
     }
 }

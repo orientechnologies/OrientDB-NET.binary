@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Orient.Client.Protocol
 {
-    internal class SqlQuery2
+    internal class SqlQuery
     {
         private QueryCompiler _compiler = new QueryCompiler();
 
@@ -238,37 +238,37 @@ namespace Orient.Client.Protocol
 
         internal void Equals<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.Equals, SqlQuery2.ToString(item));
+            _compiler.Append(Q.Where, "", Q.Equals, SqlQuery.ToString(item));
         }
 
         internal void NotEquals<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.NotEquals, SqlQuery2.ToString(item));
+            _compiler.Append(Q.Where, "", Q.NotEquals, SqlQuery.ToString(item));
         }
 
         internal void Lesser<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.Lesser, SqlQuery2.ToString(item));
+            _compiler.Append(Q.Where, "", Q.Lesser, SqlQuery.ToString(item));
         }
 
         internal void LesserEqual<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.LesserEqual, SqlQuery2.ToString(item));
+            _compiler.Append(Q.Where, "", Q.LesserEqual, SqlQuery.ToString(item));
         }
 
         internal void Greater<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.Greater, SqlQuery2.ToString(item));
+            _compiler.Append(Q.Where, "", Q.Greater, SqlQuery.ToString(item));
         }
 
         internal void GreaterEqual<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.GreaterEqual, SqlQuery2.ToString(item));
+            _compiler.Append(Q.Where, "", Q.GreaterEqual, SqlQuery.ToString(item));
         }
 
         internal void Like<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.Like, SqlQuery2.ToString(item));
+            _compiler.Append(Q.Where, "", Q.Like, SqlQuery.ToString(item));
         }
 
         internal void IsNull()
@@ -278,12 +278,12 @@ namespace Orient.Client.Protocol
 
         internal void Contains<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.Contains, SqlQuery2.ToString(item));
+            _compiler.Append(Q.Where, "", Q.Contains, SqlQuery.ToString(item));
         }
 
         internal void Contains<T>(string field, T value)
         {
-            _compiler.Append(Q.Where, "", Q.Contains, "(" + field, Q.Equals, SqlQuery2.ToString(value) + ")");
+            _compiler.Append(Q.Where, "", Q.Contains, "(" + field, Q.Equals, SqlQuery.ToString(value) + ")");
         }
 
         #endregion
@@ -325,7 +325,7 @@ namespace Orient.Client.Protocol
                 fieldName = ", " + fieldName;
             }
 
-            _compiler.Append(Q.Remove, fieldName, Q.Equals, SqlQuery2.ToString(collectionValue));
+            _compiler.Append(Q.Remove, fieldName, Q.Equals, SqlQuery.ToString(collectionValue));
         }
 
         #endregion

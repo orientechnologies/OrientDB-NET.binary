@@ -12,7 +12,6 @@ namespace Orient.Client
     public class OSqlInsert
     {
         private SqlQuery _sqlQuery = new SqlQuery();
-        private SqlQuery2 _sqlQuery2 = new SqlQuery2();
         private Connection _connection;
 
         public OSqlInsert()
@@ -28,7 +27,7 @@ namespace Orient.Client
         {
             // check for OClassName shouldn't have be here since INTO clause might specify it
 
-            _sqlQuery2.Insert(document);
+            _sqlQuery.Insert(document);
 
             return this;
         }
@@ -37,7 +36,7 @@ namespace Orient.Client
 
         public OSqlInsert Into(string className)
         {
-            _sqlQuery2.Class(className);
+            _sqlQuery.Class(className);
 
             return this;
         }
@@ -55,7 +54,7 @@ namespace Orient.Client
 
         public OSqlInsert Cluster(string clusterName)
         {
-            _sqlQuery2.Cluster(clusterName);
+            _sqlQuery.Cluster(clusterName);
 
             return this;
         }
@@ -71,14 +70,14 @@ namespace Orient.Client
 
         public OSqlInsert Set<T>(string fieldName, T fieldValue)
         {
-            _sqlQuery2.Set<T>(fieldName, fieldValue);
+            _sqlQuery.Set<T>(fieldName, fieldValue);
 
             return this;
         }
 
         public OSqlInsert Set<T>(T obj)
         {
-            _sqlQuery2.Set(obj);
+            _sqlQuery.Set(obj);
 
             return this;
         }
@@ -106,7 +105,7 @@ namespace Orient.Client
 
         public override string ToString()
         {
-            return _sqlQuery2.ToString(QueryType.Insert);
+            return _sqlQuery.ToString(QueryType.Insert);
         }
     }
 }

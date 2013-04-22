@@ -12,7 +12,6 @@ namespace Orient.Client
     public class OSqlCreateCluster
     {
         private SqlQuery _sqlQuery = new SqlQuery();
-        private SqlQuery2 _sqlQuery2 = new SqlQuery2();
         private Connection _connection;
 
         public OSqlCreateCluster()
@@ -28,7 +27,7 @@ namespace Orient.Client
 
         public OSqlCreateCluster Cluster(string clusterName, OClusterType clusterType)
         {
-            _sqlQuery2.Cluster(clusterName, clusterType);
+            _sqlQuery.Cluster(clusterName, clusterType);
 
             return this;
         }
@@ -61,7 +60,7 @@ namespace Orient.Client
 
         public override string ToString()
         {
-            return _sqlQuery2.ToString(QueryType.CreateCluster);
+            return _sqlQuery.ToString(QueryType.CreateCluster);
         }
     }
 }
