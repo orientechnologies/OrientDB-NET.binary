@@ -35,6 +35,13 @@ namespace Orient.Client
             _connection = connection;
         }
 
+        public OSqlUpdate Update(ODocument document)
+        {
+            _sqlQuery2.Update(document);
+
+            return this;
+        }
+
         #region Class
 
         public OSqlUpdate Class(string className)
@@ -83,23 +90,6 @@ namespace Orient.Client
         }
 
         #endregion
-
-        public OSqlUpdate Document(ODocument document)
-        {
-            if (!string.IsNullOrEmpty(document.OClassName))
-            {
-                _sqlQuery2.Class(document.OClassName);
-            }
-
-            if (document.ORID != null)
-            {
-                _sqlQuery2.Record(document.ORID);
-            }
-
-            _sqlQuery2.Set(document);
-
-            return this;
-        }
 
         #region Set
 

@@ -17,7 +17,7 @@ namespace Orient.Tests.Query
                 .SetField("bar", 12345);
 
             string generatedQuery = new OSqlUpdate()
-                .Document(document)
+                .Update(document)
                 .ToString();
 
             string query =
@@ -36,7 +36,7 @@ namespace Orient.Tests.Query
                 .SetField("bar", 12345);
 
             string generatedQuery = new OSqlUpdate()
-                .Document(document)
+                .Update(document)
                 .Class("TestVertexClass")
                 .ToString();
 
@@ -56,7 +56,7 @@ namespace Orient.Tests.Query
                 .SetField("bar", 12345);
 
             string generatedQuery = new OSqlUpdate()
-                .Document(document)
+                .Update(document)
                 .Cluster("TestCluster")
                 .ToString();
 
@@ -78,7 +78,7 @@ namespace Orient.Tests.Query
                 .SetField("bar", 12345);
 
             string generatedQuery = new OSqlUpdate()
-                .Document(document)
+                .Update(document)
                 .ToString();
 
             string query =
@@ -97,7 +97,7 @@ namespace Orient.Tests.Query
                 .SetField("bar", 12345);
 
             string generatedQuery = new OSqlUpdate()
-                .Document(document)
+                .Update(document)
                 .Record(new ORID(8, 0))
                 .ToString();
 
@@ -176,7 +176,7 @@ namespace Orient.Tests.Query
                 .SetField("bar", 12345);
 
             string generatedQuery = new OSqlUpdate()
-                .Document(document)
+                .Update(document)
                 .Where("foo").Equals("whoa")
                 .Or("foo").NotEquals(123)
                 .And("foo").Lesser(1)
