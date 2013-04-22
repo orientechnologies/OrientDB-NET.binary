@@ -8,7 +8,7 @@ namespace Orient.Tests.Query
     [TestClass]
     public class SqlInsertTests
     {
-        [TestMethod]
+        /*[TestMethod]
         public void ShouldInsertIntoSet()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
@@ -64,6 +64,6 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(insertedDocument.GetField<int>("bar"), document.GetField<int>("bar"));
                 }
             }
-        }
+        }*/
     }
 }

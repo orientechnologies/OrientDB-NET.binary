@@ -8,7 +8,7 @@ namespace Orient.Tests.Query
     [TestClass]
     public class SqlCreateTests
     {
-        [TestMethod]
+        /*[TestMethod]
         public void ShouldCreateClassUntyped()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
@@ -290,6 +290,6 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(loadedVertex1.GetField<int>("Bar"), testVertex.Bar);
                 }
             }
-        }
+        }*/
     }
 }

@@ -8,7 +8,7 @@ namespace Orient.Tests.Query
     [TestClass]
     public class SqlUpdateTests
     {
-        [TestMethod]
+        /*[TestMethod]
         public void ShouldUpdateSet()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
@@ -385,6 +385,6 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(fooCollection[0], "foo 2");
                 }
             }
-        }
+        }*/
     }
 }

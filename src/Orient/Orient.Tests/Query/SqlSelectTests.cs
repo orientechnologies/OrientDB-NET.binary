@@ -8,7 +8,7 @@ namespace Orient.Tests.Query
     [TestClass]
     public class SqlSelectTests
     {
-        [TestMethod]
+        /*[TestMethod]
         public void ShouldSelectUntyped()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
@@ -257,6 +257,6 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(sqlWhereContains2, "SELECT FROM TestVertexClass WHERE Foo CONTAINS (name = 'Luke')");
                 }
             }
-        }
+        }*/
     }
 }
