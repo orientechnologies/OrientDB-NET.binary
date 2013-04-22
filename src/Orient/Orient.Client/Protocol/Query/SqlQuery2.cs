@@ -46,6 +46,40 @@ namespace Orient.Client.Protocol
             _compiler.Unique(Q.Edge, className);
         }
 
+        internal void Insert(ODocument document)
+        {
+            if (!string.IsNullOrEmpty(document.OClassName))
+            {
+                Class(document.OClassName);
+            }
+
+            Set(document);
+        }
+
+        #region Update
+
+        internal void Update(ORID orid)
+        {
+            Record(orid);
+        }
+
+        internal void Update(ODocument document)
+        {
+            if (!string.IsNullOrEmpty(document.OClassName))
+            {
+                Class(document.OClassName);
+            }
+
+            if (document.ORID != null)
+            {
+                Record(document.ORID);
+            }
+
+            Set(document);
+        }
+
+        #endregion
+
         internal void From(ORID orid)
         {
             _compiler.Unique(Q.From, orid.ToString());
@@ -200,20 +234,6 @@ namespace Orient.Client.Protocol
 
         #endregion
 
-        #region Update
-
-        internal void Update(ORID orid)
-        {
-            Record(orid);
-        }
-
-        internal void Update(ODocument document)
-        {
-            Set(document);
-        }
-
-        #endregion
-
         #region Add
 
         internal void Add<T>(string fieldName, T fieldValue)
@@ -289,7 +309,7 @@ namespace Orient.Client.Protocol
                 case QueryType.Delete:
                     break;
                 case QueryType.Insert:
-                    break;
+                    return GenerateInsertQuery();
                 case QueryType.Select:
                     break;
                 case QueryType.Update:
@@ -386,6 +406,28 @@ namespace Orient.Client.Protocol
             }
 
             // [SET <field> = <expression>[,]*]
+            if (_compiler.HasKey(Q.Set))
+            {
+                query += string.Join(" ", "", Q.Set, _compiler.Value(Q.Set));
+            }
+
+            return query;
+        }
+
+        private string GenerateInsertQuery()
+        {
+            string query = "";
+
+            // INSERT INTO <Class>|cluster:<cluster>|index:<index> 
+            query += string.Join(" ", Q.Insert, Q.Into, _compiler.Value(Q.Class));
+
+            // [<cluster>](cluster) 
+            if (_compiler.HasKey(Q.Cluster))
+            {
+                query += string.Join(" ", "", Q.Cluster, _compiler.Value(Q.Cluster));
+            }
+
+            // [VALUES (<expression>[,]((<field>[,]*))*)]|[<field> = <expression>[,](SET)*]
             if (_compiler.HasKey(Q.Set))
             {
                 query += string.Join(" ", "", Q.Set, _compiler.Value(Q.Set));

@@ -3,32 +3,41 @@ using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
 // syntax:
-// INSERT INTO <Class>|cluster:<cluster>|index:<index> [<cluster>](cluster) 
+// INSERT INTO <Class>|cluster:<cluster>|index:<index> 
+// [<cluster>](cluster) 
 // [VALUES (<expression>[,]((<field>[,]*))*)]|[<field> = <expression>[,](SET)*]
 
 namespace Orient.Client
 {
     public class OSqlInsert
     {
+        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery2 _sqlQuery2 = new SqlQuery2();
         private Connection _connection;
-        private SqlQuery _sqlQuery;
 
         public OSqlInsert()
         {
-            _sqlQuery = new SqlQuery();
         }
 
         internal OSqlInsert(Connection connection)
         {
             _connection = connection;
-            _sqlQuery = new SqlQuery();
+        }
+
+        public OSqlInsert Insert(ODocument document)
+        {
+            // check for OClassName shouldn't have be here since INTO clause might specify it
+
+            _sqlQuery2.Insert(document);
+
+            return this;
         }
 
         #region Into
 
         public OSqlInsert Into(string className)
         {
-            _sqlQuery.Join(Q.Insert, Q.Into, className);
+            _sqlQuery2.Class(className);
 
             return this;
         }
@@ -46,7 +55,7 @@ namespace Orient.Client
 
         public OSqlInsert Cluster(string clusterName)
         {
-            _sqlQuery.Join("", Q.Cluster, clusterName);
+            _sqlQuery2.Cluster(clusterName);
 
             return this;
         }
@@ -62,14 +71,14 @@ namespace Orient.Client
 
         public OSqlInsert Set<T>(string fieldName, T fieldValue)
         {
-            _sqlQuery.SetField<T>(fieldName, fieldValue);
+            _sqlQuery2.Set<T>(fieldName, fieldValue);
 
             return this;
         }
 
         public OSqlInsert Set<T>(T obj)
         {
-            _sqlQuery.SetFields(obj);
+            _sqlQuery2.Set(obj);
 
             return this;
         }
@@ -80,7 +89,7 @@ namespace Orient.Client
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;
-            payload.Text = _sqlQuery.ToString();
+            payload.Text = ToString();
             payload.NonTextLimit = -1;
             payload.FetchPlan = "";
             payload.SerializedParams = new byte[] { 0 };
@@ -97,7 +106,7 @@ namespace Orient.Client
 
         public override string ToString()
         {
-            return _sqlQuery.ToString();
+            return _sqlQuery2.ToString(QueryType.Insert);
         }
     }
 }
