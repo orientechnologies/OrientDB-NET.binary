@@ -62,9 +62,33 @@ namespace Orient.Client
             return new OSqlCreateVertex(_connection).Vertex(className);
         }
 
+        public OSqlCreateVertex Vertex(ODocument document)
+        {
+            return new OSqlCreateVertex(_connection).Vertex(document);
+        }
+
         public OSqlCreateVertex Vertex<T>()
         {
             return Vertex(typeof(T).Name);
+        }
+
+        #endregion
+
+        #region Document
+
+        public OSqlCreateDocument Document(string className)
+        {
+            return new OSqlCreateDocument(_connection).Document(className);
+        }
+
+        public OSqlCreateDocument Document(ODocument document)
+        {
+            return new OSqlCreateDocument(_connection).Document(document);
+        }
+
+        public OSqlCreateDocument Document<T>()
+        {
+            return Document(typeof(T).Name);
         }
 
         #endregion

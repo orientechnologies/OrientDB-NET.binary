@@ -57,6 +57,7 @@
     <Compile Include="API\Query\OSqlCreate.cs" />
     <Compile Include="API\Query\OSqlCreateClass.cs" />
     <Compile Include="API\Query\OSqlCreateCluster.cs" />
+    <Compile Include="API\Query\OSqlCreateDocument.cs" />
     <Compile Include="API\Query\OSqlCreateEdge.cs" />
     <Compile Include="API\Query\OSqlCreateVertex.cs" />
     <Compile Include="API\Query\OSqlInsert.cs" />
