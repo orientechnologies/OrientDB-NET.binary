@@ -330,6 +330,11 @@ namespace Orient.Client.Protocol
 
         #endregion
 
+        internal void Limit(int maxRecords)
+        {
+            _compiler.Unique(Q.Limit, maxRecords.ToString());
+        }
+
         #region ToString
 
         internal static string ToString(object value)
@@ -520,7 +525,10 @@ namespace Orient.Client.Protocol
             }
 
             // [<max-records>](LIMIT)
-            // TODO:
+            if (_compiler.HasKey(Q.Limit))
+            {
+                query += string.Join(" ", "", Q.Limit, _compiler.Value(Q.Limit));
+            }
 
             return query;
         }
@@ -561,7 +569,10 @@ namespace Orient.Client.Protocol
             // TODO:
 
             // [<MaxRecords>](LIMIT)
-            // TODO:
+            if (_compiler.HasKey(Q.Limit))
+            {
+                query += string.Join(" ", "", Q.Limit, _compiler.Value(Q.Limit));
+            }
 
             return query;
         }

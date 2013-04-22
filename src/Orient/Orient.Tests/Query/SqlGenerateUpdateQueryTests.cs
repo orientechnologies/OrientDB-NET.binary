@@ -167,7 +167,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateUpdateWhereQuery()
+        public void ShouldGenerateUpdateWhereLimitQuery()
         {
             ODocument document = new ODocument();
             document.ORID = new ORID(8, 0);
@@ -187,6 +187,7 @@ namespace Orient.Tests.Query
                 .And("foo").IsNull()
                 .And("foo").Contains("johny")
                 .And("foo").Contains("name", "johny")
+                .Limit(5)
                 .ToString();
 
             string query =
@@ -202,7 +203,8 @@ namespace Orient.Tests.Query
                 "AND foo LIKE '%whoa%' " +
                 "AND foo IS NULL " +
                 "AND foo CONTAINS 'johny' " +
-                "AND foo CONTAINS (name = 'johny')";
+                "AND foo CONTAINS (name = 'johny') " +
+                "LIMIT 5";
 
             Assert.AreEqual(generatedQuery, query);
         }

@@ -138,7 +138,6 @@ namespace Orient.Client
 
         public OSqlUpdate Where(string field)
         {
-            //_sqlQuery.Where(field);
             _sqlQuery2.Where(field);
 
             return this;
@@ -232,7 +231,7 @@ namespace Orient.Client
 
         public OSqlUpdate Limit(int maxRecords)
         {
-            _sqlQuery.Join("", Q.Limit, maxRecords.ToString());
+            _sqlQuery2.Limit(maxRecords);
 
             return this;
         }

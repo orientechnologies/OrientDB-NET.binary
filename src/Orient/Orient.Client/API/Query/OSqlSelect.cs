@@ -204,6 +204,13 @@ namespace Orient.Client
 
         #endregion
 
+        public OSqlSelect Limit(int maxRecords)
+        {
+            _sqlQuery2.Limit(maxRecords);
+
+            return this;
+        }
+
         #region ToList
 
         public List<T> ToList<T>() where T : class, new()
