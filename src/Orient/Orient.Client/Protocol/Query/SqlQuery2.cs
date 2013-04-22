@@ -80,10 +80,64 @@ namespace Orient.Client.Protocol
 
         #endregion
 
+        #region Select
+
+        internal void Select(params string[] projections)
+        {
+            for (int i = 0; i < projections.Length; i++)
+            {
+                _compiler.Append(Q.Select, projections[i]);
+
+                if (i < (projections.Length - 1))
+                {
+                    _compiler.Append(Q.Select, Q.Comma, "");
+                }
+            }
+        }
+
+        internal void Also(string projection)
+        {
+            _compiler.Append(Q.Select, Q.Comma, projection);
+        }
+
+        internal void Nth(int index)
+        {
+            _compiler.Append(Q.Select, "[" + index + "]");
+        }
+
+        internal void As(string alias)
+        {
+            _compiler.Append(Q.Select, "", Q.As, alias);
+        }
+
+        #endregion
+
+        #region From
+
         internal void From(ORID orid)
         {
             _compiler.Unique(Q.From, orid.ToString());
         }
+
+        internal void From(string target)
+        {
+            _compiler.Unique(Q.From, target);
+        }
+
+        internal void From(ODocument document)
+        {
+            if (!string.IsNullOrEmpty(document.OClassName))
+            {
+                From(document.OClassName);
+            }
+
+            if (document.ORID != null)
+            {
+                From(document.ORID);
+            }
+        }
+
+        #endregion
 
         internal void To(ORID orid)
         {
@@ -310,10 +364,10 @@ namespace Orient.Client.Protocol
                     break;
                 case QueryType.Insert:
                     return GenerateInsertQuery();
-                case QueryType.Select:
-                    break;
                 case QueryType.Update:
                     return GenerateUpdateQuery();
+                case QueryType.Select:
+                    return GenerateSelectQuery();
                 default:
                     break;
             }
@@ -466,6 +520,47 @@ namespace Orient.Client.Protocol
             }
 
             // [<max-records>](LIMIT)
+            // TODO:
+
+            return query;
+        }
+
+        private string GenerateSelectQuery()
+        {
+            string query = "";
+
+            // SELECT [<Projections>]
+            if (string.IsNullOrEmpty(_compiler.Value(Q.Select)))
+            {
+                query += string.Join(" ", Q.Select);
+            }
+            else
+            {
+                query += string.Join(" ", Q.Select, _compiler.Value(Q.Select));
+            }
+
+            // [LET <Assignment>*]) 
+            // TODO:
+
+            // FROM <Target>
+            query += string.Join(" ", "", Q.From, _compiler.Value(Q.From));
+
+            // [<Condition>*](WHERE) 
+            if (_compiler.HasKey(Q.Where))
+            {
+                query += string.Join(" ", "", Q.Where, _compiler.Value(Q.Where));
+            }
+
+            // [BY <Field>](GROUP) 
+            // TODO:
+
+            // [BY <Fields>* [ASC|DESC](ORDER)*] 
+            // TODO:
+
+            // [<SkipRecords>](SKIP) 
+            // TODO:
+
+            // [<MaxRecords>](LIMIT)
             // TODO:
 
             return query;

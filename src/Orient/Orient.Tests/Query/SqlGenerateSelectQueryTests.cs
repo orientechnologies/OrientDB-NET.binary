@@ -8,103 +8,61 @@ namespace Orient.Tests.Query
     public class SqlGenerateSelectQueryTests
     {
         [TestMethod]
-        public void ShouldGenerate_Select_Also_First_Nth_As_Query()
+        public void ShouldGenerateSelectAlsoNthAsQuery()
         {
-            string generatedUntypedQuery = new OSqlSelect()
+            string generatedQuery = new OSqlSelect()
                 .Select("foo").As("Foo")
                 .Also("bar").As("Bar")
-                .Also("baz").First().As("Baz")
                 .Also("baq").Nth(0).As("Baq")
-                .From("OGraphVertex")
-                .ToString();
-
-            string generatedTypedQuery = new OSqlSelect()
-                .Select("foo").As("Foo")
-                .Also("bar").As("Bar")
-                .Also("baz").First().As("Baz")
-                .Also("baq").Nth(0).As("Baq")
-                .From<OGraphVertex>()
+                .From("TestClass")
                 .ToString();
 
             string query =
                 "SELECT foo AS Foo, " +
                 "bar AS Bar, " +
-                "first(baz) AS Baz, " +
                 "baq[0] AS Baq " +
-                "FROM OGraphVertex";
+                "FROM TestClass";
 
-            Assert.AreEqual(generatedUntypedQuery, query);
-            Assert.AreEqual(generatedTypedQuery, query);
+            Assert.AreEqual(generatedQuery, query);
         }
 
         [TestMethod]
-        public void ShouldGenerate_Select_Where_And_Or_Like_IsNull_Conditions_Query()
+        public void ShouldGenerateSelectWhereQuery()
         {
-            string generatedUntypedQuery = new OSqlSelect()
+            string generatedQuery = new OSqlSelect()
                 .Select()
-                .From("OGraphVertex")
-                .Where("foo").Equals("foo string")
-                .And("bar").NotEquals(12345)
-                .Or("baz").LesserEqual(10)
-                .Or("baq").GreaterEqual(50)
-                .Or("f1").Like("fulltext%")
-                .Or("f2").IsNull()
-                .ToString();
-
-            string generatedTypedQuery = new OSqlSelect()
-                .Select()
-                .From<OGraphVertex>()
-                .Where("foo").Equals("foo string")
-                .And("bar").NotEquals(12345)
-                .Or("baz").LesserEqual(10)
-                .Or("baq").GreaterEqual(50)
-                .Or("f1").Like("fulltext%")
-                .Or("f2").IsNull()
+                .From("TestClass")
+                .Where("foo").Equals("whoa")
+                .Or("foo").NotEquals(123)
+                .And("foo").Lesser(1)
+                .And("foo").LesserEqual(2)
+                .And("foo").Greater(3)
+                .And("foo").GreaterEqual(4)
+                .And("foo").Like("%whoa%")
+                .And("foo").IsNull()
+                .And("foo").Contains("johny")
+                .And("foo").Contains("name", "johny")
                 .ToString();
 
             string query =
                 "SELECT " +
-                "FROM OGraphVertex " +
-                "WHERE foo = 'foo string' " +
-                "AND bar != 12345 " +
-                "OR baz <= 10 " +
-                "OR baq >= 50 " +
-                "OR f1 LIKE 'fulltext%' " +
-                "OR f2 IS NULL";
+                "FROM TestClass " +
+                "WHERE foo = 'whoa' " +
+                "OR foo != 123 " +
+                "AND foo < 1 " +
+                "AND foo <= 2 " +
+                "AND foo > 3 " +
+                "AND foo >= 4 " +
+                "AND foo LIKE '%whoa%' " +
+                "AND foo IS NULL " +
+                "AND foo CONTAINS 'johny' " +
+                "AND foo CONTAINS (name = 'johny')";
 
-            Assert.AreEqual(generatedUntypedQuery, query);
-            Assert.AreEqual(generatedTypedQuery, query);
+            Assert.AreEqual(generatedQuery, query);
         }
 
         [TestMethod]
-        public void ShouldGenerate_Select_Where_Contains_Query()
-        {
-            string generatedUntypedQuery = new OSqlSelect()
-                .Select()
-                .From("OGraphVertex")
-                .Where("foo").Contains("english")
-                .And("bar").Contains("foo", 123)
-                .ToString();
-
-            string generatedTypedQuery = new OSqlSelect()
-                .Select()
-                .From<OGraphVertex>()
-                .Where("foo").Contains("english")
-                .And("bar").Contains("foo", 123)
-                .ToString();
-
-            string query =
-                "SELECT " +
-                "FROM OGraphVertex " +
-                "WHERE foo CONTAINS 'english' " +
-                "AND bar CONTAINS (foo = 123)";
-
-            Assert.AreEqual(generatedUntypedQuery, query);
-            Assert.AreEqual(generatedTypedQuery, query);
-        }
-
-        [TestMethod]
-        public void ShouldGenerateSelectFromDocumentQuery()
+        public void ShouldGenerateSelectFromDocumentOridQuery()
         {
             ODocument document = new ODocument();
             document.ORID = new ORID(8, 0);
@@ -112,15 +70,29 @@ namespace Orient.Tests.Query
             string generatedQuery = new OSqlSelect()
                 .Select("foo", "bar")
                 .From(document)
-                .Where("foo").Equals("english")
-                .And("bar").Equals(123)
                 .ToString();
 
             string query =
                 "SELECT foo, bar " +
-                "FROM #8:0 " +
-                "WHERE foo = 'english' " +
-                "AND bar = 123";
+                "FROM #8:0";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
+        public void ShouldGenerateSelectFromDocumentOClassNameQuery()
+        {
+            ODocument document = new ODocument();
+            document.OClassName = "TestClass";
+
+            string generatedQuery = new OSqlSelect()
+                .Select("foo", "bar")
+                .From(document)
+                .ToString();
+
+            string query =
+                "SELECT foo, bar " +
+                "FROM TestClass";
 
             Assert.AreEqual(generatedQuery, query);
         }

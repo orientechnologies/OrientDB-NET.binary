@@ -2,79 +2,72 @@
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
-// SELECT [FROM <Target> [LET <Assignment>*](<Projections>]) [<Condition>*](WHERE) [BY <Field>](GROUP) [BY <Fields>* [ASC|DESC](ORDER)*] [<SkipRecords>](SKIP) [<MaxRecords>](LIMIT)
+// syntax:
+// SELECT [FROM <Target> 
+// [LET <Assignment>*](<Projections>]) 
+// [<Condition>*](WHERE) 
+// [BY <Field>](GROUP) 
+// [BY <Fields>* [ASC|DESC](ORDER)*] 
+// [<SkipRecords>](SKIP) 
+// [<MaxRecords>](LIMIT)
 
 namespace Orient.Client
 {
     public class OSqlSelect
     {
+        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery2 _sqlQuery2 = new SqlQuery2();
         private Connection _connection;
-        private SqlQuery _sqlQuery;
 
         public OSqlSelect()
         {
-            _sqlQuery = new SqlQuery();
         }
 
         internal OSqlSelect(Connection connection)
         {
             _connection = connection;
-            _sqlQuery = new SqlQuery();
         }
 
         #region Select
 
-        public OSqlSelect Select(string projection)
+        /*public OSqlSelect Select(string projection)
         {
             _sqlQuery.Join(Q.Select, projection);
 
             return this;
-        }
+        }*/
 
         public OSqlSelect Select(params string[] projections)
         {
-            int iteration = 0;
-            _sqlQuery.Join(Q.Select);
-
-            foreach (string projection in projections)
-            {
-                _sqlQuery.Join("", projection);
-
-                iteration++;
-
-                if (iteration < projections.Length)
-                {
-                    _sqlQuery.Join(Q.Comma);
-                }
-            }
+            _sqlQuery2.Select(projections);
 
             return this;
         }
 
         public OSqlSelect Also(string projection)
         {
-            _sqlQuery.Join(Q.Comma, projection);
+            _sqlQuery2.Also(projection);
 
             return this;
         }
 
-        public OSqlSelect First()
+        /*public OSqlSelect First()
         {
             _sqlQuery.Surround("first");
 
             return this;
-        }
+        }*/
 
         public OSqlSelect Nth(int index)
         {
-            _sqlQuery.Join("[" + index + "]");
+            _sqlQuery2.Nth(index);
 
             return this;
         }
 
         public OSqlSelect As(string alias)
         {
-            _sqlQuery.Join("", Q.As, alias);
+            _sqlQuery2.As(alias);
 
             return this;
         }
@@ -85,19 +78,28 @@ namespace Orient.Client
 
         public OSqlSelect From(string target)
         {
-            _sqlQuery.Join("", Q.From, target);
+            _sqlQuery2.From(target);
 
             return this;
         }
 
         public OSqlSelect From(ORID orid)
         {
-            return From(orid.ToString());
+            _sqlQuery2.From(orid);
+
+            return this;
         }
 
         public OSqlSelect From(ODocument document)
         {
-            return From(document.ORID);
+            if ((document.ORID == null) && string.IsNullOrEmpty(document.OClassName))
+            {
+                throw new OException(OExceptionType.Query, "Document doesn't contain ORID or OClassName value.");
+            }
+
+            _sqlQuery2.From(document);
+
+            return this;
         }
 
         public OSqlSelect From<T>()
@@ -111,91 +113,91 @@ namespace Orient.Client
 
         public OSqlSelect Where(string field)
         {
-            _sqlQuery.Where(field);
+            _sqlQuery2.Where(field);
 
             return this;
         }
 
         public OSqlSelect And(string field)
         {
-            _sqlQuery.And(field);
+            _sqlQuery2.And(field);
 
             return this;
         }
 
         public OSqlSelect Or(string field)
         {
-            _sqlQuery.Or(field);
+            _sqlQuery2.Or(field);
 
             return this;
         }
 
         public OSqlSelect Equals<T>(T item)
         {
-            _sqlQuery.Equals<T>(item);
+            _sqlQuery2.Equals<T>(item);
 
             return this;
         }
 
         public OSqlSelect NotEquals<T>(T item)
         {
-            _sqlQuery.NotEquals<T>(item);
+            _sqlQuery2.NotEquals<T>(item);
 
             return this;
         }
 
         public OSqlSelect Lesser<T>(T item)
         {
-            _sqlQuery.Lesser<T>(item);
+            _sqlQuery2.Lesser<T>(item);
 
             return this;
         }
 
         public OSqlSelect LesserEqual<T>(T item)
         {
-            _sqlQuery.LesserEqual<T>(item);
+            _sqlQuery2.LesserEqual<T>(item);
 
             return this;
         }
 
         public OSqlSelect Greater<T>(T item)
         {
-            _sqlQuery.Greater<T>(item);
+            _sqlQuery2.Greater<T>(item);
 
             return this;
         }
 
         public OSqlSelect GreaterEqual<T>(T item)
         {
-            _sqlQuery.GreaterEqual<T>(item);
+            _sqlQuery2.GreaterEqual<T>(item);
 
             return this;
         }
 
         public OSqlSelect Like<T>(T item)
         {
-            _sqlQuery.Like<T>(item);
+            _sqlQuery2.Like<T>(item);
 
             return this;
         }
 
         public OSqlSelect IsNull()
         {
-            _sqlQuery.IsNull();
+            _sqlQuery2.IsNull();
 
             return this;
         }
 
         public OSqlSelect Contains<T>(T item)
         {
-            _sqlQuery.Contains<T>(item);
+            _sqlQuery2.Contains<T>(item);
 
             return this;
         }
 
         public OSqlSelect Contains<T>(string field, T value)
         {
-            _sqlQuery.Contains<T>(field, value);
+            _sqlQuery2.Contains<T>(field, value);
 
             return this;
         }
@@ -226,7 +228,7 @@ namespace Orient.Client
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;
-            payload.Text = _sqlQuery.ToString();
+            payload.Text = ToString();
             payload.NonTextLimit = -1;
             payload.FetchPlan = fetchPlan;
             payload.SerializedParams = new byte[] { 0 };
@@ -245,7 +247,7 @@ namespace Orient.Client
 
         public override string ToString()
         {
-            return _sqlQuery.ToString();
+            return _sqlQuery2.ToString(QueryType.Select);
         }
     }
 }
