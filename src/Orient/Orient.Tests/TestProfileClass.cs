@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Orient.Client;
 
 namespace Orient.Tests
 {
-    class TestProfileClass
+    public class TestProfileClass : OBaseRecord
     {
+        public string Name { get; set; }
+        public string Surname { get; set; }
     }
 }

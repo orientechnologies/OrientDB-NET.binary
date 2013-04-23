@@ -32,8 +32,19 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateVertex Vertex(ODocument document)
+        public OSqlCreateVertex Vertex<T>(T obj)
         {
+            ODocument document;
+
+            if (obj is ODocument)
+            {
+                document = obj as ODocument;
+            }
+            else
+            {
+                document = ODocument.ToDocument(obj);
+            }
+
             if (string.IsNullOrEmpty(document.OClassName))
             {
                 throw new OException(OExceptionType.Query, "Document doesn't contain OClassName value.");

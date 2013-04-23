@@ -23,11 +23,11 @@ namespace Orient.Client
             _connection = connection;
         }
 
-        public OSqlInsert Insert(ODocument document)
+        public OSqlInsert Insert<T>(T obj)
         {
             // check for OClassName shouldn't have be here since INTO clause might specify it
 
-            _sqlQuery.Insert(document);
+            _sqlQuery.Insert(obj);
 
             return this;
         }

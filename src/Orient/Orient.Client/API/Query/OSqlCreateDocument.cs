@@ -29,11 +29,11 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateDocument Document(ODocument document)
+        public OSqlCreateDocument Document<T>(T obj)
         {
             // check for OClassName shouldn't have be here since INTO clause might specify it
 
-            _sqlQuery.Insert(document);
+            _sqlQuery.Insert(obj);
 
             return this;
         }

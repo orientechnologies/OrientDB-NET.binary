@@ -34,8 +34,19 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateEdge Edge(ODocument document)
+        public OSqlCreateEdge Edge<T>(T obj)
         {
+            ODocument document;
+
+            if (obj is ODocument)
+            {
+                document = obj as ODocument;
+            }
+            else
+            {
+                document = ODocument.ToDocument(obj);
+            }
+
             if (string.IsNullOrEmpty(document.OClassName))
             {
                 throw new OException(OExceptionType.Query, "Document doesn't contain OClassName value.");

@@ -29,6 +29,25 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
+        public void ShouldGenerateUpdateClassFromObjectQuery()
+        {
+            TestProfileClass profile = new TestProfileClass();
+            profile.Name = "Johny";
+            profile.Surname = "Bravo";
+
+            string generatedQuery = new OSqlUpdate()
+                .Update(profile)
+                .ToString();
+
+            string query =
+                "UPDATE TestProfileClass " +
+                "SET Name = 'Johny', " +
+                "Surname = 'Bravo'";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
         public void ShouldGenerateUpdateClassQuery()
         {
             ODocument document = new ODocument()

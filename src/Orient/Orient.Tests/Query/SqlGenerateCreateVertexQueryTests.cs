@@ -42,6 +42,25 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
+        public void ShouldGenerateCreateVertexFromObjectQuery()
+        {
+            TestProfileClass profile = new TestProfileClass();
+            profile.Name = "Johny";
+            profile.Surname = "Bravo";
+
+            string generatedQuery = new OSqlCreateVertex()
+                .Vertex(profile)
+                .ToString();
+
+            string query =
+                "CREATE VERTEX TestProfileClass " +
+                "SET Name = 'Johny', " +
+                "Surname = 'Bravo'";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
         public void ShouldGenerateCreateVertexClusterQuery()
         {
             string generatedQuery = new OSqlCreateVertex()

@@ -29,6 +29,25 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
+        public void ShouldGenerateInsertObjectQuery()
+        {
+            TestProfileClass profile = new TestProfileClass();
+            profile.Name = "Johny";
+            profile.Surname = "Bravo";
+
+            string generatedQuery = new OSqlInsert()
+                .Insert(profile)
+                .ToString();
+
+            string query =
+                "INSERT INTO TestProfileClass " +
+                "SET Name = 'Johny', " +
+                "Surname = 'Bravo'";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
         public void ShouldGenerateInsertDocumentIntoQuery()
         {
             ODocument document = new ODocument()

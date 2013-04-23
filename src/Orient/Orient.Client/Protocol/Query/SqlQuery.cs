@@ -46,8 +46,19 @@ namespace Orient.Client.Protocol
             _compiler.Unique(Q.Edge, className);
         }
 
-        internal void Insert(ODocument document)
+        internal void Insert<T>(T obj)
         {
+            ODocument document;
+
+            if (obj is ODocument)
+            {
+                document = obj as ODocument;
+            }
+            else
+            {
+                document = ODocument.ToDocument(obj);
+            }
+
             if (!string.IsNullOrEmpty(document.OClassName))
             {
                 Class(document.OClassName);
@@ -63,8 +74,19 @@ namespace Orient.Client.Protocol
             Record(orid);
         }
 
-        internal void Update(ODocument document)
+        internal void Update<T>(T obj)
         {
+            ODocument document;
+
+            if (obj is ODocument)
+            {
+                document = obj as ODocument;
+            }
+            else
+            {
+                document = ODocument.ToDocument(obj);
+            }
+
             if (!string.IsNullOrEmpty(document.OClassName))
             {
                 Class(document.OClassName);
@@ -203,7 +225,7 @@ namespace Orient.Client.Protocol
             }
             else
             {
-                document = ODocument.ToDocument<T>(obj);
+                document = ODocument.ToDocument(obj);
             }
 
             // TODO: go also through embedded fields

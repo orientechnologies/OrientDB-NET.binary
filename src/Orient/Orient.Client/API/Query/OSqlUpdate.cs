@@ -34,9 +34,9 @@ namespace Orient.Client
             _connection = connection;
         }
 
-        public OSqlUpdate Update(ODocument document)
+        public OSqlUpdate Update<T>(T obj)
         {
-            _sqlQuery.Update(document);
+            _sqlQuery.Update(obj);
 
             return this;
         }
