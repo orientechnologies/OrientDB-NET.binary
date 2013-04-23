@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Query\SqlGenerateDeleteDocumentQueryTests.cs" />
     <Compile Include="Query\SqlGenerateDeleteVertexQueryTests.cs" />
+    <Compile Include="Query\SqlGenerateDeleteEdgeQueryTests.cs" />
     <Compile Include="TestProfileClass.cs" />
     <Compile Include="Pool\ConnectionPoolTests.cs" />
     <Compile Include="Query\SqlSelectTests.cs" />

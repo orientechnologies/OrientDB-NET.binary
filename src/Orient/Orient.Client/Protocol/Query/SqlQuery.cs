@@ -124,13 +124,6 @@ namespace Orient.Client.Protocol
             }
         }
 
-        #region DeleteVertex
-
-        internal void DeleteVertex(ORID orid)
-        {
-            Record(orid);
-        }
-
         internal void DeleteVertex<T>(T obj)
         {
             ODocument document;
@@ -155,7 +148,29 @@ namespace Orient.Client.Protocol
             }
         }
 
-        #endregion
+        internal void DeleteEdge<T>(T obj)
+        {
+            ODocument document;
+
+            if (obj is ODocument)
+            {
+                document = obj as ODocument;
+            }
+            else
+            {
+                document = ODocument.ToDocument(obj);
+            }
+
+            if (!string.IsNullOrEmpty(document.OClassName))
+            {
+                Class(document.OClassName);
+            }
+
+            if (document.ORID != null)
+            {
+                Record(document.ORID);
+            }
+        }
 
         #region Select
 
@@ -445,7 +460,7 @@ namespace Orient.Client.Protocol
                 case QueryType.DeleteVertex:
                     return GenerateDeleteVertexQuery();
                 case QueryType.DeleteEdge:
-                    break;
+                    return GenerateDeleteEdgeQuery();
                 case QueryType.DeleteDocument:
                     return GenerateDeleteDocumentQuery();
                 case QueryType.Insert:
@@ -628,6 +643,35 @@ namespace Orient.Client.Protocol
             }
 
             // [LIMIT <MaxRecords>>]
+            if (_compiler.HasKey(Q.Limit))
+            {
+                query += string.Join(" ", "", Q.Limit, _compiler.Value(Q.Limit));
+            }
+
+            return query;
+        }
+
+        private string GenerateDeleteEdgeQuery()
+        {
+            string query = "";
+
+            // DELETE EDGE <rid>|FROM <rid>|TO <rid>|<[<class>] 
+            if (_compiler.HasKey(Q.From) && _compiler.HasKey(Q.To))
+            {
+                query += string.Join(" ", Q.Delete, Q.Edge, _compiler.Value(Q.Class), Q.From, _compiler.Value(Q.From), Q.To, _compiler.Value(Q.To));
+            }
+            else
+            {
+                query += string.Join(" ", Q.Delete, Q.Edge, _compiler.OrderedValue(Q.Class, Q.Record));
+            }
+
+            // [WHERE <conditions>]> 
+            if (_compiler.HasKey(Q.Where))
+            {
+                query += string.Join(" ", "", Q.Where, _compiler.Value(Q.Where));
+            }
+
+            // [LIMIT <MaxRecords>]
             if (_compiler.HasKey(Q.Limit))
             {
                 query += string.Join(" ", "", Q.Limit, _compiler.Value(Q.Limit));
