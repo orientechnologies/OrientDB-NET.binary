@@ -34,12 +34,23 @@ namespace Orient.Client
             _connection = connection;
         }
 
+        #region Update
+
+        public OSqlUpdate Update(ORID orid)
+        {
+            _sqlQuery.Record(orid);
+
+            return this;
+        }
+
         public OSqlUpdate Update<T>(T obj)
         {
             _sqlQuery.Update(obj);
 
             return this;
         }
+
+        #endregion
 
         #region Class
 
@@ -77,7 +88,6 @@ namespace Orient.Client
 
         public OSqlUpdate Record(ORID orid)
         {
-            //_sqlQuery.Join(Q.Update, orid.ToString());
             _sqlQuery.Record(orid);
 
             return this;

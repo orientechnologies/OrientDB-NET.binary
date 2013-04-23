@@ -109,6 +109,26 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
+        public void ShouldGenerateUpdateOridSetQuery()
+        {
+            ODocument document = new ODocument()
+                .SetField("foo", "foo string value")
+                .SetField("bar", 12345);
+
+            string generatedQuery = new OSqlUpdate()
+                .Update(new ORID(8, 0))
+                .Set(document)
+                .ToString();
+
+            string query =
+                "UPDATE #8:0 " +
+                "SET foo = 'foo string value', " +
+                "bar = 12345";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
         public void ShouldGenerateUpdateRecordQuery()
         {
             ODocument document = new ODocument()
