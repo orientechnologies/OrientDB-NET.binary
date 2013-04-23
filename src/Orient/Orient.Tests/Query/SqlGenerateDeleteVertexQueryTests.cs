@@ -5,53 +5,20 @@ using Orient.Client;
 namespace Orient.Tests.Query
 {
     [TestClass]
-    public class SqlGenerateDeleteDocumentQueryTests
+    public class SqlGenerateDeleteVertexQueryTests
     {
-        [TestMethod]
-        public void ShouldGenerateDeleteFromDocumentOClassNameQuery()
-        {
-            ODocument document = new ODocument();
-            document.OClassName = "TestVertexClass";
-
-            string generatedQuery = new OSqlDeleteDocument()
-                .Delete(document)
-                .ToString();
-
-            string query =
-                "DELETE FROM TestVertexClass";
-
-            Assert.AreEqual(generatedQuery, query);
-        }
-
-        [TestMethod]
-        public void ShouldGenerateDeleteFromObjectOClassNameQuery()
-        {
-            TestProfileClass profile = new TestProfileClass();
-
-            string generatedQuery = new OSqlDeleteDocument()
-                .Delete(profile)
-                .ToString();
-
-            string query =
-                "DELETE FROM TestProfileClass";
-
-            Assert.AreEqual(generatedQuery, query);
-        }
-
         [TestMethod]
         public void ShouldGenerateDeleteFromDocumentOridQuery()
         {
             ODocument document = new ODocument();
-            document.OClassName = "TestVertexClass";
             document.ORID = new ORID(8, 0);
 
-            string generatedQuery = new OSqlDeleteDocument()
+            string generatedQuery = new OSqlDeleteVertex()
                 .Delete(document)
                 .ToString();
 
             string query =
-                "DELETE FROM TestVertexClass " +
-                "WHERE @rid = #8:0";
+                "DELETE VERTEX #8:0";
 
             Assert.AreEqual(generatedQuery, query);
         }
@@ -62,13 +29,43 @@ namespace Orient.Tests.Query
             TestProfileClass profile = new TestProfileClass();
             profile.ORID = new ORID(8, 0);
 
-            string generatedQuery = new OSqlDeleteDocument()
+            string generatedQuery = new OSqlDeleteVertex()
                 .Delete(profile)
                 .ToString();
 
             string query =
-                "DELETE FROM TestProfileClass " +
-                "WHERE @rid = #8:0";
+                "DELETE VERTEX #8:0";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
+        public void ShouldGenerateDeleteFromDocumentOClassNameQuery()
+        {
+            ODocument document = new ODocument();
+            document.OClassName = "TestClass";
+
+            string generatedQuery = new OSqlDeleteVertex()
+                .Delete(document)
+                .ToString();
+
+            string query =
+                "DELETE VERTEX TestClass";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
+        public void ShouldGenerateDeleteFromObjectOClassNameQuery()
+        {
+            TestProfileClass profile = new TestProfileClass();
+
+            string generatedQuery = new OSqlDeleteVertex()
+                .Delete(profile)
+                .ToString();
+
+            string query =
+                "DELETE VERTEX TestProfileClass";
 
             Assert.AreEqual(generatedQuery, query);
         }
@@ -76,7 +73,7 @@ namespace Orient.Tests.Query
         [TestMethod]
         public void ShouldGenerateDeleteClassWhereLimitQuery()
         {
-            string generatedQuery = new OSqlDeleteDocument()
+            string generatedQuery = new OSqlDeleteVertex()
                 .Class<TestProfileClass>()
                 .Where("foo").Equals("whoa")
                 .Or("foo").NotEquals(123)
@@ -92,7 +89,7 @@ namespace Orient.Tests.Query
                 .ToString();
 
             string query =
-                "DELETE FROM TestProfileClass " +
+                "DELETE VERTEX TestProfileClass " +
                 "WHERE foo = 'whoa' " +
                 "OR foo != 123 " +
                 "AND foo < 1 " +

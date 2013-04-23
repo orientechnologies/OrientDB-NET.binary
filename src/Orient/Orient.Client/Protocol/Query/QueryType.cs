@@ -7,7 +7,9 @@ namespace Orient.Client.Protocol
         CreateCluster,
         CreateEdge,
         CreateVertex,
-        Delete,
+        DeleteVertex,
+        DeleteEdge,
+        DeleteDocument,
         Insert,
         Select,
         Update

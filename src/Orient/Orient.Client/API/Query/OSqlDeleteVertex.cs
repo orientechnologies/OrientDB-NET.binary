@@ -3,169 +3,147 @@ using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
 // syntax:
-// DELETE FROM <Class>|cluster:<cluster>|index:<index> 
-// [<Condition>*](WHERE) 
-// [BY <Fields>* [ASC|DESC](ORDER)*] 
-// [<MaxRecords>](LIMIT)
+// DELETE VERTEX <rid>|<[<class>] 
+// [WHERE <conditions>] 
+// [LIMIT <MaxRecords>>]
 
 namespace Orient.Client
 {
-    public class OSqlDeleteDocument
+    public class OSqlDeleteVertex
     {
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;
 
-        public OSqlDeleteDocument()
+        public OSqlDeleteVertex()
         {
         }
 
-        internal OSqlDeleteDocument(Connection connection)
+        internal OSqlDeleteVertex(Connection connection)
         {
             _connection = connection;
         }
 
-        public OSqlDeleteDocument Delete<T>(T obj)
+        #region Delete
+
+        public OSqlDeleteVertex Delete(ORID orid)
         {
-            _sqlQuery.Delete(obj);
+            _sqlQuery.DeleteVertex(orid);
 
             return this;
         }
 
+        public OSqlDeleteVertex Delete<T>(T obj)
+        {
+            _sqlQuery.DeleteVertex(obj);
+
+            return this;
+        }
+
+        #endregion
+
         #region Class
 
-        public OSqlDeleteDocument Class(string className)
+        public OSqlDeleteVertex Class(string className)
         {
             _sqlQuery.Class(className);
 
             return this;
         }
 
-        public OSqlDeleteDocument Class<T>()
+        public OSqlDeleteVertex Class<T>()
         {
             return Class(typeof(T).Name);
         }
 
         #endregion
 
-        #region Cluster
-
-        public OSqlDeleteDocument Cluster(string clusterName)
-        {
-            _sqlQuery.Cluster("cluster:" + clusterName);
-
-            return this;
-        }
-
-        public OSqlDeleteDocument Cluster<T>()
-        {
-            return Cluster(typeof(T).Name);
-        }
-
-        #endregion
-
-        #region Record
-
-        public OSqlDeleteDocument Record(ORID orid)
-        {
-            _sqlQuery.Record(orid);
-
-            return this;
-        }
-
-        public OSqlDeleteDocument Record(ODocument document)
-        {
-            return Record(document.ORID);
-        }
-
-        #endregion
-
         #region Where with conditions
 
-        public OSqlDeleteDocument Where(string field)
+        public OSqlDeleteVertex Where(string field)
         {
             _sqlQuery.Where(field);
 
             return this;
         }
 
-        public OSqlDeleteDocument And(string field)
+        public OSqlDeleteVertex And(string field)
         {
             _sqlQuery.And(field);
 
             return this;
         }
 
-        public OSqlDeleteDocument Or(string field)
+        public OSqlDeleteVertex Or(string field)
         {
             _sqlQuery.Or(field);
 
             return this;
         }
 
-        public OSqlDeleteDocument Equals<T>(T item)
+        public OSqlDeleteVertex Equals<T>(T item)
         {
             _sqlQuery.Equals<T>(item);
 
             return this;
         }
 
-        public OSqlDeleteDocument NotEquals<T>(T item)
+        public OSqlDeleteVertex NotEquals<T>(T item)
         {
             _sqlQuery.NotEquals<T>(item);
 
             return this;
         }
 
-        public OSqlDeleteDocument Lesser<T>(T item)
+        public OSqlDeleteVertex Lesser<T>(T item)
         {
             _sqlQuery.Lesser<T>(item);
 
             return this;
         }
 
-        public OSqlDeleteDocument LesserEqual<T>(T item)
+        public OSqlDeleteVertex LesserEqual<T>(T item)
         {
             _sqlQuery.LesserEqual<T>(item);
 
             return this;
         }
 
-        public OSqlDeleteDocument Greater<T>(T item)
+        public OSqlDeleteVertex Greater<T>(T item)
         {
             _sqlQuery.Greater<T>(item);
 
             return this;
         }
 
-        public OSqlDeleteDocument GreaterEqual<T>(T item)
+        public OSqlDeleteVertex GreaterEqual<T>(T item)
         {
             _sqlQuery.GreaterEqual<T>(item);
 
             return this;
         }
 
-        public OSqlDeleteDocument Like<T>(T item)
+        public OSqlDeleteVertex Like<T>(T item)
         {
             _sqlQuery.Like<T>(item);
 
             return this;
         }
 
-        public OSqlDeleteDocument IsNull()
+        public OSqlDeleteVertex IsNull()
         {
             _sqlQuery.IsNull();
 
             return this;
         }
 
-        public OSqlDeleteDocument Contains<T>(T item)
+        public OSqlDeleteVertex Contains<T>(T item)
         {
             _sqlQuery.Contains<T>(item);
 
             return this;
         }
 
-        public OSqlDeleteDocument Contains<T>(string field, T value)
+        public OSqlDeleteVertex Contains<T>(string field, T value)
         {
             _sqlQuery.Contains<T>(field, value);
 
@@ -174,7 +152,7 @@ namespace Orient.Client
 
         #endregion
 
-        public OSqlDeleteDocument Limit(int maxRecords)
+        public OSqlDeleteVertex Limit(int maxRecords)
         {
             _sqlQuery.Limit(maxRecords);
 
@@ -202,7 +180,7 @@ namespace Orient.Client
 
         public override string ToString()
         {
-            return _sqlQuery.ToString(QueryType.DeleteDocument);
+            return _sqlQuery.ToString(QueryType.DeleteVertex);
         }
     }
 }

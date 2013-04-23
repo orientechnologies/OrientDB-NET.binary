@@ -124,6 +124,39 @@ namespace Orient.Client.Protocol
             }
         }
 
+        #region DeleteVertex
+
+        internal void DeleteVertex(ORID orid)
+        {
+            Record(orid);
+        }
+
+        internal void DeleteVertex<T>(T obj)
+        {
+            ODocument document;
+
+            if (obj is ODocument)
+            {
+                document = obj as ODocument;
+            }
+            else
+            {
+                document = ODocument.ToDocument(obj);
+            }
+
+            if (!string.IsNullOrEmpty(document.OClassName))
+            {
+                Class(document.OClassName);
+            }
+
+            if (document.ORID != null)
+            {
+                Record(document.ORID);
+            }
+        }
+
+        #endregion
+
         #region Select
 
         internal void Select(params string[] projections)
@@ -409,8 +442,12 @@ namespace Orient.Client.Protocol
                     return GenerateCreateEdgeQuery();
                 case QueryType.CreateVertex:
                     return GenerateCreateVertexQuery();
-                case QueryType.Delete:
-                    return GenerateDeleteQuery();
+                case QueryType.DeleteVertex:
+                    return GenerateDeleteVertexQuery();
+                case QueryType.DeleteEdge:
+                    break;
+                case QueryType.DeleteDocument:
+                    return GenerateDeleteDocumentQuery();
                 case QueryType.Insert:
                     return GenerateInsertQuery();
                 case QueryType.Update:
@@ -577,7 +614,29 @@ namespace Orient.Client.Protocol
             return query;
         }
 
-        private string GenerateDeleteQuery()
+        private string GenerateDeleteVertexQuery()
+        {
+            string query = "";
+
+            // DELETE VERTEX <rid>|<[<class>]
+            query += string.Join(" ", Q.Delete, Q.Vertex, _compiler.OrderedValue(Q.Class, Q.Record));
+
+            // [WHERE <conditions>] 
+            if (_compiler.HasKey(Q.Where))
+            {
+                query += string.Join(" ", "", Q.Where, _compiler.Value(Q.Where));
+            }
+
+            // [LIMIT <MaxRecords>>]
+            if (_compiler.HasKey(Q.Limit))
+            {
+                query += string.Join(" ", "", Q.Limit, _compiler.Value(Q.Limit));
+            }
+
+            return query;
+        }
+
+        private string GenerateDeleteDocumentQuery()
         {
             string query = "";
 
