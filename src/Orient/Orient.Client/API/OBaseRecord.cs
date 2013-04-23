@@ -4,17 +4,34 @@ namespace Orient.Client
 {
     public abstract class OBaseRecord
     {
-        [OProperty(Serializable = false, Deserializable = false)]
+        private string _oClassName;
+
+        #region Orient record specific properties
+
         public ORID ORID { get; set; }
 
-        [OProperty(Serializable = false, Deserializable = false)]
         public int OVersion { get; set; }
 
-        [OProperty(Serializable = false, Deserializable = false)]
         public short OClassId { get; set; }
 
-        [OProperty(Serializable = false, Deserializable = false)]
-        public string OClassName { get; set; }
+        public string OClassName {
+            get
+            {
+                if (string.IsNullOrEmpty(_oClassName))
+                {
+                    return GetType().Name;
+                }
+
+                return _oClassName;
+            }
+
+            set
+            {
+                _oClassName = value;
+            }
+        }
+
+        #endregion
 
         public ODocument ToDocument()
         {
