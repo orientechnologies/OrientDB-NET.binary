@@ -13,7 +13,7 @@ namespace Orient.Tests.Query
             ODocument document = new ODocument();
             document.OClassName = "TestVertexClass";
 
-            string generatedQuery = new OSqlDelete()
+            string generatedQuery = new OSqlDeleteDocument()
                 .Delete(document)
                 .ToString();
 
@@ -28,7 +28,7 @@ namespace Orient.Tests.Query
         {
             TestProfileClass profile = new TestProfileClass();
 
-            string generatedQuery = new OSqlDelete()
+            string generatedQuery = new OSqlDeleteDocument()
                 .Delete(profile)
                 .ToString();
 
@@ -45,7 +45,7 @@ namespace Orient.Tests.Query
             document.OClassName = "TestVertexClass";
             document.ORID = new ORID(8, 0);
 
-            string generatedQuery = new OSqlDelete()
+            string generatedQuery = new OSqlDeleteDocument()
                 .Delete(document)
                 .ToString();
 
@@ -62,7 +62,7 @@ namespace Orient.Tests.Query
             TestProfileClass profile = new TestProfileClass();
             profile.ORID = new ORID(8, 0);
 
-            string generatedQuery = new OSqlDelete()
+            string generatedQuery = new OSqlDeleteDocument()
                 .Delete(profile)
                 .ToString();
 
@@ -79,7 +79,7 @@ namespace Orient.Tests.Query
             ODocument document = new ODocument();
             document.OClassName = "TestClass";
 
-            string generatedQuery = new OSqlDelete()
+            string generatedQuery = new OSqlDeleteDocument()
                 .Delete(document)
                 .Where("foo").Equals("whoa")
                 .Or("foo").NotEquals(123)
