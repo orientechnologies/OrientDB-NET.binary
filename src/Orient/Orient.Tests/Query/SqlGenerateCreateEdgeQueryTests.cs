@@ -46,7 +46,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateCreateEdgeObjectFromVertexToVertexQuery()
+        public void ShouldGenerateCreateEdgeObjectFromDocumentToDocumentQuery()
         {
             TestProfileClass profile = new TestProfileClass();
             profile.Name = "Johny";
@@ -56,6 +56,34 @@ namespace Orient.Tests.Query
             vertexFrom.ORID = new ORID(8, 0);
 
             ODocument vertexTo = new ODocument();
+            vertexTo.ORID = new ORID(8, 1);
+
+            string generatedQuery = new OSqlCreateEdge()
+                .Edge(profile)
+                .From(vertexFrom)
+                .To(vertexTo)
+                .ToString();
+
+            string query =
+                "CREATE EDGE TestProfileClass " +
+                "FROM #8:0 TO #8:1 " +
+                "SET Name = 'Johny', " +
+                "Surname = 'Bravo'";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
+        public void ShouldGenerateCreateEdgeObjectFromObjectToObjectQuery()
+        {
+            TestProfileClass profile = new TestProfileClass();
+            profile.Name = "Johny";
+            profile.Surname = "Bravo";
+
+            TestProfileClass vertexFrom = new TestProfileClass();
+            vertexFrom.ORID = new ORID(8, 0);
+
+            TestProfileClass vertexTo = new TestProfileClass();
             vertexTo.ORID = new ORID(8, 1);
 
             string generatedQuery = new OSqlCreateEdge()

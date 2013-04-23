@@ -90,8 +90,19 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateEdge From(ODocument document)
+        public OSqlCreateEdge From<T>(T obj)
         {
+            ODocument document;
+
+            if (obj is ODocument)
+            {
+                document = obj as ODocument;
+            }
+            else
+            {
+                document = ODocument.ToDocument(obj);
+            }
+
             if (document.ORID == null)
             {
                 throw new OException(OExceptionType.Query, "Document doesn't contain ORID value.");
@@ -113,8 +124,19 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateEdge To(ODocument document)
+        public OSqlCreateEdge To<T>(T obj)
         {
+            ODocument document;
+
+            if (obj is ODocument)
+            {
+                document = obj as ODocument;
+            }
+            else
+            {
+                document = ODocument.ToDocument(obj);
+            }
+            
             if (document.ORID == null)
             {
                 throw new OException(OExceptionType.Query, "Document doesn't contain ORID value.");

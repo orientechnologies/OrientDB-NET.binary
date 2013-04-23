@@ -106,7 +106,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateDeleteFromToQuery()
+        public void ShouldGenerateDeleteFromDocumentToDocumentQuery()
         {
             TestProfileClass profile = new TestProfileClass();
 
@@ -114,6 +114,29 @@ namespace Orient.Tests.Query
             vertex1.ORID = new ORID(8, 0);
 
             ODocument vertex2 = new ODocument();
+            vertex2.ORID = new ORID(8, 1);
+
+            string generatedQuery = new OSqlDeleteEdge()
+                .Delete(profile)
+                .From(vertex1)
+                .To(vertex2)
+                .ToString();
+
+            string query =
+                "DELETE EDGE TestProfileClass FROM #8:0 TO #8:1";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
+        public void ShouldGenerateDeleteFromObjectToObjectQuery()
+        {
+            TestProfileClass profile = new TestProfileClass();
+
+            TestProfileClass vertex1 = new TestProfileClass();
+            vertex1.ORID = new ORID(8, 0);
+
+            TestProfileClass vertex2 = new TestProfileClass();
             vertex2.ORID = new ORID(8, 1);
 
             string generatedQuery = new OSqlDeleteEdge()
