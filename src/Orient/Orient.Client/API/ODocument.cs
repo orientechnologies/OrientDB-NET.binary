@@ -278,6 +278,29 @@ namespace Orient.Client
             foreach (PropertyInfo propertyInfo in genericObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 string propertyName = propertyInfo.Name;
+
+                // serialize following properties into dedicated fields in ODocument
+                if (propertyName.Equals("ORID"))
+                {
+                    document.ORID = (ORID)propertyInfo.GetValue(genericObject, null);
+                    continue;
+                }
+                else if (propertyName.Equals("OVersion"))
+                {
+                    document.OVersion = (int)propertyInfo.GetValue(genericObject, null);
+                    continue;
+                }
+                else if (propertyName.Equals("OClassId"))
+                {
+                    document.OClassId = (short)propertyInfo.GetValue(genericObject, null);
+                    continue;
+                }
+                else if (propertyName.Equals("OClassName"))
+                {
+                    document.OClassName = (string)propertyInfo.GetValue(genericObject, null);
+                    continue;
+                }
+
                 bool isSerializable = true;
                 OProperty oProperty = propertyInfo.GetCustomAttribute<OProperty>();
 
