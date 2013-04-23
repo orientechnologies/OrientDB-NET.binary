@@ -50,6 +50,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Query\SqlGenerateDeleteQueryTests.cs" />
     <Compile Include="TestProfileClass.cs" />
     <Compile Include="Pool\ConnectionPoolTests.cs" />
     <Compile Include="Query\SqlSelectTests.cs" />

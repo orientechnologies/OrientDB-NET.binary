@@ -67,13 +67,6 @@ namespace Orient.Client.Protocol
             Set(document);
         }
 
-        #region Update
-
-        internal void Update(ORID orid)
-        {
-            Record(orid);
-        }
-
         internal void Update<T>(T obj)
         {
             ODocument document;
@@ -100,7 +93,36 @@ namespace Orient.Client.Protocol
             Set(document);
         }
 
-        #endregion
+        internal void Delete<T>(T obj)
+        {
+            ODocument document;
+
+            if (obj is ODocument)
+            {
+                document = obj as ODocument;
+            }
+            else
+            {
+                document = ODocument.ToDocument(obj);
+            }
+
+            if (!string.IsNullOrEmpty(document.OClassName))
+            {
+                Class(document.OClassName);
+            }
+            else
+            {
+                throw new OException(OExceptionType.Query, "Document doesn't contain OClassName value.");
+            }
+
+            if (document.ORID != null)
+            {
+                // check if the @rid is correct in real example
+                Where("@rid");
+
+                Equals(document.ORID);
+            }
+        }
 
         #region Select
 
@@ -388,7 +410,7 @@ namespace Orient.Client.Protocol
                 case QueryType.CreateVertex:
                     return GenerateCreateVertexQuery();
                 case QueryType.Delete:
-                    break;
+                    return GenerateDeleteQuery();
                 case QueryType.Insert:
                     return GenerateInsertQuery();
                 case QueryType.Update:
@@ -547,6 +569,32 @@ namespace Orient.Client.Protocol
             }
 
             // [<max-records>](LIMIT)
+            if (_compiler.HasKey(Q.Limit))
+            {
+                query += string.Join(" ", "", Q.Limit, _compiler.Value(Q.Limit));
+            }
+
+            return query;
+        }
+
+        private string GenerateDeleteQuery()
+        {
+            string query = "";
+
+            // DELETE FROM <Class>|cluster:<cluster>|index:<index> 
+            query += string.Join(" ", Q.Delete, Q.From, _compiler.OrderedValue(Q.Class, Q.Cluster));
+
+            // [<Condition>*](WHERE) 
+            if (_compiler.HasKey(Q.Where))
+            {
+                query += string.Join(" ", "", Q.Where, _compiler.Value(Q.Where));
+            }
+            
+            // [BY <Fields>* [ASC|DESC](ORDER)*] 
+            // TODO:
+
+
+            // [<MaxRecords>](LIMIT)
             if (_compiler.HasKey(Q.Limit))
             {
                 query += string.Join(" ", "", Q.Limit, _compiler.Value(Q.Limit));

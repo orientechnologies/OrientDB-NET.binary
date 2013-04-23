@@ -25,19 +25,10 @@ namespace Orient.Client
             return _connection.Document.GetField<List<OCluster>>("Clusters");
         }
 
-        #region Select
-
-        public OSqlSelect Select(string projection)
-        {
-            return new OSqlSelect(_connection).Select(projection);
-        }
-
         public OSqlSelect Select(params string[] projections)
         {
             return new OSqlSelect(_connection).Select(projections);
         }
-
-        #endregion
 
         #region Query
 
