@@ -5,7 +5,7 @@ using Orient.Client;
 namespace Orient.Tests.Query
 {
     [TestClass]
-    public class SqlGenerateDeleteQueryTests
+    public class SqlGenerateDeleteDocumentQueryTests
     {
         [TestMethod]
         public void ShouldGenerateDeleteFromDocumentOClassNameQuery()
