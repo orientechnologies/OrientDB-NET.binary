@@ -2,7 +2,7 @@
 
 namespace Orient.Client
 {
-    public class OGraphVertex
+    public class OGraphVertex : OBaseRecord
     {
         [OProperty(Alias = "in")]
         public List<ORID> In { get; set; }
