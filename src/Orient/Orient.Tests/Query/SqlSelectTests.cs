@@ -8,140 +8,143 @@ namespace Orient.Tests.Query
     [TestClass]
     public class SqlSelectTests
     {
-        /*[TestMethod]
-        public void ShouldSelectUntyped()
+        [TestMethod]
+        public void ShouldSelectFromDocumentOrid()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
-                    string className = "TestVertexClass";
-
-                    ODocument document1 = new ODocument();
-                    document1
-                        .SetField("foo", "foo string value1")
-                        .SetField("bar", 12345);
-
-                    ODocument document2 = new ODocument();
-                    document2
-                        .SetField("foo", "foo string value2")
-                        .SetField("bar", 54321);
-
-                    // create test class
+                    // prerequisites
                     database
-                        .Create.Class("TestVertexClass")
-                        .Extends("OGraphVertex")
+                        .Create.Class("TestClass")
                         .Run();
 
-                    // load database with some testing data
-                    database
-                        .Create.Vertex(className)
-                        .Set(document1)
+                    ODocument document1 = database
+                        .Insert()
+                        .Into("TestClass")
+                        .Set("foo", "foo string value1")
+                        .Set("bar", 12345)
                         .Run();
 
-                    database
-                        .Create.Vertex(className)
-                        .Set(document2)
+                    ODocument document2 = database
+                        .Insert()
+                        .Into("TestClass")
+                        .Set("foo", "foo string value2")
+                        .Set("bar", 54321)
                         .Run();
 
-                    // perform simple select
-                    List<ODocument> result = database
-                        .Select("foo", "bar")
-                        .From("TestVertexClass")
+                    List<ODocument> documents = database
+                        .Select()
+                        .From(document2)
                         .ToList();
 
-                    Assert.AreEqual(result.Count, 2);
-                    Assert.AreEqual(result[0].GetField<string>("foo"), document1.GetField<string>("foo"));
-                    Assert.AreEqual(result[0].GetField<int>("bar"), document1.GetField<int>("bar"));
-                    Assert.AreEqual(result[1].GetField<string>("foo"), document2.GetField<string>("foo"));
-                    Assert.AreEqual(result[1].GetField<int>("bar"), document2.GetField<int>("bar"));
+                    Assert.AreEqual(documents.Count, 1);
+
+                    for (int i = 0; i < documents.Count; i++)
+                    {
+                        Assert.AreEqual(documents[i].ORID, document2.ORID);
+                        Assert.AreEqual(documents[i].OClassName, document2.OClassName);
+                        Assert.AreEqual(documents[i].GetField<string>("foo"), document2.GetField<string>("foo"));
+                        Assert.AreEqual(documents[i].GetField<int>("bar"), document2.GetField<int>("bar"));
+                    }
                 }
             }
         }
 
         [TestMethod]
-        public void ShouldSelectTyped()
+        public void ShouldSelectFromDocumentOClassNameQuery()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
-                    TestVertexClass obj1 = new TestVertexClass();
-                    obj1.Foo = "foo string value1";
-                    obj1.Bar = 12345;
-
-                    TestVertexClass obj2 = new TestVertexClass();
-                    obj2.Foo = "foo string value2";
-                    obj2.Bar = 54321;
-
-                    // create test class
+                    // prerequisites
                     database
-                        .Create.Class<TestVertexClass>()
-                        .Extends("OGraphVertex")
+                        .Create.Class("TestClass")
                         .Run();
 
-                    // load database with some testing data
-                    database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(obj1)
+                    ODocument document1 = database
+                        .Insert()
+                        .Into("TestClass")
+                        .Set("foo", "foo string value1")
+                        .Set("bar", 12345)
                         .Run();
 
-                    database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(obj2)
+                    ODocument document2 = database
+                        .Insert()
+                        .Into("TestClass")
+                        .Set("foo", "foo string value2")
+                        .Set("bar", 54321)
                         .Run();
 
-                    // perform simple select
-                    List<TestVertexClass> result = database
-                        .Select("Foo", "Bar")
-                        .From<TestVertexClass>()
-                        .ToList<TestVertexClass>();
+                    ODocument document = new ODocument();
+                    document.OClassName = "TestClass";
 
-                    Assert.AreEqual(result.Count, 2);
-                    Assert.AreEqual(result[0].Foo, obj1.Foo);
-                    Assert.AreEqual(result[0].Bar, obj1.Bar);
-                    Assert.AreEqual(result[1].Foo, obj2.Foo);
-                    Assert.AreEqual(result[1].Bar, obj2.Bar);
-                }
-            }
-        }
-
-        [TestMethod]
-        public void ShouldSelectFromORID()
-        {
-            using (TestDatabaseContext testContext = new TestDatabaseContext())
-            {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
-                {
-                    TestVertexClass obj = new TestVertexClass();
-                    obj.Foo = "foo string value1";
-                    obj.Bar = 12345;
-
-                    // create test class
-                    database
-                        .Create.Class<TestVertexClass>()
-                        .Extends("OGraphVertex")
-                        .Run();
-
-                    // load database with some testing data
-                    ODocument vertex = database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(obj)
-                        .Run();
-
-                    // perform simple select
-                    List<TestVertexClass> result = database
+                    List<ODocument> documents = database
                         .Select()
-                        .From(vertex.GetField<ORID>("@ORID"))
-                        .ToList<TestVertexClass>();
+                        .From(document)
+                        .ToList();
 
-                    Assert.AreEqual(result.Count, 1);
-                    Assert.AreEqual(result[0].Foo, obj.Foo);
-                    Assert.AreEqual(result[0].Bar, obj.Bar);
+                    Assert.AreEqual(documents.Count, 2);
+
+                    for (int i = 0; i < documents.Count; i++)
+                    {
+                        Assert.IsTrue(documents[i].ORID != null);
+                        Assert.AreEqual(documents[i].OClassName, document.OClassName);
+                        Assert.IsTrue(documents[i].HasField("foo"));
+                        Assert.IsTrue(documents[i].HasField("bar"));
+                    }
                 }
             }
         }
 
+        [TestMethod]
+        public void ShouldSelectToObjectList()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class<TestProfileClass>()
+                        .Run();
+
+                    TestProfileClass document1 = database
+                        .Insert()
+                        .Into<TestProfileClass>()
+                        .Set("Name", "Johny")
+                        .Set("Surname", "Bravo")
+                        .Run<TestProfileClass>();
+
+                    TestProfileClass document2 = database
+                        .Insert()
+                        .Into<TestProfileClass>()
+                        .Set("Name", "Johny")
+                        .Set("Surname", "Bravo")
+                        .Run<TestProfileClass>();
+
+                    List<TestProfileClass> documents = database
+                        .Select()
+                        .From<TestProfileClass>()
+                        .ToList<TestProfileClass>();
+
+                    Assert.AreEqual(documents.Count, 2);
+
+                    Assert.AreEqual(documents[0].ORID, document1.ORID);
+                    Assert.AreEqual(documents[0].OClassName, document1.OClassName);
+                    Assert.AreEqual(documents[0].Name, document1.Name);
+                    Assert.AreEqual(documents[0].Surname, document1.Surname);
+
+                    Assert.AreEqual(documents[1].ORID, document2.ORID);
+                    Assert.AreEqual(documents[1].OClassName, document2.OClassName);
+                    Assert.AreEqual(documents[1].Name, document2.Name);
+                    Assert.AreEqual(documents[1].Surname, document2.Surname);
+                }
+            }
+        }
+        
         [TestMethod]
         public void ShouldSelectAsAnd()
         {
@@ -149,6 +152,12 @@ namespace Orient.Tests.Query
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
+                    // prerequisites
+                    database
+                        .Create.Class<TestVertexClass>()
+                        .Extends<OGraphVertex>()
+                        .Run();
+
                     TestVertexClass obj1 = new TestVertexClass();
                     obj1.Foo = "foo string value1";
                     obj1.Bar = 12345;
@@ -157,13 +166,6 @@ namespace Orient.Tests.Query
                     obj2.Foo = "foo string value2";
                     obj2.Bar = 54321;
 
-                    // create test class
-                    database
-                        .Create.Class<TestVertexClass>()
-                        .Extends("OGraphVertex")
-                        .Run();
-
-                    // load database with some testing data
                     database
                         .Create.Vertex<TestVertexClass>()
                         .Set(obj1)
@@ -174,7 +176,6 @@ namespace Orient.Tests.Query
                         .Set(obj2)
                         .Run();
 
-                    // perform simple select
                     List<ODocument> result = database
                         .Select("Foo").As("CustomFoo")
                         .Also("Bar").As("CustomBar")
@@ -189,74 +190,5 @@ namespace Orient.Tests.Query
                 }
             }
         }
-
-        [TestMethod]
-        public void ShouldGenerateSelectWhereStrings()
-        {
-            using (TestDatabaseContext testContext = new TestDatabaseContext())
-            {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
-                {
-                    string sqlWhereEquals = database
-                        .Select()
-                        .From<TestVertexClass>()
-                        .Where("Foo").Equals(123)
-                        .ToString();
-
-                    Assert.AreEqual(sqlWhereEquals, "SELECT FROM TestVertexClass WHERE Foo = 123");
-
-                    string sqlWhereNotEquals = database
-                        .Select()
-                        .From<TestVertexClass>()
-                        .Where("Foo").NotEquals("whoa")
-                        .ToString();
-
-                    Assert.AreEqual(sqlWhereNotEquals, "SELECT FROM TestVertexClass WHERE Foo != 'whoa'");
-
-                    string sqlWhereLesserGreater = database
-                        .Select()
-                        .From<TestVertexClass>()
-                        .Where("Foo").Lesser(1)
-                        .And("Bar").LesserEqual(2)
-                        .Or("Baz").Greater(3)
-                        .Or("Gar").GreaterEqual(4)
-                        .ToString();
-
-                    Assert.AreEqual(sqlWhereLesserGreater, "SELECT FROM TestVertexClass WHERE Foo < 1 AND Bar <= 2 OR Baz > 3 OR Gar >= 4");
-
-                    string sqlWhereLike = database
-                        .Select()
-                        .From<TestVertexClass>()
-                        .Where("Foo").Like("whoa%")
-                        .ToString();
-
-                    Assert.AreEqual(sqlWhereLike, "SELECT FROM TestVertexClass WHERE Foo LIKE 'whoa%'");
-
-                    string sqlWhereIsNull = database
-                        .Select()
-                        .From<TestVertexClass>()
-                        .Where("Foo").IsNull()
-                        .ToString();
-
-                    Assert.AreEqual(sqlWhereIsNull, "SELECT FROM TestVertexClass WHERE Foo IS NULL");
-
-                    string sqlWhereContains1 = database
-                        .Select()
-                        .From<TestVertexClass>()
-                        .Where("Foo").Contains("Luke")
-                        .ToString();
-
-                    Assert.AreEqual(sqlWhereContains1, "SELECT FROM TestVertexClass WHERE Foo CONTAINS 'Luke'");
-
-                    string sqlWhereContains2 = database
-                        .Select()
-                        .From<TestVertexClass>()
-                        .Where("Foo").Contains("name", "Luke")
-                        .ToString();
-
-                    Assert.AreEqual(sqlWhereContains2, "SELECT FROM TestVertexClass WHERE Foo CONTAINS (name = 'Luke')");
-                }
-            }
-        }*/
     }
 }
