@@ -22,7 +22,7 @@ namespace Orient.Client.Protocol
         {
             if (this.ContainsKey(key))
             {
-                this[key] += string.Join(" ", values);
+                this[key] = string.Join(" ", values);
             }
             else
             {
