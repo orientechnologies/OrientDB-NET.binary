@@ -326,6 +326,29 @@ namespace Orient.Client
             foreach (PropertyInfo propertyInfo in genericObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 string propertyName = propertyInfo.Name;
+
+                // serialize orient specific fields into dedicated properties
+                if (propertyName.Equals("ORID"))
+                {
+                    propertyInfo.SetValue(genericObject, this.ORID, null);
+                    continue;
+                }
+                else if (propertyName.Equals("OVersion"))
+                {
+                    propertyInfo.SetValue(genericObject, this.OVersion, null);
+                    continue;
+                }
+                else if (propertyName.Equals("OClassId"))
+                {
+                    propertyInfo.SetValue(genericObject, this.OClassId, null);
+                    continue;
+                }
+                else if (propertyName.Equals("OClassName"))
+                {
+                    propertyInfo.SetValue(genericObject, this.OClassName, null);
+                    continue;
+                }
+
                 OProperty oProperty = propertyInfo.GetCustomAttribute<OProperty>();
 
                 if (oProperty != null)
