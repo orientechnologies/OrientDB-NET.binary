@@ -11,7 +11,6 @@ namespace Orient.Client
         private Connection _connection;
 
         public OSqlCreate Create { get { return new OSqlCreate(_connection); } }
-        public OSqlUpdate Update { get { return new OSqlUpdate(_connection); } }
 
         public ODatabase(string alias)
         {
@@ -40,6 +39,27 @@ namespace Orient.Client
         {
             return new OSqlInsert(_connection)
                 .Insert(obj);
+        }
+
+        #endregion
+
+        #region Update
+
+        public OSqlUpdate Update()
+        {
+            return new OSqlUpdate(_connection);
+        }
+
+        public OSqlUpdate Update(ORID orid)
+        {
+            return new OSqlUpdate(_connection)
+                .Update(orid);
+        }
+
+        public OSqlUpdate Update<T>(T obj)
+        {
+            return new OSqlUpdate(_connection)
+                .Update(obj);
         }
 
         #endregion
