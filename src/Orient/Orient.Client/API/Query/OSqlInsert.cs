@@ -23,6 +23,18 @@ namespace Orient.Client
             _connection = connection;
         }
 
+        #region Insert
+
+        public OSqlInsert Insert(string className)
+        {
+            return Into(className);
+        }
+
+        public OSqlInsert Insert<T>()
+        {
+            return Into<T>();
+        }
+
         public OSqlInsert Insert<T>(T obj)
         {
             // check for OClassName shouldn't have be here since INTO clause might specify it
@@ -31,6 +43,8 @@ namespace Orient.Client
 
             return this;
         }
+
+        #endregion
 
         #region Into
 
