@@ -11,6 +11,7 @@ namespace Orient.Client
         private Connection _connection;
 
         public OSqlCreate Create { get { return new OSqlCreate(_connection); } }
+        public OSqlDelete Delete { get { return new OSqlDelete(_connection); } }
 
         public ODatabase(string alias)
         {

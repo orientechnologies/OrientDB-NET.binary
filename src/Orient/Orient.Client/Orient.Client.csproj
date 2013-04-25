@@ -60,6 +60,7 @@
     <Compile Include="API\Query\OSqlCreateDocument.cs" />
     <Compile Include="API\Query\OSqlCreateEdge.cs" />
     <Compile Include="API\Query\OSqlCreateVertex.cs" />
+    <Compile Include="API\Query\OSqlDelete.cs" />
     <Compile Include="API\Query\OSqlDeleteDocument.cs" />
     <Compile Include="API\Query\OSqlDeleteEdge.cs" />
     <Compile Include="API\Query\OSqlDeleteVertex.cs" />

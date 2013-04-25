@@ -58,6 +58,7 @@
     <Compile Include="Query\SqlCreateDocumentTests.cs" />
     <Compile Include="Query\SqlCreateVertexTests.cs" />
     <Compile Include="Query\SqlCreateEdgeTests.cs" />
+    <Compile Include="Query\SqlDeleteDocumentTests.cs" />
     <Compile Include="TestProfileClass.cs" />
     <Compile Include="Pool\ConnectionPoolTests.cs" />
     <Compile Include="Query\SqlSelectTests.cs" />
