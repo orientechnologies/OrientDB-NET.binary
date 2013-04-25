@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Orient.Client.Protocol;
+﻿using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client
@@ -41,23 +40,23 @@ namespace Orient.Client
 
         #endregion
 
-        #region Edge
+        #region Document
 
-        public OSqlCreateEdge Edge(string className)
+        public OSqlCreateDocument Document(string className)
         {
-            return new OSqlCreateEdge(_connection)
-                .Edge(className);
+            return new OSqlCreateDocument(_connection)
+                .Document(className);
         }
 
-        public OSqlCreateEdge Edge<T>()
+        public OSqlCreateDocument Document<T>()
         {
-            return Edge(typeof(T).Name);
+            return Document(typeof(T).Name);
         }
 
-        public OSqlCreateEdge Edge<T>(T obj)
+        public OSqlCreateDocument Document<T>(T obj)
         {
-            return new OSqlCreateEdge(_connection)
-                .Edge(obj);
+            return new OSqlCreateDocument(_connection)
+                .Document(obj);
         }
 
         #endregion
@@ -83,23 +82,23 @@ namespace Orient.Client
 
         #endregion
 
-        #region Document
+        #region Edge
 
-        public OSqlCreateDocument Document(string className)
+        public OSqlCreateEdge Edge(string className)
         {
-            return new OSqlCreateDocument(_connection)
-                .Document(className);
+            return new OSqlCreateEdge(_connection)
+                .Edge(className);
         }
 
-        public OSqlCreateDocument Document<T>()
+        public OSqlCreateEdge Edge<T>()
         {
-            return Document(typeof(T).Name);
+            return Edge(typeof(T).Name);
         }
 
-        public OSqlCreateDocument Document<T>(T obj)
+        public OSqlCreateEdge Edge<T>(T obj)
         {
-            return new OSqlCreateDocument(_connection)
-                .Document(obj);
+            return new OSqlCreateEdge(_connection)
+                .Edge(obj);
         }
 
         #endregion
