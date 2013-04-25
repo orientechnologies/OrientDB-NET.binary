@@ -90,7 +90,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateIntoClusterSetQuery()
+        public void ShouldGenerateInsertIntoClusterSetQuery()
         {
             string generatedQuery = new OSqlInsert()
                 .Into("TestClass")

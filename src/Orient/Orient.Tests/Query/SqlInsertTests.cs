@@ -8,26 +8,121 @@ namespace Orient.Tests.Query
     [TestClass]
     public class SqlInsertTests
     {
-        /*[TestMethod]
-        public void ShouldInsertIntoSet()
+        [TestMethod]
+        public void ShouldInsertDocument()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
+                    // prerequisites
                     database
                         .Create.Class("TestClass")
                         .Run();
 
                     ODocument document = new ODocument();
-                    document.SetField("foo", "foo string value");
-                    document.SetField("bar", 12345);
+                    document.OClassName = "TestClass";
+                    document
+                        .SetField("foo", "foo string value")
+                        .SetField("bar", 12345);
 
                     ODocument insertedDocument = database
-                        .Insert.Into("TestClass")
-                        .Set(document)
+                        .Insert(document)
                         .Run();
 
+                    Assert.IsTrue(insertedDocument.ORID != null);
+                    Assert.AreEqual(insertedDocument.OClassName, "TestClass");
+                    Assert.AreEqual(insertedDocument.GetField<string>("foo"), document.GetField<string>("foo"));
+                    Assert.AreEqual(insertedDocument.GetField<int>("bar"), document.GetField<int>("bar"));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldInsertObject()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class<TestProfileClass>()
+                        .Run();
+
+                    TestProfileClass profile = new TestProfileClass();
+                    profile.Name = "Johny";
+                    profile.Surname = "Bravo";
+
+                    TestProfileClass insertedDocument = database
+                        .Insert(profile)
+                        .Run<TestProfileClass>();
+
+                    Assert.IsTrue(insertedDocument.ORID != null);
+                    Assert.AreEqual(insertedDocument.OClassName, typeof(TestProfileClass).Name);
+                    Assert.AreEqual(insertedDocument.Name, profile.Name);
+                    Assert.AreEqual(insertedDocument.Surname, profile.Surname);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldInsertDocumentInto()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestClass")
+                        .Run();
+
+                    ODocument document = new ODocument()
+                        .SetField("foo", "foo string value")
+                        .SetField("bar", 12345);
+
+                    ODocument insertedDocument = database
+                        .Insert(document)
+                        .Into("TestClass")
+                        .Run();
+
+                    Assert.IsTrue(insertedDocument.ORID != null);
+                    Assert.AreEqual(insertedDocument.OClassName, "TestClass");
+                    Assert.AreEqual(insertedDocument.GetField<string>("foo"), document.GetField<string>("foo"));
+                    Assert.AreEqual(insertedDocument.GetField<int>("bar"), document.GetField<int>("bar"));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldInsertDocumentIntoCluster()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestClass")
+                        .Run();
+
+                    database
+                        .Create.Cluster("TestCluster", OClusterType.Physical)
+                        .Run();
+
+                    ODocument document = new ODocument()
+                        .SetField("foo", "foo string value")
+                        .SetField("bar", 12345);
+
+                    ODocument insertedDocument = database
+                        .Insert(document)
+                        .Into("TestClass")
+                        .Cluster("TestCluster")
+                        .Run();
+
+                    Assert.IsTrue(insertedDocument.ORID != null);
+                    Assert.AreEqual(insertedDocument.OClassName, "TestClass");
                     Assert.AreEqual(insertedDocument.GetField<string>("foo"), document.GetField<string>("foo"));
                     Assert.AreEqual(insertedDocument.GetField<int>("bar"), document.GetField<int>("bar"));
                 }
@@ -41,29 +136,29 @@ namespace Orient.Tests.Query
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
-                    short clusterId = database
-                        .Create.Cluster("TestCluster", OClusterType.Physical)
+                    // prerequisites
+                    database
+                        .Create.Class("TestClass")
                         .Run();
 
                     database
-                        .Create.Class("TestClass")
-                        .Cluster(clusterId)
+                        .Create.Cluster("TestCluster", OClusterType.Physical)
                         .Run();
-
-                    ODocument document = new ODocument();
-                    document.SetField("foo", "foo string value");
-                    document.SetField("bar", 12345);
 
                     ODocument insertedDocument = database
-                        .Insert.Into("TestClass")
+                        .Insert()
+                        .Into("TestClass")
                         .Cluster("TestCluster")
-                        .Set(document)
+                        .Set("foo", "foo string value")
+                        .Set("bar", 12345)
                         .Run();
 
-                    Assert.AreEqual(insertedDocument.GetField<string>("foo"), document.GetField<string>("foo"));
-                    Assert.AreEqual(insertedDocument.GetField<int>("bar"), document.GetField<int>("bar"));
+                    Assert.IsTrue(insertedDocument.ORID != null);
+                    Assert.AreEqual(insertedDocument.OClassName, "TestClass");
+                    Assert.AreEqual(insertedDocument.GetField<string>("foo"), "foo string value");
+                    Assert.AreEqual(insertedDocument.GetField<int>("bar"), 12345);
                 }
             }
-        }*/
+        }
     }
 }
