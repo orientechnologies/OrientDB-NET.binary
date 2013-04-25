@@ -45,12 +45,19 @@ namespace Orient.Client
 
         public OSqlCreateEdge Edge(string className)
         {
-            return new OSqlCreateEdge(_connection).Edge(className);
+            return new OSqlCreateEdge(_connection)
+                .Edge(className);
         }
 
         public OSqlCreateEdge Edge<T>()
         {
             return Edge(typeof(T).Name);
+        }
+
+        public OSqlCreateEdge Edge<T>(T obj)
+        {
+            return new OSqlCreateEdge(_connection)
+                .Edge(obj);
         }
 
         #endregion
@@ -59,17 +66,19 @@ namespace Orient.Client
 
         public OSqlCreateVertex Vertex(string className)
         {
-            return new OSqlCreateVertex(_connection).Vertex(className);
-        }
-
-        public OSqlCreateVertex Vertex(ODocument document)
-        {
-            return new OSqlCreateVertex(_connection).Vertex(document);
+            return new OSqlCreateVertex(_connection)
+                .Vertex(className);
         }
 
         public OSqlCreateVertex Vertex<T>()
         {
             return Vertex(typeof(T).Name);
+        }
+
+        public OSqlCreateVertex Vertex<T>(T obj)
+        {
+            return new OSqlCreateVertex(_connection)
+                .Vertex(obj);
         }
 
         #endregion
@@ -78,17 +87,19 @@ namespace Orient.Client
 
         public OSqlCreateDocument Document(string className)
         {
-            return new OSqlCreateDocument(_connection).Document(className);
-        }
-
-        public OSqlCreateDocument Document(ODocument document)
-        {
-            return new OSqlCreateDocument(_connection).Document(document);
+            return new OSqlCreateDocument(_connection)
+                .Document(className);
         }
 
         public OSqlCreateDocument Document<T>()
         {
             return Document(typeof(T).Name);
+        }
+
+        public OSqlCreateDocument Document<T>(T obj)
+        {
+            return new OSqlCreateDocument(_connection)
+                .Document(obj);
         }
 
         #endregion
