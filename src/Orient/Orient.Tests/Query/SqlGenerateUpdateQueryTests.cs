@@ -109,7 +109,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateUpdateOridSetQuery()
+        public void ShouldGenerateUpdateRecordFromOridQuery()
         {
             ODocument document = new ODocument()
                 .SetField("foo", "foo string value")
@@ -138,46 +138,6 @@ namespace Orient.Tests.Query
             string generatedQuery = new OSqlUpdate()
                 .Update(document)
                 .Record(new ORID(8, 0))
-                .ToString();
-
-            string query =
-                "UPDATE #8:0 " +
-                "SET foo = 'foo string value', " +
-                "bar = 12345";
-
-            Assert.AreEqual(generatedQuery, query);
-        }
-
-        [TestMethod]
-        public void ShouldGenerateUpdateRecordFromOridQuery()
-        {
-            ODocument document = new ODocument()
-                .SetField("foo", "foo string value")
-                .SetField("bar", 12345);
-
-            string generatedQuery = new OSqlUpdate()
-                .Record(new ORID(8, 0))
-                .Set(document)
-                .ToString();
-
-            string query =
-                "UPDATE #8:0 " +
-                "SET foo = 'foo string value', " +
-                "bar = 12345";
-
-            Assert.AreEqual(generatedQuery, query);
-        }
-
-        [TestMethod]
-        public void ShouldGenerateUpdateRecordSetDocumentQuery()
-        {
-            ODocument document = new ODocument()
-                .SetField("foo", "foo string value")
-                .SetField("bar", 12345);
-
-            string generatedQuery = new OSqlUpdate()
-                .Record(new ORID(8, 0))
-                .Set(document)
                 .ToString();
 
             string query =
@@ -264,6 +224,21 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
+        public void ShouldGenerateUpdateRemoveCollectionItemQuery()
+        {
+            string generatedQuery = new OSqlUpdate()
+                .Record(new ORID(8, 0))
+                .Remove("foo", 123)
+                .ToString();
+
+            string query =
+                "UPDATE #8:0 " +
+                "REMOVE foo = 123";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
         public void ShouldGenerateUpdateRemoveFieldsQuery()
         {
             string generatedQuery = new OSqlUpdate()
@@ -275,21 +250,6 @@ namespace Orient.Tests.Query
             string query =
                 "UPDATE #8:0 " +
                 "REMOVE foo, bar";
-
-            Assert.AreEqual(generatedQuery, query);
-        }
-
-        [TestMethod]
-        public void ShouldGenerateUpdateRemoveCollectionItemQuery()
-        {
-            string generatedQuery = new OSqlUpdate()
-                .Record(new ORID(8, 0))
-                .Remove("foo", 123)
-                .ToString();
-
-            string query =
-                "UPDATE #8:0 " +
-                "REMOVE foo = 123";
 
             Assert.AreEqual(generatedQuery, query);
         }

@@ -8,182 +8,339 @@ namespace Orient.Tests.Query
     [TestClass]
     public class SqlUpdateTests
     {
-        /*[TestMethod]
-        public void ShouldUpdateSet()
+        [TestMethod]
+        public void ShouldUpdateClassFromDocument()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
+                    // prerequisites
                     database
-                        .Create.Class<TestVertexClass>()
-                        .Extends<OGraphVertex>()
+                        .Create.Class("TestClass")
                         .Run();
 
-                    TestVertexClass obj1 = new TestVertexClass();
-                    obj1.Foo = "foo string value 1";
-                    obj1.Bar = 12345;
+                    ODocument document = new ODocument();
+                    document.OClassName = "TestClass";
+                    document
+                        .SetField("foo", "foo string value")
+                        .SetField("bar", 12345);
 
-                    ODocument vertex1 = database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(obj1)
+                    database
+                        .Insert(document)
                         .Run();
 
-                    Assert.AreEqual(vertex1.GetField<string>("Foo"), obj1.Foo);
-                    Assert.AreEqual(vertex1.GetField<int>("Bar"), obj1.Bar);
-
-                    TestVertexClass obj2 = new TestVertexClass();
-                    obj2.Foo = "foo string value 2";
-                    obj2.Bar = 123456;
-
-                    ODocument vertex2 = database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(obj2)
+                    database
+                        .Insert(document)
                         .Run();
 
-                    Assert.AreEqual(vertex2.GetField<string>("Foo"), obj2.Foo);
-                    Assert.AreEqual(vertex2.GetField<int>("Bar"), obj2.Bar);
+                    document
+                        .SetField("bar", 54321)
+                        .SetField("baz", "new baz value");
 
-                    int recordsUpdated = database
-                        .Update.Class<TestVertexClass>()
-                        .Set("Baz", "baz string value")
+                    int documentsUpdated = database
+                        .Update(document)
                         .Run();
 
-                    Assert.AreEqual(recordsUpdated, 2);
+                    Assert.AreEqual(documentsUpdated, 2);
 
-                    List<ODocument> updatedRecords = database
+                    List<ODocument> documents = database
                         .Select()
-                        .From<TestVertexClass>()
+                        .From("TestClass")
                         .ToList();
 
-                    Assert.AreEqual(updatedRecords.Count, 2);
-                    Assert.AreEqual(updatedRecords[0].GetField<string>("Foo"), obj1.Foo);
-                    Assert.AreEqual(updatedRecords[0].GetField<int>("Bar"), obj1.Bar);
-                    Assert.AreEqual(updatedRecords[0].GetField<string>("Baz"), "baz string value");
-                    Assert.AreEqual(updatedRecords[1].GetField<string>("Foo"), obj2.Foo);
-                    Assert.AreEqual(updatedRecords[1].GetField<int>("Bar"), obj2.Bar);
-                    Assert.AreEqual(updatedRecords[1].GetField<string>("Baz"), "baz string value");
+                    Assert.AreEqual(documents.Count, 2);
+
+                    for (int i = 0; i < documents.Count; i++)
+                    {
+                        Assert.IsTrue(documents[i].ORID != null);
+                        Assert.AreEqual(documents[i].OClassName, document.OClassName);
+                        Assert.AreEqual(documents[i].GetField<string>("foo"), document.GetField<string>("foo"));
+                        Assert.AreEqual(documents[i].GetField<int>("bar"), document.GetField<int>("bar"));
+                        Assert.AreEqual(documents[i].GetField<string>("baz"), document.GetField<string>("baz"));
+                    }
                 }
             }
         }
 
         [TestMethod]
-        public void ShouldUpdateSetWhere()
+        public void ShouldUpdateClassFromObject()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
+                    // prerequisites
                     database
-                        .Create.Class<TestVertexClass>()
-                        .Extends<OGraphVertex>()
+                        .Create.Class<TestProfileClass>()
                         .Run();
 
-                    TestVertexClass obj1 = new TestVertexClass();
-                    obj1.Foo = "foo string value 1";
-                    obj1.Bar = 12345;
+                    TestProfileClass profile = new TestProfileClass();
+                    profile.Name = "Johny";
 
-                    ODocument vertex1 = database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(obj1)
+                    database
+                        .Insert(profile)
                         .Run();
 
-                    Assert.AreEqual(vertex1.GetField<string>("Foo"), obj1.Foo);
-                    Assert.AreEqual(vertex1.GetField<int>("Bar"), obj1.Bar);
-
-                    TestVertexClass obj2 = new TestVertexClass();
-                    obj2.Foo = "foo string value 2";
-                    obj2.Bar = 123456;
-
-                    ODocument vertex2 = database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(obj2)
+                    database
+                        .Insert(profile)
                         .Run();
 
-                    Assert.AreEqual(vertex2.GetField<string>("Foo"), obj2.Foo);
-                    Assert.AreEqual(vertex2.GetField<int>("Bar"), obj2.Bar);
+                    profile.Name = "Julia";
+                    profile.Surname = "Bravo";
 
-                    int recordsUpdated = database
-                        .Update.Class<TestVertexClass>()
-                        .Set("Foo", "new string value")
-                        .Set("Bar", 54321)
-                        .Set("Baz", "baz string value")
-                        .Where("@rid").Equals(vertex1.GetField<ORID>("@ORID"))
+                    int documentsUpdated = database
+                        .Update(profile)
                         .Run();
 
-                    Assert.AreEqual(recordsUpdated, 1);
+                    Assert.AreEqual(documentsUpdated, 2);
 
-                    List<ODocument> updatedRecords = database
+                    List<TestProfileClass> documents = database
                         .Select()
-                        .From<TestVertexClass>()
-                        .ToList();
+                        .From<TestProfileClass>()
+                        .ToList<TestProfileClass>();
 
-                    Assert.AreEqual(updatedRecords.Count, 2);
-                    Assert.AreEqual(updatedRecords[0].GetField<string>("Foo"), "new string value");
-                    Assert.AreEqual(updatedRecords[0].GetField<int>("Bar"), 54321);
-                    Assert.AreEqual(updatedRecords[0].GetField<string>("Baz"), "baz string value");
-                    Assert.AreEqual(updatedRecords[1].GetField<string>("Foo"), obj2.Foo);
-                    Assert.AreEqual(updatedRecords[1].GetField<int>("Bar"), obj2.Bar);
+                    Assert.AreEqual(documents.Count, 2);
+
+                    for (int i = 0; i < documents.Count; i++)
+                    {
+                        Assert.IsTrue(documents[i].ORID != null);
+                        Assert.AreEqual(documents[i].OClassName, typeof(TestProfileClass).Name);
+                        Assert.AreEqual(documents[i].Name, profile.Name);
+                        Assert.AreEqual(documents[i].Surname, profile.Surname);
+                    }
                 }
             }
         }
 
         [TestMethod]
-        public void ShouldUpdateRecordSet()
+        public void ShouldUpdateClass()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
+                    // prerequisites
                     database
-                        .Create.Class<TestVertexClass>()
-                        .Extends<OGraphVertex>()
+                        .Create.Class("TestClass")
                         .Run();
 
-                    TestVertexClass obj1 = new TestVertexClass();
-                    obj1.Foo = "foo string value 1";
-                    obj1.Bar = 12345;
+                    ODocument document = new ODocument();
+                    document
+                        .SetField("foo", "foo string value")
+                        .SetField("bar", 12345);
 
-                    ODocument vertex1 = database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(obj1)
+                    database
+                        .Insert(document)
+                        .Into("TestClass")
                         .Run();
 
-                    Assert.AreEqual(vertex1.GetField<string>("Foo"), obj1.Foo);
-                    Assert.AreEqual(vertex1.GetField<int>("Bar"), obj1.Bar);
-
-                    TestVertexClass obj2 = new TestVertexClass();
-                    obj2.Foo = "foo string value 2";
-                    obj2.Bar = 123456;
-
-                    ODocument vertex2 = database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(obj2)
+                    database
+                        .Insert(document)
+                        .Into("TestClass")
                         .Run();
 
-                    Assert.AreEqual(vertex2.GetField<string>("Foo"), obj2.Foo);
-                    Assert.AreEqual(vertex2.GetField<int>("Bar"), obj2.Bar);
+                    document
+                        .SetField("bar", 54321)
+                        .SetField("baz", "new baz value");
 
-                    int recordsUpdated = database
-                        .Update.Record(vertex1.GetField<ORID>("@ORID"))
-                        .Set("Foo", "new string value")
-                        .Set("Bar", 54321)
-                        .Set("Baz", "baz string value")
+                    int documentsUpdated = database
+                        .Update(document)
+                        .Class("TestClass")
                         .Run();
 
-                    Assert.AreEqual(recordsUpdated, 1);
+                    Assert.AreEqual(documentsUpdated, 2);
 
-                    List<ODocument> updatedRecords = database
+                    List<ODocument> documents = database
                         .Select()
-                        .From<TestVertexClass>()
+                        .From("TestClass")
                         .ToList();
 
-                    Assert.AreEqual(updatedRecords.Count, 2);
-                    Assert.AreEqual(updatedRecords[0].GetField<string>("Foo"), "new string value");
-                    Assert.AreEqual(updatedRecords[0].GetField<int>("Bar"), 54321);
-                    Assert.AreEqual(updatedRecords[0].GetField<string>("Baz"), "baz string value");
-                    Assert.AreEqual(updatedRecords[1].GetField<string>("Foo"), obj2.Foo);
-                    Assert.AreEqual(updatedRecords[1].GetField<int>("Bar"), obj2.Bar);
+                    Assert.AreEqual(documents.Count, 2);
+
+                    for (int i = 0; i < documents.Count; i++)
+                    {
+                        Assert.IsTrue(documents[i].ORID != null);
+                        Assert.AreEqual(documents[i].OClassName, "TestClass");
+                        Assert.AreEqual(documents[i].GetField<string>("foo"), document.GetField<string>("foo"));
+                        Assert.AreEqual(documents[i].GetField<int>("bar"), document.GetField<int>("bar"));
+                        Assert.AreEqual(documents[i].GetField<string>("baz"), document.GetField<string>("baz"));
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldUpdateCluster()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestClass")
+                        .Run();
+
+                    database
+                        .Create.Cluster("TestCluster", OClusterType.Physical)
+                        .Run();
+
+                    ODocument document = new ODocument();
+                    document.OClassName = "TestClass";
+                    document
+                        .SetField("foo", "foo string value")
+                        .SetField("bar", 12345);
+
+                    database
+                        .Insert(document)
+                        .Cluster("TestCluster")
+                        .Run();
+
+                    database
+                        .Insert(document)
+                        .Cluster("TestCluster")
+                        .Run();
+
+                    document
+                        .SetField("bar", 54321)
+                        .SetField("baz", "new baz value");
+
+                    int documentsUpdated = database
+                        .Update(document)
+                        .Cluster("TestCluster")
+                        .Run();
+
+                    Assert.AreEqual(documentsUpdated, 2);
+
+                    List<ODocument> documents = database
+                        .Select()
+                        .From("cluster:TestCluster")
+                        .ToList();
+
+                    Assert.AreEqual(documents.Count, 2);
+
+                    for (int i = 0; i < documents.Count; i++)
+                    {
+                        Assert.IsTrue(documents[i].ORID != null);
+                        Assert.AreEqual(documents[i].OClassName, document.OClassName);
+                        Assert.AreEqual(documents[i].GetField<string>("foo"), document.GetField<string>("foo"));
+                        Assert.AreEqual(documents[i].GetField<int>("bar"), document.GetField<int>("bar"));
+                        Assert.AreEqual(documents[i].GetField<string>("baz"), document.GetField<string>("baz"));
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldUpdateRecordFromDocument()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestClass")
+                        .Run();
+
+                    ODocument document = new ODocument();
+                    document.OClassName = "TestClass";
+                    document
+                        .SetField("foo", "foo string value")
+                        .SetField("bar", 12345);
+
+                    ODocument document1 = database
+                        .Insert(document)
+                        .Run();
+
+                    ODocument document2 = database
+                        .Insert(document)
+                        .Run();
+
+                    document2
+                        .SetField("bar", 54321)
+                        .SetField("baz", "new baz value");
+
+                    int documentsUpdated = database
+                        .Update(document2)
+                        .Run();
+
+                    Assert.AreEqual(documentsUpdated, 1);
+
+                    List<ODocument> documents = database
+                        .Select()
+                        .From("TestClass")
+                        .Where("bar").Equals(54321)
+                        .ToList();
+
+                    Assert.AreEqual(documents.Count, 1);
+
+                    for (int i = 0; i < documents.Count; i++)
+                    {
+                        Assert.AreEqual(documents[i].ORID, document2.ORID);
+                        Assert.AreEqual(documents[i].OClassName, document2.OClassName);
+                        Assert.AreEqual(documents[i].GetField<string>("foo"), document2.GetField<string>("foo"));
+                        Assert.AreEqual(documents[i].GetField<int>("bar"), document2.GetField<int>("bar"));
+                        Assert.AreEqual(documents[i].GetField<string>("baz"), document2.GetField<string>("baz"));
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldUpdateOridSet()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestClass")
+                        .Run();
+
+                    ODocument document = new ODocument();
+                    document.OClassName = "TestClass";
+                    document
+                        .SetField("foo", "foo string value")
+                        .SetField("bar", 12345);
+
+                    ODocument document1 = database
+                        .Insert(document)
+                        .Run();
+
+                    ODocument document2 = database
+                        .Insert(document)
+                        .Run();
+
+                    document2
+                        .SetField("bar", 54321)
+                        .SetField("baz", "new baz value");
+
+                    int documentsUpdated = database
+                        .Update(document2.ORID)
+                        .Set(document2)
+                        .Run();
+
+                    Assert.AreEqual(documentsUpdated, 1);
+
+                    List<ODocument> documents = database
+                        .Select()
+                        .From("TestClass")
+                        .Where("bar").Equals(54321)
+                        .ToList();
+
+                    Assert.AreEqual(documents.Count, 1);
+
+                    for (int i = 0; i < documents.Count; i++)
+                    {
+                        Assert.AreEqual(documents[i].ORID, document2.ORID);
+                        Assert.AreEqual(documents[i].OClassName, document2.OClassName);
+                        Assert.AreEqual(documents[i].GetField<string>("foo"), document2.GetField<string>("foo"));
+                        Assert.AreEqual(documents[i].GetField<int>("bar"), document2.GetField<int>("bar"));
+                        Assert.AreEqual(documents[i].GetField<string>("baz"), document2.GetField<string>("baz"));
+                    }
                 }
             }
         }
@@ -195,148 +352,209 @@ namespace Orient.Tests.Query
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
+                    // prerequisites
                     database
-                        .Create.Class<TestVertexClass>()
-                        .Extends<OGraphVertex>()
-                        .Run();
-
-                    TestVertexClass obj1 = new TestVertexClass();
-                    obj1.Foo = "foo string value 1";
-                    obj1.Bar = 12345;
-
-                    ODocument vertex1 = database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(obj1)
-                        .Run();
-
-                    Assert.AreEqual(vertex1.GetField<string>("Foo"), obj1.Foo);
-                    Assert.AreEqual(vertex1.GetField<int>("Bar"), obj1.Bar);
-
-                    TestVertexClass obj2 = new TestVertexClass();
-                    obj2.Foo = "foo string value 2";
-                    obj2.Bar = 123456;
-
-                    ODocument vertex2 = database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(obj2)
-                        .Run();
-
-                    Assert.AreEqual(vertex2.GetField<string>("Foo"), obj2.Foo);
-                    Assert.AreEqual(vertex2.GetField<int>("Bar"), obj2.Bar);
-
-                    vertex1
-                        .SetField("Foo", "new string value")
-                        .SetField("Bar", 54321)
-                        .SetField("Baz", "baz string value");
-
-                    int recordsUpdated = database
-                        .Update.Document(vertex1)
-                        .Run();
-
-                    Assert.AreEqual(recordsUpdated, 1);
-
-                    List<ODocument> updatedRecords = database
-                        .Select()
-                        .From<TestVertexClass>()
-                        .ToList();
-
-                    Assert.AreEqual(updatedRecords.Count, 2);
-                    Assert.AreEqual(updatedRecords[0].GetField<string>("Foo"), "new string value");
-                    Assert.AreEqual(updatedRecords[0].GetField<int>("Bar"), 54321);
-                    Assert.AreEqual(updatedRecords[0].GetField<string>("Baz"), "baz string value");
-                    Assert.AreEqual(updatedRecords[1].GetField<string>("Foo"), obj2.Foo);
-                    Assert.AreEqual(updatedRecords[1].GetField<int>("Bar"), obj2.Bar);
-                }
-            }
-        }
-
-        [TestMethod]
-        public void ShouldUpdateAdd()
-        {
-            using (TestDatabaseContext testContext = new TestDatabaseContext())
-            {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
-                {
-                    database
-                        .Create.Class<TestVertexClass>()
-                        .Extends<OGraphVertex>()
+                        .Create.Class("TestClass")
                         .Run();
 
                     ODocument document = new ODocument();
-                    document.SetField<List<string>>("FooCollection", new List<string> { "foo 1", "foo 2" });
+                    document.OClassName = "TestClass";
+                    document
+                        .SetField("foo", "foo string value")
+                        .SetField("bar", 12345);
 
-                    ODocument vertex1 = database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(document)
+                    ODocument document1 = database
+                        .Insert(document)
                         .Run();
 
-                    List<string> fooCollection = vertex1.GetField<List<string>>("FooCollection");
-                    
-                    Assert.AreEqual(fooCollection.Count, 2);
-
-                    int recordsUpdated = database
-                        .Update.Record(vertex1.GetField<ORID>("@ORID"))
-                        .Add("FooCollection", "foo 3")
+                    ODocument document2 = database
+                        .Insert(document)
                         .Run();
 
-                    Assert.AreEqual(recordsUpdated, 1);
+                    ODocument docToUpdate = new ODocument()
+                        .SetField("bar", 54321)
+                        .SetField("baz", "new baz value");
 
-                    List<ODocument> updatedRecords = database
+                    int documentsUpdated = database
+                        .Update(docToUpdate)
+                        .Record(document2.ORID)
+                        .Run();
+
+                    Assert.AreEqual(documentsUpdated, 1);
+
+                    List<ODocument> documents = database
                         .Select()
-                        .From<TestVertexClass>()
+                        .From("TestClass")
+                        .Where("bar").Equals(54321)
                         .ToList();
 
-                    Assert.AreEqual(updatedRecords.Count, 1);
+                    Assert.AreEqual(documents.Count, 1);
 
-                    fooCollection = updatedRecords[0].GetField<List<string>>("FooCollection");
-
-                    Assert.AreEqual(fooCollection.Count, 3);
-                    Assert.AreEqual(fooCollection[0], "foo 1");
-                    Assert.AreEqual(fooCollection[1], "foo 2");
-                    Assert.AreEqual(fooCollection[2], "foo 3");
+                    Assert.AreEqual(documents[0].ORID, document2.ORID);
+                    Assert.AreEqual(documents[0].OClassName, document2.OClassName);
+                    Assert.AreEqual(documents[0].GetField<string>("foo"), document2.GetField<string>("foo"));
+                    Assert.AreEqual(documents[0].GetField<int>("bar"), docToUpdate.GetField<int>("bar"));
+                    Assert.AreEqual(documents[0].GetField<string>("baz"), docToUpdate.GetField<string>("baz"));
                 }
             }
         }
 
         [TestMethod]
-        public void ShouldUpdateRemoveField()
+        public void ShouldUpdateRecordSet()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
+                    // prerequisites
                     database
-                         .Create.Class<TestVertexClass>()
-                         .Extends<OGraphVertex>()
-                         .Run();
-
-                    TestVertexClass obj1 = new TestVertexClass();
-                    obj1.Foo = "foo string value 1";
-                    obj1.Bar = 12345;
-
-                    ODocument vertex1 = database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(obj1)
+                        .Create.Class("TestClass")
                         .Run();
 
-                    Assert.AreEqual(vertex1.GetField<string>("Foo"), obj1.Foo);
-                    Assert.AreEqual(vertex1.GetField<int>("Bar"), obj1.Bar);
+                    ODocument document = new ODocument();
+                    document.OClassName = "TestClass";
+                    document
+                        .SetField("foo", "foo string value")
+                        .SetField("bar", 12345);
 
-                    int recordsUpdated = database
-                        .Update.Record(vertex1.GetField<ORID>("@ORID"))
-                        .Remove("Bar")
+                    ODocument document1 = database
+                        .Insert(document)
                         .Run();
 
-                    Assert.AreEqual(recordsUpdated, 1);
+                    ODocument document2 = database
+                        .Insert(document)
+                        .Run();
 
-                    List<ODocument> updatedRecords = database
+                    int documentsUpdated = database
+                        .Update(document2.ORID)
+                        .Set("bar", 54321)
+                        .Set("baz", "new baz value")
+                        .Run();
+
+                    Assert.AreEqual(documentsUpdated, 1);
+
+                    List<ODocument> documents = database
                         .Select()
-                        .From<TestVertexClass>()
+                        .From("TestClass")
+                        .Where("bar").Equals(54321)
                         .ToList();
 
-                    Assert.AreEqual(updatedRecords.Count, 1);
-                    Assert.AreEqual(updatedRecords[0].GetField<string>("Foo"), obj1.Foo);
-                    Assert.AreEqual(updatedRecords[0].HasField("Bar"), false);
+                    Assert.AreEqual(documents.Count, 1);
+
+                    Assert.AreEqual(documents[0].ORID, document2.ORID);
+                    Assert.AreEqual(documents[0].OClassName, document2.OClassName);
+                    Assert.AreEqual(documents[0].GetField<string>("foo"), document2.GetField<string>("foo"));
+                    Assert.AreEqual(documents[0].GetField<int>("bar"), 54321);
+                    Assert.AreEqual(documents[0].GetField<string>("baz"), "new baz value");
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldUpdateWhere()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestClass")
+                        .Run();
+
+                    ODocument document1 = database
+                        .Insert()
+                        .Into("TestClass")
+                        .Set("foo", "foo string value")
+                        .Set("bar", 11111)
+                        .Run();
+
+                    ODocument document2 = database
+                        .Insert()
+                        .Into("TestClass")
+                        .Set("foo", "foo string value")
+                        .Set("bar", 12345)
+                        .Run();
+
+                    int documentsUpdated = database
+                        .Update()
+                        .Class("TestClass")
+                        .Set("bar", 54321)
+                        .Set("baz", "new baz value")
+                        .Where("bar").Equals(12345)
+                        .Run();
+
+                    Assert.AreEqual(documentsUpdated, 1);
+
+                    List<ODocument> documents = database
+                        .Select()
+                        .From("TestClass")
+                        .Where("bar").Equals(54321)
+                        .ToList();
+
+                    Assert.AreEqual(documents.Count, 1);
+
+                    Assert.AreEqual(documents[0].ORID, document2.ORID);
+                    Assert.AreEqual(documents[0].OClassName, document2.OClassName);
+                    Assert.AreEqual(documents[0].GetField<string>("foo"), document2.GetField<string>("foo"));
+                    Assert.AreEqual(documents[0].GetField<int>("bar"), 54321);
+                    Assert.AreEqual(documents[0].GetField<string>("baz"), "new baz value");
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldUpdateAddCollectionItem()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestClass")
+                        .Run();
+
+                    ODocument document1 = database
+                        .Insert()
+                        .Into("TestClass")
+                        .Set("foo", new List<string>() { "foo1", "foo2" })
+                        .Set("bar", 11111)
+                        .Run();
+
+                    ODocument document2 = database
+                        .Insert()
+                        .Into("TestClass")
+                        .Set("foo", new List<string>() { "foo1", "foo2" })
+                        .Set("bar", 12345)
+                        .Run();
+
+                    int documentsUpdated = database
+                        .Update(document2)
+                        .Add("foo", "foo3")
+                        .Run();
+
+                    Assert.AreEqual(documentsUpdated, 1);
+
+                    List<ODocument> documents = database
+                        .Select()
+                        .From("TestClass")
+                        .Where("bar").Equals(12345)
+                        .ToList();
+
+                    Assert.AreEqual(documents.Count, 1);
+
+                    Assert.AreEqual(documents[0].ORID, document2.ORID);
+                    Assert.AreEqual(documents[0].OClassName, document2.OClassName);
+
+                    List<string> foos = new List<string>() { "foo1", "foo2", "foo3" };
+
+                    Assert.AreEqual(documents[0].GetField<List<string>>("foo").Count, foos.Count);
+                    Assert.AreEqual(documents[0].GetField<List<string>>("foo")[0], foos[0]);
+                    Assert.AreEqual(documents[0].GetField<List<string>>("foo")[1], foos[1]);
+                    Assert.AreEqual(documents[0].GetField<List<string>>("foo")[2], foos[2]);
+
+                    Assert.AreEqual(documents[0].GetField<int>("bar"), document2.GetField<int>("bar"));
                 }
             }
         }
@@ -348,43 +566,100 @@ namespace Orient.Tests.Query
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
+                    // prerequisites
                     database
-                        .Create.Class<TestVertexClass>()
-                        .Extends<OGraphVertex>()
+                        .Create.Class("TestClass")
                         .Run();
 
-                    ODocument document = new ODocument();
-                    document.SetField<List<string>>("FooCollection", new List<string> { "foo 1", "foo 2" });
-
-                    ODocument vertex1 = database
-                        .Create.Vertex<TestVertexClass>()
-                        .Set(document)
+                    ODocument document1 = database
+                        .Insert()
+                        .Into("TestClass")
+                        .Set("foo", new List<string>() { "foo1", "foo2" })
+                        .Set("bar", 11111)
                         .Run();
 
-                    List<string> fooCollection = vertex1.GetField<List<string>>("FooCollection");
-
-                    Assert.AreEqual(fooCollection.Count, 2);
-
-                    int recordsUpdated = database
-                        .Update.Record(vertex1.GetField<ORID>("@ORID"))
-                        .Remove("FooCollection", "foo 1")
+                    ODocument document2 = database
+                        .Insert()
+                        .Into("TestClass")
+                        .Set("foo", new List<string>() { "foo1", "foo2" })
+                        .Set("bar", 12345)
                         .Run();
 
-                    Assert.AreEqual(recordsUpdated, 1);
+                    int documentsUpdated = database
+                        .Update(document2)
+                        .Remove("foo", "foo2")
+                        .Run();
 
-                    List<ODocument> updatedRecords = database
+                    Assert.AreEqual(documentsUpdated, 1);
+
+                    List<ODocument> documents = database
                         .Select()
-                        .From<TestVertexClass>()
+                        .From("TestClass")
+                        .Where("bar").Equals(12345)
                         .ToList();
 
-                    Assert.AreEqual(updatedRecords.Count, 1);
+                    Assert.AreEqual(documents.Count, 1);
 
-                    fooCollection = updatedRecords[0].GetField<List<string>>("FooCollection");
+                    Assert.AreEqual(documents[0].ORID, document2.ORID);
+                    Assert.AreEqual(documents[0].OClassName, document2.OClassName);
 
-                    Assert.AreEqual(fooCollection.Count, 1);
-                    Assert.AreEqual(fooCollection[0], "foo 2");
+                    List<string> foos = new List<string>() { "foo1" };
+
+                    Assert.AreEqual(documents[0].GetField<List<string>>("foo").Count, foos.Count);
+                    Assert.AreEqual(documents[0].GetField<List<string>>("foo")[0], foos[0]);
+
+                    Assert.AreEqual(documents[0].GetField<int>("bar"), document2.GetField<int>("bar"));
                 }
             }
-        }*/
+        }
+
+        [TestMethod]
+        public void ShouldUpdateRemoveFieldQuery()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestClass")
+                        .Run();
+
+                    ODocument document1 = database
+                        .Insert()
+                        .Into("TestClass")
+                        .Set("foo", "foo string value1")
+                        .Set("bar", 11111)
+                        .Run();
+
+                    ODocument document2 = database
+                        .Insert()
+                        .Into("TestClass")
+                        .Set("foo", "foo string value2")
+                        .Set("bar", 12345)
+                        .Run();
+
+                    int documentsUpdated = database
+                        .Update(document2)
+                        .Remove("bar")
+                        .Run();
+
+                    Assert.AreEqual(documentsUpdated, 1);
+
+                    List<ODocument> documents = database
+                        .Select()
+                        .From("TestClass")
+                        .Where("foo").Equals("foo string value2")
+                        .ToList();
+
+                    Assert.AreEqual(documents.Count, 1);
+
+                    Assert.AreEqual(documents[0].ORID, document2.ORID);
+                    Assert.AreEqual(documents[0].OClassName, document2.OClassName);
+                    Assert.AreEqual(documents[0].GetField<string>("foo"), document2.GetField<string>("foo"));
+                    Assert.IsFalse(documents[0].HasField("bar"));
+                }
+            }
+        }
     }
 }
