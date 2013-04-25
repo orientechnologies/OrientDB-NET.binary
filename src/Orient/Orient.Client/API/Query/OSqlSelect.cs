@@ -29,13 +29,6 @@ namespace Orient.Client
 
         #region Select
 
-        /*public OSqlSelect Select(string projection)
-        {
-            _sqlQuery.Join(Q.Select, projection);
-
-            return this;
-        }*/
-
         public OSqlSelect Select(params string[] projections)
         {
             _sqlQuery.Select(projections);
