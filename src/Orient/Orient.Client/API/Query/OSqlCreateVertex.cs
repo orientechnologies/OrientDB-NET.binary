@@ -97,6 +97,8 @@ namespace Orient.Client
 
         #endregion
 
+        #region Run
+
         public ODocument Run()
         {
             CommandPayload payload = new CommandPayload();
@@ -115,6 +117,13 @@ namespace Orient.Client
 
             return result.ToSingle();
         }
+
+        public T Run<T>() where T : class, new()
+        {
+            return Run().To<T>();
+        }
+
+        #endregion
 
         public override string ToString()
         {
