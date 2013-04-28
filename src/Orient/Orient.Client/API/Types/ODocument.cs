@@ -105,6 +105,30 @@ namespace Orient.Client
                                 }
                             }
                         }
+                        else if (type.Name == "HashSet`1")
+                        {
+                            Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
+                            IEnumerator enumerator = ((IEnumerable)this[fieldPath]).GetEnumerator();
+
+                            var addMethod = type.GetMethod("Add");
+
+                            while (enumerator.MoveNext())
+                            {
+                                // if current element is ODocument type which is Dictionary<string, object>
+                                // map its dictionary data to element instance
+                                if (enumerator.Current is ODocument)
+                                {
+                                    var instance = Activator.CreateInstance(elementType);
+                                    ((ODocument)enumerator.Current).Map(ref instance);
+
+                                    addMethod.Invoke(value, new object[] { instance });
+                                }
+                                else
+                                {
+                                    addMethod.Invoke(value, new object[] { enumerator.Current });
+                                }
+                            }
+                        }
                         else
                         {
                             value = (T)embeddedDocument[field];
@@ -127,7 +151,7 @@ namespace Orient.Client
             {
                 if (this.ContainsKey(fieldPath))
                 {
-                    // if value is collection type, get element type and enumerate over its elements
+                    // if value is list or set type, get element type and enumerate over its elements
                     if (value is IList)
                     {
                         Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
@@ -135,7 +159,7 @@ namespace Orient.Client
                         
                         while (enumerator.MoveNext())
                         {
-                            // if current element is DataObject type which is dictionary<string, object>
+                            // if current element is ODocument type which is Dictionary<string, object>
                             // map its dictionary data to element instance
                             if (enumerator.Current is ODocument)
                             {
@@ -147,6 +171,30 @@ namespace Orient.Client
                             else
                             {
                                 ((IList)value).Add(enumerator.Current);
+                            }
+                        }
+                    }
+                    else if (type.Name == "HashSet`1")
+                    {
+                        Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
+                        IEnumerator enumerator = ((IEnumerable)this[fieldPath]).GetEnumerator();
+
+                        var addMethod = type.GetMethod("Add");
+
+                        while (enumerator.MoveNext())
+                        {
+                            // if current element is ODocument type which is Dictionary<string, object>
+                            // map its dictionary data to element instance
+                            if (enumerator.Current is ODocument)
+                            {
+                                var instance = Activator.CreateInstance(elementType);
+                                ((ODocument)enumerator.Current).Map(ref instance);
+
+                                addMethod.Invoke(value, new object[] { instance });
+                            }
+                            else
+                            {
+                                addMethod.Invoke(value, new object[] { enumerator.Current });
                             }
                         }
                     }

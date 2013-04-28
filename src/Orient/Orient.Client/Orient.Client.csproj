@@ -51,7 +51,7 @@
     <Compile Include="API\OClusterType.cs" />
     <Compile Include="API\ODatabase.cs" />
     <Compile Include="API\ORecordType.cs" />
-    <Compile Include="API\ORID.cs" />
+    <Compile Include="API\Types\ORID.cs" />
     <Compile Include="API\OServer.cs" />
     <Compile Include="API\OStorageType.cs" />
     <Compile Include="API\Query\OSqlCreate.cs" />
@@ -71,7 +71,6 @@
     <Compile Include="Protocol\Query\SqlQuery.cs" />
     <Compile Include="API\Types\OType.cs" />
     <Compile Include="API\Types\OLinkCollection.cs" />
-    <Compile Include="API\Types\OLinkSet.cs" />
     <Compile Include="Protocol\Connection.cs" />
     <Compile Include="API\ODatabaseType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -96,7 +95,7 @@
     <Compile Include="Protocol\Operations\OperationType.cs" />
     <Compile Include="Protocol\Request.cs" />
     <Compile Include="Protocol\Response.cs" />
-    <Compile Include="API\ODocument.cs" />
+    <Compile Include="API\Types\ODocument.cs" />
     <Compile Include="Protocol\ResponseStatus.cs" />
     <Compile Include="Protocol\Serializers\BinarySerializer.cs" />
     <Compile Include="Protocol\Serializers\RecordSerializer.cs" />
