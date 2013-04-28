@@ -139,5 +139,37 @@ namespace Orient.Tests.Serialization
 
             Assert.AreEqual(serializedString, recordString);
         }
+
+        [TestMethod]
+        public void ShouldSerializeListOfORIDs()
+        {
+            string recordString = "TestClass@Single:#8:0,Array:[#8:1,#8:2],embedded:(Array:[#9:1,#9:2])";
+
+            ODocument document = new ODocument()
+                .SetField("@ClassName", "TestClass")
+                .SetField("Single", new ORID(8, 0))
+                .SetField("Array", new List<ORID> { new ORID(8, 1), new ORID(8, 2) })
+                .SetField("embedded.Array", new List<ORID> { new ORID(9, 1), new ORID(9, 2) });
+
+            string serializedString = document.Serialize();
+
+            Assert.AreEqual(serializedString, recordString);
+        }
+
+        [TestMethod]
+        public void ShouldSerializeSetOfORIDs()
+        {
+            string recordString = "TestClass@Single:#8:0,Set:<#8:1,#8:2>,embedded:(Set:<#9:1,#9:2>)";
+
+            ODocument document = new ODocument()
+                .SetField("@ClassName", "TestClass")
+                .SetField("Single", new ORID(8, 0))
+                .SetField("Set", new HashSet<ORID> { new ORID(8, 1), new ORID(8, 2) })
+                .SetField("embedded.Set", new HashSet<ORID> { new ORID(9, 1), new ORID(9, 2) });
+
+            string serializedString = document.Serialize();
+
+            Assert.AreEqual(serializedString, recordString);
+        }
     }
 }

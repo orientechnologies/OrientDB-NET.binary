@@ -312,24 +312,56 @@ namespace Orient.Tests.Serialization
         }
 
         [TestMethod]
-        public void ShouldDeserializeSingleAndCollectionOfOrids()
+        public void ShouldDeserializeSingleAndListOfOrids()
         {
-            string recordString = "single:#10:12345,collection:[#11:123,#22:1234,#33:1234567]";
+            string recordString = "single:#10:12345,list:[#11:123,#22:1234,#33:1234567]";
 
             ODocument document = ODocument.Deserialize(recordString);
 
             // check for fields existence
             Assert.AreEqual(document.HasField("single"), true);
-            Assert.AreEqual(document.HasField("collection"), true);
+            Assert.AreEqual(document.HasField("list"), true);
 
             // check for fields values
             Assert.AreEqual(document.GetField<ORID>("single"), new ORID(10, 12345));
-            List<ORID> collection = document.GetField<List<ORID>>("collection");
+            List<ORID> collection = document.GetField<List<ORID>>("list");
             Assert.AreEqual(collection.Count, 3);
             Assert.AreEqual(collection[0], new ORID(11, 123));
             Assert.AreEqual(collection[1], new ORID(22, 1234));
             Assert.AreEqual(collection[2], new ORID(33, 1234567));
         }
+
+        [TestMethod]
+        public void ShouldDeserializeSingleAndSetOfOrids()
+        {
+            string recordString = "single:#10:12345,set:<#11:123,#22:1234,#33:1234567>";
+
+            ODocument document = ODocument.Deserialize(recordString);
+
+            // check for fields existence
+            Assert.AreEqual(document.HasField("single"), true);
+            Assert.AreEqual(document.HasField("set"), true);
+
+            // check for fields values
+            Assert.AreEqual(document.GetField<ORID>("single"), new ORID(10, 12345));
+            HashSet<ORID> collection = document.GetField<HashSet<ORID>>("set");
+            Assert.AreEqual(collection.Count, 3);
+            Assert.IsTrue(collection.Contains(new ORID(11, 123)));
+            Assert.IsTrue(collection.Contains(new ORID(22, 1234)));
+            Assert.IsTrue(collection.Contains(new ORID(33, 1234567)));
+        }
+
+        /*[TestMethod]
+        public void ShouldDeserializeMapExample()
+        {
+            string recordString = "ORole@name:\"reader\",inheritedRole:,mode:0,rules:{\"database\":2,\"database.cluster.internal\":2,\"database.cluster.orole\":2,\"database.cluster.ouser\":2,\"database.class.*\":2,\"database.cluster.*\":2,\"database.query\":2,\"database.command\":2,\"database.hook.record\":2}";
+
+            ODocument document = ODocument.Deserialize(recordString);
+
+            // check for fields existence
+
+            // check for fields values
+        }*/
     }
 
     class DocComplexExampleEmbedded
