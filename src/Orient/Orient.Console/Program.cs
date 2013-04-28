@@ -13,8 +13,49 @@ namespace Orient.Console
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
-                bool exit = false;
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    database
+                        .Create.Class("Person")
+                        .Extends<OGraphVertex>()
+                        .Run();
 
+                    database
+                        .Create.Class("Spouse")
+                        .Extends<OGraphVertex>()
+                        .Run();
+
+                    ODocument person1 = database
+                        .Create.Vertex("Person")
+                        .Set("Name", "Johny")
+                        .Run();
+
+                    ODocument spouse1 = database
+                        .Create.Vertex("Spouse")
+                        .Set("Name", "Mary")
+                        .Run();
+
+                    ODocument spouse2 = database
+                        .Create.Vertex("Spouse")
+                        .Set("Name", "Julia")
+                        .Run();
+
+                    database
+                        .Create.Edge<OGraphEdge>()
+                        .From(person1)
+                        .To(spouse1)
+                        .Run();
+
+                    database
+                        .Create.Edge<OGraphEdge>()
+                        .From(person1)
+                        .To(spouse2)
+                        .Run();
+
+                    List<ODocument> docs = database.Query("select map('name1', out[0].in.Name, 'name2', out[1].in.Name) AS embeddedDoc, Name from Person");
+                }
+
+                /*bool exit = false;
 
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
@@ -51,7 +92,9 @@ namespace Orient.Console
                     {
                         exit = true;
                     }
-                }
+                }*/
+
+
             }
         }
 

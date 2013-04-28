@@ -22,7 +22,8 @@ namespace Orient.Console
         {
             _server = new OServer(_hostname, _port, _rootUserName, _rootUserParssword);
 
-            GlobalTestDatabaseName = "globalTestDatabaseForNetDriver001";
+            //GlobalTestDatabaseName = "globalTestDatabaseForNetDriver001";
+            GlobalTestDatabaseName = "ModelTest";
             GlobalTestDatabaseType = ODatabaseType.Graph;
             GlobalTestDatabaseAlias = "globalTestDatabaseForNetDriver001Alias";
         }
