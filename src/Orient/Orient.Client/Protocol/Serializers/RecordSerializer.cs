@@ -19,58 +19,6 @@ namespace Orient.Client.Protocol.Serializers
             return document.GetField<string>("@ClassName") + "@" + SerializeDocument(document);
         }
 
-        /*internal static ORecord ToRecord(ORID orid, int version, ORecordType type, short classId, byte[] rawRecord)
-        {
-            ORecord record = new ORecord(orid, version, type, classId);
-
-            string recordString = BinarySerializer.ToString(rawRecord).Trim();
-
-            int atIndex = recordString.IndexOf('@');
-            int colonIndex = recordString.IndexOf(':');
-            int index = 0;
-
-            // parse class name
-            if ((atIndex != -1) && (atIndex < colonIndex))
-            {
-                record.ClassName = recordString.Substring(0, atIndex);
-                index = atIndex + 1;
-            }
-
-            // start document parsing with first field name
-            do
-            {
-                index = ParseFieldName(index, recordString, record.Document);
-            }
-            while (index < recordString.Length);
-
-            return record;
-        }*/
-
-        /*internal static ORecord ToRecord(string recordString)
-        {
-            ORecord record = new ORecord();
-
-            int atIndex = recordString.IndexOf('@');
-            int colonIndex = recordString.IndexOf(':');
-            int index = 0;
-
-            // parse class name
-            if ((atIndex != -1) && (atIndex < colonIndex))
-            {
-                record.ClassName = recordString.Substring(0, atIndex);
-                index = atIndex + 1;
-            }
-
-            // start document parsing with first field name
-            do
-            {
-                index = ParseFieldName(index, recordString, record.Document);
-            }
-            while (index < recordString.Length);
-
-            return record;
-        }*/
-
         #region Deserialize
 
         internal static ODocument Deserialize(ORID orid, int version, ORecordType type, short classId, byte[] rawRecord)
@@ -222,7 +170,14 @@ namespace Orient.Client.Protocol.Serializers
                     case TypeCode.Object:
                         if ((valueType.IsArray) || (valueType.IsGenericType))
                         {
-                            serializedString += "[";
+                            if (valueType.Name == "HashSet`1")
+                            {
+                                serializedString += "<";
+                            }
+                            else
+                            {
+                                serializedString += "[";
+                            }
 
                             IEnumerable collection = (IEnumerable)value;
 
@@ -246,10 +201,17 @@ namespace Orient.Client.Protocol.Serializers
                                 serializedString = serializedString.Remove(serializedString.Length - 1);
                             }
 
-                            serializedString += "]";
+                            if (valueType.Name == "HashSet`1")
+                            {
+                                serializedString += ">";
+                            }
+                            else
+                            {
+                                serializedString += "]";
+                            }
                         }
                         // if property is ORID type it needs to be serialized as ORID
-                        else if (valueType.IsClass && (valueType.Name == "ORID")) 
+                        else if (valueType.IsClass && (valueType.Name == "ORID"))
                         {
                             serializedString += ((ORID)value).RID;
                         }
@@ -314,14 +276,10 @@ namespace Orient.Client.Protocol.Serializers
                     i = ParseEmbeddedDocument(i, recordString, document, fieldName);
                     break;
                 case '[':
-                    if (recordString[i + 1] == '(')
-                    {
-                        i = ParseCollection(i, recordString, document, fieldName);
-                    }
-                    else
-                    {
-                        i = ParseCollection(i, recordString, document, fieldName);
-                    }
+                    i = ParseList(i, recordString, document, fieldName);
+                    break;
+                case '<':
+                    i = ParseSet(i, recordString, document, fieldName);
                     break;
                 case '{':
                     i = ParseMap(i, recordString, document, fieldName);
@@ -382,6 +340,10 @@ namespace Orient.Client.Protocol.Serializers
             {
                 document[fieldName] = value;
             }
+            else if (document[fieldName] is HashSet<object>)
+            {
+                ((HashSet<object>)document[fieldName]).Add(value);
+            }
             else
             {
                 ((List<object>)document[fieldName]).Add(value);
@@ -398,7 +360,12 @@ namespace Orient.Client.Protocol.Serializers
             int startIndex = i;
 
             // search for end of parsed record ID value
-            while ((i < recordString.Length) && (recordString[i] != ',') && (recordString[i] != ')') && (recordString[i] != ']'))
+            while (
+                (i < recordString.Length) && 
+                (recordString[i] != ',') && 
+                (recordString[i] != ')') && 
+                (recordString[i] != ']') &&
+                (recordString[i] != '>'))
             {
                 i++;
             }
@@ -409,6 +376,10 @@ namespace Orient.Client.Protocol.Serializers
             if (document[fieldName] == null)
             {
                 document[fieldName] = new ORID(orid);
+            }
+            else if (document[fieldName] is HashSet<object>)
+            {
+                ((HashSet<object>)document[fieldName]).Add(new ORID(orid));
             }
             else
             {
@@ -469,6 +440,10 @@ namespace Orient.Client.Protocol.Serializers
             {
                 document[fieldName] = recordString.Substring(startIndex, i - startIndex);
             }
+            else if (document[fieldName] is HashSet<object>)
+            {
+                ((HashSet<object>)document[fieldName]).Add(recordString.Substring(startIndex, i - startIndex));
+            }
             else
             {
                 ((List<object>)document[fieldName]).Add(recordString.Substring(startIndex, i - startIndex));
@@ -482,7 +457,12 @@ namespace Orient.Client.Protocol.Serializers
             int startIndex = i;
 
             // search for end of parsed field value
-            while ((i < recordString.Length) && (recordString[i] != ',') && (recordString[i] != ')') && (recordString[i] != ']'))
+            while (
+                (i < recordString.Length) && 
+                (recordString[i] != ',') && 
+                (recordString[i] != ')') && 
+                (recordString[i] != ']') &&
+                (recordString[i] != '>'))
             {
                 i++;
             }
@@ -565,6 +545,10 @@ namespace Orient.Client.Protocol.Serializers
             {
                 document[fieldName] = value;
             }
+            else if (document[fieldName] is HashSet<object>)
+            {
+                ((HashSet<object>)document[fieldName]).Add(value);
+            }
             else
             {
                 ((List<object>)document[fieldName]).Add(value);
@@ -590,11 +574,16 @@ namespace Orient.Client.Protocol.Serializers
                 // create new dictionary which would hold K/V pairs of embedded document
                 ODocument embeddedDocument = new ODocument();
 
-                if (document[fieldName] == null) // embedded object
+                // assign embedded object
+                if (document[fieldName] == null)
                 {
                     document[fieldName] = embeddedDocument;
                 }
-                else // collection of embedded objects
+                else if (document[fieldName] is HashSet<object>)
+                {
+                    ((HashSet<object>)document[fieldName]).Add(embeddedDocument);
+                }
+                else
                 {
                     ((List<object>)document[fieldName]).Add(embeddedDocument);
                 }
@@ -639,9 +628,9 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseCollection(int i, string recordString, ODocument document, string fieldName)
+        private static int ParseList(int i, string recordString, ODocument document, string fieldName)
         {
-            // move to the first element of this collection
+            // move to the first element of this list
             i++;
 
             if (document[fieldName] == null)
@@ -675,7 +664,49 @@ namespace Orient.Client.Protocol.Serializers
                 }
             }
 
-            // move past closing bracket of collection
+            // move past closing bracket of this list
+            i++;
+
+            return i;
+        }
+
+        private static int ParseSet(int i, string recordString, ODocument document, string fieldName)
+        {
+            // move to the first element of this set
+            i++;
+
+            if (document[fieldName] == null)
+            {
+                document[fieldName] = new HashSet<object>();
+            }
+
+            while (recordString[i] != '>')
+            {
+                // check what follows after parsed field name and start parsing underlying type
+                switch (recordString[i])
+                {
+                    case '"':
+                        i = ParseString(i, recordString, document, fieldName);
+                        break;
+                    case '#':
+                        i = ParseRecordID(i, recordString, document, fieldName);
+                        break;
+                    case '(':
+                        i = ParseEmbeddedDocument(i, recordString, document, fieldName);
+                        break;
+                    case '{':
+                        i = ParseMap(i, recordString, document, fieldName);
+                        break;
+                    case ',':
+                        i++;
+                        break;
+                    default:
+                        i = ParseValue(i, recordString, document, fieldName);
+                        break;
+                }
+            }
+
+            // move past closing bracket of this set
             i++;
 
             return i;
