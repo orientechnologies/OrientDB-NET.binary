@@ -3,10 +3,11 @@ namespace Orient.Client
 {
     public enum OType
     {
+        Null,
         Boolean,
         Byte,
-        Integer,
         Short,
+        Integer,
         Long,
         Float,
         Double,
@@ -14,13 +15,10 @@ namespace Orient.Client
         Date,
         String,
         Binary,
-        Embedded,
-        EmbeddedList,
-        EmbeddedSet,
-        EmbeddedMap,
-        Link,
-        LinkList,
-        LinkSet,
-        LinkMap
+        Document,
+        List,
+        Set,
+        Map,
+        Link
     }
 }
