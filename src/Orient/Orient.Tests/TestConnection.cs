@@ -10,7 +10,7 @@ namespace Orient.Tests
         private static string _password = "admin";
 
         private static string _rootUserName = "root";
-        private static string _rootUserParssword = "6ECADDC4AB2BE7447A3144588321247613B43D6EF04C8B3F301ABA48CE33CB89";
+        private static string _rootUserParssword = "root";
         private static OServer _server;
 
         public static int GlobalTestDatabasePoolSize { get { return 3; } }
