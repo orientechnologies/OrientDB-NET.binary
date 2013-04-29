@@ -8,7 +8,7 @@ namespace Orient.Tests.Query
     public class SqlGenerateDeleteVertexQueryTests
     {
         [TestMethod]
-        public void ShouldGenerateDeleteFromDocumentOridQuery()
+        public void ShouldGenerateDeleteVertexFromDocumentOridQuery()
         {
             ODocument document = new ODocument();
             document.ORID = new ORID(8, 0);
@@ -24,7 +24,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateDeleteFromObjectOridQuery()
+        public void ShouldGenerateDeleteVertexFromObjectOridQuery()
         {
             TestProfileClass profile = new TestProfileClass();
             profile.ORID = new ORID(8, 0);
@@ -40,7 +40,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateDeleteFromDocumentOClassNameQuery()
+        public void ShouldGenerateDeleteVertexFromDocumentOClassNameQuery()
         {
             ODocument document = new ODocument();
             document.OClassName = "TestClass";
@@ -56,7 +56,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateDeleteFromObjectOClassNameQuery()
+        public void ShouldGenerateDeleteVertexFromObjectOClassNameQuery()
         {
             TestProfileClass profile = new TestProfileClass();
 
@@ -71,7 +71,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateDeleteClassWhereLimitQuery()
+        public void ShouldGenerateDeleteVertexClassWhereLimitQuery()
         {
             string generatedQuery = new OSqlDeleteVertex()
                 .Class<TestProfileClass>()

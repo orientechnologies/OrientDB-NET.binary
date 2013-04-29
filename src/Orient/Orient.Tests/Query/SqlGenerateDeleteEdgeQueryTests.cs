@@ -8,7 +8,7 @@ namespace Orient.Tests.Query
     public class SqlGenerateDeleteEdgeQueryTests
     {
         [TestMethod]
-        public void ShouldGenerateDeleteFromDocumentOridQuery()
+        public void ShouldGenerateDeleteEdgeFromDocumentOridQuery()
         {
             ODocument document = new ODocument();
             document.ORID = new ORID(8, 0);
@@ -24,7 +24,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateDeleteFromObjectOridQuery()
+        public void ShouldGenerateDeleteEdgeFromObjectOridQuery()
         {
             TestProfileClass profile = new TestProfileClass();
             profile.ORID = new ORID(8, 0);
@@ -40,7 +40,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateDeleteFromDocumentOClassNameQuery()
+        public void ShouldGenerateDeleteEdgeFromDocumentOClassNameQuery()
         {
             ODocument document = new ODocument();
             document.OClassName = "TestClass";
@@ -56,7 +56,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateDeleteFromObjectOClassNameQuery()
+        public void ShouldGenerateDeleteEdgeFromObjectOClassNameQuery()
         {
             TestProfileClass profile = new TestProfileClass();
 
@@ -71,7 +71,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateDeleteClassWhereLimitQuery()
+        public void ShouldGenerateDeleteEdgeClassWhereLimitQuery()
         {
             string generatedQuery = new OSqlDeleteEdge()
                 .Class<TestProfileClass>()
@@ -106,7 +106,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateDeleteFromDocumentToDocumentQuery()
+        public void ShouldGenerateDeleteEdgeFromDocumentToDocumentQuery()
         {
             TestProfileClass profile = new TestProfileClass();
 
@@ -129,7 +129,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldGenerateDeleteFromObjectToObjectQuery()
+        public void ShouldGenerateDeleteEdgeFromObjectToObjectQuery()
         {
             TestProfileClass profile = new TestProfileClass();
 

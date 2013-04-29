@@ -8,7 +8,7 @@ namespace Orient.Tests.Query
     public class SqlDeleteVertexTests
     {
         [TestMethod]
-        public void ShouldDeleteFromDocumentOrid()
+        public void ShouldDeleteVertexFromDocumentOrid()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
@@ -42,7 +42,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldDeleteFromObjectOrid()
+        public void ShouldDeleteVertexFromObjectOrid()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
@@ -76,7 +76,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldDeleteFromClassWhere()
+        public void ShouldDeleteVertexFromClassWhere()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {

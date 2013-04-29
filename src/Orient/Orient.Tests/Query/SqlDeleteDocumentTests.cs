@@ -8,7 +8,7 @@ namespace Orient.Tests.Query
     public class SqlDeleteDocumentTests
     {
         [TestMethod]
-        public void ShouldDeleteFromDocumentOClassName()
+        public void ShouldDeleteDocumentFromDocumentOClassName()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
@@ -44,7 +44,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldDeleteFromObjectOClassName()
+        public void ShouldDeleteDocumentFromObjectOClassName()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
@@ -77,7 +77,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldDeleteFromDocumentOrid()
+        public void ShouldDeleteDocumentFromDocumentOrid()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
@@ -113,7 +113,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldDeleteFromObjectOrid()
+        public void ShouldDeleteDocumentFromObjectOrid()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
@@ -146,7 +146,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldDeleteClassWhereQuery()
+        public void ShouldDeleteDocumentClassWhereQuery()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {

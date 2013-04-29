@@ -8,7 +8,7 @@ namespace Orient.Tests.Query
     public class SqlDeleteEdgeTests
     {
         [TestMethod]
-        public void ShouldDeleteFromDocumentOrid()
+        public void ShouldDeleteEdgeFromDocumentOrid()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
@@ -55,7 +55,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldDeleteFromObjectOrid()
+        public void ShouldDeleteEdgeFromObjectOrid()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
@@ -96,7 +96,7 @@ namespace Orient.Tests.Query
         }
 
         [TestMethod]
-        public void ShouldDeleteFromClassWhere()
+        public void ShouldDeleteEdgeFromClassWhere()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
@@ -134,8 +134,8 @@ namespace Orient.Tests.Query
             }
         }
 
-        /*[TestMethod]
-        public void ShouldDeleteFromDocumentToDocument()
+        [TestMethod]
+        public void ShouldDeleteEdgeFromDocumentToDocument()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
@@ -179,6 +179,6 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(documentsDeleted, 2);
                 }
             }
-        }*/
+        }
     }
 }
