@@ -40,19 +40,20 @@ namespace Orient.Console
                         .Set("Name", "Julia")
                         .Run();
 
-                    database
+                    // TODO: check what happens in command execution
+                    ODocument edge1 = database
                         .Create.Edge<OGraphEdge>()
                         .From(person1)
                         .To(spouse1)
                         .Run();
 
-                    database
+                    ODocument edge2 = database
                         .Create.Edge<OGraphEdge>()
                         .From(person1)
                         .To(spouse2)
                         .Run();
 
-                    List<ODocument> docs = database.Query("select map('name1', out[0].in.Name, 'name2', out[1].in.Name) AS embeddedDoc, Name from Person");
+                    List<ODocument> docs = database.Query("select Name from Person");
                 }
 
                 /*bool exit = false;
