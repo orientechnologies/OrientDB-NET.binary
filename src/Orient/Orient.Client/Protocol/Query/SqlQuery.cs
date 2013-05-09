@@ -9,19 +9,19 @@ namespace Orient.Client.Protocol
 
         internal void Class(string className)
         {
-            _compiler.Unique(Q.Class, className);
+            _compiler.Unique(Q.Class, ParseClassName(className));
         }
 
         #region Cluster
 
         internal void Cluster(string clusterName)
         {
-            _compiler.Unique(Q.Cluster, clusterName);
+            _compiler.Unique(Q.Cluster, ParseClassName(clusterName));
         }
 
         internal void Cluster(string clusterName, OClusterType clustertype)
         {
-            _compiler.Unique(Q.Cluster, clusterName, clustertype.ToString().ToUpper());
+            _compiler.Unique(Q.Cluster, ParseClassName(clusterName), clustertype.ToString().ToUpper());
         }
 
         #endregion
@@ -33,17 +33,17 @@ namespace Orient.Client.Protocol
 
         internal void Extends(string superClass)
         {
-            _compiler.Unique(Q.Extends, superClass);
+            _compiler.Unique(Q.Extends, ParseClassName(superClass));
         }
 
         internal void Vertex(string className)
         {
-            _compiler.Unique(Q.Vertex, className);
+            _compiler.Unique(Q.Vertex, ParseClassName(className));
         }
 
         internal void Edge(string className)
         {
-            _compiler.Unique(Q.Edge, className);
+            _compiler.Unique(Q.Edge, ParseClassName(className));
         }
 
         internal void Insert<T>(T obj)
@@ -213,7 +213,7 @@ namespace Orient.Client.Protocol
 
         internal void From(string target)
         {
-            _compiler.Unique(Q.From, target);
+            _compiler.Unique(Q.From, ParseClassName(target));
         }
 
         internal void From(ODocument document)
@@ -792,6 +792,21 @@ namespace Orient.Client.Protocol
             }
 
             return query;
+        }
+
+        private string ParseClassName(string className)
+        {
+            if (className.Equals(typeof(OVertex).Name))
+            {
+                return "V";
+            }
+
+            if (className.Equals(typeof(OEdge).Name))
+            {
+                return "E";
+            }
+
+            return className;
         }
     }
 }

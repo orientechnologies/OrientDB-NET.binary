@@ -1,7 +1,7 @@
 ﻿
 namespace Orient.Client
 {
-    public class OGraphEdge : OBaseRecord
+    public class OEdge : OBaseRecord
     {
         [OProperty(Alias = "in")]
         public ORID In { get; set; }

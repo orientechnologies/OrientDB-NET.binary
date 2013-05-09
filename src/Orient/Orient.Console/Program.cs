@@ -17,12 +17,12 @@ namespace Orient.Console
                 {
                     database
                         .Create.Class("Person")
-                        .Extends<OGraphVertex>()
+                        .Extends<OVertex>()
                         .Run();
 
                     database
                         .Create.Class("Spouse")
-                        .Extends<OGraphVertex>()
+                        .Extends<OVertex>()
                         .Run();
 
                     ODocument person1 = database
@@ -42,13 +42,13 @@ namespace Orient.Console
 
                     // TODO: check what happens in command execution
                     ODocument edge1 = database
-                        .Create.Edge<OGraphEdge>()
+                        .Create.Edge<OEdge>()
                         .From(person1)
                         .To(spouse1)
                         .Run();
 
                     ODocument edge2 = database
-                        .Create.Edge<OGraphEdge>()
+                        .Create.Edge<OEdge>()
                         .From(person1)
                         .To(spouse2)
                         .Run();
@@ -62,7 +62,7 @@ namespace Orient.Console
                 {
                     database
                         .Create.Class("TestClass")
-                        .Extends<OGraphVertex>()
+                        .Extends<OVertex>()
                         .Run();
 
                     database
@@ -140,8 +140,8 @@ namespace Orient.Console
         {
             ODatabase database = new ODatabase(_alias);
 
-            //List<ORecord> records = database.Query("select from OGraphVertex where title = \"server 1\"", "*:2");
-            //List<ORecord> records = database.Query("select in.in.@rid as inVs, in.out.@rid as outVs, title from OGraphVertex where @rid = #8:0");
+            //List<ORecord> records = database.Query("select from OVertex where title = \"server 1\"", "*:2");
+            //List<ORecord> records = database.Query("select in.in.@rid as inVs, in.out.@rid as outVs, title from OVertex where @rid = #8:0");
             List<ORecord> records = database.Query(
                 "select " +
                 " out.in as neighborRIDs," +
@@ -163,13 +163,13 @@ namespace Orient.Console
                 //System.Console.WriteLine(v.Title);
             }
 
-            //foreach (ORecord record in database.Query("select from OGraphEdge limit 20", "*:2"))
+            //foreach (ORecord record in database.Query("select from OEdge limit 20", "*:2"))
             //{
             //    Ed e = record.To<Ed>();
             //    System.Console.WriteLine(e.Label);
             //}
 
-            //ORecord rec = database.Command("create vertex OGraphVertex set title = \"whoa\"").ToSingle();
+            //ORecord rec = database.Command("create vertex OVertex set title = \"whoa\"").ToSingle();
             //object foo = database.Command("delete vertex " + rec.ORID.ToString());
         }
 
@@ -199,9 +199,9 @@ namespace Orient.Console
             {
                 ODatabase database = new ODatabase(_alias);
 
-                //List<ORecord> result = database.Query("select name from OGraphVertex where in[0].label = 'followed_by' and in[0].out.name = 'JAM'");
-                //List<ORecord> result = database.Query("select from OGraphVertex limit 20");
-                List<ORecord> result = database.Query("select from OGraphEdge limit 20");
+                //List<ORecord> result = database.Query("select name from OVertex where in[0].label = 'followed_by' and in[0].out.name = 'JAM'");
+                //List<ORecord> result = database.Query("select from OVertex limit 20");
+                List<ORecord> result = database.Query("select from OEdge limit 20");
 
                 database.Close();
                 tps++;

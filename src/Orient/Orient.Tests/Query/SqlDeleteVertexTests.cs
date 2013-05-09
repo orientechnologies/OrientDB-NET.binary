@@ -17,7 +17,7 @@ namespace Orient.Tests.Query
                     // prerequisites
                     database
                         .Create.Class("TestVertexClass")
-                        .Extends<OGraphVertex>()
+                        .Extends<OVertex>()
                         .Run();
 
                     ODocument vertex1 = database
@@ -51,7 +51,7 @@ namespace Orient.Tests.Query
                     // prerequisites
                     database
                         .Create.Class<TestProfileClass>()
-                        .Extends<OGraphVertex>()
+                        .Extends<OVertex>()
                         .Run();
 
                     TestProfileClass vertex1 = database
@@ -85,7 +85,7 @@ namespace Orient.Tests.Query
                     // prerequisites
                     database
                         .Create.Class("TestVertexClass")
-                        .Extends<OGraphVertex>()
+                        .Extends<OVertex>()
                         .Run();
 
                     ODocument vertex1 = database

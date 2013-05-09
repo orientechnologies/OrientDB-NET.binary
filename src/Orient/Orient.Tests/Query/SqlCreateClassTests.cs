@@ -38,14 +38,14 @@ namespace Orient.Tests.Query
                 {
                     short classId1 = database
                         .Create.Class("TestClass1")
-                        .Extends("OGraphVertex")
+                        .Extends("OVertex")
                         .Run();
 
                     Assert.IsTrue(classId1 > 0);
 
                     short classId2 = database
                         .Create.Class("TestClass2")
-                        .Extends<OGraphVertex>()
+                        .Extends<OVertex>()
                         .Run();
 
                     Assert.AreEqual(classId2, classId1 + 1);

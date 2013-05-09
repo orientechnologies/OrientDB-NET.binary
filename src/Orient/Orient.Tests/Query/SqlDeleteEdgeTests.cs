@@ -17,12 +17,12 @@ namespace Orient.Tests.Query
                     // prerequisites
                     database
                         .Create.Class("TestVertexClass")
-                        .Extends<OGraphVertex>()
+                        .Extends<OVertex>()
                         .Run();
 
                     database
                         .Create.Class("TestEdgeClass")
-                        .Extends<OGraphEdge>()
+                        .Extends<OEdge>()
                         .Run();
 
                     ODocument vertex1 = database
@@ -63,17 +63,17 @@ namespace Orient.Tests.Query
                 {
                     database
                         .Create.Class<TestProfileClass>()
-                        .Extends<OGraphEdge>()
+                        .Extends<OEdge>()
                         .Run();
 
                     ODocument vertex1 = database
-                        .Create.Vertex<OGraphVertex>()
+                        .Create.Vertex<OVertex>()
                         .Set("foo", "foo string value1")
                         .Set("bar", 12345)
                         .Run();
 
                     ODocument vertex2 = database
-                        .Create.Vertex<OGraphVertex>()
+                        .Create.Vertex<OVertex>()
                         .Set("foo", "foo string value2")
                         .Set("bar", 54321)
                         .Run();
@@ -104,19 +104,19 @@ namespace Orient.Tests.Query
                 {
                     // prerequisites
                     ODocument vertex1 = database
-                        .Create.Vertex<OGraphVertex>()
+                        .Create.Vertex<OVertex>()
                         .Set("foo", "foo string value1")
                         .Set("bar", 12345)
                         .Run();
 
                     ODocument vertex2 = database
-                        .Create.Vertex<OGraphVertex>()
+                        .Create.Vertex<OVertex>()
                         .Set("foo", "foo string value2")
                         .Set("bar", 54321)
                         .Run();
 
                     ODocument edge1 = database
-                        .Create.Edge<OGraphEdge>()
+                        .Create.Edge<OEdge>()
                         .From(vertex1)
                         .To(vertex2)
                         .Set("foo", "foo string value2")
@@ -125,7 +125,7 @@ namespace Orient.Tests.Query
 
                     int documentsDeleted = database
                         .Delete.Edge()
-                        .Class<OGraphEdge>()
+                        .Class<OEdge>()
                         .Where("bar").Equals(54321)
                         .Run();
 
@@ -143,19 +143,19 @@ namespace Orient.Tests.Query
                 {
                     // prerequisites
                     ODocument vertex1 = database
-                        .Create.Vertex<OGraphVertex>()
+                        .Create.Vertex<OVertex>()
                         .Set("foo", "foo string value1")
                         .Set("bar", 12345)
                         .Run();
 
                     ODocument vertex2 = database
-                        .Create.Vertex<OGraphVertex>()
+                        .Create.Vertex<OVertex>()
                         .Set("foo", "foo string value2")
                         .Set("bar", 54321)
                         .Run();
 
                     ODocument edge1 = database
-                        .Create.Edge<OGraphEdge>()
+                        .Create.Edge<OEdge>()
                         .From(vertex1)
                         .To(vertex2)
                         .Set("foo", "foo string value2")
@@ -163,15 +163,21 @@ namespace Orient.Tests.Query
                         .Run();
 
                     ODocument edge2 = database
-                        .Create.Edge<OGraphEdge>()
+                        .Create.Edge<OEdge>()
                         .From(vertex1)
                         .To(vertex2)
                         .Set("foo", "foo string value2")
                         .Set("bar", 12345)
                         .Run();
 
+                    string s = database
+                        .Delete.Edge<OEdge>()
+                        .From(vertex1)
+                        .To(vertex2)
+                        .ToString();
+
                     int documentsDeleted = database
-                        .Delete.Edge<OGraphEdge>()
+                        .Delete.Edge<OEdge>()
                         .From(vertex1)
                         .To(vertex2)
                         .Run();
