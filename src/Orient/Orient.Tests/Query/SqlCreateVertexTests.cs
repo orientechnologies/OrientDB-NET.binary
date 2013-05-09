@@ -8,6 +8,33 @@ namespace Orient.Tests.Query
     public class SqlCreateVertexTests
     {
         [TestMethod]
+        public void ShouldCreateVertexSet()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestVertexClass")
+                        .Extends<OGraphVertex>()
+                        .Run();
+
+                    ODocument createdVertex = database
+                        .Create.Vertex("TestVertexClass")
+                        .Set("foo", "foo string value")
+                        .Set("bar", 12345)
+                        .Run();
+
+                    Assert.IsTrue(createdVertex.ORID != null);
+                    Assert.AreEqual(createdVertex.OClassName, "TestVertexClass");
+                    Assert.AreEqual(createdVertex.GetField<string>("foo"), "foo string value");
+                    Assert.AreEqual(createdVertex.GetField<int>("bar"), 12345);
+                }
+            }
+        }
+
+        [TestMethod]
         public void ShouldCreateVertexFromDocument()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
