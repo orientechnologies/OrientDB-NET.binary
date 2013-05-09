@@ -196,6 +196,34 @@ namespace Orient.Client
 
         #endregion
 
+        public OSqlSelect OrderBy(params string[] fields)
+        {
+            _sqlQuery.OrderBy(fields);
+
+            return this;
+        }
+
+        public OSqlSelect Ascending()
+        {
+            _sqlQuery.Ascending();
+
+            return this;
+        }
+
+        public OSqlSelect Descending()
+        {
+            _sqlQuery.Descending();
+
+            return this;
+        }
+
+        public OSqlSelect Skip(int skipCount)
+        {
+            _sqlQuery.Skip(skipCount);
+
+            return this;
+        }
+
         public OSqlSelect Limit(int maxRecords)
         {
             _sqlQuery.Limit(maxRecords);

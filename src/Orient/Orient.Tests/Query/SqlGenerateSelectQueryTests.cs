@@ -98,5 +98,62 @@ namespace Orient.Tests.Query
 
             Assert.AreEqual(generatedQuery, query);
         }
+
+        [TestMethod]
+        public void ShouldGenerateSelectFromOrderBySkipLimitQuery()
+        {
+            string generatedQuery = new OSqlSelect()
+                .Select()
+                .From("TestClass")
+                .OrderBy("foo", "bar")
+                .Skip(5)
+                .Limit(10)
+                .ToString();
+
+            string query =
+                "SELECT " +
+                "FROM TestClass " +
+                "ORDER BY foo, bar " +
+                "SKIP 5 " +
+                "LIMIT 10";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
+        public void ShouldGenerateSelectFromOrderByAscendingQuery()
+        {
+            string generatedQuery = new OSqlSelect()
+                .Select()
+                .From("TestClass")
+                .OrderBy("foo")
+                .Ascending()
+                .ToString();
+
+            string query =
+                "SELECT " +
+                "FROM TestClass " +
+                "ORDER BY foo ASC";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [TestMethod]
+        public void ShouldGenerateSelectFromOrderByDescendingQuery()
+        {
+            string generatedQuery = new OSqlSelect()
+                .Select()
+                .From("TestClass")
+                .OrderBy("foo")
+                .Descending()
+                .ToString();
+
+            string query =
+                "SELECT " +
+                "FROM TestClass " +
+                "ORDER BY foo DESC";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
     }
 }

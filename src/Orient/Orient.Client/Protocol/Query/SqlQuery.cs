@@ -422,6 +422,34 @@ namespace Orient.Client.Protocol
 
         #endregion
 
+        internal void OrderBy(params string[] fields)
+        {
+            for (int i = 0; i < fields.Length; i++)
+            {
+                _compiler.Append(Q.OrderBy, fields[i]);
+
+                if (i < (fields.Length - 1))
+                {
+                    _compiler.Append(Q.OrderBy, Q.Comma, "");
+                }
+            }
+        }
+
+        internal void Ascending()
+        {
+            _compiler.Unique(Q.Ascending, Q.Ascending);
+        }
+
+        internal void Descending()
+        {
+            _compiler.Unique(Q.Descending, Q.Descending);
+        }
+
+        internal void Skip(int skipCount)
+        {
+            _compiler.Unique(Q.Skip, skipCount.ToString());
+        }
+
         internal void Limit(int maxRecords)
         {
             _compiler.Unique(Q.Limit, maxRecords.ToString());
@@ -736,10 +764,26 @@ namespace Orient.Client.Protocol
             // TODO:
 
             // [BY <Fields>* [ASC|DESC](ORDER)*] 
-            // TODO:
+            if (_compiler.HasKey(Q.OrderBy))
+            {
+                query += string.Join(" ", "", Q.OrderBy, _compiler.Value(Q.OrderBy));
+            }
+
+            if (_compiler.HasKey(Q.Ascending))
+            {
+                query += string.Join(" ", "", Q.Ascending);
+            }
+
+            if (_compiler.HasKey(Q.Descending))
+            {
+                query += string.Join(" ", "", Q.Descending);
+            }
 
             // [<SkipRecords>](SKIP) 
-            // TODO:
+            if (_compiler.HasKey(Q.Skip))
+            {
+                query += string.Join(" ", "", Q.Skip, _compiler.Value(Q.Skip));
+            }
 
             // [<MaxRecords>](LIMIT)
             if (_compiler.HasKey(Q.Limit))

@@ -190,5 +190,138 @@ namespace Orient.Tests.Query
                 }
             }
         }
+
+        [TestMethod]
+        public void ShouldSelectSkipLimit()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class<TestVertexClass>()
+                        .Extends<OGraphVertex>()
+                        .Run();
+
+                    TestVertexClass obj1 = new TestVertexClass();
+                    obj1.Foo = "foo string value1";
+                    obj1.Bar = 1;
+
+                    TestVertexClass obj2 = new TestVertexClass();
+                    obj2.Foo = "foo string value2";
+                    obj2.Bar = 2;
+
+                    TestVertexClass obj3 = new TestVertexClass();
+                    obj3.Foo = "foo string value3";
+                    obj3.Bar = 3;
+
+                    TestVertexClass obj4 = new TestVertexClass();
+                    obj4.Foo = "foo string value4";
+                    obj4.Bar = 4;
+
+                    TestVertexClass obj5 = new TestVertexClass();
+                    obj5.Foo = "foo string value5";
+                    obj5.Bar = 5;
+
+                    database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj1)
+                        .Run();
+
+                    database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj2)
+                        .Run();
+
+                    database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj3)
+                        .Run();
+
+                    database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj4)
+                        .Run();
+
+                    database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj5)
+                        .Run();
+
+                    List<ODocument> result = database
+                        .Select("Foo").As("CustomFoo")
+                        .Also("Bar").As("CustomBar")
+                        .From<TestVertexClass>()
+                        .Skip(2)
+                        .Limit(2)
+                        .ToList();
+
+                    Assert.AreEqual(result.Count, 2);
+                    Assert.AreEqual(result[0].GetField<string>("CustomFoo"), obj3.Foo);
+                    Assert.AreEqual(result[0].GetField<int>("CustomBar"), obj3.Bar);
+                    Assert.AreEqual(result[1].GetField<string>("CustomFoo"), obj4.Foo);
+                    Assert.AreEqual(result[1].GetField<int>("CustomBar"), obj4.Bar);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldSelectOrderByDescending()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class<TestVertexClass>()
+                        .Extends<OGraphVertex>()
+                        .Run();
+
+                    TestVertexClass obj1 = new TestVertexClass();
+                    obj1.Foo = "foo string value1";
+                    obj1.Bar = 1;
+
+                    TestVertexClass obj2 = new TestVertexClass();
+                    obj2.Foo = "foo string value2";
+                    obj2.Bar = 2;
+
+                    TestVertexClass obj3 = new TestVertexClass();
+                    obj3.Foo = "foo string value3";
+                    obj3.Bar = 3;
+
+                    database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj1)
+                        .Run();
+
+                    database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj2)
+                        .Run();
+
+                    database
+                        .Create.Vertex<TestVertexClass>()
+                        .Set(obj3)
+                        .Run();
+
+                    List<ODocument> result = database
+                        .Select("Foo").As("CustomFoo")
+                        .Also("Bar").As("CustomBar")
+                        .From<TestVertexClass>()
+                        .OrderBy("CustomBar").Descending()
+                        .ToList();
+
+                    Assert.AreEqual(result.Count, 3);
+                    Assert.AreEqual(result[0].GetField<string>("CustomFoo"), obj3.Foo);
+                    Assert.AreEqual(result[0].GetField<int>("CustomBar"), obj3.Bar);
+                    Assert.AreEqual(result[1].GetField<string>("CustomFoo"), obj2.Foo);
+                    Assert.AreEqual(result[1].GetField<int>("CustomBar"), obj2.Bar);
+                    Assert.AreEqual(result[2].GetField<string>("CustomFoo"), obj1.Foo);
+                    Assert.AreEqual(result[2].GetField<int>("CustomBar"), obj1.Bar);
+                }
+            }
+        }
     }
 }

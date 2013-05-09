@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Serializers;
 

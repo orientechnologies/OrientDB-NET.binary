@@ -8,6 +8,7 @@ namespace Orient.Client.Protocol
         internal static string Add = "ADD";
         internal static string And = "AND";
         internal static string As = "AS";
+        internal static string Ascending = "ASC";
         internal static string Between = "BETWEEN";
         internal static string Class = "CLASS";
         internal static string Cluster = "CLUSTER";
@@ -15,6 +16,7 @@ namespace Orient.Client.Protocol
         internal static string Contains = "CONTAINS";
         internal static string Create = "CREATE";
         internal static string Delete = "DELETE";
+        internal static string Descending = "DESC";
         internal static string Edge = "EDGE";
         internal static new string Equals = "=";
         internal static string Extends = "EXTENDS";
@@ -32,11 +34,13 @@ namespace Orient.Client.Protocol
         internal static string NotEquals = "!=";
         internal static string Null = "NULL";
         internal static string Or = "OR";
+        internal static string OrderBy = "ORDER BY";
         internal static string Put = "PUT";
         internal static string Record = "RECORD";
         internal static string Remove = "REMOVE";
         internal static string Select = "SELECT";
         internal static string Set = "SET";
+        internal static string Skip = "SKIP";
         internal static string To = "TO";
         internal static string Update = "UPDATE";
         internal static string Values = "VALUES";
