@@ -2,18 +2,24 @@
 
 namespace Orient.Client
 {
-    public class OVertex : OBaseRecord
+    public class OVertex : ODocument
     {
-        [OProperty(Alias = "in")]
-        public HashSet<ORID> In { get; set; }
-
-        [OProperty(Alias = "out")]
-        public HashSet<ORID> Out { get; set; }
-
-        public OVertex()
+        [OProperty(Alias = "in_", Serializable = false)]
+        public HashSet<ORID> InE 
         {
-            In = new HashSet<ORID>();
-            Out = new HashSet<ORID>();
+            get
+            {
+                return this.GetField<HashSet<ORID>>("in_");
+            }
+        }
+
+        [OProperty(Alias = "out_", Serializable = false)]
+        public HashSet<ORID> OutE 
+        {
+            get
+            {
+                return this.GetField<HashSet<ORID>>("out_");
+            }
         }
     }
 }
