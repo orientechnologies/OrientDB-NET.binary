@@ -21,5 +21,10 @@ namespace Orient.Client
                 return this.GetField<HashSet<ORID>>("out_");
             }
         }
+
+        public OVertex()
+        {
+            this.OClassName = "V";
+        }
     }
 }
