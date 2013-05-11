@@ -20,7 +20,7 @@ namespace Orient.Tests.Query
                         .Extends<OVertex>()
                         .Run();
 
-                    ODocument createdVertex = database
+                    OVertex createdVertex = database
                         .Create.Vertex("TestVertexClass")
                         .Set("foo", "foo string value")
                         .Set("bar", 12345)
@@ -53,7 +53,7 @@ namespace Orient.Tests.Query
                         .SetField("foo", "foo string value")
                         .SetField("bar", 12345);
 
-                    ODocument createdVertex = database
+                    OVertex createdVertex = database
                         .Create.Vertex(document)
                         .Run();
 
@@ -61,6 +61,30 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(createdVertex.OClassName, "TestVertexClass");
                     Assert.AreEqual(createdVertex.GetField<string>("foo"), document.GetField<string>("foo"));
                     Assert.AreEqual(createdVertex.GetField<int>("bar"), document.GetField<int>("bar"));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldCreateVertexFromOVertex()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    OVertex vertex = new OVertex();
+                    vertex
+                        .SetField("foo", "foo string value")
+                        .SetField("bar", 12345);
+
+                    OVertex createdVertex = database
+                        .Create.Vertex(vertex)
+                        .Run();
+
+                    Assert.IsTrue(createdVertex.ORID != null);
+                    Assert.AreEqual(createdVertex.OClassName, "V");
+                    Assert.AreEqual(createdVertex.GetField<string>("foo"), vertex.GetField<string>("foo"));
+                    Assert.AreEqual(createdVertex.GetField<int>("bar"), vertex.GetField<int>("bar"));
                 }
             }
         }
