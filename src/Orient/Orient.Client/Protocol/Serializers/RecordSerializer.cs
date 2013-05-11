@@ -375,7 +375,17 @@ namespace Orient.Client.Protocol.Serializers
             //assign field value
             if (document[fieldName] == null)
             {
-                document[fieldName] = new ORID(orid);
+                // there is a special case when OEdge InV/OutV fields contains only single ORID instead of HashSet<ORID>
+                // therefore single ORID should be deserialized into HashSet<ORID> type
+                if (fieldName.Equals("in_") || fieldName.Equals("out_"))
+                {
+                    document[fieldName] = new HashSet<ORID>();
+                    ((HashSet<ORID>)document[fieldName]).Add(new ORID(orid));
+                }
+                else
+                {
+                    document[fieldName] = new ORID(orid);
+                }
             }
             else if (document[fieldName] is HashSet<object>)
             {
