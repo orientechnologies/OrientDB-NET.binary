@@ -99,7 +99,7 @@ namespace Orient.Client
 
         #region Run
 
-        public ODocument Run()
+        public OVertex Run()
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;
@@ -115,7 +115,7 @@ namespace Orient.Client
 
             OCommandResult result = new OCommandResult(_connection.ExecuteOperation<Command>(operation));
 
-            return result.ToSingle();
+            return result.ToSingle().To<OVertex>();
         }
 
         public T Run<T>() where T : class, new()
