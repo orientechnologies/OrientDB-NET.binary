@@ -334,7 +334,7 @@ namespace Orient.Tests.Serialization
         [TestMethod]
         public void ShouldDeserializeSingleAndSetOfOrids()
         {
-            string recordString = "single:#10:12345,set:<#11:123,#22:1234,#33:1234567>";
+            string recordString = "single:#10:12345,set:<#11:123,#22:1234,#33:1234567>,singleSet:<#44:44>";
 
             ODocument document = ODocument.Deserialize(recordString);
 
@@ -349,6 +349,10 @@ namespace Orient.Tests.Serialization
             Assert.IsTrue(collection.Contains(new ORID(11, 123)));
             Assert.IsTrue(collection.Contains(new ORID(22, 1234)));
             Assert.IsTrue(collection.Contains(new ORID(33, 1234567)));
+
+            HashSet<ORID> singleSet = document.GetField<HashSet<ORID>>("singleSet");
+            Assert.AreEqual(singleSet.Count, 1);
+            Assert.IsTrue(singleSet.Contains(new ORID(44, 44)));
         }
 
         /*[TestMethod]
