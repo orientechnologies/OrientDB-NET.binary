@@ -47,12 +47,18 @@ namespace Orient.Client
                 document = ODocument.ToDocument(obj);
             }
 
-            if (string.IsNullOrEmpty(document.OClassName))
+            string className = document.OClassName;
+
+            if (typeof(T) == typeof(OEdge))
+            {
+                className = "E";
+            }
+            else if (string.IsNullOrEmpty(document.OClassName))
             {
                 throw new OException(OExceptionType.Query, "Document doesn't contain OClassName value.");
             }
 
-            _sqlQuery.Edge(document.OClassName);
+            _sqlQuery.Edge(className);
             _sqlQuery.Set(document);
 
             return this;
@@ -169,7 +175,7 @@ namespace Orient.Client
 
         #region Run
 
-        public ODocument Run()
+        public OEdge Run()
         {
             CommandPayload payload = new CommandPayload();
             payload.Type = CommandPayloadType.Sql;
@@ -185,7 +191,7 @@ namespace Orient.Client
 
             OCommandResult result = new OCommandResult(_connection.ExecuteOperation<Command>(operation));
 
-            return result.ToSingle();
+            return result.ToSingle().To<OEdge>();
         }
 
         public T Run<T>() where T : class, new()
