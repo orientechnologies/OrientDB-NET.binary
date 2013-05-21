@@ -24,24 +24,62 @@ namespace Orient.Tests.Query
                         .Create.Cluster("TestCluster", OClusterType.Physical)
                         .Run();
 
-                    ODocument vertex1 = database
+                    OVertex vertex1 = database
                         .Create.Vertex<OVertex>()
                         .Run();
 
-                    ODocument vertex2 = database
+                    OVertex vertex2 = database
                         .Create.Vertex<OVertex>()
                         .Run();
 
-                    ODocument createdEdge = database
+                    OEdge createdEdge = database
                         .Create.Edge("TestEdgeClass")
                         .Cluster("TestCluster")
                         .From(vertex1.ORID)
                         .To(vertex2.ORID)
                         .Run();
 
-                    Assert.IsTrue(createdEdge.ORID != null);
-                    Assert.AreEqual(createdEdge.GetField<ORID>("in"), vertex2.ORID);
-                    Assert.AreEqual(createdEdge.GetField<ORID>("out"), vertex1.ORID);
+                    Assert.IsTrue(!string.IsNullOrEmpty(createdEdge.ORID.ToString()));
+                    Assert.AreEqual(createdEdge.Label, "TestEdgeClass");
+                    Assert.AreEqual(createdEdge.OClassName, "TestEdgeClass");
+                    Assert.AreEqual(createdEdge.InV, vertex2.ORID);
+                    Assert.AreEqual(createdEdge.OutV, vertex1.ORID);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ShouldCreateEdgeFromOEdge()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    OVertex vertex1 = database
+                        .Create.Vertex<OVertex>()
+                        .Run();
+
+                    OVertex vertex2 = database
+                        .Create.Vertex<OVertex>()
+                        .Run();
+
+                    OEdge edge = new OEdge();
+                    edge.SetField("Foo", "foo string value");
+                    edge.SetField("Bar", 12345);
+
+                    OEdge createdEdge = database
+                        .Create.Edge(edge)
+                        .From(vertex1)
+                        .To(vertex2)
+                        .Run();
+
+                    Assert.IsTrue(!string.IsNullOrEmpty(createdEdge.ORID.ToString()));
+                    Assert.AreEqual(createdEdge.Label, "E");
+                    Assert.AreEqual(createdEdge.OClassName, "E");
+                    Assert.AreEqual(createdEdge.InV, vertex2.ORID);
+                    Assert.AreEqual(createdEdge.OutV, vertex1.ORID);
+                    Assert.AreEqual(createdEdge.GetField<string>("Foo"), edge.GetField<string>("Foo"));
+                    Assert.AreEqual(createdEdge.GetField<int>("Bar"), edge.GetField<int>("Bar"));
                 }
             }
         }
@@ -59,15 +97,15 @@ namespace Orient.Tests.Query
                         .Extends<OEdge>()
                         .Run();
 
-                    ODocument vertex1 = database
+                    OVertex vertex1 = database
                         .Create.Vertex<OVertex>()
                         .Run();
 
-                    ODocument vertex2 = database
+                    OVertex vertex2 = database
                         .Create.Vertex<OVertex>()
                         .Run();
 
-                    ODocument createdEdge = database
+                    OEdge createdEdge = database
                         .Create.Edge("TestEdgeClass")
                         .From(vertex1.ORID)
                         .To(vertex2.ORID)
@@ -75,9 +113,11 @@ namespace Orient.Tests.Query
                         .Set("bar", 12345)
                         .Run();
 
-                    Assert.IsTrue(createdEdge.ORID != null);
-                    Assert.AreEqual(createdEdge.GetField<ORID>("in"), vertex2.ORID);
-                    Assert.AreEqual(createdEdge.GetField<ORID>("out"), vertex1.ORID);
+                    Assert.IsTrue(!string.IsNullOrEmpty(createdEdge.ORID.ToString()));
+                    Assert.AreEqual(createdEdge.Label, "TestEdgeClass");
+                    Assert.AreEqual(createdEdge.OClassName, "TestEdgeClass");
+                    Assert.AreEqual(createdEdge.InV, vertex2.ORID);
+                    Assert.AreEqual(createdEdge.OutV, vertex1.ORID);
                     Assert.AreEqual(createdEdge.GetField<string>("foo"), "foo string value");
                     Assert.AreEqual(createdEdge.GetField<int>("bar"), 12345);
                 }
@@ -97,11 +137,11 @@ namespace Orient.Tests.Query
                         .Extends<OEdge>()
                         .Run();
 
-                    ODocument vertex1 = database
+                    OVertex vertex1 = database
                         .Create.Vertex<OVertex>()
                         .Run();
 
-                    ODocument vertex2 = database
+                    OVertex vertex2 = database
                         .Create.Vertex<OVertex>()
                         .Run();
 
