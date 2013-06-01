@@ -8,6 +8,23 @@ namespace Orient.Tests.Graph
     [TestClass]
     public class GraphClassesTests
     {
+	[TestMethod]
+	public void ShouldNotThrowExceptionWhenCreatingVerticesWithNonASCIIChars(){
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+		    //This commadn contains a character that will take up more than one byte
+                    OVertex vertex1 = database
+                        .Create.Vertex<OVertex>()
+                        .Set("Name", "René")
+                        .Run<OVertex>();
+	            //This command will throw exception if bytearray lengths and string lenghts are mixed up in protocol
+		    OVertex vertex2 = database.Create.Vertex<OVertex>().Set("Name", "test").Run<OVertex>();
+		}
+	    }
+		
+	}
         [TestMethod]
         public void ShouldCreateVerticesWithEdge()
         {
