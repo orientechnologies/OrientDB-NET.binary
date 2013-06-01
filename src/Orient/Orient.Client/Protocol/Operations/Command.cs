@@ -45,12 +45,12 @@ namespace Orient.Client.Protocol.Operations
             request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(
                 //4 + // this int
                 4 + // class name int length
-                className.Length + 
+                BinarySerializer.Length(className) + 
                 4 + // limit int length
                 4 + // text int length
-                CommandPayload.Text.Length + 
+                BinarySerializer.Length(CommandPayload.Text) + 
                 4 + // fetch plant int length
-                CommandPayload.FetchPlan.Length +
+                BinarySerializer.Length(CommandPayload.FetchPlan) +
                 4 // serialized params int (disable)
             ) });
             request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(className) });
