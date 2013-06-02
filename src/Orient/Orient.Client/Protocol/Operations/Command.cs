@@ -31,7 +31,14 @@ namespace Orient.Client.Protocol.Operations
                     break;
                 // non-idempotent command (e.g. insert)
                 case CommandClassType.NonIdempotent:
-                    className = "com.orientechnologies.orient.core.sql.OCommandSQL";
+                    if (!string.IsNullOrEmpty(CommandPayload.Language) && CommandPayload.Language.Equals("gremlin"))
+                    {
+                        className = "com.orientechnologies.orient.graph.gremlin.OCommandGremlin";
+                    }
+                    else
+                    {
+                        className = "com.orientechnologies.orient.core.sql.OCommandSQL";
+                    }
                     break;
                 // script command
                 case CommandClassType.Script:

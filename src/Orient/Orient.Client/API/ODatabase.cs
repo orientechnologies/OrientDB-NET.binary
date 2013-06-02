@@ -93,6 +93,26 @@ namespace Orient.Client
 
         #endregion
 
+        public List<ODocument> Gremlin(string query)
+        {
+            CommandPayload payload = new CommandPayload();
+            payload.Language = "gremlin";
+            payload.Type = CommandPayloadType.Sql;
+            payload.Text = query;
+            payload.NonTextLimit = -1;
+            payload.FetchPlan = "";
+            payload.SerializedParams = new byte[] { 0 };
+
+            Command operation = new Command();
+            operation.OperationMode = OperationMode.Asynchronous;
+            operation.ClassType = CommandClassType.NonIdempotent;
+            operation.CommandPayload = payload;
+
+            ODocument document = _connection.ExecuteOperation<Command>(operation);
+
+            return document.GetField<List<ODocument>>("Content");
+        }
+
         public OCommandResult Command(string sql)
         {
             CommandPayload payload = new CommandPayload();
