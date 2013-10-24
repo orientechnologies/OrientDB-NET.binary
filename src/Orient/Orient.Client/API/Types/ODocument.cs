@@ -350,12 +350,16 @@ namespace Orient.Client
                 }
 
                 bool isSerializable = true;
-                OProperty oProperty = propertyInfo.GetCustomAttribute<OProperty>();
+                object[] oProperties = propertyInfo.GetCustomAttributes(typeof(OProperty), true);
 
-                if (oProperty != null)
+                if (oProperties.Any())
                 {
-                    propertyName = oProperty.Alias;
-                    isSerializable = oProperty.Serializable;
+                    OProperty oProperty = oProperties.First() as OProperty;
+                    if (oProperty != null)
+                    {
+                        propertyName = oProperty.Alias;
+                        isSerializable = oProperty.Serializable;
+                    }
                 }
 
                 if (isSerializable)
@@ -408,11 +412,15 @@ namespace Orient.Client
                         continue;
                     }
 
-                    OProperty oProperty = propertyInfo.GetCustomAttribute<OProperty>();
+                    object[] oProperties = propertyInfo.GetCustomAttributes(typeof(OProperty), true);
 
-                    if (oProperty != null)
+                    if (oProperties.Any())
                     {
-                        propertyName = oProperty.Alias;
+                        OProperty oProperty = oProperties.First() as OProperty;
+                        if (oProperty != null)
+                        {
+                            propertyName = oProperty.Alias;
+                        }
                     }
 
                     string fieldPath = path + (path != "" ? "." : "") + propertyName;
