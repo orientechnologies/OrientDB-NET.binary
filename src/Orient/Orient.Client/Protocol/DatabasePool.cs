@@ -7,6 +7,7 @@ namespace Orient.Client.Protocol
     {
         private Queue<Connection> _connections;
 
+        internal string Release { get; private set; }
         internal string Hostname { get; set; }
         internal int Port { get; set; }
         internal string DatabaseName { get; set; }
@@ -41,6 +42,13 @@ namespace Orient.Client.Protocol
                 Connection connection = new Connection(Hostname, Port, databaseName, databaseType, userName, userPassword, alias, true);
 
                 _connections.Enqueue(connection);
+            }
+
+            //get release from last connection
+            var lastConnection = _connections.LastOrDefault();
+            if (lastConnection != null)
+            {
+                Release = lastConnection.Document.GetField<string>("OrientdbRelease");
             }
         }
 

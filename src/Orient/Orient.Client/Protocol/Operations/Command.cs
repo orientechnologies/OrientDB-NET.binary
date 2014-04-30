@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Serializers;
@@ -79,8 +80,6 @@ namespace Orient.Client.Protocol.Operations
 
         public ODocument Response(Response response)
         {
-            // start from this position since standard fields (status, session ID) has been already parsed
-            int offset = 5;
             ODocument responseDocument = new ODocument();
             
             if (response == null)
@@ -88,9 +87,10 @@ namespace Orient.Client.Protocol.Operations
                 return responseDocument;
             }
 
+            var reader = response.Reader;
+
             // operation specific fields
-            PayloadStatus payloadStatus = (PayloadStatus)BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray());
-            offset += 1;
+            PayloadStatus payloadStatus = (PayloadStatus)reader.ReadByte();
 
             responseDocument.SetField("PayloadStatus", payloadStatus);
 
@@ -100,7 +100,7 @@ namespace Orient.Client.Protocol.Operations
 
                 while (payloadStatus != PayloadStatus.NoRemainingRecords)
                 {
-                    ODocument document = ParseDocument(ref offset, response.Data);
+                    ODocument document = ParseDocument(reader);
 
                     switch (payloadStatus)
                     {
@@ -108,15 +108,14 @@ namespace Orient.Client.Protocol.Operations
                             documents.Add(document);
                             break;
                         case PayloadStatus.PreFetched:
-                            // TODO: client cache
-                            documents.Add(document);
+                            //client cache
+                            response.Connection.Database.ClientCache.Add(document.ORID, document);
                             break;
                         default:
                             break;
                     }
 
-                    payloadStatus = (PayloadStatus)BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray());
-                    offset += 1;
+                    payloadStatus = (PayloadStatus)reader.ReadByte();
                 }
 
                 responseDocument.SetField("Content", documents);
@@ -130,28 +129,42 @@ namespace Orient.Client.Protocol.Operations
                     case PayloadStatus.NullResult: // 'n'
                         // nothing to do
                         break;
-                    case PayloadStatus.SingleRecord: // 'r'
-                        ODocument document = ParseDocument(ref offset, response.Data);
-                        responseDocument.SetField("Content", document);
-                        break;
                     case PayloadStatus.SerializedResult: // 'a'
                         // TODO: how to parse result - string?
-                        contentLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
-                        offset += 4;
-                        string serialized = BinarySerializer.ToString(response.Data.Skip(offset).Take(contentLength).ToArray());
-                        offset += contentLength;
-
+                        contentLength = reader.ReadInt32EndianAware();
+                        string serialized = System.Text.Encoding.Default.GetString(reader.ReadBytes(contentLength));
                         responseDocument.SetField("Content", serialized);
                         break;
+                    case PayloadStatus.SingleRecord: // 'r'
                     case PayloadStatus.RecordCollection: // 'l'
-                        int recordsCount = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
-                        offset += 4;
-
                         List<ODocument> documents = new List<ODocument>();
 
-                        for (int i = 0; i < recordsCount; i++)
+                        if (payloadStatus == PayloadStatus.SingleRecord)
                         {
-                            documents.Add(ParseDocument(ref offset, response.Data));
+                            documents.Add(ParseDocument(reader));                            
+                        }
+                        else if (payloadStatus == PayloadStatus.RecordCollection)
+                        {
+                            int recordsCount = reader.ReadInt32EndianAware();
+
+                            for (int i = 0; i < recordsCount; i++)
+                            {
+                                documents.Add(ParseDocument(reader));
+                            }
+                        }
+
+                        if (OClient.ProtocolVersion >= 17)
+                        {
+                            //Load the fetched records in cache
+                            while ((payloadStatus = (PayloadStatus)reader.ReadByte()) != PayloadStatus.NoRemainingRecords)
+                            {
+                                ODocument document = ParseDocument(reader);
+                                if (document != null && payloadStatus == PayloadStatus.PreFetched)
+                                {
+                                    //Put in the client local cache
+                                    response.Connection.Database.ClientCache.Add(document.ORID, document);
+                                }
+                            }
                         }
 
                         responseDocument.SetField("Content", documents);
@@ -164,12 +177,11 @@ namespace Orient.Client.Protocol.Operations
             return responseDocument;
         }
 
-        private ODocument ParseDocument(ref int offset, byte[] data)
+        private ODocument ParseDocument(BinaryReader reader)
         {
             ODocument document = null;
 
-            short classId = BinarySerializer.ToShort(data.Skip(offset).Take(2).ToArray());
-            offset += 2;
+            short classId = reader.ReadInt16EndianAware();
 
             if (classId == -2) // NULL
             {
@@ -177,11 +189,8 @@ namespace Orient.Client.Protocol.Operations
             else if (classId == -3) // record id
             {
                 ORID orid = new ORID();
-                orid.ClusterId = BinarySerializer.ToShort(data.Skip(offset).Take(2).ToArray());
-                offset += 2;
-
-                orid.ClusterPosition = BinarySerializer.ToLong(data.Skip(offset).Take(8).ToArray());
-                offset += 8;
+                orid.ClusterId = reader.ReadInt16EndianAware();
+                orid.ClusterPosition = reader.ReadInt64EndianAware();
 
                 document = new ODocument();
                 document.ORID = orid;
@@ -189,25 +198,14 @@ namespace Orient.Client.Protocol.Operations
             }
             else
             {
-                ORecordType type = (ORecordType)BinarySerializer.ToByte(data.Skip(offset).Take(1).ToArray());
-                offset += 1;
+                ORecordType type = (ORecordType)reader.ReadByte();
 
                 ORID orid = new ORID();
-                orid.ClusterId = BinarySerializer.ToShort(data.Skip(offset).Take(2).ToArray());
-                offset += 2;
-
-                orid.ClusterPosition = BinarySerializer.ToLong(data.Skip(offset).Take(8).ToArray());
-                offset += 8;
-
-                int version = BinarySerializer.ToInt(data.Skip(offset).Take(4).ToArray());
-                offset += 4;
-
-                int recordLength = BinarySerializer.ToInt(data.Skip(offset).Take(4).ToArray());
-                offset += 4;
-
-                byte[] rawRecord = data.Skip(offset).Take(recordLength).ToArray();
-                offset += recordLength;
-
+                orid.ClusterId = reader.ReadInt16EndianAware();
+                orid.ClusterPosition = reader.ReadInt64EndianAware();
+                int version = reader.ReadInt32EndianAware();
+                int recordLength = reader.ReadInt32EndianAware();
+                byte[] rawRecord = reader.ReadBytes(recordLength);
                 document = RecordSerializer.Deserialize(orid, version, type, classId, rawRecord);
             }
 

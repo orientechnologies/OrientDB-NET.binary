@@ -11,7 +11,7 @@ namespace Orient.Client
 
         public static string DriverName { get { return "OrientDB-NET.binary"; } }
         public static string DriverVersion { get { return "0.2.1"; } }
-        public static short ProtocolVersion { get { return 15; } }
+        public static short ProtocolVersion { get { return 17; } }
         public static int BufferLenght { get; set; }
 
         static OClient()
@@ -21,13 +21,14 @@ namespace Orient.Client
             BufferLenght = 1024;
         }
 
-        public static void CreateDatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias)
+        public static string CreateDatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias)
         {
             lock (_syncRoot)
             {
                 DatabasePool databasePool = new DatabasePool(hostname, port, databaseName, databaseType, userName, userPassword, poolSize, alias);
 
                 _databasePools.Add(databasePool);
+                return databasePool.Release;
             }
         }
 

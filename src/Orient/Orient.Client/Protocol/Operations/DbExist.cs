@@ -22,8 +22,6 @@ namespace Orient.Client.Protocol.Operations
 
         public ODocument Response(Response response)
         {
-            // start from this position since standard fields (status, session ID) has been already parsed
-            int offset = 5;
             ODocument document = new ODocument();
 
             if (response == null)
@@ -31,9 +29,10 @@ namespace Orient.Client.Protocol.Operations
                 return document;
             }
 
+            var reader = response.Reader;
+
             // operation specific fields
-            byte existByte = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray());
-            offset += 1;
+            byte existByte = reader.ReadByte();
 
             if (existByte == 0)
             {

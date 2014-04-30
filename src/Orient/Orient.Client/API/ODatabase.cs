@@ -10,13 +10,17 @@ namespace Orient.Client
         private bool _containsConnection;
         private Connection _connection;
 
+        public IDictionary<ORID, ODocument> ClientCache { get; private set; }
+
         public OSqlCreate Create { get { return new OSqlCreate(_connection); } }
         public OSqlDelete Delete { get { return new OSqlDelete(_connection); } }
 
         public ODatabase(string alias)
         {
             _connection = OClient.ReleaseConnection(alias);
+            _connection.Database = this;
             _containsConnection = true;
+            ClientCache = new Dictionary<ORID, ODocument>();
         }
 
         public List<OCluster> GetClusters()
@@ -136,6 +140,8 @@ namespace Orient.Client
         {
             if (_containsConnection)
             {
+                _connection.Database = null;
+
                 if (_connection.IsReusable)
                 {
                     OClient.ReturnConnection(_connection);
@@ -144,7 +150,7 @@ namespace Orient.Client
                 {
                     _connection.Dispose();
                 }
-
+                
                 _containsConnection = false;
             }
         }

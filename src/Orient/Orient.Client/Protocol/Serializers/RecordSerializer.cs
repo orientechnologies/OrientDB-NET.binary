@@ -284,6 +284,9 @@ namespace Orient.Client.Protocol.Serializers
                 case '{':
                     i = ParseMap(i, recordString, document, fieldName);
                     break;
+                case '%':
+                    i = ParseRidBags(i, recordString, document, fieldName);
+                    break;
                 default:
                     i = ParseValue(i, recordString, document, fieldName);
                     break;
@@ -563,6 +566,37 @@ namespace Orient.Client.Protocol.Serializers
             {
                 ((List<object>)document[fieldName]).Add(value);
             }
+
+            return i;
+        }
+
+        /// <summary>
+        /// Parse RidBags ex. %[content:binary]; where [content:binary] is the actual binary base64 content.
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="recordString"></param>
+        /// <param name="document"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        private static int ParseRidBags(int i, string recordString, ODocument document, string fieldName)
+        {
+            //move to first base64 char
+            i++;
+
+            StringBuilder builder = new StringBuilder();
+
+            while (recordString[i] != ';')
+            {
+                builder.Append(recordString[i]);
+                i++;
+            }
+
+            var value = Convert.FromBase64String(builder.ToString());
+
+            document[fieldName] = value;
+
+            //move past ';'
+            i++;
 
             return i;
         }

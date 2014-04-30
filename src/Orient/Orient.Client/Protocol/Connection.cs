@@ -17,6 +17,7 @@ namespace Orient.Client.Protocol
         internal string Hostname { get; set; }
         internal int Port { get; set; }
         internal ConnectionType Type { get; private set; }
+        internal ODatabase Database { get; set; }
 
         internal string Alias { get; set; }
         internal bool IsReusable { get; set; }
@@ -107,17 +108,9 @@ namespace Orient.Client.Protocol
 
             if (request.OperationMode == OperationMode.Synchronous)
             {
-                Response response = new Response();
+                Response response = new Response(this);
 
-                response.Data = Receive();
-                // parse standard response fields
-                response.Status = (ResponseStatus)BinarySerializer.ToByte(response.Data.Take(1).ToArray());
-                response.SessionId = BinarySerializer.ToInt(response.Data.Skip(1).Take(4).ToArray());
-
-                if (response.Status == ResponseStatus.ERROR)
-                {
-                    ParseResponseError(response);
-                }
+                response.Receive();
 
                 return ((IOperation)operation).Response(response);
             }
@@ -125,6 +118,11 @@ namespace Orient.Client.Protocol
             {
                 return null;
             }
+        }
+
+        internal Stream GetNetworkStream()
+        {
+            return _networkStream;
         }
 
         internal void Close()
@@ -219,64 +217,6 @@ namespace Orient.Client.Protocol
                     throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
                 }
             }
-        }
-
-        private byte[] Receive()
-        {
-            MemoryStream memoryStream = new MemoryStream();
-
-            if ((_networkStream != null) && _networkStream.CanRead)
-            {
-                try
-                {
-                    do
-                    {
-                        int bytesRead = _networkStream.Read(_readBuffer, 0, _readBuffer.Length);
-
-                        memoryStream.Write(_readBuffer, 0, bytesRead);
-                    }
-                    while (_networkStream.DataAvailable);
-                }
-                catch (Exception ex)
-                {
-                    throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
-                }
-            }
-
-            return memoryStream.ToArray();
-        }
-
-        private void ParseResponseError(Response response)
-        {
-            int offset = 5;
-            string exceptionString = "";
-
-            byte followByte = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray());
-            offset += 1;
-
-            while (followByte == 1)
-            {
-                int exceptionClassLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
-                offset += 4;
-
-                exceptionString += BinarySerializer.ToString(response.Data.Skip(offset).Take(exceptionClassLength).ToArray()) + ": ";
-                offset += exceptionClassLength;
-
-                int exceptionMessageLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
-                offset += 4;
-
-                // don't read exception message string if it's null
-                if (exceptionMessageLength != -1)
-                {
-                    exceptionString += BinarySerializer.ToString(response.Data.Skip(offset).Take(exceptionMessageLength).ToArray()) + "\n";
-                    offset += exceptionMessageLength;
-                }
-
-                followByte = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray());
-                offset += 1;
-            }
-
-            throw new OException(OExceptionType.Operation, exceptionString);
         }
 
         #endregion

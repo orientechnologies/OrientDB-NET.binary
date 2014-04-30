@@ -34,8 +34,6 @@ namespace Orient.Client.Protocol.Operations
 
         public ODocument Response(Response response)
         {
-            // start from this position since standard fields (status, session ID) has been already parsed
-            int offset = 5;
             ODocument document = new ODocument();
 
             if (response == null)
@@ -43,12 +41,12 @@ namespace Orient.Client.Protocol.Operations
                 return document;
             }
 
+            var reader = response.Reader;
+
             // operation specific fields
-            document.SetField("SessionId", BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray()));
-            offset += 4;
-            short clusterCount = BinarySerializer.ToShort(response.Data.Skip(offset).Take(2).ToArray());
+            document.SetField("SessionId", reader.ReadInt32EndianAware());
+            short clusterCount = reader.ReadInt16EndianAware();
             document.SetField("ClusterCount", clusterCount);
-            offset += 2;
 
             if (clusterCount > 0)
             {
@@ -58,24 +56,18 @@ namespace Orient.Client.Protocol.Operations
                 {
                     OCluster cluster = new OCluster();
 
-                    int clusterNameLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
-                    offset += 4;
+                    int clusterNameLength = reader.ReadInt32EndianAware();
 
-                    cluster.Name = BinarySerializer.ToString(response.Data.Skip(offset).Take(clusterNameLength).ToArray());
-                    offset += clusterNameLength;
+                    cluster.Name = System.Text.Encoding.Default.GetString(reader.ReadBytes(clusterNameLength));
 
-                    cluster.Id = BinarySerializer.ToShort(response.Data.Skip(offset).Take(2).ToArray());
-                    offset += 2;
+                    cluster.Id = reader.ReadInt16EndianAware();
 
-                    int clusterTypeLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
-                    offset += 4;
+                    int clusterTypeLength = reader.ReadInt32EndianAware();
 
-                    string clusterName = BinarySerializer.ToString(response.Data.Skip(offset).Take(clusterTypeLength).ToArray());
-                    cluster.Type = (OClusterType)Enum.Parse(typeof(OClusterType), clusterName, true);
-                    offset += clusterTypeLength;
+                    string clusterType = System.Text.Encoding.Default.GetString(reader.ReadBytes(clusterTypeLength));
+                    cluster.Type = (OClusterType)Enum.Parse(typeof(OClusterType), clusterType, true);
 
-                    cluster.DataSegmentID = BinarySerializer.ToShort(response.Data.Skip(offset).Take(2).ToArray());
-                    offset += 2;
+                    cluster.DataSegmentID = reader.ReadInt16EndianAware();
 
                     clusters.Add(cluster);
                 }
@@ -83,11 +75,19 @@ namespace Orient.Client.Protocol.Operations
                 document.SetField("Clusters", clusters);
             }
 
-            int clusterConfigLength = BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray());
-            offset += 4;
+            int clusterConfigLength = reader.ReadInt32EndianAware();
 
-            document.SetField("ClusterConfig", response.Data.Skip(offset).Take(clusterConfigLength).ToArray());
-            offset += clusterConfigLength;
+            byte[] clusterConfig = null;
+
+            if (clusterConfigLength > 0)
+            {
+                 clusterConfig = reader.ReadBytes(clusterConfigLength);
+            }
+            
+            document.SetField("ClusterConfig", clusterConfig);
+
+            string release = reader.ReadInt32PrefixedString();
+            document.SetField("OrientdbRelease", release);
 
             return document;
         }
