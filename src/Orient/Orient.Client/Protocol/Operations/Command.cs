@@ -129,48 +129,44 @@ namespace Orient.Client.Protocol.Operations
                     case PayloadStatus.NullResult: // 'n'
                         // nothing to do
                         break;
+                    case PayloadStatus.SingleRecord: // 'r'
+                        ODocument document = ParseDocument(reader);
+                        responseDocument.SetField("Content", document);
+                        break;
                     case PayloadStatus.SerializedResult: // 'a'
                         // TODO: how to parse result - string?
                         contentLength = reader.ReadInt32EndianAware();
                         string serialized = System.Text.Encoding.Default.GetString(reader.ReadBytes(contentLength));
                         responseDocument.SetField("Content", serialized);
                         break;
-                    case PayloadStatus.SingleRecord: // 'r'
                     case PayloadStatus.RecordCollection: // 'l'
                         List<ODocument> documents = new List<ODocument>();
 
-                        if (payloadStatus == PayloadStatus.SingleRecord)
-                        {
-                            documents.Add(ParseDocument(reader));                            
-                        }
-                        else if (payloadStatus == PayloadStatus.RecordCollection)
-                        {
-                            int recordsCount = reader.ReadInt32EndianAware();
+                        int recordsCount = reader.ReadInt32EndianAware();
 
-                            for (int i = 0; i < recordsCount; i++)
-                            {
-                                documents.Add(ParseDocument(reader));
-                            }
-                        }
-
-                        if (OClient.ProtocolVersion >= 17)
+                        for (int i = 0; i < recordsCount; i++)
                         {
-                            //Load the fetched records in cache
-                            while ((payloadStatus = (PayloadStatus)reader.ReadByte()) != PayloadStatus.NoRemainingRecords)
-                            {
-                                ODocument document = ParseDocument(reader);
-                                if (document != null && payloadStatus == PayloadStatus.PreFetched)
-                                {
-                                    //Put in the client local cache
-                                    response.Connection.Database.ClientCache.Add(document.ORID, document);
-                                }
-                            }
+                            documents.Add(ParseDocument(reader));
                         }
 
                         responseDocument.SetField("Content", documents);
                         break;
                     default:
                         break;
+                }
+
+                if (OClient.ProtocolVersion >= 17)
+                {
+                    //Load the fetched records in cache
+                    while ((payloadStatus = (PayloadStatus)reader.ReadByte()) != PayloadStatus.NoRemainingRecords)
+                    {
+                        ODocument document = ParseDocument(reader);
+                        if (document != null && payloadStatus == PayloadStatus.PreFetched)
+                        {
+                            //Put in the client local cache
+                            response.Connection.Database.ClientCache.Add(document.ORID, document);
+                        }
+                    }
                 }
             }
 
