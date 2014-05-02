@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Orient.Client.Protocol.Serializers
 {
@@ -251,6 +252,13 @@ namespace Orient.Client.Protocol.Serializers
 
             // parse field name string from raw document string
             string fieldName = recordString.Substring(startIndex, i - startIndex);
+            int pos = fieldName.IndexOf('@');
+            if (pos > 0)
+            {
+                fieldName = fieldName.Substring(pos + 1, fieldName.Length - pos - 1);
+            }
+
+            fieldName = fieldName.Replace("\"", "");
 
             document.Add(fieldName, null);
 
@@ -417,7 +425,7 @@ namespace Orient.Client.Protocol.Serializers
                     i++;
 
                     // go to the end of string
-                    while ((i < recordString.Length) && (recordString[i] != '"'))
+                    while ((i < recordString.Length) && (recordString[i + 1] != '"'))
                     {
                         i++;
                     }
@@ -448,18 +456,21 @@ namespace Orient.Client.Protocol.Serializers
             // move past the closing bracket character
             i++;
 
+            // do not include { and } in field value
+            startIndex++;
+
             //assign field value
             if (document[fieldName] == null)
             {
-                document[fieldName] = recordString.Substring(startIndex, i - startIndex);
+                document[fieldName] = recordString.Substring(startIndex, i - 1 - startIndex);
             }
             else if (document[fieldName] is HashSet<object>)
             {
-                ((HashSet<object>)document[fieldName]).Add(recordString.Substring(startIndex, i - startIndex));
+                ((HashSet<object>)document[fieldName]).Add(recordString.Substring(startIndex, i - 1 - startIndex));
             }
             else
             {
-                ((List<object>)document[fieldName]).Add(recordString.Substring(startIndex, i - startIndex));
+                ((List<object>)document[fieldName]).Add(recordString.Substring(startIndex, i - 1 - startIndex));
             }
 
             return i;

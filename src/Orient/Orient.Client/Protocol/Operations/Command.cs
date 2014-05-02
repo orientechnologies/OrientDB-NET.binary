@@ -109,7 +109,7 @@ namespace Orient.Client.Protocol.Operations
                             break;
                         case PayloadStatus.PreFetched:
                             //client cache
-                            response.Connection.Database.ClientCache.Add(document.ORID, document);
+                            response.Connection.Database.ClientCache[document.ORID] = document;
                             break;
                         default:
                             break;
@@ -164,7 +164,7 @@ namespace Orient.Client.Protocol.Operations
                         if (document != null && payloadStatus == PayloadStatus.PreFetched)
                         {
                             //Put in the client local cache
-                            response.Connection.Database.ClientCache.Add(document.ORID, document);
+                            response.Connection.Database.ClientCache[document.ORID] = document;
                         }
                     }
                 }

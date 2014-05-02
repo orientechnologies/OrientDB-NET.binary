@@ -19,6 +19,11 @@ namespace Orient.Client.Protocol
         internal ConnectionType Type { get; private set; }
         internal ODatabase Database { get; set; }
 
+        internal string DatabaseName { get; private set; }
+        internal ODatabaseType DatabaseType { get; private set; }
+        internal string UserName { get; private set; }
+        internal string UserPassword { get; private set; }
+
         internal string Alias { get; set; }
         internal bool IsReusable { get; set; }
         internal short ProtocolVersion { get; set; }
@@ -53,6 +58,11 @@ namespace Orient.Client.Protocol
             IsReusable = isReusable;
             ProtocolVersion = 0;
             SessionId = -1;
+
+            DatabaseName = databaseName;
+            DatabaseType = databaseType;
+            UserName = userName;
+            UserPassword = userPassword;
 
             InitializeDatabaseConnection(databaseName, databaseType, userName, userPassword);
         }
@@ -108,15 +118,37 @@ namespace Orient.Client.Protocol
 
             if (request.OperationMode == OperationMode.Synchronous)
             {
-                Response response = new Response(this);
+                try
+                {
+                    Response response = new Response(this);
 
-                response.Receive();
+                    response.Receive();
 
-                return ((IOperation)operation).Response(response);
+                    return ((IOperation)operation).Response(response);
+                }
+                catch (Exception exception)
+                {
+                    //reset connection as the socket may contains unread data and is considered unstable
+                    Reconnect();
+                    throw;
+                }
             }
             else
             {
                 return null;
+            }
+        }
+
+        private void Reconnect()
+        {
+            Close();
+            if (Type == ConnectionType.Database)
+            {
+                InitializeDatabaseConnection(DatabaseName, DatabaseType, UserName, UserPassword);
+            }
+            else
+            {
+                InitializeServerConnection(UserName, UserPassword);
             }
         }
 
@@ -128,6 +160,9 @@ namespace Orient.Client.Protocol
         internal void Close()
         {
             SessionId = -1;
+
+            DbClose operation = new DbClose();
+            ExecuteOperation<DbClose>(operation);
 
             if ((_networkStream != null) && (_socket != null))
             {
