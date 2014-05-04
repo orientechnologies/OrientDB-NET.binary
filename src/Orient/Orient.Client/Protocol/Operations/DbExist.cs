@@ -6,6 +6,7 @@ namespace Orient.Client.Protocol.Operations
     internal class DbExist : IOperation
     {
         internal string DatabaseName { get; set; }
+        internal OStorageType StorageType { get; set; }
 
         public Request Request(int sessionID)
         {
@@ -16,14 +17,14 @@ namespace Orient.Client.Protocol.Operations
             request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(sessionID) });
             // operation specific fields
             request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(DatabaseName) });
+            if (OClient.ProtocolVersion >= 16) //since 1.5 snapshot but not in 1.5
+                request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(StorageType.ToString().ToLower()) });
 
             return request;
         }
 
         public ODocument Response(Response response)
         {
-            // start from this position since standard fields (status, session ID) has been already parsed
-            int offset = 5;
             ODocument document = new ODocument();
 
             if (response == null)
@@ -31,9 +32,10 @@ namespace Orient.Client.Protocol.Operations
                 return document;
             }
 
+            var reader = response.Reader;
+
             // operation specific fields
-            byte existByte = BinarySerializer.ToByte(response.Data.Skip(offset).Take(1).ToArray());
-            offset += 1;
+            byte existByte = reader.ReadByte();
 
             if (existByte == 0)
             {

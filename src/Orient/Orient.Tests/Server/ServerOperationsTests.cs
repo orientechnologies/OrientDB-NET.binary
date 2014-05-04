@@ -13,21 +13,21 @@ namespace Orient.Tests.Server
             string databaseName = "thisIsTestDatabaseForNetDriver";
             OServer server = TestConnection.GetServer();
 
-            bool exists = server.DatabaseExist(databaseName);
+            bool exists = server.DatabaseExist(databaseName, OStorageType.PLocal);
 
             Assert.AreEqual(exists, false);
 
             if (!exists)
             {
-                bool isCreated = server.CreateDatabase(databaseName, ODatabaseType.Graph, OStorageType.Local);
+                bool isCreated = server.CreateDatabase(databaseName, ODatabaseType.Graph, OStorageType.PLocal);
 
                 Assert.AreEqual(isCreated, true);
 
                 if (isCreated)
                 {
-                    server.DropDatabase(databaseName);
+                    server.DropDatabase(databaseName, OStorageType.PLocal);
 
-                    exists = server.DatabaseExist(databaseName);
+                    exists = server.DatabaseExist(databaseName, OStorageType.PLocal);
 
                     Assert.AreEqual(exists, false);
                 }

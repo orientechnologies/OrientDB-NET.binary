@@ -37,7 +37,7 @@ namespace Orient.Client
             return _document.GetField<List<ODocument>>("Content");
         }
 
-        internal ODocument ToDocument()
+        public ODocument ToDocument()
         {
             return _document;
         }

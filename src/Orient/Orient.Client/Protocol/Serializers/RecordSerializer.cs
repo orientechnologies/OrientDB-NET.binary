@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Orient.Client.Protocol.Serializers
 {
@@ -251,6 +252,13 @@ namespace Orient.Client.Protocol.Serializers
 
             // parse field name string from raw document string
             string fieldName = recordString.Substring(startIndex, i - startIndex);
+            int pos = fieldName.IndexOf('@');
+            if (pos > 0)
+            {
+                fieldName = fieldName.Substring(pos + 1, fieldName.Length - pos - 1);
+            }
+
+            fieldName = fieldName.Replace("\"", "");
 
             document.Add(fieldName, null);
 
@@ -283,6 +291,9 @@ namespace Orient.Client.Protocol.Serializers
                     break;
                 case '{':
                     i = ParseMap(i, recordString, document, fieldName);
+                    break;
+                case '%':
+                    i = ParseRidBags(i, recordString, document, fieldName);
                     break;
                 default:
                     i = ParseValue(i, recordString, document, fieldName);
@@ -414,7 +425,7 @@ namespace Orient.Client.Protocol.Serializers
                     i++;
 
                     // go to the end of string
-                    while ((i < recordString.Length) && (recordString[i] != '"'))
+                    while ((i < recordString.Length) && (recordString[i + 1] != '"'))
                     {
                         i++;
                     }
@@ -445,18 +456,21 @@ namespace Orient.Client.Protocol.Serializers
             // move past the closing bracket character
             i++;
 
+            // do not include { and } in field value
+            startIndex++;
+
             //assign field value
             if (document[fieldName] == null)
             {
-                document[fieldName] = recordString.Substring(startIndex, i - startIndex);
+                document[fieldName] = recordString.Substring(startIndex, i - 1 - startIndex);
             }
             else if (document[fieldName] is HashSet<object>)
             {
-                ((HashSet<object>)document[fieldName]).Add(recordString.Substring(startIndex, i - startIndex));
+                ((HashSet<object>)document[fieldName]).Add(recordString.Substring(startIndex, i - 1 - startIndex));
             }
             else
             {
-                ((List<object>)document[fieldName]).Add(recordString.Substring(startIndex, i - startIndex));
+                ((List<object>)document[fieldName]).Add(recordString.Substring(startIndex, i - 1 - startIndex));
             }
 
             return i;
@@ -563,6 +577,37 @@ namespace Orient.Client.Protocol.Serializers
             {
                 ((List<object>)document[fieldName]).Add(value);
             }
+
+            return i;
+        }
+
+        /// <summary>
+        /// Parse RidBags ex. %[content:binary]; where [content:binary] is the actual binary base64 content.
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="recordString"></param>
+        /// <param name="document"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        private static int ParseRidBags(int i, string recordString, ODocument document, string fieldName)
+        {
+            //move to first base64 char
+            i++;
+
+            StringBuilder builder = new StringBuilder();
+
+            while (recordString[i] != ';')
+            {
+                builder.Append(recordString[i]);
+                i++;
+            }
+
+            var value = Convert.FromBase64String(builder.ToString());
+
+            document[fieldName] = value;
+
+            //move past ';'
+            i++;
 
             return i;
         }

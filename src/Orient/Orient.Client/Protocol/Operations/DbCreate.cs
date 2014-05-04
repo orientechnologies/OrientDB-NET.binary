@@ -25,8 +25,6 @@ namespace Orient.Client.Protocol.Operations
 
         public ODocument Response(Response response)
         {
-            // start from this position since standard fields (status, session ID) has been already parsed
-            //int offset = 5;
             ODocument document = new ODocument();
 
             if (response == null)

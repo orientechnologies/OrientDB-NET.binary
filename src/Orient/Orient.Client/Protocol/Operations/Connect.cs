@@ -28,8 +28,6 @@ namespace Orient.Client.Protocol.Operations
 
         public ODocument Response(Response response)
         {
-            // start from this position since standard fields (status, session ID) has been already parsed
-            int offset = 5;
             ODocument document = new ODocument();
 
             if (response == null)
@@ -37,9 +35,10 @@ namespace Orient.Client.Protocol.Operations
                 return document;
             }
 
+            var reader = response.Reader;
+
             // operation specific fields
-            document.SetField("SessionId", BinarySerializer.ToInt(response.Data.Skip(offset).Take(4).ToArray()));
-            offset += 4;
+            document.SetField("SessionId", reader.ReadInt32EndianAware());
 
             return document;
         }

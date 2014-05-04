@@ -68,6 +68,7 @@
     <Compile Include="API\Query\OSqlInsert.cs" />
     <Compile Include="API\Query\OSqlSelect.cs" />
     <Compile Include="API\Query\OSqlUpdate.cs" />
+    <Compile Include="Protocol\BinaryReaderHelper.cs" />
     <Compile Include="Protocol\Query\QueryCompiler.cs" />
     <Compile Include="Protocol\Query\SqlQuery.cs" />
     <Compile Include="API\Types\OType.cs" />
