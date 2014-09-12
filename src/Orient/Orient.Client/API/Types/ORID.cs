@@ -26,6 +26,12 @@ namespace Orient.Client
 
         }
 
+        public ORID(ORID other)
+        {
+            ClusterId = other.ClusterId;
+            ClusterPosition = other.ClusterPosition;
+        }
+
         public ORID(short clusterId, long clusterPosition)
         {
             ClusterId = clusterId;

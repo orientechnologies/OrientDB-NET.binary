@@ -431,7 +431,12 @@ namespace Orient.Client
                         {
                             object propertyValue = this.GetField<object>(fieldPath);
 
-                            IList collection = (IList)propertyValue;
+                            IList collection = propertyValue as IList;
+                            if (collection == null) // if we only have one item currently stored (but scope for more) we create a temporary list and put our single item in it.
+                            {
+                                collection = new ArrayList();
+                                collection.Add(propertyValue);
+                            }
 
                             if (collection.Count > 0)
                             {
