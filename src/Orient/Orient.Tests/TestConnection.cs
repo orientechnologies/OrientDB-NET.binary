@@ -31,14 +31,14 @@ namespace Orient.Tests
         {
             DropTestDatabase();
 
-            _server.CreateDatabase(GlobalTestDatabaseName, GlobalTestDatabaseType, OStorageType.PLocal);
+            _server.CreateDatabase(GlobalTestDatabaseName, GlobalTestDatabaseType, OStorageType.Memory);
         }
 
         public static void DropTestDatabase()
         {
-            if (_server.DatabaseExist(GlobalTestDatabaseName, OStorageType.PLocal))
+            if (_server.DatabaseExist(GlobalTestDatabaseName, OStorageType.Memory))
             {
-                _server.DropDatabase(GlobalTestDatabaseName, OStorageType.PLocal);
+                _server.DropDatabase(GlobalTestDatabaseName, OStorageType.Memory);
             }
         }
 
