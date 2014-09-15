@@ -317,6 +317,18 @@ namespace Orient.Client
             return genericObject;
         }
 
+        public T ToUnique<T>(IUniqueObjectStore store) where T : class, new()
+        {
+            
+            if (store.ContainsKey(ORID))
+                return (T) store[ORID];
+
+            T genericObject = To<T>();
+
+            store.Add(ORID, genericObject);
+            return genericObject;
+        }
+
         public string Serialize()
         {
             return RecordSerializer.Serialize(this);
@@ -547,5 +559,13 @@ namespace Orient.Client
                 }
             }
         }
+    }
+
+    public interface IUniqueObjectStore 
+    {
+        Object this[ORID key] { get;  }
+        void Add(ORID key, Object value);
+        bool ContainsKey(ORID key);
+        
     }
 }
