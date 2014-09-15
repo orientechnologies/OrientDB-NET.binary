@@ -155,8 +155,7 @@ namespace Orient.Client
                     if (value is IList)
                     {
                         Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
-                        object oField = this[fieldPath];
-                        IEnumerator enumerator = oField is IEnumerable ? ((IEnumerable) oField).GetEnumerator() : new[] {oField}.GetEnumerator();
+                        IEnumerator enumerator = EnumerableFromField<T>(this[fieldPath]).GetEnumerator();
                         
                         while (enumerator.MoveNext())
                         {
@@ -207,6 +206,16 @@ namespace Orient.Client
             }
 
             return value;
+        }
+
+        private static IEnumerable EnumerableFromField<T>(object oField)
+        {
+            if (oField is IEnumerable)
+                return ((IEnumerable) oField);
+            if (oField == null)
+                return (new object[0]);
+
+            return new[] {oField};
         }
 
         public ODocument SetField<T>(string fieldPath, T value)
@@ -420,6 +429,8 @@ namespace Orient.Client
                         OProperty oProperty = oProperties.First() as OProperty;
                         if (oProperty != null)
                         {
+                            if (!oProperty.Deserializable)
+                                continue;
                             propertyName = oProperty.Alias;
                         }
                     }
@@ -436,7 +447,8 @@ namespace Orient.Client
                             if (collection == null) // if we only have one item currently stored (but scope for more) we create a temporary list and put our single item in it.
                             {
                                 collection = new ArrayList();
-                                collection.Add(propertyValue);
+                                if (propertyValue != null)
+                                    collection.Add(propertyValue);
                             }
 
                             if (collection.Count > 0)
