@@ -155,7 +155,8 @@ namespace Orient.Client
                     if (value is IList)
                     {
                         Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
-                        IEnumerator enumerator = ((IEnumerable)this[fieldPath]).GetEnumerator();
+                        object oField = this[fieldPath];
+                        IEnumerator enumerator = oField is IEnumerable ? ((IEnumerable) oField).GetEnumerator() : new[] {oField}.GetEnumerator();
                         
                         while (enumerator.MoveNext())
                         {

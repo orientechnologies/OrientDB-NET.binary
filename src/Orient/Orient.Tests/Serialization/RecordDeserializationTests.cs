@@ -332,6 +332,53 @@ namespace Orient.Tests.Serialization
         }
 
         [TestMethod]
+        public void ShouldDeserializeSingleItemToOneElementList()
+        {
+            string recordString = "single:#10:12345,list:[#11:123,#22:1234,#33:1234567]";
+
+            ODocument document = ODocument.Deserialize(recordString);
+
+            // check for fields existence
+            Assert.AreEqual(document.HasField("single"), true);
+            Assert.AreEqual(document.HasField("list"), true);
+
+            // check for fields values
+            List<ORID> collection = document.GetField<List<ORID>>("single");
+            Assert.AreEqual(collection.Count, 1);
+            Assert.AreEqual(collection[0], new ORID(10, 12345));
+        }
+
+        class TestObject
+        {
+            public List<ORID> single { get; set; }
+            public List<ORID> list { get; set; } 
+        }
+
+        [TestMethod]
+        public void ShouldDeserializeSingleItemToOneElementListFieldOfObject()
+        {
+            // important if you use ordered edges, since if more than 1 they appear as a list, if only one then as a single object, ie
+            //    db.Create.Class<Person>().Extends("V").Run();
+            //    db.Command("create property Person.in_FriendOf ANY");
+            //    db.Command("alter property Person.in_FriendOf custom ordered=true");
+
+            string recordString = "single:#10:12345,list:[#11:123,#22:1234,#33:1234567]";
+
+            ODocument document = ODocument.Deserialize(recordString);
+
+            // check for fields existence
+            Assert.AreEqual(document.HasField("single"), true);
+            Assert.AreEqual(document.HasField("list"), true);
+
+            var testObj = document.To<TestObject>();
+            Assert.IsNotNull(testObj);
+            Assert.IsNotNull(testObj.single);
+            Assert.IsNotNull(testObj.list);
+            Assert.AreEqual(1, testObj.single.Count);
+            Assert.AreEqual(3, testObj.list.Count);
+        }
+
+        [TestMethod]
         public void ShouldDeserializeSingleAndSetOfOrids()
         {
             string recordString = "single:#10:12345,set:<#11:123,#22:1234,#33:1234567>,singleSet:<#44:44>";
