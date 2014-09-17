@@ -347,6 +347,9 @@ namespace Orient.Client
             // TODO: recursive mapping of nested/embedded objects
             foreach (PropertyInfo propertyInfo in genericObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
+                if (!propertyInfo.CanRead || !propertyInfo.CanWrite)
+                    continue; // read only or write only properties can be ignored
+
                 string propertyName = propertyInfo.Name;
 
                 // serialize following properties into dedicated fields in ODocument
@@ -410,6 +413,9 @@ namespace Orient.Client
             {
                 foreach (PropertyInfo propertyInfo in genericObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
                 {
+                    if (!propertyInfo.CanRead || !propertyInfo.CanWrite)
+                        continue; // read only or write only properties can be ignored
+
                     string propertyName = propertyInfo.Name;
 
                     // serialize orient specific fields into dedicated properties
@@ -449,7 +455,7 @@ namespace Orient.Client
 
                     string fieldPath = path + (path != "" ? "." : "") + propertyName;
 
-                    if ((propertyInfo.PropertyType.IsArray || propertyInfo.PropertyType.IsGenericType))
+                    if ((propertyInfo.PropertyType.IsArray || propertyInfo.PropertyType.IsGenericType) )
                     {
                         if (this.HasField(fieldPath))
                         {
