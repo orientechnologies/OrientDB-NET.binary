@@ -317,16 +317,16 @@ namespace Orient.Client
             return genericObject;
         }
 
-        public T ToUnique<T>(IUniqueObjectStore store) where T : class, new()
+        public T ToUnique<T>(ICreationContext store) where T : class, new()
         {
             
-            if (store.ContainsKey(ORID))
-                return (T) store[ORID];
+            if (store.AlreadyCreated(ORID))
+                return (T) store.GetExistingObject(ORID);
 
-            T genericObject = To<T>();
-
-            store.Add(ORID, genericObject);
-            return genericObject;
+            T genericObject = (T) store.CreateObject(OClassName);
+            var result = ToObject(genericObject, "");
+            store.AddObject(ORID, result);
+            return result;
         }
 
         public string Serialize()
@@ -567,11 +567,12 @@ namespace Orient.Client
         }
     }
 
-    public interface IUniqueObjectStore 
+    public interface ICreationContext
     {
-        Object this[ORID key] { get;  }
-        void Add(ORID key, Object value);
-        bool ContainsKey(ORID key);
-        
+        object GetExistingObject(ORID key);
+        void AddObject(ORID key, Object value);
+        bool AlreadyCreated(ORID key);
+
+        object CreateObject(string oClassName);
     }
 }
