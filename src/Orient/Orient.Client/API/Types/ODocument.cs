@@ -317,7 +317,7 @@ namespace Orient.Client
             return genericObject;
         }
 
-        public T ToUnique<T>(ICreationContext store) where T : class, new()
+        public T ToUnique<T>(ICreationContext store) where T : class
         {
             
             if (store.AlreadyCreated(ORID))
@@ -396,7 +396,7 @@ namespace Orient.Client
             return document;
         }
 
-        private T ToObject<T>(T genericObject, string path) where T : class, new()
+        private T ToObject<T>(T genericObject, string path) where T : class
         {
             Type genericObjectType = genericObject.GetType();
 
