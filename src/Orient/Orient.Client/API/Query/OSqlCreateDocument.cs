@@ -95,7 +95,7 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.NonIdempotent;
             operation.CommandPayload = payload;
 
-            OCommandResult result = new OCommandResult(_connection.ExecuteOperation<Command>(operation));
+            OCommandResult result = new OCommandResult(_connection.ExecuteOperation(operation));
 
             return result.ToSingle();
         }

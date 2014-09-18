@@ -79,9 +79,9 @@ namespace Orient.Client.Protocol
             InitializeServerConnection(userName, userPassword);
         }
 
-        internal ODocument ExecuteOperation<T>(T operation)
+        internal ODocument ExecuteOperation(IOperation operation)
         {
-            Request request = ((IOperation)operation).Request(SessionId);
+            Request request = operation.Request(SessionId);
             byte[] buffer;
 
             foreach (RequestDataItem item in request.DataItems)
@@ -162,7 +162,7 @@ namespace Orient.Client.Protocol
             SessionId = -1;
 
             DbClose operation = new DbClose();
-            ExecuteOperation<DbClose>(operation);
+            ExecuteOperation(operation);
 
             if ((_networkStream != null) && (_socket != null))
             {
@@ -207,7 +207,7 @@ namespace Orient.Client.Protocol
             operation.UserName = userName;
             operation.UserPassword = userPassword;
 
-            Document = ExecuteOperation<DbOpen>(operation);
+            Document = ExecuteOperation(operation);
             SessionId = Document.GetField<int>("SessionId");
         }
 
@@ -235,7 +235,7 @@ namespace Orient.Client.Protocol
             operation.UserName = userName;
             operation.UserPassword = userPassword;
 
-            Document = ExecuteOperation<Connect>(operation);
+            Document = ExecuteOperation(operation);
             SessionId = Document.GetField<int>("SessionId");
         }
 

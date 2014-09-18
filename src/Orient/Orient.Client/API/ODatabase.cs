@@ -90,7 +90,7 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.Idempotent;
             operation.CommandPayload = payload;
 
-            ODocument document = _connection.ExecuteOperation<Command>(operation);
+            ODocument document = _connection.ExecuteOperation(operation);
 
             return document.GetField<List<ODocument>>("Content");
         }
@@ -112,7 +112,7 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.NonIdempotent;
             operation.CommandPayload = payload;
 
-            ODocument document = _connection.ExecuteOperation<Command>(operation);
+            ODocument document = _connection.ExecuteOperation(operation);
 
             return document.GetField<List<ODocument>>("Content");
         }
@@ -131,7 +131,7 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.NonIdempotent;
             operation.CommandPayload = payload;
 
-            ODocument document = _connection.ExecuteOperation<Command>(operation);
+            ODocument document = _connection.ExecuteOperation(operation);
 
             return new OCommandResult(document);
         }
