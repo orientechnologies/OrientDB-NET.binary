@@ -13,9 +13,9 @@ namespace Orient.Client.Mapping
 
         }
 
-        protected override void MapToNamedField(ODocument document, object typedObject)
+        protected override void MapToNamedField(ODocument document, object typedObject, string basePath)
         {
-            object propertyValue = document.GetField<object>(_fieldPath);
+            object propertyValue = document.GetField<object>(FieldPath(basePath));
 
             IList collection = propertyValue as IList;
             if (collection == null) // if we only have one item currently stored (but scope for more) we create a temporary list and put our single item in it.
@@ -36,7 +36,7 @@ namespace Orient.Client.Mapping
                     // collection is simple array
                     if (_propertyInfo.PropertyType.IsArray)
                     {
-                        ((object[]) collectionInstance)[i] = collection[i];
+                        ((Array) collectionInstance).SetValue(collection[i], i);
                     }
                         // collection is generic
                     else if (_propertyInfo.PropertyType.IsGenericType && (propertyValue is IEnumerable))

@@ -10,7 +10,7 @@ namespace Orient.Client.Mapping
             
         }
 
-        public override void MapToObject(ODocument document, object typedObject)
+        public override void MapToObject(ODocument document, object typedObject, string basePath)
         {
             _propertyInfo.SetValue(typedObject, document.ORID, null);
         }
@@ -24,7 +24,7 @@ namespace Orient.Client.Mapping
 
         }
 
-        public override void MapToObject(ODocument document, object typedObject)
+        public override void MapToObject(ODocument document, object typedObject, string basePath)
         {
             _propertyInfo.SetValue(typedObject, document.OVersion, null);
         }
@@ -38,7 +38,7 @@ namespace Orient.Client.Mapping
 
         }
 
-        public override void MapToObject(ODocument document, object typedObject)
+        public override void MapToObject(ODocument document, object typedObject, string basePath)
         {
             _propertyInfo.SetValue(typedObject, document.OClassId, null);
         }
@@ -53,7 +53,7 @@ namespace Orient.Client.Mapping
 
         }
 
-        public override void MapToObject(ODocument document, object typedObject)
+        public override void MapToObject(ODocument document, object typedObject, string basePath)
         {
             _propertyInfo.SetValue(typedObject, document.OClassName, null);
         }

@@ -9,9 +9,9 @@ namespace Orient.Client.Mapping
             
         }
 
-        protected override void MapToNamedField(ODocument document, object typedObject)
+        protected override void MapToNamedField(ODocument document, object typedObject, string basePath)
         {
-            _propertyInfo.SetValue(typedObject, document.GetField<object>(_fieldPath), null);
+            _propertyInfo.SetValue(typedObject, document.GetField<object>(FieldPath(basePath)), null);
         }
     }
 }

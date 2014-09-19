@@ -384,6 +384,81 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(3, testObj.list.Count);
         }
 
+        class TestArray
+        {
+            public int[] values { get; set; }
+        }
+
+        class TestList
+        {
+            public List<int> values { get; set; }
+        }
+
+        [TestMethod]
+        public void TestDeserializeArray()
+        {
+            string recordString = "values:[1,2,3,4,5]";
+
+            ODocument document = ODocument.Deserialize(recordString);
+
+
+            TypeMapper<TestArray> tm = TypeMapper<TestArray>.Instance;
+            var t = new TestArray();
+            tm.ToObject(document, t);
+
+            Assert.IsNotNull(t.values);
+            Assert.AreEqual(5, t.values.Length);
+            Assert.AreEqual(3, t.values[2]);
+
+        }
+
+        [TestMethod]
+        public void TestDeserializeList()
+        {
+            string recordString = "values:[1,2,3,4,5]";
+
+            ODocument document = ODocument.Deserialize(recordString);
+
+
+            TypeMapper<TestList> tm = TypeMapper<TestList>.Instance;
+            var t = new TestList();
+            tm.ToObject(document, t);
+
+            Assert.IsNotNull(t.values);
+            Assert.AreEqual(5, t.values.Count);
+            Assert.AreEqual(3, t.values[2]);
+
+        }
+
+        class Thing
+        {
+            public int Value { get; set; }
+            public string Text { get; set; }
+        }
+
+        class TestHasAThing
+        {
+            public Thing TheThing { get; set; }
+        }
+
+        [TestMethod]
+        public void TestDeserializeSubObject()
+        {
+            string recordString = "TheThing:(Value:17,Text:\"blah\")";
+
+            ODocument document = ODocument.Deserialize(recordString);
+
+
+            TypeMapper<TestHasAThing> tm = TypeMapper<TestHasAThing>.Instance;
+            var t = new TestHasAThing();
+            tm.ToObject(document, t);
+
+            Assert.IsNotNull(t.TheThing);
+            Assert.AreEqual(17, t.TheThing.Value);
+            Assert.AreEqual("blah", t.TheThing.Text);
+
+        }
+
         [TestMethod]
         public void TestDeserializationMapping()
         {

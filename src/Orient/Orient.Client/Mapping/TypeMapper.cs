@@ -95,8 +95,8 @@ namespace Orient.Client.Mapping
 
         private void AddClassProperty(PropertyInfo propertyInfo, string fieldPath)
         {
-            var mappingType = typeof (ClassNamedFieldMapping<>).MakeGenericType(propertyInfo.PropertyType);
-            _fields.Add((NamedFieldMapping) Activator.CreateInstance(mappingType, propertyInfo, fieldPath));
+            var mappingType = typeof (ClassFieldMapping<>).MakeGenericType(propertyInfo.PropertyType);
+            _fields.Add((FieldMapping) Activator.CreateInstance(mappingType, propertyInfo, fieldPath));
         }
 
         private void AddCollectionProperrty(PropertyInfo propertyInfo, string fieldPath)
@@ -104,10 +104,10 @@ namespace Orient.Client.Mapping
             _fields.Add(new CollectionNamedFieldMapping(propertyInfo, fieldPath));
         }
 
-        public void ToObject(ODocument document, T typedObject)
+        public void ToObject(ODocument document, T typedObject, string basePath = null)
         {
             foreach (var fm in _fields)
-                fm.MapToObject(document, typedObject);
+                fm.MapToObject(document, typedObject, basePath);
         }
     }
 }

@@ -3,15 +3,17 @@ using System.Reflection;
 
 namespace Orient.Client.Mapping
 {
-    internal class ClassNamedFieldMapping<T> : NamedFieldMapping
+    internal class ClassFieldMapping<T> : FieldMapping where T : new()
     {
-        public ClassNamedFieldMapping(PropertyInfo propertyInfo, string fieldPath) : base(propertyInfo, fieldPath)
+        public ClassFieldMapping(PropertyInfo propertyInfo, string fieldPath) : base(propertyInfo, fieldPath)
         {
         }
 
-        protected override void MapToNamedField(ODocument document, object typedObject)
+        public override void MapToObject(ODocument document, object typedObject, string basePath)
         {
-            throw new NotImplementedException();
+            T result = new T();
+            TypeMapper<T>.Instance.ToObject(document, result, FieldPath(basePath));
+            _propertyInfo.SetValue(typedObject, result, null);
         }
     }
 }
