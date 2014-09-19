@@ -11,7 +11,7 @@ namespace Orient.Client.Protocol
     internal class Connection : IDisposable
     {
         private TcpClient _socket;
-        private NetworkStream _networkStream;
+        private BufferedStream _networkStream;
         private byte[] _readBuffer;
 
         internal string Hostname { get; set; }
@@ -116,6 +116,8 @@ namespace Orient.Client.Protocol
                 }
             }
 
+            _networkStream.Flush();
+
             if (request.OperationMode == OperationMode.Synchronous)
             {
                 try
@@ -195,7 +197,7 @@ namespace Orient.Client.Protocol
                 throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
 
-            _networkStream = _socket.GetStream();
+            _networkStream = new BufferedStream( _socket.GetStream());
             _networkStream.Read(_readBuffer, 0, 2);
 
             ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
@@ -225,7 +227,7 @@ namespace Orient.Client.Protocol
                 throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
 
-            _networkStream = _socket.GetStream();
+            _networkStream = new BufferedStream( _socket.GetStream());
             _networkStream.Read(_readBuffer, 0, 2);
 
             ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());

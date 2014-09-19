@@ -11,10 +11,12 @@ namespace Orient.Client.Protocol.Operations
     class LoadRecord : IOperation
     {
         private readonly ORID _orid;
+        private readonly string _fetchPlan;
 
-        public LoadRecord(ORID orid)
+        public LoadRecord(ORID orid, string fetchPlan)
         {
             _orid = orid;
+            _fetchPlan = fetchPlan;
         }
 
         public Request Request(int sessionID)
@@ -26,7 +28,7 @@ namespace Orient.Client.Protocol.Operations
             request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(sessionID) });
             request.DataItems.Add(new RequestDataItem() { Type = "short", Data = BinarySerializer.ToArray(_orid.ClusterId) });
             request.DataItems.Add(new RequestDataItem() { Type = "long", Data = BinarySerializer.ToArray(_orid.ClusterPosition) });
-            request.DataItems.Add(new RequestDataItem() {Type = "string", Data = BinarySerializer.ToArray("")} );
+            request.DataItems.Add(new RequestDataItem() {Type = "string", Data = BinarySerializer.ToArray(_fetchPlan)} );
             request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)0) });
             request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)0) });
 
@@ -66,6 +68,8 @@ namespace Orient.Client.Protocol.Operations
                 byte[] readBytes = reader.ReadBytes(contentLength);
                 var version = reader.ReadInt32EndianAware();
                 var recordType = reader.ReadByte();
+
+  
                 string serialized = System.Text.Encoding.Default.GetString(readBytes);
                 var document = RecordSerializer.Deserialize(serialized);
                 document.ORID = _orid;

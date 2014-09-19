@@ -11,6 +11,7 @@ namespace Orient.Client.API.Query
     {
         private readonly Connection _connection;
         private ORID _orid;
+        private string _fetchPlan = string.Empty;
 
         internal OLoadRecord(Connection connection)
         {
@@ -23,9 +24,15 @@ namespace Orient.Client.API.Query
             return this;
         }
 
+        public OLoadRecord FetchPlan(string plan)
+        {
+            _fetchPlan = plan;
+            return this;
+        }
+
         public ODocument Run()
         {
-            var operation = new LoadRecord(_orid);
+            var operation = new LoadRecord(_orid, _fetchPlan);
 
             var result = new OCommandResult(_connection.ExecuteOperation(operation));
 
