@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Orient.Client.API.Query;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
@@ -14,6 +15,7 @@ namespace Orient.Client
 
         public OSqlCreate Create { get { return new OSqlCreate(_connection); } }
         public OSqlDelete Delete { get { return new OSqlDelete(_connection); } }
+        public OLoadRecord Load { get { return new OLoadRecord(_connection);}}
 
         public ODatabase(string alias)
         {

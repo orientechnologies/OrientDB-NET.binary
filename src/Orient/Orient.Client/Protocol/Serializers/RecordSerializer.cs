@@ -32,6 +32,11 @@ namespace Orient.Client.Protocol.Serializers
 
             string recordString = BinarySerializer.ToString(rawRecord).Trim();
 
+            return Deserialize(recordString, document);
+        }
+
+        public static ODocument Deserialize(string recordString, ODocument document)
+        {
             int atIndex = recordString.IndexOf('@');
             int colonIndex = recordString.IndexOf(':');
             int index = 0;
@@ -47,35 +52,15 @@ namespace Orient.Client.Protocol.Serializers
             do
             {
                 index = ParseFieldName(index, recordString, document);
-            }
-            while (index < recordString.Length);
+            } while (index < recordString.Length);
 
             return document;
         }
 
         internal static ODocument Deserialize(string recordString)
         {
-            ODocument document = new ODocument();
+            return Deserialize(recordString, new ODocument());
 
-            int atIndex = recordString.IndexOf('@');
-            int colonIndex = recordString.IndexOf(':');
-            int index = 0;
-
-            // parse class name
-            if ((atIndex != -1) && (atIndex < colonIndex))
-            {
-                document.OClassName = recordString.Substring(0, atIndex);
-                index = atIndex + 1;
-            }
-
-            // start document parsing with first field name
-            do
-            {
-                index = ParseFieldName(index, recordString, document);
-            }
-            while (index < recordString.Length);
-
-            return document;
         }
 
         #endregion

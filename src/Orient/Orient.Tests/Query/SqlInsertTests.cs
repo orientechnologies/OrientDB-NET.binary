@@ -91,6 +91,12 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(insertedDocument.OClassName, "TestClass");
                     Assert.AreEqual(insertedDocument.GetField<string>("foo"), document.GetField<string>("foo"));
                     Assert.AreEqual(insertedDocument.GetField<int>("bar"), document.GetField<int>("bar"));
+
+                    var loaded = database.Load.ORID(insertedDocument.ORID).Run();
+                    Assert.AreEqual(loaded.OClassName, "TestClass");
+                    Assert.AreEqual(loaded.GetField<string>("foo"), document.GetField<string>("foo"));
+                    Assert.AreEqual(loaded.GetField<int>("bar"), document.GetField<int>("bar"));
+                    Assert.AreEqual(insertedDocument.ORID, loaded.ORID);
                 }
             }
         }
@@ -161,6 +167,8 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(insertedDocument.OClassName, "TestClass");
                     Assert.AreEqual(insertedDocument.GetField<string>("foo"), "foo string value");
                     Assert.AreEqual(insertedDocument.GetField<int>("bar"), 12345);
+
+         
                 }
             }
         }
