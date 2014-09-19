@@ -9,10 +9,10 @@ namespace Orient.Client.Mapping
         {
         }
 
-        public override void MapToObject(ODocument document, object typedObject, string basePath)
+        public override void MapToObject(ODocument document, object typedObject)
         {
             T result = new T();
-            TypeMapper<T>.Instance.ToObject(document, result, FieldPath(basePath));
+            TypeMapper<T>.Instance.ToObject(document.GetField<ODocument>(_fieldPath), result, "");
             _propertyInfo.SetValue(typedObject, result, null);
         }
     }

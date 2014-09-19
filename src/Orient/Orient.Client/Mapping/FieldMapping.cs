@@ -13,12 +13,9 @@ namespace Orient.Client.Mapping
             _fieldPath = fieldPath;
         }
 
-        public abstract void MapToObject(ODocument document, object typedObject, string basePath);
+        public abstract void MapToObject(ODocument document, object typedObject);
 
-        protected string FieldPath(string basePath)
-        {
-            return string.IsNullOrEmpty(basePath) ? _fieldPath :  basePath + "." + _fieldPath;
-        }
+     
     }
 
     internal abstract class NamedFieldMapping : FieldMapping
@@ -27,12 +24,12 @@ namespace Orient.Client.Mapping
         {
         }
 
-        public override void MapToObject(ODocument document, object typedObject, string basePath)
+        public override void MapToObject(ODocument document, object typedObject)
         {
-            if (document.HasField(FieldPath(basePath)))
-                MapToNamedField(document, typedObject, basePath);
+            if (document.HasField(_fieldPath))
+                MapToNamedField(document, typedObject);
         }
 
-        protected abstract void MapToNamedField(ODocument document, object typedObject, string basePath);
+        protected abstract void MapToNamedField(ODocument document, object typedObject);
     }
 }

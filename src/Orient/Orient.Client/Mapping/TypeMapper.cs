@@ -107,7 +107,7 @@ namespace Orient.Client.Mapping
         public void ToObject(ODocument document, T typedObject, string basePath = null)
         {
             foreach (var fm in _fields)
-                fm.MapToObject(document, typedObject, basePath);
+                fm.MapToObject(document, typedObject);
         }
     }
 }
