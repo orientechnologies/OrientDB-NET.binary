@@ -32,7 +32,7 @@ namespace Orient.Client.API.Query
 
         public ODocument Run()
         {
-            var operation = new LoadRecord(_orid, _fetchPlan);
+            var operation = new LoadRecord(_orid, _fetchPlan, _connection.Database);
 
             var result = new OCommandResult(_connection.ExecuteOperation(operation));
 
