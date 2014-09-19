@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Orient.Client;
+using Orient.Client.Mapping;
 
 namespace Orient.Tests.Serialization
 {
@@ -350,8 +351,13 @@ namespace Orient.Tests.Serialization
 
         class TestObject
         {
+            public int Value { get; set; }
+            public string Text { get; set; }
+            public ORID Link { get; set; }
             public List<ORID> single { get; set; }
-            public List<ORID> list { get; set; } 
+            public List<ORID> list { get; set; }
+
+            public ORID ORID { get; set; }
         }
 
         [TestMethod]
@@ -379,11 +385,47 @@ namespace Orient.Tests.Serialization
         }
 
         [TestMethod]
+        public void TestDeserializationMapping()
+        {
+            // important if you use ordered edges, since if more than 1 they appear as a list, if only one then as a single object, ie
+            //    db.Create.Class<Person>().Extends("V").Run();
+            //    db.Command("create property Person.in_FriendOf ANY");
+            //    db.Command("alter property Person.in_FriendOf custom ordered=true");
+
+            string recordString = "single:#10:12345,list:[#11:123,#22:1234,#33:1234567],Link:#11:123,Value:17,Text:\"some text\"";
+
+            ODocument document = ODocument.Deserialize(recordString);
+            document.ORID = new ORID("#123:45");
+            Assert.AreEqual(document.HasField("single"), true);
+            Assert.AreEqual(document.HasField("Link"), true);
+            Assert.AreEqual(document.HasField("Value"), true);
+            Assert.AreEqual(document.HasField("Text"), true);
+
+
+            TypeMapper<TestObject> tm = TypeMapper<TestObject>.Instance;
+            var testObj = new TestObject();
+            tm.ToObject(document, testObj);
+
+            Assert.AreEqual("#123:45", testObj.ORID.RID);
+
+            Assert.AreEqual(17, testObj.Value);
+            Assert.AreEqual("some text", testObj.Text);
+            Assert.IsNotNull(testObj.Link);
+            Assert.AreEqual("#11:123", testObj.Link.RID);
+            Assert.IsNotNull(testObj);
+            Assert.IsNotNull(testObj.single);
+            Assert.IsNotNull(testObj.list);
+            Assert.AreEqual(1, testObj.single.Count);
+            Assert.AreEqual(3, testObj.list.Count);
+        }
+
+        [TestMethod]
         public void ShouldDeserializeSingleAndSetOfOrids()
         {
             string recordString = "single:#10:12345,set:<#11:123,#22:1234,#33:1234567>,singleSet:<#44:44>";
 
             ODocument document = ODocument.Deserialize(recordString);
+
 
             // check for fields existence
             Assert.AreEqual(document.HasField("single"), true);

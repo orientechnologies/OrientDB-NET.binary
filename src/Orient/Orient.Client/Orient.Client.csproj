@@ -69,6 +69,13 @@
     <Compile Include="API\Query\OSqlInsert.cs" />
     <Compile Include="API\Query\OSqlSelect.cs" />
     <Compile Include="API\Query\OSqlUpdate.cs" />
+    <Compile Include="Mapping\AllFieldMapping.cs" />
+    <Compile Include="Mapping\BasicFieldMapping.cs" />
+    <Compile Include="Mapping\ClassFieldMapping.cs" />
+    <Compile Include="Mapping\CollectionFieldMapping.cs" />
+    <Compile Include="Mapping\FieldMapping.cs" />
+    <Compile Include="Mapping\ORIDFieldMapping.cs" />
+    <Compile Include="Mapping\TypeMapper.cs" />
     <Compile Include="Protocol\BinaryReaderHelper.cs" />
     <Compile Include="Protocol\Operations\LoadRecord.cs" />
     <Compile Include="Protocol\Query\QueryCompiler.cs" />
