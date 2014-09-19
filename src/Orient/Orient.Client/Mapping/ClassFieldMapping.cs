@@ -12,7 +12,7 @@ namespace Orient.Client.Mapping
         public override void MapToObject(ODocument document, object typedObject)
         {
             T result = new T();
-            TypeMapper<T>.Instance.ToObject(document.GetField<ODocument>(_fieldPath), result, "");
+            TypeMapper<T>.Instance.ToObject(document.GetField<ODocument>(_fieldPath), result);
             _propertyInfo.SetValue(typedObject, result, null);
         }
     }

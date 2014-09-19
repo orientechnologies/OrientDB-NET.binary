@@ -459,6 +459,54 @@ namespace Orient.Tests.Serialization
 
         }
 
+        class TestHasThings
+        {
+            public Thing[] TheThings { get; set; }
+        }
+
+        [TestMethod]
+        public void TestDeserializeSubObjectArray()
+        {
+            string recordString = "TheThings:[(Value:17,Text:\"blah\"),(Value:18,Text:\"foo\")]";
+
+            ODocument document = ODocument.Deserialize(recordString);
+
+
+            TypeMapper<TestHasThings> tm = TypeMapper<TestHasThings>.Instance;
+            var t = new TestHasThings();
+            tm.ToObject(document, t);
+
+            Assert.IsNotNull(t.TheThings);
+            Assert.AreEqual(2, t.TheThings.Length);
+            Assert.AreEqual(18, t.TheThings[1].Value);
+            Assert.AreEqual("foo", t.TheThings[1].Text);
+
+        }
+
+        class TestHasListThings
+        {
+            public List<Thing> TheThings { get; set; }
+        }
+
+        [TestMethod]
+        public void TestDeserializeSubObjectList()
+        {
+            string recordString = "TheThings:[(Value:17,Text:\"blah\"),(Value:18,Text:\"foo\")]";
+
+            ODocument document = ODocument.Deserialize(recordString);
+
+
+            TypeMapper<TestHasListThings> tm = TypeMapper<TestHasListThings>.Instance;
+            var t = new TestHasListThings();
+            tm.ToObject(document, t);
+
+            Assert.IsNotNull(t.TheThings);
+            Assert.AreEqual(2, t.TheThings.Count);
+            Assert.AreEqual(18, t.TheThings[1].Value);
+            Assert.AreEqual("foo", t.TheThings[1].Text);
+
+        }
+
         [TestMethod]
         public void TestDeserializationMapping()
         {

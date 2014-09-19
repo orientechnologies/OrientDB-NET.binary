@@ -7,7 +7,18 @@ using System.Text;
 
 namespace Orient.Client.Mapping
 {
-    public class TypeMapper<T>
+    public abstract class TypeMapperBase
+    {
+        public abstract void ToObject(ODocument document, object typedObject);
+
+        public static TypeMapperBase GetInstanceFor(Type t)
+        {
+            var mappingType = typeof (ClassFieldMapping<>).MakeGenericType(t);
+            return (TypeMapperBase) mappingType.GetProperty("Instance", BindingFlags.Static).GetValue(null, null);
+        }
+    }
+
+    public class TypeMapper<T> : TypeMapperBase
     {
 
 
@@ -104,10 +115,15 @@ namespace Orient.Client.Mapping
             _fields.Add(new CollectionNamedFieldMapping(propertyInfo, fieldPath));
         }
 
-        public void ToObject(ODocument document, T typedObject, string basePath = null)
+        public void ToObject(ODocument document, T typedObject)
         {
             foreach (var fm in _fields)
                 fm.MapToObject(document, typedObject);
+        }
+
+        public override void ToObject(ODocument document, object typedObject)
+        {
+            ToObject(document, (T)typedObject);
         }
     }
 }

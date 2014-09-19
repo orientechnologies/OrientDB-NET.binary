@@ -10,7 +10,6 @@ namespace Orient.Client.Mapping
         public CollectionNamedFieldMapping(PropertyInfo propertyInfo, string fieldPath)
             : base(propertyInfo, fieldPath)
         {
-
         }
 
         protected override void MapToNamedField(ODocument document, object typedObject)
@@ -31,49 +30,77 @@ namespace Orient.Client.Mapping
                 // create instance of property type
                 object collectionInstance = Activator.CreateInstance(_propertyInfo.PropertyType, collection.Count);
 
-                for (int i = 0; i < collection.Count; i++)
+                if (_propertyInfo.PropertyType.IsArray)
                 {
-                    // collection is simple array
-                    if (_propertyInfo.PropertyType.IsArray)
+                    var elementType = _propertyInfo.PropertyType.GetElementType();
+                    if (NeedsNoConversion(elementType))
                     {
-                        ((Array) collectionInstance).SetValue(collection[i], i);
-                    }
-                        // collection is generic
-                    else if (_propertyInfo.PropertyType.IsGenericType && (propertyValue is IEnumerable))
-                    {
-                        Type elementType = collection[i].GetType();
-
-                        // generic collection consists of basic types or ORIDs
-                        if (elementType.IsPrimitive ||
-                            (elementType == typeof (string)) ||
-                            (elementType == typeof (DateTime)) ||
-                            (elementType == typeof (decimal)) ||
-                            (elementType == typeof (ORID)))
+                        for (int i = 0; i < collection.Count; i++)
                         {
-                            ((IList) collectionInstance).Add(collection[i]);
-                        }
-                            // generic collection consists of generic type which should be parsed
-                        else
-                        {
-                            // create instance object based on first element of generic collection
-                            object instance = Activator.CreateInstance(_propertyInfo.PropertyType.GetGenericArguments().First(), null);
-                            
-
-                            
-                            throw new NotImplementedException();
-//                            ((IList) collectionInstance).Add(ToObject(instance, fieldPath));
+                            ((Array) collectionInstance).SetValue(collection[i], i);
                         }
                     }
                     else
                     {
-                        object v = Activator.CreateInstance(collection[i].GetType(), collection[i]);
+                        if (collection[0] is ODocument)
+                        {
+                            TypeMapperBase tmb = TypeMapperBase.GetInstanceFor(elementType);
+                            for (int i = 0; i < collection.Count; i++)
+                            {
+                                object element = Activator.CreateInstance(elementType);
+                                tmb.ToObject((ODocument) collection[i], element);
+                                ((Array)collectionInstance).SetValue(element, i);
+                            }
+                        }
+                        else
+                            throw new NotImplementedException();
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < collection.Count; i++)
+                    {
+                        if (_propertyInfo.PropertyType.IsGenericType && (propertyValue is IEnumerable))
+                        {
+                            Type elementType = collection[i].GetType();
 
-                        ((IList) collectionInstance).Add(v);
+                            // generic collection consists of basic types or ORIDs
+                            if (NeedsNoConversion(elementType))
+                            {
+                                ((IList) collectionInstance).Add(collection[i]);
+                            }
+                                // generic collection consists of generic type which should be parsed
+                            else
+                            {
+                                // create instance object based on first element of generic collection
+                                object instance = Activator.CreateInstance(_propertyInfo.PropertyType.GetGenericArguments().First(), null);
+
+
+
+                                throw new NotImplementedException();
+                                //                            ((IList) collectionInstance).Add(ToObject(instance, fieldPath));
+                            }
+                        }
+                        else
+                        {
+                            object v = Activator.CreateInstance(collection[i].GetType(), collection[i]);
+
+                            ((IList) collectionInstance).Add(v);
+                        }
                     }
                 }
 
                 _propertyInfo.SetValue(typedObject, collectionInstance, null);
             }
+        }
+
+        private static bool NeedsNoConversion(Type elementType)
+        {
+            return elementType.IsPrimitive ||
+                   (elementType == typeof (string)) ||
+                   (elementType == typeof (DateTime)) ||
+                   (elementType == typeof (decimal)) ||
+                   (elementType == typeof (ORID));
         }
     }
 }
