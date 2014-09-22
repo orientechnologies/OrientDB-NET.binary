@@ -7,21 +7,29 @@ namespace Orient.Client.Mapping
 {
     internal class CollectionNamedFieldMapping : NamedFieldMapping
     {
+        private TypeMapperBase _mapper;
+        private Type _targetElementType;
+        private bool _needsMapping;
+
         public CollectionNamedFieldMapping(PropertyInfo propertyInfo, string fieldPath)
             : base(propertyInfo, fieldPath)
         {
+            _targetElementType = GetTargetElementType();
+            _needsMapping = !NeedsNoConversion(_targetElementType);
+            if (_needsMapping)
+                _mapper = TypeMapperBase.GetInstanceFor(_targetElementType);
         }
 
         protected override void MapToNamedField(ODocument document, object typedObject)
         {
-            object propertyValue = document.GetField<object>(_fieldPath);
+            object sourcePropertyValue = document.GetField<object>(_fieldPath);
 
-            IList collection = propertyValue as IList;
+            IList collection = sourcePropertyValue as IList;
             if (collection == null) // if we only have one item currently stored (but scope for more) we create a temporary list and put our single item in it.
             {
                 collection = new ArrayList();
-                if (propertyValue != null)
-                    collection.Add(propertyValue);
+                if (sourcePropertyValue != null)
+                    collection.Add(sourcePropertyValue);
             }
 
 
@@ -32,66 +40,70 @@ namespace Orient.Client.Mapping
 
                 if (_propertyInfo.PropertyType.IsArray)
                 {
-                    var elementType = _propertyInfo.PropertyType.GetElementType();
-                    if (NeedsNoConversion(elementType))
+                    if (!_needsMapping)
                     {
                         for (int i = 0; i < collection.Count; i++)
                         {
                             ((Array) collectionInstance).SetValue(collection[i], i);
                         }
                     }
+                    else if (collection[0] is ODocument)
+                    {
+                        for (int i = 0; i < collection.Count; i++)
+                        {
+                            object element = Activator.CreateInstance(_targetElementType);
+                            _mapper.ToObject((ODocument) collection[i], element);
+                            ((Array) collectionInstance).SetValue(element, i);
+                        }
+                    }
                     else
                     {
-                        if (collection[0] is ODocument)
+                        throw new NotImplementedException();
+                    }
+                }
+                else if (_propertyInfo.PropertyType.IsGenericType)
+                {
+                    foreach (var t in collection)
+                    {
+                        // generic collection consists of basic types or ORIDs
+                        if (!_needsMapping)
                         {
-                            TypeMapperBase tmb = TypeMapperBase.GetInstanceFor(elementType);
-                            for (int i = 0; i < collection.Count; i++)
-                            {
-                                object element = Activator.CreateInstance(elementType);
-                                tmb.ToObject((ODocument) collection[i], element);
-                                ((Array)collectionInstance).SetValue(element, i);
-                            }
+                            ((IList) collectionInstance).Add(t);
                         }
+                            // generic collection consists of generic type which should be parsed
                         else
-                            throw new NotImplementedException();
+                        {
+                            // create instance object based on first element of generic collection
+                            object element = Activator.CreateInstance(_targetElementType);
+                            _mapper.ToObject((ODocument)t, element);
+
+                            ((IList)collectionInstance).Add(element);
+                        }
                     }
                 }
                 else
                 {
-                    for (int i = 0; i < collection.Count; i++)
+                    foreach (var t in collection)
                     {
-                        if (_propertyInfo.PropertyType.IsGenericType && (propertyValue is IEnumerable))
-                        {
-                            Type elementType = collection[i].GetType();
+                        object v = Activator.CreateInstance(t.GetType(), t);
 
-                            // generic collection consists of basic types or ORIDs
-                            if (NeedsNoConversion(elementType))
-                            {
-                                ((IList) collectionInstance).Add(collection[i]);
-                            }
-                                // generic collection consists of generic type which should be parsed
-                            else
-                            {
-                                // create instance object based on first element of generic collection
-                                object instance = Activator.CreateInstance(_propertyInfo.PropertyType.GetGenericArguments().First(), null);
-
-
-
-                                throw new NotImplementedException();
-                                //                            ((IList) collectionInstance).Add(ToObject(instance, fieldPath));
-                            }
-                        }
-                        else
-                        {
-                            object v = Activator.CreateInstance(collection[i].GetType(), collection[i]);
-
-                            ((IList) collectionInstance).Add(v);
-                        }
+                        ((IList) collectionInstance).Add(v);
                     }
                 }
 
                 _propertyInfo.SetValue(typedObject, collectionInstance, null);
             }
+        }
+
+        private Type GetTargetElementType()
+        {
+            if (_propertyInfo.PropertyType.IsArray)
+                return _propertyInfo.PropertyType.GetElementType();
+            if (_propertyInfo.PropertyType.IsGenericType)
+                return _propertyInfo.PropertyType.GetGenericArguments().First();
+
+            throw new NotImplementedException();
+
         }
 
         private static bool NeedsNoConversion(Type elementType)

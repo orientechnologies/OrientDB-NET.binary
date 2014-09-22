@@ -13,8 +13,9 @@ namespace Orient.Client.Mapping
 
         public static TypeMapperBase GetInstanceFor(Type t)
         {
-            var mappingType = typeof (ClassFieldMapping<>).MakeGenericType(t);
-            return (TypeMapperBase) mappingType.GetProperty("Instance", BindingFlags.Static).GetValue(null, null);
+            var mappingType = typeof(TypeMapper<>).MakeGenericType(t);
+            PropertyInfo propertyInfo = mappingType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public);
+            return (TypeMapperBase) propertyInfo.GetValue(null, null);
         }
     }
 
