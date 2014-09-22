@@ -43,6 +43,7 @@
     <Compile Include="API\Exceptions\OException.cs" />
     <Compile Include="API\Exceptions\OExceptionType.cs" />
     <Compile Include="API\Query\OLoadRecord.cs" />
+    <Compile Include="API\Query\OSqlCreateVertexDirect.cs" />
     <Compile Include="API\Types\OBaseRecord.cs" />
     <Compile Include="API\Types\OEdge.cs" />
     <Compile Include="API\Types\OVertex.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Mapping\ORIDFieldMapping.cs" />
     <Compile Include="Mapping\TypeMapper.cs" />
     <Compile Include="Protocol\BinaryReaderHelper.cs" />
+    <Compile Include="Protocol\Operations\CreateRecord.cs" />
     <Compile Include="Protocol\Operations\LoadRecord.cs" />
     <Compile Include="Protocol\Query\QueryCompiler.cs" />
     <Compile Include="Protocol\Query\SqlQuery.cs" />

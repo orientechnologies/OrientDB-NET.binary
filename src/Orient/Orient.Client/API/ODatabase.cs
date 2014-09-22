@@ -30,6 +30,14 @@ namespace Orient.Client
             return _connection.Document.GetField<List<OCluster>>("Clusters");
         }
 
+        public void AddCluster(string className, short clusterId)
+        {
+            var clusters = _connection.Document.GetField<List<OCluster>>("Clusters");
+            clusters.Add(new OCluster() {Id = clusterId, Name = className.ToLower()});
+            _connection.Document.SetField("Clusters", clusters);
+
+        }
+
         public OSqlSelect Select(params string[] projections)
         {
             return new OSqlSelect(_connection).Select(projections);

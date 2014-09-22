@@ -243,6 +243,8 @@ namespace Orient.Client.Protocol
 
         private void Send(byte[] rawData)
         {
+//            Console.WriteLine(string.Join(", ", rawData.Select(x => x.ToString("X2"))));
+
             if ((_networkStream != null) && _networkStream.CanWrite)
             {
                 try
