@@ -483,6 +483,42 @@ namespace Orient.Tests.Serialization
 
         }
 
+        [TestMethod]
+        public void TestDeserializeSingleSubObjectArray()
+        {
+            string recordString = "TheThings:[(Value:18,Text:\"foo\")]";
+
+            ODocument document = ODocument.Deserialize(recordString);
+
+
+            TypeMapper<TestHasThings> tm = TypeMapper<TestHasThings>.Instance;
+            var t = new TestHasThings();
+            tm.ToObject(document, t);
+
+            Assert.IsNotNull(t.TheThings);
+            Assert.AreEqual(1, t.TheThings.Length);
+            Assert.AreEqual(18, t.TheThings[0].Value);
+            Assert.AreEqual("foo", t.TheThings[0].Text);
+
+        }
+
+        [TestMethod]
+        public void TestDeserializeEmptySubObjectArray()
+        {
+            string recordString = "TheThings:[]";
+
+            ODocument document = ODocument.Deserialize(recordString);
+
+
+            TypeMapper<TestHasThings> tm = TypeMapper<TestHasThings>.Instance;
+            var t = new TestHasThings();
+            tm.ToObject(document, t);
+
+            Assert.IsNotNull(t.TheThings, "much easier for consumers to have a consistent behaviour - collections always created but empty, rather than having to test for nullness");
+            Assert.AreEqual(0, t.TheThings.Length);
+
+        }
+
         class TestHasListThings
         {
             public List<Thing> TheThings { get; set; }
@@ -506,6 +542,24 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual("foo", t.TheThings[1].Text);
 
         }
+
+        [TestMethod]
+        public void TestDeserializeSingleSubObjectList()
+        {
+            string recordString = "TheThings:[(Value:18,Text:\"foo\")]";
+
+            ODocument document = ODocument.Deserialize(recordString);
+
+
+            TypeMapper<TestHasListThings> tm = TypeMapper<TestHasListThings>.Instance;
+            var t = new TestHasListThings();
+            tm.ToObject(document, t);
+
+            Assert.IsNotNull(t.TheThings);
+            Assert.AreEqual(1, t.TheThings.Count);
+
+        }
+
 
         [TestMethod]
         public void TestDeserializationMapping()

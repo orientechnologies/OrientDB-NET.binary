@@ -32,37 +32,30 @@ namespace Orient.Client.Mapping
                     collection.Add(sourcePropertyValue);
             }
 
-            if (collection.Count > 0)
-            {
-                // create instance of property type
-                IList collectionInstance = (IList) Activator.CreateInstance(_propertyInfo.PropertyType,collection.Count);
+            // create instance of property type
+            IList collectionInstance = (IList) Activator.CreateInstance(_propertyInfo.PropertyType, collection.Count);
 
-                for (int i = 0; i < collection.Count; i++ )
+            for (int i = 0; i < collection.Count; i++)
+            {
+                var t = collection[i];
+                object oMapped = t;
+                if (_needsMapping)
                 {
-                    var t = collection[i];
-                    object oMapped = t;
-                    if (_needsMapping)
-                    {
-                        object element = Activator.CreateInstance(_targetElementType);
-                        _mapper.ToObject((ODocument)t, element);
-                        oMapped = element;
-                    }
-                    if (collectionInstance.IsFixedSize)
-                    {
-                        collectionInstance[i] = oMapped;
-                    }
-                    else
-                    {
-                        collectionInstance.Add(oMapped);
-                    }
+                    object element = Activator.CreateInstance(_targetElementType);
+                    _mapper.ToObject((ODocument) t, element);
+                    oMapped = element;
                 }
+                if (collectionInstance.IsFixedSize)
+                {
+                    collectionInstance[i] = oMapped;
+                }
+                else
+                {
+                    collectionInstance.Add(oMapped);
+                }
+            }
 
-                _propertyInfo.SetValue(typedObject, collectionInstance, null);
-            }
-            else
-            {
-                _propertyInfo.SetValue(typedObject, null, null);
-            }
+            _propertyInfo.SetValue(typedObject, collectionInstance, null);
         }
 
         private Type GetTargetElementType()
