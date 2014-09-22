@@ -11,16 +11,34 @@ using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client
 {
-    public class OSqlCreateEdge
+    public interface OSqlCreateEdge
+    {
+        OSqlCreateEdge Edge(string className);
+        OSqlCreateEdge Edge<T>(T obj);
+        OSqlCreateEdge Edge<T>();
+        OSqlCreateEdge Cluster(string clusterName);
+        OSqlCreateEdge Cluster<T>();
+        OSqlCreateEdge From(ORID orid);
+        OSqlCreateEdge From<T>(T obj);
+        OSqlCreateEdge To(ORID orid);
+        OSqlCreateEdge To<T>(T obj);
+        OSqlCreateEdge Set<T>(string fieldName, T fieldValue);
+        OSqlCreateEdge Set<T>(T obj);
+        OEdge Run();
+        T Run<T>() where T : class, new();
+        string ToString();
+    }
+
+    public class OSqlCreateEdgeViaSql : OSqlCreateEdge
     {
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;
 
-        public OSqlCreateEdge()
+        public OSqlCreateEdgeViaSql()
         {
         }
 
-        internal OSqlCreateEdge(Connection connection)
+        internal OSqlCreateEdgeViaSql(Connection connection)
         {
             _connection = connection;
         }

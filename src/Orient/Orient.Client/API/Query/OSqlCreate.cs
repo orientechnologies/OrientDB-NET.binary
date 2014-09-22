@@ -86,7 +86,7 @@ namespace Orient.Client
 
         public OSqlCreateEdge Edge(string className)
         {
-            return new OSqlCreateEdge(_connection)
+            return new OSqlCreateEdgeViaSql(_connection)
                 .Edge(className);
         }
 
@@ -97,7 +97,7 @@ namespace Orient.Client
 
         public OSqlCreateEdge Edge<T>(T obj)
         {
-            return new OSqlCreateEdge(_connection)
+            return new OSqlCreateEdgeViaSql(_connection)
                 .Edge(obj);
         }
 
