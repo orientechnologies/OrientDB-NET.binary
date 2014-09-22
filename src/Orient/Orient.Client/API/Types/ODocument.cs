@@ -16,197 +16,126 @@ namespace Orient.Client
         { 
             get 
             {
-                return this.HasField("@ORID") ? this.GetField<ORID>("@ORID") : null; 
+                return HasField("@ORID") ? GetField<ORID>("@ORID") : null; 
             } 
-            set { this.SetField("@ORID", value); }
+            set { SetField("@ORID", value); }
         }
 
         public int OVersion 
         {
             get
             {
-                return this.GetField<int>("@OVersion");
+                return GetField<int>("@OVersion");
             }
-            set { this.SetField("@OVersion", value); }
+            set { SetField("@OVersion", value); }
         }
 
         public ORecordType OType
         {
             get
             {
-                return this.GetField<ORecordType>("@OType");
+                return GetField<ORecordType>("@OType");
             }
-            set { this.SetField("@OType", value); }
+            set { SetField("@OType", value); }
         }
 
         public short OClassId
         {
             get
             {
-                return this.GetField<short>("@OClassId");
+                return GetField<short>("@OClassId");
             }
-            set { this.SetField("@OClassId", value); }
+            set { SetField("@OClassId", value); }
         }
 
         public string OClassName
         {
             get
             {
-                return this.GetField<string>("@OClassName");
+                return GetField<string>("@OClassName");
             }
-            set { this.SetField("@OClassName", value); }
+            set { SetField("@OClassName", value); }
         }
 
         #endregion
 
         public T GetField<T>(string fieldPath)
         {
-            Type type = typeof(T);
-            T value;
-
-            if (type.IsPrimitive || type.IsArray || (type.Name == "String"))
-            {
-                value = default(T);
-            }
-            else
-            {
-                value = (T)Activator.CreateInstance(type);
-            }
 
             if (fieldPath.Contains("."))
             {
+                ODocument target = this;
                 var fields = fieldPath.Split('.');
-                int iteration = 1;
-                ODocument embeddedDocument = this;
-
-                foreach (var field in fields)
+                for (int i = 0; i < fields.Length - 1; i++ )
                 {
-                    if (iteration == fields.Length)
+                    target = target.GetField<ODocument>(fields[i]);
+                }
+                return target.GetField<T>(fields.Last());
+            }
+            var type = typeof(T);
+             
+            if (ContainsKey(fieldPath))
+            {
+
+                // if value is list or set type, get element type and enumerate over its elements
+                if (!type.IsArray && type.GetInterfaces().Contains(typeof(IList)))
+                {
+                    var value = (T)Activator.CreateInstance(type);
+                    Type elementType = type.GetGenericArguments()[0];
+                    IEnumerator enumerator = EnumerableFromField<T>(this[fieldPath]).GetEnumerator();
+                        
+                    while (enumerator.MoveNext())
                     {
-                        // if value is collection type, get element type and enumerate over its elements
-                        if (value is IList)
+                        // if current element is ODocument type which is Dictionary<string, object>
+                        // map its dictionary data to element instance
+                        if (enumerator.Current is ODocument)
                         {
-                            Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
-                            IEnumerator enumerator = ((IEnumerable)embeddedDocument[field]).GetEnumerator();
+                            var instance = Activator.CreateInstance(elementType);
+                            ((ODocument)enumerator.Current).Map(ref instance);
 
-                            while (enumerator.MoveNext())
-                            {
-                                // if current element is ODocument type which is dictionary<string, object>
-                                // map its dictionary data to element instance
-                                if (enumerator.Current is ODocument)
-                                {
-                                    var instance = Activator.CreateInstance(elementType);
-                                    ((ODocument)enumerator.Current).Map(ref instance);
-
-                                    ((IList)value).Add(instance);
-                                }
-                                else
-                                {
-                                    ((IList)value).Add(enumerator.Current);
-                                }
-                            }
-                        }
-                        else if (type.Name == "HashSet`1")
-                        {
-                            Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
-                            IEnumerator enumerator = ((IEnumerable)this[fieldPath]).GetEnumerator();
-
-                            var addMethod = type.GetMethod("Add");
-
-                            while (enumerator.MoveNext())
-                            {
-                                // if current element is ODocument type which is Dictionary<string, object>
-                                // map its dictionary data to element instance
-                                if (enumerator.Current is ODocument)
-                                {
-                                    var instance = Activator.CreateInstance(elementType);
-                                    ((ODocument)enumerator.Current).Map(ref instance);
-
-                                    addMethod.Invoke(value, new object[] { instance });
-                                }
-                                else
-                                {
-                                    addMethod.Invoke(value, new object[] { enumerator.Current });
-                                }
-                            }
+                            ((IList)value).Add(instance);
                         }
                         else
                         {
-                            value = (T)embeddedDocument[field];
+                            ((IList)value).Add(enumerator.Current);
                         }
-                        break;
                     }
 
-                    if (embeddedDocument.ContainsKey(field))
-                    {
-                        embeddedDocument = (ODocument)embeddedDocument[field];
-                        iteration++;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    return value;
                 }
-            }
-            else
-            {
-                if (this.ContainsKey(fieldPath))
+
+                if (type.Name == "HashSet`1")
                 {
-                    // if value is list or set type, get element type and enumerate over its elements
-                    if (value is IList)
-                    {
-                        Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
-                        IEnumerator enumerator = EnumerableFromField<T>(this[fieldPath]).GetEnumerator();
-                        
-                        while (enumerator.MoveNext())
-                        {
-                            // if current element is ODocument type which is Dictionary<string, object>
-                            // map its dictionary data to element instance
-                            if (enumerator.Current is ODocument)
-                            {
-                                var instance = Activator.CreateInstance(elementType);
-                                ((ODocument)enumerator.Current).Map(ref instance);
+                    var value = (T)Activator.CreateInstance(type);
 
-                                ((IList)value).Add(instance);
-                            }
-                            else
-                            {
-                                ((IList)value).Add(enumerator.Current);
-                            }
+                    Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
+                    IEnumerator enumerator = ((IEnumerable)this[fieldPath]).GetEnumerator();
+
+                    var addMethod = type.GetMethod("Add");
+
+                    while (enumerator.MoveNext())
+                    {
+                        // if current element is ODocument type which is Dictionary<string, object>
+                        // map its dictionary data to element instance
+                        if (enumerator.Current is ODocument)
+                        {
+                            var instance = Activator.CreateInstance(elementType);
+                            ((ODocument)enumerator.Current).Map(ref instance);
+
+                            addMethod.Invoke(value, new object[] { instance });
+                        }
+                        else
+                        {
+                            addMethod.Invoke(value, new object[] { enumerator.Current });
                         }
                     }
-                    else if (type.Name == "HashSet`1")
-                    {
-                        Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
-                        IEnumerator enumerator = ((IEnumerable)this[fieldPath]).GetEnumerator();
-
-                        var addMethod = type.GetMethod("Add");
-
-                        while (enumerator.MoveNext())
-                        {
-                            // if current element is ODocument type which is Dictionary<string, object>
-                            // map its dictionary data to element instance
-                            if (enumerator.Current is ODocument)
-                            {
-                                var instance = Activator.CreateInstance(elementType);
-                                ((ODocument)enumerator.Current).Map(ref instance);
-
-                                addMethod.Invoke(value, new object[] { instance });
-                            }
-                            else
-                            {
-                                addMethod.Invoke(value, new object[] { enumerator.Current });
-                            }
-                        }
-                    }
-                    else
-                    {
-                        value = (T)this[fieldPath];
-                    }
+                    return value;
                 }
+
+                return (T)this[fieldPath];
             }
 
-            return value;
+            return type.IsPrimitive || type == typeof(string) || type.IsArray ? default(T) : (T) Activator.CreateInstance(type);
         }
 
         private static IEnumerable EnumerableFromField<T>(object oField)
@@ -259,13 +188,13 @@ namespace Orient.Client
             }
             else
             {
-                if (this.ContainsKey(fieldPath))
+                if (ContainsKey(fieldPath))
                 {
                     this[fieldPath] = value;
                 }
                 else
                 {
-                    this.Add(fieldPath, value);
+                    Add(fieldPath, value);
                 }
             }
 
@@ -303,7 +232,7 @@ namespace Orient.Client
             }
             else
             {
-                contains = this.ContainsKey(fieldPath);
+                contains = ContainsKey(fieldPath);
             }
 
             return contains;
@@ -342,7 +271,6 @@ namespace Orient.Client
 
         public static ODocument ToDocument<T>(T genericObject)
         {
-
             return TypeMapperBase.GetInstanceFor(genericObject.GetType()).ToDocument(genericObject);
         }
 
