@@ -81,6 +81,10 @@ namespace Orient.Client.Protocol.Serializers
                         if (bld.Length>0)
                             bld.Append(",");
 
+                        var val = field.Value;
+                        if (val == null || ((val is IList) && (val as IList).Count == 0))
+                            continue;
+
                         bld.AppendFormat("{0}:{1}", field.Key, SerializeValue(field.Value));
                     }
 

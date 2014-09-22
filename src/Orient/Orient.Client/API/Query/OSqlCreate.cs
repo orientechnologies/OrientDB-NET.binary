@@ -65,7 +65,7 @@ namespace Orient.Client
 
         public OSqlCreateVertex Vertex(string className)
         {
-            return new OSqlCreateVertexDirect(_connection)
+            return new OCreateVertexRecord(_connection)
                 .Vertex(className);
         }
 
@@ -76,7 +76,7 @@ namespace Orient.Client
 
         public OSqlCreateVertex Vertex<T>(T obj)
         {
-            return new OSqlCreateVertexDirect(_connection)
+            return new OCreateVertexRecord(_connection)
                 .Vertex(obj);
         }
 

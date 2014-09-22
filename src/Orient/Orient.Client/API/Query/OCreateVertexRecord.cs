@@ -10,16 +10,16 @@ using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client
 {
-    public class OSqlCreateVertexDirect : OSqlCreateVertex
+    public class OCreateVertexRecord : OSqlCreateVertex
     {
         private Connection _connection;
         private ODocument _document;
 
-        public OSqlCreateVertexDirect()
+        public OCreateVertexRecord()
         {
         }
 
-        internal OSqlCreateVertexDirect(Connection connection)
+        internal OCreateVertexRecord(Connection connection)
         {
             _connection = connection;
         }

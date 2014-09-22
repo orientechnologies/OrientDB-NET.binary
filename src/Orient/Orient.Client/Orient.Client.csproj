@@ -43,7 +43,7 @@
     <Compile Include="API\Exceptions\OException.cs" />
     <Compile Include="API\Exceptions\OExceptionType.cs" />
     <Compile Include="API\Query\OLoadRecord.cs" />
-    <Compile Include="API\Query\OSqlCreateVertexDirect.cs" />
+    <Compile Include="API\Query\OCreateVertexRecord.cs" />
     <Compile Include="API\Types\OBaseRecord.cs" />
     <Compile Include="API\Types\OEdge.cs" />
     <Compile Include="API\Types\OVertex.cs" />
