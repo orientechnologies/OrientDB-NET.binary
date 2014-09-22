@@ -83,9 +83,9 @@ namespace Orient.Tests.Serialization
         }
 
         [TestMethod]
-        public void TestDeserializeList()
+        public void TestSerializeList()
         {
-            string recordString = "values:[1,2,3,4,5]";
+            string recordString = "TestList@values:[1,2,3,4,5]";
 
             ODocument document = ODocument.Deserialize(recordString);
 
@@ -98,6 +98,9 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(5, t.values.Count);
             Assert.AreEqual(3, t.values[2]);
 
+            ODocument newODocument = ODocument.ToDocument(t);
+            var serialized = newODocument.Serialize();
+            Assert.AreEqual(recordString, serialized);
         }
 
         class Thing
@@ -112,9 +115,9 @@ namespace Orient.Tests.Serialization
         }
 
         [TestMethod]
-        public void TestDeserializeSubObject()
+        public void TestSerializeSubObject()
         {
-            string recordString = "TheThing:(Value:17,Text:\"blah\")";
+            string recordString = "TestHasAThing@TheThing:(Value:17,Text:\"blah\")";
 
             ODocument document = ODocument.Deserialize(recordString);
 
@@ -127,6 +130,10 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(17, t.TheThing.Value);
             Assert.AreEqual("blah", t.TheThing.Text);
 
+            ODocument newODocument = ODocument.ToDocument(t);
+            var serialized = newODocument.Serialize();
+            Assert.AreEqual(recordString, serialized);
+
         }
 
         class TestHasThings
@@ -135,9 +142,9 @@ namespace Orient.Tests.Serialization
         }
 
         [TestMethod]
-        public void TestDeserializeSubObjectArray()
+        public void TestSerializeSubObjectArray()
         {
-            string recordString = "TheThings:[(Value:17,Text:\"blah\"),(Value:18,Text:\"foo\")]";
+            string recordString = "TestHasThings@TheThings:[(Value:17,Text:\"blah\"),(Value:18,Text:\"foo\")]";
 
             ODocument document = ODocument.Deserialize(recordString);
 
@@ -151,12 +158,15 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(18, t.TheThings[1].Value);
             Assert.AreEqual("foo", t.TheThings[1].Text);
 
+            ODocument newODocument = ODocument.ToDocument(t);
+            var serialized = newODocument.Serialize();
+            Assert.AreEqual(recordString, serialized);
         }
 
         [TestMethod]
-        public void TestDeserializeSingleSubObjectArray()
+        public void TestSerializeSingleSubObjectArray()
         {
-            string recordString = "TheThings:[(Value:18,Text:\"foo\")]";
+            string recordString = "TestHasThings@TheThings:[(Value:18,Text:\"foo\")]";
 
             ODocument document = ODocument.Deserialize(recordString);
 
@@ -170,12 +180,15 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(18, t.TheThings[0].Value);
             Assert.AreEqual("foo", t.TheThings[0].Text);
 
+            ODocument newODocument = ODocument.ToDocument(t);
+            var serialized = newODocument.Serialize();
+            Assert.AreEqual(recordString, serialized);
         }
 
         [TestMethod]
-        public void TestDeserializeEmptySubObjectArray()
+        public void TestSerializeEmptySubObjectArray()
         {
-            string recordString = "TheThings:[]";
+            string recordString = "TestHasThings@TheThings:[]";
 
             ODocument document = ODocument.Deserialize(recordString);
 
@@ -187,6 +200,9 @@ namespace Orient.Tests.Serialization
             Assert.IsNotNull(t.TheThings, "much easier for consumers to have a consistent behaviour - collections always created but empty, rather than having to test for nullness");
             Assert.AreEqual(0, t.TheThings.Length);
 
+            ODocument newODocument = ODocument.ToDocument(t);
+            var serialized = newODocument.Serialize();
+            Assert.AreEqual(recordString, serialized);
         }
 
         class TestHasListThings
@@ -197,7 +213,7 @@ namespace Orient.Tests.Serialization
         [TestMethod]
         public void TestDeserializeSubObjectList()
         {
-            string recordString = "TheThings:[(Value:17,Text:\"blah\"),(Value:18,Text:\"foo\")]";
+            string recordString = "TestHasListThings@TheThings:[(Value:17,Text:\"blah\"),(Value:18,Text:\"foo\")]";
 
             ODocument document = ODocument.Deserialize(recordString);
 
@@ -211,12 +227,15 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(18, t.TheThings[1].Value);
             Assert.AreEqual("foo", t.TheThings[1].Text);
 
+            ODocument newODocument = ODocument.ToDocument(t);
+            var serialized = newODocument.Serialize();
+            Assert.AreEqual(recordString, serialized);
         }
 
         [TestMethod]
-        public void TestDeserializeSingleSubObjectList()
+        public void TestSerializeSingleSubObjectList()
         {
-            string recordString = "TheThings:[(Value:18,Text:\"foo\")]";
+            string recordString = "TestHasListThings@TheThings:[(Value:18,Text:\"foo\")]";
 
             ODocument document = ODocument.Deserialize(recordString);
 
@@ -228,6 +247,9 @@ namespace Orient.Tests.Serialization
             Assert.IsNotNull(t.TheThings);
             Assert.AreEqual(1, t.TheThings.Count);
 
+            ODocument newODocument = ODocument.ToDocument(t);
+            var serialized = newODocument.Serialize();
+            Assert.AreEqual(recordString, serialized);
         }
 
         class TestObject
@@ -242,14 +264,14 @@ namespace Orient.Tests.Serialization
         }
 
         [TestMethod]
-        public void TestDeserializationMapping()
+        public void TestSerializationMapping()
         {
             // important if you use ordered edges, since if more than 1 they appear as a list, if only one then as a single object, ie
             //    db.Create.Class<Person>().Extends("V").Run();
             //    db.Command("create property Person.in_FriendOf ANY");
             //    db.Command("alter property Person.in_FriendOf custom ordered=true");
 
-            string recordString = "single:#10:12345,list:[#11:123,#22:1234,#33:1234567],Link:#11:123,Value:17,Text:\"some text\"";
+            string recordString = "TestObject@single:#10:12345,list:[#11:123,#22:1234,#33:1234567],Link:#11:123,Value:17,Text:\"some text\"";
 
             ODocument document = ODocument.Deserialize(recordString);
             document.ORID = new ORID("#123:45");
@@ -274,12 +296,16 @@ namespace Orient.Tests.Serialization
             Assert.IsNotNull(testObj.list);
             Assert.AreEqual(1, testObj.single.Count);
             Assert.AreEqual(3, testObj.list.Count);
+
+            ODocument newODocument = ODocument.ToDocument(testObj);
+            var serialized = newODocument.Serialize();
+            Assert.AreEqual(recordString, serialized);
         }
 
         [TestMethod]
-        public void ShouldDeserializeSingleAndSetOfOrids()
+        public void ShouldSerializeSingleAndSetOfOrids()
         {
-            string recordString = "single:#10:12345,set:<#11:123,#22:1234,#33:1234567>,singleSet:<#44:44>";
+            string recordString = "Something@single:#10:12345,set:<#11:123,#22:1234,#33:1234567>,singleSet:<#44:44>";
 
             ODocument document = ODocument.Deserialize(recordString);
 
@@ -299,6 +325,9 @@ namespace Orient.Tests.Serialization
             HashSet<ORID> singleSet = document.GetField<HashSet<ORID>>("singleSet");
             Assert.AreEqual(singleSet.Count, 1);
             Assert.IsTrue(singleSet.Contains(new ORID(44, 44)));
+
+            var serialized = document.Serialize();
+            Assert.AreEqual(recordString, serialized);
         }
 
 
