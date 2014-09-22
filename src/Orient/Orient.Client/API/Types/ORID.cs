@@ -9,7 +9,7 @@ namespace Orient.Client
         {
             get
             {
-                return "#" + ClusterId + ":" + ClusterPosition;
+                return string.Format("#{0}:{1}",  ClusterId , ClusterPosition);
             }
 
             set

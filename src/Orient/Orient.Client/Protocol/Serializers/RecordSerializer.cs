@@ -183,16 +183,11 @@ namespace Orient.Client.Protocol.Serializers
         {
             int startIndex = i;
 
-            // iterate until colon is found since it's the character which ends the field name
-            while (recordString[i] != ':')
-            {
-                i++;
+            int iColonPos = recordString.IndexOf(':', i);
+            if (iColonPos == -1)
+                return recordString.Length;
 
-                if (i >= recordString.Length)
-                {
-                    return recordString.Length;
-                }
-            }
+            i = iColonPos;
 
             // parse field name string from raw document string
             string fieldName = recordString.Substring(startIndex, i - startIndex);
@@ -524,6 +519,17 @@ namespace Orient.Client.Protocol.Serializers
 
             return i;
         }
+
+        //public static int IntParseFast(string value)
+        //{
+        //    int result = 0;
+        //    for (int i = 0; i < value.Length; i++)
+        //    {
+        //        char letter = value[i];
+        //        result = 10 * result + (letter - 48);
+        //    }
+        //    return result;
+        //}
 
         /// <summary>
         /// Parse RidBags ex. %[content:binary]; where [content:binary] is the actual binary base64 content.

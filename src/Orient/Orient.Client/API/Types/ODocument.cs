@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +11,8 @@ namespace Orient.Client
 {
     public class ODocument : Dictionary<string, object>
     {
+        private static ConcurrentDictionary<Type, bool> _implementsMap = new ConcurrentDictionary<Type, bool>();
+
         #region Properties which holds orient specific fields
 
         public ORID ORID 
@@ -73,16 +76,18 @@ namespace Orient.Client
                 return target.GetField<T>(fields.Last());
             }
             var type = typeof(T);
-             
-            if (ContainsKey(fieldPath))
+
+            object fieldValue;
+
+            if (TryGetValue(fieldPath, out fieldValue))
             {
 
                 // if value is list or set type, get element type and enumerate over its elements
-                if (!type.IsArray && type.GetInterfaces().Contains(typeof(IList)))
+                if (ImplementsIList(type) && !type.IsArray)
                 {
                     var value = (T)Activator.CreateInstance(type);
                     Type elementType = type.GetGenericArguments()[0];
-                    IEnumerator enumerator = EnumerableFromField<T>(this[fieldPath]).GetEnumerator();
+                    IEnumerator enumerator = EnumerableFromField<T>(fieldValue).GetEnumerator();
                         
                     while (enumerator.MoveNext())
                     {
@@ -109,7 +114,7 @@ namespace Orient.Client
                     var value = (T)Activator.CreateInstance(type);
 
                     Type elementType = ((IEnumerable)value).GetType().GetGenericArguments()[0];
-                    IEnumerator enumerator = ((IEnumerable)this[fieldPath]).GetEnumerator();
+                    IEnumerator enumerator = ((IEnumerable)fieldValue).GetEnumerator();
 
                     var addMethod = type.GetMethod("Add");
 
@@ -132,10 +137,21 @@ namespace Orient.Client
                     return value;
                 }
 
-                return (T)this[fieldPath];
+                return (T)fieldValue;
             }
 
             return type.IsPrimitive || type == typeof(string) || type.IsArray ? default(T) : (T) Activator.CreateInstance(type);
+        }
+
+        private bool ImplementsIList(Type type)
+        {
+            bool result;
+            if (_implementsMap.TryGetValue(type, out result))
+                return result;
+
+            result = type.GetInterfaces().Contains(typeof (IList));
+            _implementsMap.AddOrUpdate(type, type1 => result, (type1, b) => result);
+            return result;
         }
 
         private static IEnumerable EnumerableFromField<T>(object oField)
