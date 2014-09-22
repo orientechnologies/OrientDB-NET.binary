@@ -14,6 +14,11 @@ namespace Orient.Client.Mapping
         {
             _propertyInfo.SetValue(typedObject, document.ORID, null);
         }
+
+        public override void MapToDocument(object typedObject, ODocument document)
+        {
+            document.ORID = (ORID) _propertyInfo.GetValue(typedObject, null);
+        }
     }
 
     internal class OVersionFieldMapping : FieldMapping
@@ -27,6 +32,11 @@ namespace Orient.Client.Mapping
         public override void MapToObject(ODocument document, object typedObject)
         {
             _propertyInfo.SetValue(typedObject, document.OVersion, null);
+        }
+
+        public override void MapToDocument(object typedObject, ODocument document)
+        {
+            document.OVersion = (int) _propertyInfo.GetValue(typedObject, null);
         }
     }
 
@@ -42,6 +52,11 @@ namespace Orient.Client.Mapping
         {
             _propertyInfo.SetValue(typedObject, document.OClassId, null);
         }
+
+        public override void MapToDocument(object typedObject, ODocument document)
+        {
+            document.OClassId = (short) _propertyInfo.GetValue(typedObject, null);
+        }
     }
 
 
@@ -56,6 +71,11 @@ namespace Orient.Client.Mapping
         public override void MapToObject(ODocument document, object typedObject)
         {
             _propertyInfo.SetValue(typedObject, document.OClassName, null);
+        }
+
+        public override void MapToDocument(object typedObject, ODocument document)
+        {
+            document.OClassName = (string) _propertyInfo.GetValue(typedObject, null);
         }
     }
 

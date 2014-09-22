@@ -13,5 +13,11 @@ namespace Orient.Client.Mapping
         {
             _propertyInfo.SetValue(typedObject, document.GetField<object>(_fieldPath), null);
         }
+
+        public override void MapToDocument(object typedObject, ODocument document)
+        {
+            object value = _propertyInfo.GetValue(typedObject, null);
+            document.SetField(_fieldPath, value);
+        }
     }
 }

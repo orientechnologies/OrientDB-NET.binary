@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -76,6 +77,20 @@ namespace Orient.Client.Mapping
                    (elementType == typeof (DateTime)) ||
                    (elementType == typeof (decimal)) ||
                    (elementType == typeof (ORID));
+        }
+
+        public override void MapToDocument(object typedObject, ODocument document)
+        {
+            var targetElementType = _needsMapping ? typeof (ODocument) : _targetElementType;
+            var listType = typeof (List<>).MakeGenericType(targetElementType);
+            var targetList = (IList) Activator.CreateInstance(listType);
+
+            var sourceList = (IEnumerable) _propertyInfo.GetValue(typedObject, null);
+
+            foreach (var item in sourceList)
+                targetList.Add(_needsMapping ? _mapper.ToDocument(item) : item);
+
+            document.SetField(_fieldPath, targetList);
         }
     }
 }

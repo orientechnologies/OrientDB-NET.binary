@@ -15,7 +15,8 @@ namespace Orient.Client.Mapping
 
         public abstract void MapToObject(ODocument document, object typedObject);
 
-     
+
+        public abstract void MapToDocument(object typedObject, ODocument document);
     }
 
     internal abstract class NamedFieldMapping : FieldMapping
@@ -29,6 +30,7 @@ namespace Orient.Client.Mapping
             if (document.HasField(_fieldPath))
                 MapToNamedField(document, typedObject);
         }
+
 
         protected abstract void MapToNamedField(ODocument document, object typedObject);
     }

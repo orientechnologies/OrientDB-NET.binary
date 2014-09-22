@@ -211,7 +211,7 @@ namespace Orient.Tests.Serialization
         }
 
         [TestMethod]
-        public void TestDeserializeSubObjectList()
+        public void TestSerializeSubObjectList()
         {
             string recordString = "TestHasListThings@TheThings:[(Value:17,Text:\"blah\"),(Value:18,Text:\"foo\")]";
 
@@ -271,7 +271,7 @@ namespace Orient.Tests.Serialization
             //    db.Command("create property Person.in_FriendOf ANY");
             //    db.Command("alter property Person.in_FriendOf custom ordered=true");
 
-            string recordString = "TestObject@single:#10:12345,list:[#11:123,#22:1234,#33:1234567],Link:#11:123,Value:17,Text:\"some text\"";
+            string recordString = "TestObject@Value:17,Text:\"some text\",Link:#11:123,single:[#10:12345],list:[#11:123,#22:1234,#33:1234567]";
 
             ODocument document = ODocument.Deserialize(recordString);
             document.ORID = new ORID("#123:45");

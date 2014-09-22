@@ -10,6 +10,7 @@ namespace Orient.Client.Mapping
     public abstract class TypeMapperBase
     {
         public abstract void ToObject(ODocument document, object typedObject);
+        public abstract ODocument ToDocument(object typedObject);
 
         public static TypeMapperBase GetInstanceFor(Type t)
         {
@@ -17,6 +18,8 @@ namespace Orient.Client.Mapping
             PropertyInfo propertyInfo = mappingType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public);
             return (TypeMapperBase) propertyInfo.GetValue(null, null);
         }
+
+
     }
 
     public class TypeMapper<T> : TypeMapperBase
@@ -125,6 +128,74 @@ namespace Orient.Client.Mapping
         public override void ToObject(ODocument document, object typedObject)
         {
             ToObject(document, (T)typedObject);
+        }
+
+        public override ODocument ToDocument(object genericObject)
+        {
+            ODocument document = new ODocument();
+
+            foreach (var fm in _fields)
+                fm.MapToDocument(genericObject, document);
+
+            if (string.IsNullOrEmpty(document.OClassName))
+                document.OClassName = genericObject.GetType().Name;
+
+            return document;
+
+            //Type genericObjectType = genericObject.GetType();
+
+            //// TODO: recursive mapping of nested/embedded objects
+            //foreach (PropertyInfo propertyInfo in genericObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            //{
+            //    if (!propertyInfo.CanRead || !propertyInfo.CanWrite)
+            //        continue; // read only or write only properties can be ignored
+
+            //    string propertyName = propertyInfo.Name;
+
+            //    // serialize following properties into dedicated fields in ODocument
+            //    if (propertyName.Equals("ORID"))
+            //    {
+            //        document.ORID = (ORID)propertyInfo.GetValue(genericObject, null);
+            //        continue;
+            //    }
+            //    else if (propertyName.Equals("OVersion"))
+            //    {
+            //        document.OVersion = (int)propertyInfo.GetValue(genericObject, null);
+            //        continue;
+            //    }
+            //    else if (propertyName.Equals("OClassId"))
+            //    {
+            //        document.OClassId = (short)propertyInfo.GetValue(genericObject, null);
+            //        continue;
+            //    }
+            //    else if (propertyName.Equals("OClassName"))
+            //    {
+            //        document.OClassName = (string)propertyInfo.GetValue(genericObject, null);
+            //        continue;
+            //    }
+
+            //    bool isSerializable = true;
+            //    object[] oProperties = propertyInfo.GetCustomAttributes(typeof(OProperty), true);
+
+            //    if (oProperties.Any())
+            //    {
+            //        OProperty oProperty = oProperties.First() as OProperty;
+            //        if (oProperty != null)
+            //        {
+            //            propertyName = oProperty.Alias;
+            //            isSerializable = oProperty.Serializable;
+            //        }
+            //    }
+
+            //    if (isSerializable)
+            //    {
+            //        document.SetField(propertyName, propertyInfo.GetValue(genericObject, null));
+            //    }
+            //}
+
+      
+
+            //return document;
         }
     }
 }

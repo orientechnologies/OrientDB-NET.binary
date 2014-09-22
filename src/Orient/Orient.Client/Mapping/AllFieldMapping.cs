@@ -17,5 +17,14 @@ namespace Orient.Client.Mapping
                 target.SetField(item.Key, item.Value);
             }
         }
+
+        public override void MapToDocument(object typedObject, ODocument document)
+        {
+            var source = (ODocument)typedObject;
+            foreach (KeyValuePair<string, object> item in source)
+            {
+                document.SetField(item.Key, item.Value);
+            }
+        }
     }
 }
