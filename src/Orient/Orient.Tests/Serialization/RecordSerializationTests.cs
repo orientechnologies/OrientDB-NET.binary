@@ -14,7 +14,7 @@ namespace Orient.Tests.Serialization
             string recordString = "TestClass@foo:true";
 
             ODocument document = new ODocument()
-                .SetField("@ClassName", "TestClass")
+                .SetField("@OClassName", "TestClass")
                 .SetField("@ClassId", 123)
                 .SetField("@Foo", "bar")
                 .SetField("@ORID", new ORID(8, 0))
@@ -31,7 +31,7 @@ namespace Orient.Tests.Serialization
             string recordString = "TestClass@null:,embedded:(null:)";
 
             ODocument document = new ODocument()
-                .SetField("@ClassName", "TestClass")
+                .SetField("@OClassName", "TestClass")
                 .SetField<object>("null", null)
                 .SetField<object>("embedded.null", null);
 
@@ -46,7 +46,7 @@ namespace Orient.Tests.Serialization
             string recordString = "TestClass@isTrue:true,isFalse:false,embedded:(isTrue:true,isFalse:false),array:[true,false]";
 
             ODocument document = new ODocument()
-                .SetField("@ClassName", "TestClass")
+                .SetField("@OClassName", "TestClass")
                 .SetField("isTrue", true)
                 .SetField("isFalse", false)
                 .SetField("embedded.isTrue", true)
@@ -64,7 +64,7 @@ namespace Orient.Tests.Serialization
             string recordString = "TestClass@ByteNumber:123b,ShortNumber:1234s,IntNumber:123456,LongNumber:12345678901l,FloatNumber:3.14f,DoubleNumber:3.14d,DecimalNumber:1234567.8901c,embedded:(ByteNumber:123b,ShortNumber:1234s,IntNumber:123456,LongNumber:12345678901l,FloatNumber:3.14f,DoubleNumber:3.14d,DecimalNumber:1234567.8901c)";
 
             ODocument document = new ODocument()
-                .SetField("@ClassName", "TestClass")
+                .SetField("@OClassName", "TestClass")
                 .SetField("ByteNumber", byte.Parse("123"))
                 .SetField("ShortNumber", short.Parse("1234"))
                 .SetField("IntNumber", 123456)
@@ -97,7 +97,7 @@ namespace Orient.Tests.Serialization
             string recordString = "TestClass@DateTime:" + timeString + "t,embedded:(DateTime:" + timeString + "t)";
 
             ODocument document = new ODocument()
-                .SetField("@ClassName", "TestClass")
+                .SetField("@OClassName", "TestClass")
                 .SetField("DateTime", dateTime)
                 .SetField("embedded.DateTime", dateTime);
 
@@ -112,7 +112,7 @@ namespace Orient.Tests.Serialization
             string recordString = "TestClass@String:\"Bra\\" + "\"vo \\\\ asdf\",Array:[\"foo\",\"bar\"],embedded:(String:\"Bra\\" + "\"vo \\\\ asdf\",Array:[\"foo\",\"bar\"])";
 
             ODocument document = new ODocument()
-                .SetField("@ClassName", "TestClass")
+                .SetField("@OClassName", "TestClass")
                 .SetField("String", "Bra\"vo \\ asdf")
                 .SetField("Array", new List<string> { "foo", "bar" })
                 .SetField("embedded.String", "Bra\"vo \\ asdf")
@@ -129,7 +129,7 @@ namespace Orient.Tests.Serialization
             string recordString = "TestClass@Single:#8:0,Array:[#8:1,#8:2],embedded:(Single:#9:0,Array:[#9:1,#9:2])";
 
             ODocument document = new ODocument()
-                .SetField("@ClassName", "TestClass")
+                .SetField("@OClassName", "TestClass")
                 .SetField("Single", new ORID(8, 0))
                 .SetField("Array", new List<ORID> { new ORID(8, 1), new ORID(8, 2) })
                 .SetField("embedded.Single", new ORID(9, 0))
@@ -146,7 +146,7 @@ namespace Orient.Tests.Serialization
             string recordString = "TestClass@Single:#8:0,Array:[#8:1,#8:2],embedded:(Array:[#9:1,#9:2])";
 
             ODocument document = new ODocument()
-                .SetField("@ClassName", "TestClass")
+                .SetField("@OClassName", "TestClass")
                 .SetField("Single", new ORID(8, 0))
                 .SetField("Array", new List<ORID> { new ORID(8, 1), new ORID(8, 2) })
                 .SetField("embedded.Array", new List<ORID> { new ORID(9, 1), new ORID(9, 2) });
@@ -162,7 +162,7 @@ namespace Orient.Tests.Serialization
             string recordString = "TestClass@Single:#8:0,Set:<#8:1,#8:2>,embedded:(Set:<#9:1,#9:2>)";
 
             ODocument document = new ODocument()
-                .SetField("@ClassName", "TestClass")
+                .SetField("@OClassName", "TestClass")
                 .SetField("Single", new ORID(8, 0))
                 .SetField("Set", new HashSet<ORID> { new ORID(8, 1), new ORID(8, 2) })
                 .SetField("embedded.Set", new HashSet<ORID> { new ORID(9, 1), new ORID(9, 2) });

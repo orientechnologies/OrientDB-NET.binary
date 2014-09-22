@@ -394,6 +394,9 @@ namespace Orient.Client
                 }
             }
 
+            if (string.IsNullOrEmpty(document.OClassName))
+                document.OClassName = genericObject.GetType().Name;
+
             return document;
         }
 
