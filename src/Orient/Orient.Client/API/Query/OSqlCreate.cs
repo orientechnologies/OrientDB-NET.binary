@@ -63,18 +63,18 @@ namespace Orient.Client
 
         #region Vertex
 
-        public OSqlCreateVertexDirect Vertex(string className)
+        public OSqlCreateVertex Vertex(string className)
         {
             return new OSqlCreateVertexDirect(_connection)
                 .Vertex(className);
         }
 
-        public OSqlCreateVertexDirect Vertex<T>()
+        public OSqlCreateVertex Vertex<T>()
         {
             return Vertex(typeof(T).Name);
         }
 
-        public OSqlCreateVertexDirect Vertex<T>(T obj)
+        public OSqlCreateVertex Vertex<T>(T obj)
         {
             return new OSqlCreateVertexDirect(_connection)
                 .Vertex(obj);

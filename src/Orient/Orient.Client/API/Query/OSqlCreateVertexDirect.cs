@@ -10,7 +10,7 @@ using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client
 {
-    public class OSqlCreateVertexDirect
+    public class OSqlCreateVertexDirect : OSqlCreateVertex
     {
         private Connection _connection;
         private ODocument _document;
@@ -26,7 +26,7 @@ namespace Orient.Client
 
         #region Vertex
 
-        public OSqlCreateVertexDirect Vertex(string className)
+        public OSqlCreateVertex Vertex(string className)
         {
             if (_document == null)
                 _document = new ODocument();
@@ -36,7 +36,7 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateVertexDirect Vertex<T>(T obj)
+        public OSqlCreateVertex Vertex<T>(T obj)
         {
 
             if (obj is ODocument)
@@ -56,7 +56,7 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateVertexDirect Vertex<T>()
+        public OSqlCreateVertex Vertex<T>()
         {
             return Vertex(typeof(T).Name);
         }
@@ -65,7 +65,7 @@ namespace Orient.Client
 
         #region Cluster
 
-        public OSqlCreateVertexDirect Cluster(string clusterName)
+        public OSqlCreateVertex Cluster(string clusterName)
         {
             if (_document.ORID == null)
                 _document.ORID = new ORID();
@@ -75,7 +75,7 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateVertexDirect Cluster<T>()
+        public OSqlCreateVertex Cluster<T>()
         {
             return Cluster(typeof(T).Name);
         }
@@ -84,14 +84,14 @@ namespace Orient.Client
 
         #region Set
 
-        public OSqlCreateVertexDirect Set<T>(string fieldName, T fieldValue)
+        public OSqlCreateVertex Set<T>(string fieldName, T fieldValue)
         {
             _document.SetField(fieldName, fieldValue);
 
             return this;
         }
 
-        public OSqlCreateVertexDirect Set<T>(T obj)
+        public OSqlCreateVertex Set<T>(T obj)
         {
             var document = obj is ODocument ? obj as ODocument : ODocument.ToDocument(obj);
 
