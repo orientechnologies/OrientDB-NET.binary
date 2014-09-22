@@ -7,9 +7,9 @@ namespace Orient.Client.Mapping
 {
     internal class CollectionNamedFieldMapping : NamedFieldMapping
     {
-        private TypeMapperBase _mapper;
-        private Type _targetElementType;
-        private bool _needsMapping;
+        private readonly TypeMapperBase _mapper;
+        private readonly Type _targetElementType;
+        private readonly bool _needsMapping;
 
         public CollectionNamedFieldMapping(PropertyInfo propertyInfo, string fieldPath)
             : base(propertyInfo, fieldPath)
@@ -32,66 +32,36 @@ namespace Orient.Client.Mapping
                     collection.Add(sourcePropertyValue);
             }
 
-
             if (collection.Count > 0)
             {
                 // create instance of property type
-                object collectionInstance = Activator.CreateInstance(_propertyInfo.PropertyType, collection.Count);
+                IList collectionInstance = (IList) Activator.CreateInstance(_propertyInfo.PropertyType,collection.Count);
 
-                if (_propertyInfo.PropertyType.IsArray)
+                for (int i = 0; i < collection.Count; i++ )
                 {
-                    if (!_needsMapping)
+                    var t = collection[i];
+                    object oMapped = t;
+                    if (_needsMapping)
                     {
-                        for (int i = 0; i < collection.Count; i++)
-                        {
-                            ((Array) collectionInstance).SetValue(collection[i], i);
-                        }
+                        object element = Activator.CreateInstance(_targetElementType);
+                        _mapper.ToObject((ODocument)t, element);
+                        oMapped = element;
                     }
-                    else if (collection[0] is ODocument)
+                    if (collectionInstance.IsFixedSize)
                     {
-                        for (int i = 0; i < collection.Count; i++)
-                        {
-                            object element = Activator.CreateInstance(_targetElementType);
-                            _mapper.ToObject((ODocument) collection[i], element);
-                            ((Array) collectionInstance).SetValue(element, i);
-                        }
+                        collectionInstance[i] = oMapped;
                     }
                     else
                     {
-                        throw new NotImplementedException();
-                    }
-                }
-                else if (_propertyInfo.PropertyType.IsGenericType)
-                {
-                    foreach (var t in collection)
-                    {
-                        // generic collection consists of basic types or ORIDs
-                        if (!_needsMapping)
-                        {
-                            ((IList) collectionInstance).Add(t);
-                        }
-                            // generic collection consists of generic type which should be parsed
-                        else
-                        {
-                            // create instance object based on first element of generic collection
-                            object element = Activator.CreateInstance(_targetElementType);
-                            _mapper.ToObject((ODocument)t, element);
-
-                            ((IList)collectionInstance).Add(element);
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (var t in collection)
-                    {
-                        object v = Activator.CreateInstance(t.GetType(), t);
-
-                        ((IList) collectionInstance).Add(v);
+                        collectionInstance.Add(oMapped);
                     }
                 }
 
                 _propertyInfo.SetValue(typedObject, collectionInstance, null);
+            }
+            else
+            {
+                _propertyInfo.SetValue(typedObject, null, null);
             }
         }
 
