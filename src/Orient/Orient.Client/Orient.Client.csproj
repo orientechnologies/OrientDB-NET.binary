@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="API\Exceptions\OException.cs" />
     <Compile Include="API\Exceptions\OExceptionType.cs" />
+    <Compile Include="API\Query\OCreateEdgeRecord.cs" />
     <Compile Include="API\Query\OLoadRecord.cs" />
     <Compile Include="API\Query\OCreateVertexRecord.cs" />
     <Compile Include="API\Types\OBaseRecord.cs" />
