@@ -40,9 +40,6 @@ namespace Orient.Client.Protocol.Operations
             request.DataItems.Add(new RequestDataItem() {Type = "byte", Data = BinarySerializer.ToArray((byte) 'd')});
             request.DataItems.Add(new RequestDataItem() {Type = "byte", Data = BinarySerializer.ToArray((byte) 0)});
 
-            //for (int i = 0; i < 1000; i++ )
-            //    request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)0) });
-
             return request;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Orient.Client.API;
 using Orient.Client.API.Query;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
@@ -17,12 +18,15 @@ namespace Orient.Client
         public OSqlDelete Delete { get { return new OSqlDelete(_connection); } }
         public OLoadRecord Load { get { return new OLoadRecord(_connection);}}
 
+        public OTransaction Transaction { get; private set; }
+
         public ODatabase(string alias)
         {
             _connection = OClient.ReleaseConnection(alias);
             _connection.Database = this;
             _containsConnection = true;
             ClientCache = new Dictionary<ORID, ODocument>();
+            Transaction = new OTransaction(_connection);
         }
 
         public List<OCluster> GetClusters()
