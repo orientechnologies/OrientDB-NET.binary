@@ -1,7 +1,6 @@
 The MIT X11 License covers the OrientDB-NET.binary project. Some third party libraries might come from different projects, and are licensed under their own terms.
 
 Copyright (c) [2013 - present] Tomas Bosak, [http://yojimbo87.github.com/](http://yojimbo87.github.com/)
-
 Copyright (c) 2014 Workshare
  
 Permission is hereby granted, free of charge, to any person obtaining
