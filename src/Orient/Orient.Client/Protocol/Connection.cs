@@ -181,6 +181,14 @@ namespace Orient.Client.Protocol
             Close();
         }
 
+        public void Reload()
+        {
+            DbReload operation = new DbReload();
+            var document = ExecuteOperation(operation);
+            Document.SetField("Clusters", document.GetField<List<OCluster>>("Clusters"));
+            Document.SetField("ClusterCount", document.GetField<short>("ClusterCount"));
+        }
+
         #region Private methods
 
         private void InitializeDatabaseConnection(string databaseName, ODatabaseType databaseType, string userName, string userPassword)

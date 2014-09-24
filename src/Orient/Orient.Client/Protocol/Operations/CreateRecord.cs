@@ -27,8 +27,7 @@ namespace Orient.Client.Protocol.Operations
 
             CorrectClassName();
 
-            string className = _document.OClassName.ToLower();
-            var clusterId = _database.GetClusters().First(x => x.Name == className).Id;
+            var clusterId = _database.GetClusterIdFor(_document.OClassName);
             _document.ORID = new ORID(clusterId, -1);
 
             // standard request fields

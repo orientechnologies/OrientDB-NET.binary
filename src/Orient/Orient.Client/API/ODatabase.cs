@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Orient.Client.API;
 using Orient.Client.API.Query;
 using Orient.Client.Protocol;
@@ -32,6 +33,27 @@ namespace Orient.Client
         public List<OCluster> GetClusters()
         {
             return _connection.Document.GetField<List<OCluster>>("Clusters");
+        }
+
+        public short GetClusterIdFor(string className)
+        {
+            var clusterName = CorrectClassName(className).ToLower();
+            OCluster oCluster = GetClusters().FirstOrDefault(x => x.Name == clusterName);
+            if (oCluster == null)
+            {
+                _connection.Reload();
+                oCluster = GetClusters().First(x => x.Name == clusterName);
+            }
+            return oCluster.Id;
+        }
+
+        private string CorrectClassName(string className)
+        {
+            if (className == "OVertex")
+                return "V";
+            if (className == "OEdge")
+                return "E";
+            return className;
         }
 
         public void AddCluster(string className, short clusterId)

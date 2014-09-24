@@ -83,6 +83,7 @@
     <Compile Include="Protocol\BinaryReaderHelper.cs" />
     <Compile Include="Protocol\Operations\CommitTransaction.cs" />
     <Compile Include="Protocol\Operations\CreateRecord.cs" />
+    <Compile Include="Protocol\Operations\DbReload.cs" />
     <Compile Include="Protocol\Operations\LoadRecord.cs" />
     <Compile Include="Protocol\Operations\TransactionRecord.cs" />
     <Compile Include="Protocol\Operations\TypedTransactionRecord.cs" />

@@ -57,6 +57,17 @@ namespace Orient.Client.Protocol.Operations
             }
         }
 
+        public string OClassName
+        {
+            get
+            {
+                if (Document != null)
+                    return Document.OClassName;
+
+                return Object.OClassName;
+            }
+        }
+
 
         public void AddToRequest(Request request)
         {

@@ -98,7 +98,10 @@ namespace Orient.Client.API
                 throw new InvalidOperationException("Objects to be updated or deleted via a transaction must already be in the database");
 
             if (!hasOrid)
+            {
                 record.ORID = CreateTempORID();
+                record.ORID.ClusterId = _connection.Database.GetClusterIdFor(record.OClassName);
+            }
 
             if (_records.ContainsKey(record.ORID))
             {
