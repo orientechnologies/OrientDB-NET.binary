@@ -16,8 +16,8 @@ namespace Orient.Client.API
         internal OTransaction(Connection connection)
         {
             _connection = connection;
-            _tempClusterId = short.MaxValue - 2;
-            _tempObjectId = 0;
+            _tempClusterId = -1;
+            _tempObjectId = -1;
         }
 
         private readonly Dictionary<ORID, TransactionRecord> _records = new Dictionary<ORID, TransactionRecord>();
@@ -28,7 +28,21 @@ namespace Orient.Client.API
         {
             CommitTransaction ct = new CommitTransaction(_records.Values.ToList(), _connection.Database);
             var result = _connection.ExecuteOperation(ct);
-            throw new NotImplementedException("todo - remap ORIDs");
+            Dictionary<ORID, ORID> mapping = result.GetField<Dictionary<ORID, ORID>>("CreatedRecordMapping");
+
+            foreach (var kvp in mapping)
+            {
+                var record = _records[kvp.Key];
+                record.ORID = kvp.Value;
+            }
+
+            var versions = result.GetField<Dictionary<ORID, int>>("UpdatedRecordVersions");
+            foreach (var kvp in versions)
+            {
+                var record = _records[kvp.Key];
+                record.Version = kvp.Value;
+            }
+
         }
 
         public void Reset()
@@ -100,7 +114,7 @@ namespace Orient.Client.API
 
         private ORID CreateTempORID()
         {
-            return new ORID(_tempClusterId, ++_tempObjectId);
+            return new ORID(_tempClusterId, --_tempObjectId);
         }
     }
 }

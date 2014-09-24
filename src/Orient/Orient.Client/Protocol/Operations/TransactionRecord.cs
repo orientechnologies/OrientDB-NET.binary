@@ -39,9 +39,28 @@ namespace Orient.Client.Protocol.Operations
             }
         }
 
+        public int Version
+        {
+            get
+            {
+                if (Document != null)
+                    return Document.OVersion;
+
+                return Object.OVersion;
+            }
+            set
+            {
+                if (Document != null)
+                    Document.OVersion = value;
+                if (Object != null)
+                    Object.OVersion = value;
+            }
+        }
+
 
         public void AddToRequest(Request request)
         {
+            request.AddDataItem((byte)1); // undocumented but the java code does this
             request.AddDataItem((byte)RecordType);
             request.AddDataItem(ORID.ClusterId);
             request.AddDataItem(ORID.ClusterPosition);
@@ -53,10 +72,10 @@ namespace Orient.Client.Protocol.Operations
                     request.AddDataItem(GetDocument().Serialize());
                     break;
                 case RecordType.Delete:
-                    request.AddDataItem(GetVersion());
+                    request.AddDataItem(Version);
                     break;
                 case RecordType.Update:
-                    request.AddDataItem(GetVersion());
+                    request.AddDataItem(Version);
                     request.AddDataItem((byte)1);
                     request.AddDataItem(GetDocument().Serialize());
                     break;
@@ -67,13 +86,7 @@ namespace Orient.Client.Protocol.Operations
 
         }
 
-        private int GetVersion()
-        {
-            if (Document != null)
-                return Document.OVersion;
-
-            return Object.OVersion;
-        }
+     
 
         private ODocument GetDocument()
         {

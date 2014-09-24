@@ -9,7 +9,7 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client
 {
-    public class ODocument : Dictionary<string, object>
+    public class ODocument : Dictionary<string, object>, IBaseRecord
     {
         private static ConcurrentDictionary<Type, bool> _implementsMap = new ConcurrentDictionary<Type, bool>();
 
