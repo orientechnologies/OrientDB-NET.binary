@@ -30,6 +30,8 @@ namespace Orient.Client.API
             var result = _connection.ExecuteOperation(ct);
             Dictionary<ORID, ORID> mapping = result.GetField<Dictionary<ORID, ORID>>("CreatedRecordMapping");
 
+            var survivingRecords = _records.Values.Where(x => x.RecordType != RecordType.Delete).ToList();
+
             foreach (var kvp in mapping)
             {
                 var record = _records[kvp.Key];
@@ -44,6 +46,30 @@ namespace Orient.Client.API
                 record.Version = kvp.Value;
             }
 
+            // Update ORIDs for links/edges in the stuff we have pushed during the transaction
+            foreach (var record in survivingRecords)
+            {
+                var vertex = record.Document as OVertex ?? record.Object as OVertex;
+                if (vertex != null)
+                {
+                    var inReplacements = mapping.Where(x => vertex.InE.Contains(x.Key)).ToList();
+                    foreach (var repl in inReplacements)
+                    {
+                        vertex.InE.Remove(repl.Key);
+                        vertex.InE.Add(repl.Value);
+                    }
+
+                    var outReplacements = mapping.Where(x => vertex.OutE.Contains(x.Key)).ToList();
+                    foreach (var repl in outReplacements)
+                    {
+                        vertex.OutE.Remove(repl.Key);
+                        vertex.OutE.Add(repl.Value);
+                    }
+
+                }
+            }
+
+            Reset();
         }
 
         public void Reset()

@@ -142,6 +142,8 @@ namespace Orient.Tests.Query
 
                     database.Transaction.Commit();
 
+                    Assert.AreEqual( testVertex2.ORID, testVertex1.OutE.First());
+                    Assert.AreEqual(testVertex1.ORID, testVertex2.InE.First());
 
                     var createdVertices = database.Select().From("V").ToList<OVertex>();
                     Assert.AreEqual(2, createdVertices.Count);
