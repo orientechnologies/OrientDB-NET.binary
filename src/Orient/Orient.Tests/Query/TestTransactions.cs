@@ -155,6 +155,48 @@ namespace Orient.Tests.Query
             }
         }
 
+        class Widget : OBaseRecord
+        {
+            public string Foo { get; set; }
+            public int Bar { get; set; }
+            public ORID OtherWidget { get; set; }
+        }
+
+        [TestMethod]
+        public void TestTypedCreateVerticesAndLinks()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database.Create.Class<Widget>().Extends<OVertex>().Run();
+
+
+                    var w1 = new Widget() {Foo = "foo", Bar = 1};
+                    var w2 = new Widget() {Foo = "woo", Bar = 2};
+
+                    database.Transaction.Add(w1);
+                    database.Transaction.Add(w2);
+                    w1.OtherWidget = w2.ORID;
+
+                    database.Transaction.Commit();
+
+                    Assert.AreEqual(w2.ORID, w1.OtherWidget);
+
+                    var createdVertices = database.Select().From<Widget>().ToList<Widget>();
+                    Assert.AreEqual(2, createdVertices.Count);
+
+                    var withLink = createdVertices.First(x => x.OtherWidget != null);
+                    var noLink = createdVertices.First(x => x.OtherWidget == null);
+
+
+                    Assert.AreEqual(noLink.ORID, withLink.OtherWidget);
+
+                }
+            }
+        }
+
         private static OVertex CreateTestVertex(int iBar)
         {
             OVertex testVertex = new OVertex();

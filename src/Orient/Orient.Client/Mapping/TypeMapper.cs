@@ -43,7 +43,7 @@ namespace Orient.Client.Mapping
                 return;
             }
 
-            string path = "";
+            
             foreach (PropertyInfo propertyInfo in genericObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 if (!propertyInfo.CanRead || !propertyInfo.CanWrite)
@@ -81,7 +81,7 @@ namespace Orient.Client.Mapping
                     }
                 }
 
-                string fieldPath = path + (path != "" ? "." : "") + propertyName;
+                string fieldPath = propertyName;
 
                 if ((propertyInfo.PropertyType.IsArray || propertyInfo.PropertyType.IsGenericType))
                 {
