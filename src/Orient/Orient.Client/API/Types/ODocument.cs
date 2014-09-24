@@ -81,6 +81,8 @@ namespace Orient.Client
 
             if (TryGetValue(fieldPath, out fieldValue))
             {
+                if (fieldValue == null || fieldValue.GetType() == typeof (T))
+                    return (T)fieldValue;
 
                 // if value is list or set type, get element type and enumerate over its elements
                 if (ImplementsIList(type) && !type.IsArray)
@@ -140,7 +142,9 @@ namespace Orient.Client
                 return (T)fieldValue;
             }
 
-            return type.IsPrimitive || type == typeof(string) || type.IsArray ? default(T) : (T) Activator.CreateInstance(type);
+            var result =  type.IsPrimitive || type == typeof(string) || type.IsArray ? default(T) : (T) Activator.CreateInstance(type);
+            SetField(fieldPath, result);
+            return result;
         }
 
         private bool ImplementsIList(Type type)

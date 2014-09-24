@@ -34,6 +34,7 @@ namespace Orient.Client.API
             {
                 var record = _records[kvp.Key];
                 record.ORID = kvp.Value;
+                _records.Add(record.ORID, record);
             }
 
             var versions = result.GetField<Dictionary<ORID, int>>("UpdatedRecordVersions");
