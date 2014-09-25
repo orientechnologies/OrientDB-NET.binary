@@ -21,15 +21,15 @@ namespace Orient.Client.Protocol
         }
         public void AddDataItem(short s)
         {
-            DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray(s) });
+            DataItems.Add(new RequestDataItem() { Type = "short", Data = BinarySerializer.ToArray(s) });
         }
         public void AddDataItem(int i)
         {
-            DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray(i) });
+            DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(i) });
         }
         public void AddDataItem(long l)
         {
-            DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray(l) });
+            DataItems.Add(new RequestDataItem() { Type = "long", Data = BinarySerializer.ToArray(l) });
         }
         public void AddDataItem(string s)
         {

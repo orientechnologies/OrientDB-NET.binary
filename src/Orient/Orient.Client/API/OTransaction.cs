@@ -71,33 +71,16 @@ namespace Orient.Client.API
             _records.Clear();
         }
 
-        public void Add(ODocument document)
-        {
-            var record = new TransactionRecord(RecordType.Create, document);
-            Insert(record);
-        }
-
+      
         public void Add<T>(T typedObject) where T : IBaseRecord
         {
             var record = new TypedTransactionRecord<T>(RecordType.Create, typedObject);
             Insert(record);
         }
-
-        public void Update(ODocument document)
-        {
-            var record = new TransactionRecord(RecordType.Update, document);
-            Insert(record);
-        }
-
+      
         public void Update<T>(T typedObject) where T : IBaseRecord
         {
             var record = new TypedTransactionRecord<T>(RecordType.Update, typedObject);
-            Insert(record);
-        }
-
-        public void Delete(ODocument document)
-        {
-            var record = new TransactionRecord(RecordType.Delete, document);
             Insert(record);
         }
 
@@ -149,6 +132,14 @@ namespace Orient.Client.API
                 return (T) record.Object;
             }
             return default(T);
+        }
+
+        public void AddOrUpdate<T>(T target) where T : IBaseRecord
+        {
+            if (target.ORID == null)
+                Add(target);
+            else if (!_records.ContainsKey(target.ORID))
+                Update(target);
         }
     }
 }

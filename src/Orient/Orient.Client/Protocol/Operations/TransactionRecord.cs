@@ -87,7 +87,7 @@ namespace Orient.Client.Protocol.Operations
                     break;
                 case RecordType.Update:
                     request.AddDataItem(Version);
-                    request.AddDataItem((byte)1);
+                    //request.AddDataItem((byte)1);
                     request.AddDataItem(GetDocument().Serialize());
                     break;
 

@@ -8,6 +8,57 @@ namespace Orient.Tests.Query
     public class TestTransactions
     {
         [TestMethod]
+        public void TestUpdateVertex()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                ORID orid;
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestVertexClass")
+                        .Extends<OVertex>()
+                        .Run();
+
+                    OVertex testVertex = new OVertex();
+                    testVertex.OClassName = "TestVertexClass";
+                    testVertex.SetField("foo", "foo string value");
+                    testVertex.SetField("bar", 12345);
+
+                    Assert.AreEqual(null, testVertex.ORID);
+
+                    database.Transaction.Add(testVertex);
+
+                    Assert.IsNotNull(testVertex.ORID);
+                    Assert.IsTrue(testVertex.ORID.ClusterPosition < 0);
+                    Assert.AreEqual(-2, testVertex.ORID.ClusterPosition);
+
+                    database.Transaction.Commit();
+                    orid = testVertex.ORID;
+                }
+
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+
+                    OVertex v = database.Load.ORID(orid).Run().To<OVertex>();
+                    v.SetField("foobar", "blah");
+                    database.Transaction.Update(v);
+
+                    database.Transaction.Commit();
+                }
+
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+
+                    OVertex v = database.Load.ORID(orid).Run().To<OVertex>();
+                    Assert.AreEqual("blah", v.GetField<string>("foobar"));
+                }
+
+            }
+        }
+
+        [TestMethod]
         public void TestCreateVertex()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
