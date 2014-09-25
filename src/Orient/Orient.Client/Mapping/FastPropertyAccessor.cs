@@ -1,9 +1,52 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Orient.Client.Mapping
 {
+    class FastConstructor
+    {
+        public static Func<object> BuildConstructor(Type type)
+        {
+            var ctor = type.GetConstructor(Type.EmptyTypes);
+            if (ctor == null) throw new MissingMethodException("There is no constructor without defined parameters for this object");
+            DynamicMethod dynamic = new DynamicMethod(string.Empty,
+                        type,
+                        Type.EmptyTypes,
+                        type);
+            ILGenerator il = dynamic.GetILGenerator();
+
+            il.DeclareLocal(type);
+            il.Emit(OpCodes.Newobj, ctor);
+            il.Emit(OpCodes.Stloc_0);
+            il.Emit(OpCodes.Ldloc_0);
+            il.Emit(OpCodes.Ret);
+
+            return (Func<object>)dynamic.CreateDelegate(typeof(Func<object>));
+        }
+
+        public static Func<T> BuildConstructor<T>()
+        {
+            var type = typeof (T);
+            var ctor = type.GetConstructor(Type.EmptyTypes);
+            if (ctor == null) throw new MissingMethodException("There is no constructor without defined parameters for this object");
+            DynamicMethod dynamic = new DynamicMethod(string.Empty,
+                        type,
+                        Type.EmptyTypes,
+                        type);
+            ILGenerator il = dynamic.GetILGenerator();
+
+            il.DeclareLocal(type);
+            il.Emit(OpCodes.Newobj, ctor);
+            il.Emit(OpCodes.Stloc_0);
+            il.Emit(OpCodes.Ldloc_0);
+            il.Emit(OpCodes.Ret);
+
+            return (Func<T>)dynamic.CreateDelegate(typeof(Func<T>));
+        }
+    }
+
     class FastPropertyAccessor
     {
         public static Func<T, TReturn> BuildTypedGetter<T, TReturn>(PropertyInfo propertyInfo)

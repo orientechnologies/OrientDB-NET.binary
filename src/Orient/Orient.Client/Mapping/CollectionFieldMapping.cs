@@ -11,6 +11,7 @@ namespace Orient.Client.Mapping
         private readonly TypeMapperBase _mapper;
         private readonly Type _targetElementType;
         private readonly bool _needsMapping;
+        private Func<object> _elementFactory;
 
         public CollectionNamedFieldMapping(PropertyInfo propertyInfo, string fieldPath)
             : base(propertyInfo, fieldPath)
@@ -18,7 +19,10 @@ namespace Orient.Client.Mapping
             _targetElementType = GetTargetElementType();
             _needsMapping = !NeedsNoConversion(_targetElementType);
             if (_needsMapping)
+            {
                 _mapper = TypeMapperBase.GetInstanceFor(_targetElementType);
+                _elementFactory = FastConstructor.BuildConstructor(_targetElementType);
+            }
         }
 
         protected override void MapToNamedField(ODocument document, TTarget typedObject)
@@ -42,7 +46,7 @@ namespace Orient.Client.Mapping
                 object oMapped = t;
                 if (_needsMapping)
                 {
-                    object element = Activator.CreateInstance(_targetElementType);
+                    object element = _elementFactory();
                     _mapper.ToObject((ODocument) t, element);
                     oMapped = element;
                 }
