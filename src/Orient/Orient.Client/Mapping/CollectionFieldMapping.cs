@@ -6,7 +6,50 @@ using System.Reflection;
 
 namespace Orient.Client.Mapping
 {
-    internal class CollectionNamedFieldMapping<TTarget> : NamedFieldMapping<TTarget>
+    internal class ListNamedFieldMapping<TTarget> : CollectionNamedFieldMapping<TTarget>
+    {
+        private readonly Func<object> _listFactory;
+
+        public ListNamedFieldMapping(PropertyInfo propertyInfo, string fieldPath) : base(propertyInfo, fieldPath)
+        {
+            _listFactory = FastConstructor.BuildConstructor(_propertyInfo.PropertyType);
+        }
+
+        protected override IList CreateListInstance(int collectionSize)
+        {
+            return (IList) _listFactory();
+        }
+
+        protected override void AddItemToList(IList list, int index, object item)
+        {
+            list.Add(item);
+        }
+    }
+
+    internal class ArrayNamedFieldMapping<TTarget> : CollectionNamedFieldMapping<TTarget>
+    {
+        private Func<int, object> _arrayFactory;
+
+        public ArrayNamedFieldMapping(PropertyInfo propertyInfo, string fieldPath)
+            : base(propertyInfo, fieldPath)
+        {
+            _arrayFactory = FastConstructor.BuildConstructor<int>(propertyInfo.PropertyType);
+        }
+
+
+        protected override IList CreateListInstance(int collectionSize)
+        {
+            return (IList) _arrayFactory(collectionSize);
+        }
+
+        protected override void AddItemToList(IList list, int index, object item)
+        {
+            list[index] = item;
+        }
+    }
+
+
+    internal abstract class CollectionNamedFieldMapping<TTarget> : NamedFieldMapping<TTarget>
     {
         private readonly TypeMapperBase _mapper;
         private readonly Type _targetElementType;
@@ -25,6 +68,9 @@ namespace Orient.Client.Mapping
             }
         }
 
+        protected abstract IList CreateListInstance(int collectionSize);
+        protected abstract void AddItemToList(IList list, int index, object item);
+
         protected override void MapToNamedField(ODocument document, TTarget typedObject)
         {
             object sourcePropertyValue = document.GetField<object>(_fieldPath);
@@ -38,7 +84,7 @@ namespace Orient.Client.Mapping
             }
 
             // create instance of property type
-            IList collectionInstance = (IList) Activator.CreateInstance(_propertyInfo.PropertyType, collection.Count);
+            IList collectionInstance = CreateListInstance(collection.Count);
 
             for (int i = 0; i < collection.Count; i++)
             {
@@ -50,14 +96,8 @@ namespace Orient.Client.Mapping
                     _mapper.ToObject((ODocument) t, element);
                     oMapped = element;
                 }
-                if (collectionInstance.IsFixedSize)
-                {
-                    collectionInstance[i] = oMapped;
-                }
-                else
-                {
-                    collectionInstance.Add(oMapped);
-                }
+
+                AddItemToList(collectionInstance, i, oMapped);
             }
 
             SetPropertyValue(typedObject, collectionInstance);

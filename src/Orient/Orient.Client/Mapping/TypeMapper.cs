@@ -83,9 +83,13 @@ namespace Orient.Client.Mapping
 
                 string fieldPath = propertyName;
 
-                if ((propertyInfo.PropertyType.IsArray || propertyInfo.PropertyType.IsGenericType))
+                if (propertyInfo.PropertyType.IsArray)
                 {
-                    AddCollectionProperrty(propertyInfo, fieldPath);
+                    _fields.Add(new ArrayNamedFieldMapping<T>(propertyInfo, fieldPath));
+                }
+                else if (propertyInfo.PropertyType.IsGenericType)
+                {
+                    _fields.Add(new ListNamedFieldMapping<T>(propertyInfo, fieldPath));
                 }
                     // property is class except the string or ORID type since string and ORID values are parsed differently
                 else if (propertyInfo.PropertyType.IsClass &&
@@ -114,10 +118,6 @@ namespace Orient.Client.Mapping
             _fields.Add((IFieldMapping) Activator.CreateInstance(mappingType, propertyInfo, fieldPath));
         }
 
-        private void AddCollectionProperrty(PropertyInfo propertyInfo, string fieldPath)
-        {
-            _fields.Add(new CollectionNamedFieldMapping<T>(propertyInfo, fieldPath));
-        }
 
         public void ToObject(ODocument document, T typedObject)
         {

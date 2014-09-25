@@ -9,42 +9,21 @@ namespace Orient.Client.Mapping
     {
         public static Func<object> BuildConstructor(Type type)
         {
-            var ctor = type.GetConstructor(Type.EmptyTypes);
-            if (ctor == null) throw new MissingMethodException("There is no constructor without defined parameters for this object");
-            DynamicMethod dynamic = new DynamicMethod(string.Empty,
-                        type,
-                        Type.EmptyTypes,
-                        type);
-            ILGenerator il = dynamic.GetILGenerator();
-
-            il.DeclareLocal(type);
-            il.Emit(OpCodes.Newobj, ctor);
-            il.Emit(OpCodes.Stloc_0);
-            il.Emit(OpCodes.Ldloc_0);
-            il.Emit(OpCodes.Ret);
-
-            return (Func<object>)dynamic.CreateDelegate(typeof(Func<object>));
+            Expression body = Expression.New(type);
+            return Expression.Lambda<Func<object>>(body).Compile();    
         }
 
-        public static Func<T> BuildConstructor<T>()
+        public static Func<T, object> BuildConstructor<T>(Type type)
         {
-            var type = typeof (T);
-            var ctor = type.GetConstructor(Type.EmptyTypes);
-            if (ctor == null) throw new MissingMethodException("There is no constructor without defined parameters for this object");
-            DynamicMethod dynamic = new DynamicMethod(string.Empty,
-                        type,
-                        Type.EmptyTypes,
-                        type);
-            ILGenerator il = dynamic.GetILGenerator();
-
-            il.DeclareLocal(type);
-            il.Emit(OpCodes.Newobj, ctor);
-            il.Emit(OpCodes.Stloc_0);
-            il.Emit(OpCodes.Ldloc_0);
-            il.Emit(OpCodes.Ret);
-
-            return (Func<T>)dynamic.CreateDelegate(typeof(Func<T>));
+            var param1 = Expression.Parameter(typeof(T), "param1");
+            ConstructorInfo constructorInfo = type.GetConstructor(new Type[] {typeof (T)});
+            if (constructorInfo == null)
+                throw new MissingMethodException(type.Name + " has so public constructore with 1 parameter of type " + typeof(T).Name);
+            Expression body = Expression.New(constructorInfo, param1);
+            return Expression.Lambda<Func<T, object>>(body, param1).Compile();    
+            
         }
+
     }
 
     class FastPropertyAccessor
