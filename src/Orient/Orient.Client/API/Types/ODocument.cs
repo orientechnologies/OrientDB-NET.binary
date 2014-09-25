@@ -64,17 +64,6 @@ namespace Orient.Client
 
         public T GetField<T>(string fieldPath)
         {
-
-            if (fieldPath.Contains("."))
-            {
-                ODocument target = this;
-                var fields = fieldPath.Split('.');
-                for (int i = 0; i < fields.Length - 1; i++ )
-                {
-                    target = target.GetField<ODocument>(fields[i]);
-                }
-                return target.GetField<T>(fields.Last());
-            }
             var type = typeof(T);
 
             object fieldValue;
@@ -85,7 +74,7 @@ namespace Orient.Client
                     return (T)fieldValue;
 
                 // if value is list or set type, get element type and enumerate over its elements
-                if (ImplementsIList(type) && !type.IsArray)
+                if (!type.IsPrimitive && ImplementsIList(type) && !type.IsArray)
                 {
                     var value = (T)Activator.CreateInstance(type);
                     Type elementType = type.GetGenericArguments()[0];
@@ -140,6 +129,16 @@ namespace Orient.Client
                 }
 
                 return (T)fieldValue;
+            }
+            if (fieldPath.Contains("."))
+            {
+                ODocument target = this;
+                var fields = fieldPath.Split('.');
+                for (int i = 0; i < fields.Length - 1; i++)
+                {
+                    target = target.GetField<ODocument>(fields[i]);
+                }
+                return target.GetField<T>(fields.Last());
             }
 
             var result =  type.IsPrimitive || type == typeof(string) || type.IsArray ? default(T) : (T) Activator.CreateInstance(type);
@@ -223,8 +222,11 @@ namespace Orient.Client
 
         public bool HasField(string fieldPath)
         {
-            bool contains = false;
 
+            if (ContainsKey(fieldPath))
+                return true;
+
+            bool contains = false;
             if (fieldPath.Contains("."))
             {
                 var fields = fieldPath.Split('.');
@@ -249,10 +251,6 @@ namespace Orient.Client
                         break;
                     }
                 }
-            }
-            else
-            {
-                contains = ContainsKey(fieldPath);
             }
 
             return contains;

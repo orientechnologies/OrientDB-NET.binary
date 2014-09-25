@@ -71,7 +71,7 @@ namespace Orient.Client
 
         public override int GetHashCode()
         {
-            return (int)ClusterId + (int)ClusterPosition;
+            return (ClusterId * 17) ^ ClusterPosition.GetHashCode();
         }
     }
 }
