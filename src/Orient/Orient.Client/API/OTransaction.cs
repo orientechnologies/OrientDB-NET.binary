@@ -38,6 +38,8 @@ namespace Orient.Client.API
                 var record = _records[kvp.Key];
                 record.ORID = kvp.Value;
                 _records.Add(record.ORID, record);
+                if (record.Document != null)
+                    _connection.Database.ClientCache.Add(kvp.Value, record.Document);
             }
 
             var versions = result.GetField<Dictionary<ORID, int>>("UpdatedRecordVersions");
@@ -56,8 +58,9 @@ namespace Orient.Client.API
                 else
                 {
                     ORIDUpdaterBase.GetInstanceFor(record.Document.GetType()).UpdateORIDs(record.Document, mapping);
-                    
                 }
+
+
             }
 
             Reset();
@@ -136,6 +139,16 @@ namespace Orient.Client.API
         private ORID CreateTempORID()
         {
             return new ORID(_tempClusterId, --_tempObjectId);
+        }
+
+        public T GetPendingObject<T>(ORID orid) where T : IBaseRecord
+        {
+            TransactionRecord record;
+            if (_records.TryGetValue(orid, out record))
+            {
+                return (T) record.Object;
+            }
+            return default(T);
         }
     }
 }
