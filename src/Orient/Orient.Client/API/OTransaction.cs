@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Transactions;
 
 namespace Orient.Client.API
 {
@@ -46,26 +47,16 @@ namespace Orient.Client.API
                 record.Version = kvp.Value;
             }
 
-            // Update ORIDs for links/edges in the stuff we have pushed during the transaction
             foreach (var record in survivingRecords)
             {
-                var vertex = record.Document as OVertex ?? record.Object as OVertex;
-                if (vertex != null)
+                if (record.Object != null)
                 {
-                    var inReplacements = mapping.Where(x => vertex.InE.Contains(x.Key)).ToList();
-                    foreach (var repl in inReplacements)
-                    {
-                        vertex.InE.Remove(repl.Key);
-                        vertex.InE.Add(repl.Value);
-                    }
-
-                    var outReplacements = mapping.Where(x => vertex.OutE.Contains(x.Key)).ToList();
-                    foreach (var repl in outReplacements)
-                    {
-                        vertex.OutE.Remove(repl.Key);
-                        vertex.OutE.Add(repl.Value);
-                    }
-
+                    ORIDUpdaterBase.GetInstanceFor(record.Object.GetType()).UpdateORIDs(record.Object, mapping);
+                }
+                else
+                {
+                    ORIDUpdaterBase.GetInstanceFor(record.Document.GetType()).UpdateORIDs(record.Document, mapping);
+                    
                 }
             }
 

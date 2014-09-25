@@ -119,6 +119,7 @@
     <Compile Include="Protocol\ResponseStatus.cs" />
     <Compile Include="Protocol\Serializers\BinarySerializer.cs" />
     <Compile Include="Protocol\Serializers\RecordSerializer.cs" />
+    <Compile Include="Transactions\ORIDUpdater.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
