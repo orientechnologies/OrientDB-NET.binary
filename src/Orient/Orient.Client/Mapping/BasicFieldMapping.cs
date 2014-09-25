@@ -2,21 +2,21 @@
 
 namespace Orient.Client.Mapping
 {
-    internal class BasicNamedFieldMapping : NamedFieldMapping
+    internal class BasicNamedFieldMapping<TTarget> : NamedFieldMapping<TTarget>
     {
         public BasicNamedFieldMapping(PropertyInfo propertyInfo, string fieldPath) : base(propertyInfo, fieldPath)
         {
             
         }
 
-        protected override void MapToNamedField(ODocument document, object typedObject)
+        protected override void MapToNamedField(ODocument document, TTarget typedObject)
         {
-            _propertyInfo.SetValue(typedObject, document.GetField<object>(_fieldPath), null);
+            SetPropertyValue(typedObject, document.GetField<object>(_fieldPath));
         }
 
-        public override void MapToDocument(object typedObject, ODocument document)
+        public override void MapToDocument(TTarget typedObject, ODocument document)
         {
-            object value = _propertyInfo.GetValue(typedObject, null);
+            object value = GetPropertyValue(typedObject);
             document.SetField(_fieldPath, value);
         }
     }

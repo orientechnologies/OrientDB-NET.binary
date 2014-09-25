@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Orient.Client.Mapping
 {
-    internal class CollectionNamedFieldMapping : NamedFieldMapping
+    internal class CollectionNamedFieldMapping<TTarget> : NamedFieldMapping<TTarget>
     {
         private readonly TypeMapperBase _mapper;
         private readonly Type _targetElementType;
@@ -21,7 +21,7 @@ namespace Orient.Client.Mapping
                 _mapper = TypeMapperBase.GetInstanceFor(_targetElementType);
         }
 
-        protected override void MapToNamedField(ODocument document, object typedObject)
+        protected override void MapToNamedField(ODocument document, TTarget typedObject)
         {
             object sourcePropertyValue = document.GetField<object>(_fieldPath);
 
@@ -56,7 +56,7 @@ namespace Orient.Client.Mapping
                 }
             }
 
-            _propertyInfo.SetValue(typedObject, collectionInstance, null);
+            SetPropertyValue(typedObject, collectionInstance);
         }
 
         private Type GetTargetElementType()
@@ -79,13 +79,13 @@ namespace Orient.Client.Mapping
                    (elementType == typeof (ORID));
         }
 
-        public override void MapToDocument(object typedObject, ODocument document)
+        public override void MapToDocument(TTarget typedObject, ODocument document)
         {
             var targetElementType = _needsMapping ? typeof (ODocument) : _targetElementType;
             var listType = typeof (List<>).MakeGenericType(targetElementType);
             var targetList = (IList) Activator.CreateInstance(listType);
 
-            var sourceList = (IEnumerable) _propertyInfo.GetValue(typedObject, null);
+            var sourceList = (IEnumerable) GetPropertyValue(typedObject);
 
             foreach (var item in sourceList)
                 targetList.Add(_needsMapping ? _mapper.ToDocument(item) : item);

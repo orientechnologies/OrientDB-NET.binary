@@ -29,7 +29,7 @@ namespace Orient.Client.Mapping
         private static readonly TypeMapper<T> _instance = new TypeMapper<T>();
         public static TypeMapper<T> Instance { get { return _instance; } }
 
-        readonly List<FieldMapping> _fields = new List<FieldMapping>();
+        readonly List<IFieldMapping> _fields = new List<IFieldMapping>();
 
         private TypeMapper()
         {
@@ -39,7 +39,7 @@ namespace Orient.Client.Mapping
                 genericObjectType.Name.Equals("OVertex") ||
                 genericObjectType.Name.Equals("OEdge"))
             {
-                _fields.Add(new AllFieldMapping());
+                _fields.Add(new AllFieldMapping<T>());
                 return;
             }
 
@@ -55,16 +55,16 @@ namespace Orient.Client.Mapping
                 switch (propertyName)
                 {
                     case "ORID":
-                        _fields.Add(new ORIDFieldMapping(propertyInfo));
+                        _fields.Add(new ORIDFieldMapping<T>(propertyInfo));
                         continue;
                     case "OVersion":
-                        _fields.Add(new OVersionFieldMapping(propertyInfo));
+                        _fields.Add(new OVersionFieldMapping<T>(propertyInfo));
                         continue;
                     case "OClassId":
-                        _fields.Add(new OClassIdFieldMapping(propertyInfo));
+                        _fields.Add(new OClassIdFieldMapping<T>(propertyInfo));
                         continue;
                     case "OClassName":
-                        _fields.Add(new OClassNameFieldMapping(propertyInfo));
+                        _fields.Add(new OClassNameFieldMapping<T>(propertyInfo));
                         continue;
                 }
 
@@ -105,18 +105,18 @@ namespace Orient.Client.Mapping
 
         private void AddBasicProperty(PropertyInfo propertyInfo, string fieldPath)
         {
-            _fields.Add(new BasicNamedFieldMapping(propertyInfo, fieldPath));
+            _fields.Add(new BasicNamedFieldMapping<T>(propertyInfo, fieldPath));
         }
 
         private void AddClassProperty(PropertyInfo propertyInfo, string fieldPath)
         {
-            var mappingType = typeof (ClassFieldMapping<>).MakeGenericType(propertyInfo.PropertyType);
-            _fields.Add((FieldMapping) Activator.CreateInstance(mappingType, propertyInfo, fieldPath));
+            var mappingType = typeof (ClassFieldMapping<,>).MakeGenericType(propertyInfo.PropertyType, typeof(T));
+            _fields.Add((IFieldMapping) Activator.CreateInstance(mappingType, propertyInfo, fieldPath));
         }
 
         private void AddCollectionProperrty(PropertyInfo propertyInfo, string fieldPath)
         {
-            _fields.Add(new CollectionNamedFieldMapping(propertyInfo, fieldPath));
+            _fields.Add(new CollectionNamedFieldMapping<T>(propertyInfo, fieldPath));
         }
 
         public void ToObject(ODocument document, T typedObject)

@@ -3,25 +3,25 @@ using System.Reflection;
 
 namespace Orient.Client.Mapping
 {
-    internal class ORIDFieldMapping : FieldMapping
+    internal class ORIDFieldMapping<TTarget> : FieldMapping<TTarget>
     {
         public ORIDFieldMapping(PropertyInfo propertyInfo) : base(propertyInfo, "ORID")
         {
             
         }
 
-        public override void MapToObject(ODocument document, object typedObject)
+        public override void MapToObject(ODocument document, TTarget typedObject)
         {
-            _propertyInfo.SetValue(typedObject, document.ORID, null);
+            SetPropertyValue(typedObject, document.ORID);
         }
 
-        public override void MapToDocument(object typedObject, ODocument document)
+        public override void MapToDocument(TTarget typedObject, ODocument document)
         {
-            document.ORID = (ORID) _propertyInfo.GetValue(typedObject, null);
+            document.ORID = (ORID)GetPropertyValue(typedObject);
         }
     }
 
-    internal class OVersionFieldMapping : FieldMapping
+    internal class OVersionFieldMapping<TTarget> : FieldMapping<TTarget>
     {
         public OVersionFieldMapping(PropertyInfo propertyInfo)
             : base(propertyInfo, "OVersion")
@@ -29,18 +29,18 @@ namespace Orient.Client.Mapping
 
         }
 
-        public override void MapToObject(ODocument document, object typedObject)
+        public override void MapToObject(ODocument document, TTarget typedObject)
         {
-            _propertyInfo.SetValue(typedObject, document.OVersion, null);
+            SetPropertyValue(typedObject, document.OVersion);
         }
 
-        public override void MapToDocument(object typedObject, ODocument document)
+        public override void MapToDocument(TTarget typedObject, ODocument document)
         {
-            document.OVersion = (int) _propertyInfo.GetValue(typedObject, null);
+            document.OVersion = (int)GetPropertyValue(typedObject);
         }
     }
 
-    internal class OClassIdFieldMapping : FieldMapping
+    internal class OClassIdFieldMapping<TTarget> : FieldMapping<TTarget>
     {
         public OClassIdFieldMapping(PropertyInfo propertyInfo)
             : base(propertyInfo, "OClassId")
@@ -48,19 +48,19 @@ namespace Orient.Client.Mapping
 
         }
 
-        public override void MapToObject(ODocument document, object typedObject)
+        public override void MapToObject(ODocument document, TTarget typedObject)
         {
-            _propertyInfo.SetValue(typedObject, document.OClassId, null);
+            SetPropertyValue(typedObject, document.OClassId);
         }
 
-        public override void MapToDocument(object typedObject, ODocument document)
+        public override void MapToDocument(TTarget typedObject, ODocument document)
         {
-            document.OClassId = (short) _propertyInfo.GetValue(typedObject, null);
+            document.OClassId = (short)GetPropertyValue(typedObject);
         }
     }
 
 
-    internal class OClassNameFieldMapping : FieldMapping
+    internal class OClassNameFieldMapping<TTarget> : FieldMapping<TTarget>
     {
         public OClassNameFieldMapping(PropertyInfo propertyInfo)
             : base(propertyInfo, "OClassName")
@@ -68,14 +68,14 @@ namespace Orient.Client.Mapping
 
         }
 
-        public override void MapToObject(ODocument document, object typedObject)
+        public override void MapToObject(ODocument document, TTarget typedObject)
         {
-            _propertyInfo.SetValue(typedObject, document.OClassName, null);
+            SetPropertyValue(typedObject, document.OClassName);
         }
 
-        public override void MapToDocument(object typedObject, ODocument document)
+        public override void MapToDocument(TTarget typedObject, ODocument document)
         {
-            document.OClassName = (string) _propertyInfo.GetValue(typedObject, null);
+            document.OClassName = (string) GetPropertyValue(typedObject);
         }
     }
 
