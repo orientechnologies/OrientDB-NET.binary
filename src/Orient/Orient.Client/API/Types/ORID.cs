@@ -61,12 +61,12 @@ namespace Orient.Client
             // if parameter cannot be cast to ORID return false.
             ORID orid = obj as ORID;
             
-            if ((System.Object)orid == null)
+            if (orid == null)
             {
                 return false;
             }
 
-            return (this.ToString() == orid.ToString());
+            return ClusterId == orid.ClusterId && ClusterPosition == orid.ClusterPosition;
         }
 
         public override int GetHashCode()
