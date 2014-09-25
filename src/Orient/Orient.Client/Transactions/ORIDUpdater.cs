@@ -54,20 +54,20 @@ namespace Orient.Client.Transactions
                 }
 
                 if (propertyType == ORIDType && propertyInfo.CanWrite)
-                    _fields.Add(new ORIDSimplePropertyUpdater(propertyInfo));
+                    _fields.Add(new ORIDSimplePropertyUpdater<T>(propertyInfo));
 
                 if (propertyType.IsArray && propertyType.GetElementType() == ORIDType)
-                    _fields.Add(new ORIDArrayPropertyUpdater(propertyInfo));
+                    _fields.Add(new ORIDArrayPropertyUpdater<T>(propertyInfo));
 
                 if (propertyType.IsGenericType && propertyType.GetGenericArguments().First() == ORIDType)
                 {
                     switch (propertyType.Name)
                     {
                         case "HashSet`1":
-                            _fields.Add(new ORIDHashSetUpdater(propertyInfo));
+                            _fields.Add(new ORIDHashSetUpdater<T>(propertyInfo));
                             break;
                         case "List`1":
-                            _fields.Add(new ORIDListPropertyUpdater(propertyInfo));
+                            _fields.Add(new ORIDListPropertyUpdater<T>(propertyInfo));
                             break;
                         default:
                             throw new NotImplementedException("Generic ORID collection not handled.");
@@ -83,118 +83,5 @@ namespace Orient.Client.Transactions
             foreach (var field in _fields)
                 field.Update(oTarget, replacements);
         }
-    }
-
-    internal class ORIDListPropertyUpdater : ORIDPropertyUpdater<List<ORID>> 
-    {
-        public ORIDListPropertyUpdater(PropertyInfo propertyInfo) : base(propertyInfo)
-        {
-        }
-
-        public override void Update(object oTarget, Dictionary<ORID, ORID> mappings)
-        {
-            var orids = GetValue(oTarget);
-            if (orids == null)
-                return;
-            for (int i = 0; i < orids.Count; i++)
-            {
-                ORID replacement;
-                if (mappings.TryGetValue(orids[i], out replacement))
-                {
-                    orids[i] = replacement;
-                }
-            }
-        }
-    }
-
-    internal class ORIDHashSetUpdater : ORIDPropertyUpdater<HashSet<ORID>> 
-    {
-        public ORIDHashSetUpdater(PropertyInfo propertyInfo) : base(propertyInfo)
-        {
-        }
-
-        public override void Update(object oTarget, Dictionary<ORID, ORID> mappings)
-        {
-            var orids = GetValue(oTarget);
-            if (orids == null)
-                return;
-            foreach (var orid in orids.ToList())
-            {
-                ORID replacement;
-                if (mappings.TryGetValue(orid, out replacement))
-                {
-                    orids.Remove(orid);
-                    orids.Add(replacement);
-                }
-            }
-        }
-    }
-
-    internal class ORIDSimplePropertyUpdater : ORIDPropertyUpdater<ORID>
-    {
-        public ORIDSimplePropertyUpdater(PropertyInfo propertyInfo) : base(propertyInfo)
-        {
-            
-        }
-
-        public override void Update(object oTarget, Dictionary<ORID, ORID> mappings)
-        {
-            ORID orid = GetValue(oTarget);
-            if (orid == null)
-                return;
-            ORID replacement;
-            if (mappings.TryGetValue(orid, out replacement))
-                SetValue(oTarget, replacement);
-
-        }
-    }
-
-    internal class ORIDArrayPropertyUpdater : ORIDPropertyUpdater<ORID[]>
-    {
-        public ORIDArrayPropertyUpdater(PropertyInfo propertyInfo) : base(propertyInfo)
-        {
-        }
-
-        public override void Update(object oTarget, Dictionary<ORID, ORID> mappings)
-        {
-            ORID[] orids = GetValue(oTarget);
-            if (orids == null)
-                return;
-            for (int i = 0; i < orids.Length; i++)
-            {
-                ORID replacement;
-                if (mappings.TryGetValue(orids[i], out replacement))
-                {
-                    orids[i] = replacement;
-                }
-            }
-        }
-    }
-
-    internal abstract class ORIDPropertyUpdater<T> : IORIDPropertyUpdater
-    {
-        private readonly PropertyInfo _propertyInfo;
-
-        protected ORIDPropertyUpdater(PropertyInfo propertyInfo)
-        {
-            _propertyInfo = propertyInfo;
-        }
-
-        protected T GetValue(object oTarget)
-        {
-            return (T) _propertyInfo.GetValue(oTarget, null);
-        }
-
-        protected void SetValue(object oTarget, T value)
-        {
-            _propertyInfo.SetValue(oTarget, value, null );
-        }
-
-        public abstract void Update(object oTarget, Dictionary<ORID, ORID> mappings);
-    }
-
-    internal interface IORIDPropertyUpdater
-    {
-        void Update(object oTarget, Dictionary<ORID, ORID> mappings);
     }
 }

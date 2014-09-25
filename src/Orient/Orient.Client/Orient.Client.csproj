@@ -77,6 +77,7 @@
     <Compile Include="Mapping\BasicFieldMapping.cs" />
     <Compile Include="Mapping\ClassFieldMapping.cs" />
     <Compile Include="Mapping\CollectionFieldMapping.cs" />
+    <Compile Include="Mapping\FastPropertyAccessor.cs" />
     <Compile Include="Mapping\FieldMapping.cs" />
     <Compile Include="Mapping\ORIDFieldMapping.cs" />
     <Compile Include="Mapping\TypeMapper.cs" />
@@ -119,6 +120,11 @@
     <Compile Include="Protocol\ResponseStatus.cs" />
     <Compile Include="Protocol\Serializers\BinarySerializer.cs" />
     <Compile Include="Protocol\Serializers\RecordSerializer.cs" />
+    <Compile Include="Transactions\ORIDArrayPropertyUpdater.cs" />
+    <Compile Include="Transactions\ORIDHashSetUpdater.cs" />
+    <Compile Include="Transactions\ORIDListPropertyUpdater.cs" />
+    <Compile Include="Transactions\ORIDPropertyUpdater.cs" />
+    <Compile Include="Transactions\ORIDSimplePropertyUpdater.cs" />
     <Compile Include="Transactions\ORIDUpdater.cs" />
   </ItemGroup>
   <ItemGroup />
