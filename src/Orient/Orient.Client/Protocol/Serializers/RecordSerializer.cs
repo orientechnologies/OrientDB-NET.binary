@@ -321,7 +321,6 @@ namespace Orient.Client.Protocol.Serializers
                 i++;
             }
 
-            string orid = recordString.Substring(startIndex, i - startIndex);
 
             //assign field value
             if (document[fieldName] == null)
@@ -331,20 +330,20 @@ namespace Orient.Client.Protocol.Serializers
                 if (fieldName.Equals("in_") || fieldName.Equals("out_"))
                 {
                     document[fieldName] = new HashSet<ORID>();
-                    ((HashSet<ORID>)document[fieldName]).Add(new ORID(orid));
+                    ((HashSet<ORID>)document[fieldName]).Add(new ORID(recordString, startIndex));
                 }
                 else
                 {
-                    document[fieldName] = new ORID(orid);
+                    document[fieldName] = new ORID(recordString, startIndex);
                 }
             }
             else if (document[fieldName] is HashSet<object>)
             {
-                ((HashSet<object>)document[fieldName]).Add(new ORID(orid));
+                ((HashSet<object>)document[fieldName]).Add(new ORID(recordString, startIndex));
             }
             else
             {
-                ((List<object>)document[fieldName]).Add(new ORID(orid));
+                ((List<object>)document[fieldName]).Add(new ORID(recordString, startIndex));
             }
 
             return i;
