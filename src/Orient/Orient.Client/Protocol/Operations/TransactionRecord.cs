@@ -89,6 +89,10 @@ namespace Orient.Client.Protocol.Operations
                     request.AddDataItem(Version);
                     //request.AddDataItem((byte)1);
                     request.AddDataItem(GetDocument().Serialize());
+                    if (OClient.ProtocolVersion >= 23)
+                    {
+                        request.AddDataItem((byte)1); // updateContent flag 
+                    }
                     break;
 
                 default:

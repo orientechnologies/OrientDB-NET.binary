@@ -49,12 +49,17 @@ namespace Orient.Client.Protocol.Operations
 
                     cluster.Id = reader.ReadInt16EndianAware();
 
-                    int clusterTypeLength = reader.ReadInt32EndianAware();
+                    if (OClient.ProtocolVersion < 24)
+                    {
+                        int clusterTypeLength = reader.ReadInt32EndianAware();
 
-                    string clusterType = System.Text.Encoding.Default.GetString(reader.ReadBytes(clusterTypeLength));
-                    cluster.Type = (OClusterType)Enum.Parse(typeof(OClusterType), clusterType, true);
-
-                    cluster.DataSegmentID = reader.ReadInt16EndianAware();
+                        string clusterType = System.Text.Encoding.Default.GetString(reader.ReadBytes(clusterTypeLength));
+                        //cluster.Type = (OClusterType)Enum.Parse(typeof(OClusterType), clusterType, true);
+                        if (OClient.ProtocolVersion >= 12)
+                            cluster.DataSegmentID = reader.ReadInt16EndianAware();
+                        else
+                            cluster.DataSegmentID = 0;
+                    }
 
                     clusters.Add(cluster);
                 }

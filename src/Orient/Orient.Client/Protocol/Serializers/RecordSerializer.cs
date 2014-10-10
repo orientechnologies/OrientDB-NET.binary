@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace Orient.Client.Protocol.Serializers
 {
@@ -78,10 +79,10 @@ namespace Orient.Client.Protocol.Serializers
                     // serialize only fields which doesn't start with @ character
                     if ((field.Key.Length > 0) && (field.Key[0] != '@'))
                     {
-                        if (bld.Length>0)
+                        if (bld.Length > 0)
                             bld.Append(",");
 
-                   
+
                         bld.AppendFormat("{0}:{1}", field.Key, SerializeValue(field.Value));
                     }
 
@@ -115,14 +116,14 @@ namespace Orient.Client.Protocol.Serializers
                 case TypeCode.Int64:
                     return value.ToString() + "l";
                 case TypeCode.Single:
-                    return ((float) value).ToString(CultureInfo.InvariantCulture) + "f";
+                    return ((float)value).ToString(CultureInfo.InvariantCulture) + "f";
                 case TypeCode.Double:
-                    return ((double) value).ToString(CultureInfo.InvariantCulture) + "d";
+                    return ((double)value).ToString(CultureInfo.InvariantCulture) + "d";
                 case TypeCode.Decimal:
-                    return ((decimal) value).ToString(CultureInfo.InvariantCulture) + "c";
+                    return ((decimal)value).ToString(CultureInfo.InvariantCulture) + "c";
                 case TypeCode.DateTime:
                     DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                    return ((long) ((DateTime) value - unixEpoch).TotalMilliseconds).ToString() + "t";
+                    return ((long)((DateTime)value - unixEpoch).TotalMilliseconds).ToString() + "t";
                 case TypeCode.String:
                 case TypeCode.Char:
                     // strings must escape these characters:
@@ -150,7 +151,7 @@ namespace Orient.Client.Protocol.Serializers
             {
                 bld.Append(valueType.Name == "HashSet`1" ? "<" : "[");
 
-                IEnumerable collection = (IEnumerable) value;
+                IEnumerable collection = (IEnumerable)value;
 
                 bool first = true;
                 foreach (object val in collection)
@@ -164,14 +165,14 @@ namespace Orient.Client.Protocol.Serializers
 
                 bld.Append(valueType.Name == "HashSet`1" ? ">" : "]");
             }
-                // if property is ORID type it needs to be serialized as ORID
+            // if property is ORID type it needs to be serialized as ORID
             else if (valueType.IsClass && (valueType.Name == "ORID"))
             {
                 bld.Append(((ORID)value).RID);
             }
             else if (valueType.IsClass && (valueType.Name == "ODocument"))
             {
-                bld.AppendFormat("({0})", SerializeDocument((ODocument) value));
+                bld.AppendFormat("({0})", SerializeDocument((ODocument)value));
             }
             return bld.ToString();
         }
@@ -274,7 +275,7 @@ namespace Orient.Client.Protocol.Serializers
                 {
                     i = i + 2;
                 }
-                else 
+                else
                 {
                     i++;
                 }
@@ -312,9 +313,9 @@ namespace Orient.Client.Protocol.Serializers
 
             // search for end of parsed record ID value
             while (
-                (i < recordString.Length) && 
-                (recordString[i] != ',') && 
-                (recordString[i] != ')') && 
+                (i < recordString.Length) &&
+                (recordString[i] != ',') &&
+                (recordString[i] != ')') &&
                 (recordString[i] != ']') &&
                 (recordString[i] != '>'))
             {
@@ -421,9 +422,9 @@ namespace Orient.Client.Protocol.Serializers
 
             // search for end of parsed field value
             while (
-                (i < recordString.Length) && 
-                (recordString[i] != ',') && 
-                (recordString[i] != ')') && 
+                (i < recordString.Length) &&
+                (recordString[i] != ',') &&
+                (recordString[i] != ')') &&
                 (recordString[i] != ']') &&
                 (recordString[i] != '>'))
             {
@@ -551,11 +552,36 @@ namespace Orient.Client.Protocol.Serializers
                 builder.Append(recordString[i]);
                 i++;
             }
+            var rids = new HashSet<ORID>();
 
             var value = Convert.FromBase64String(builder.ToString());
+            using(var stream = new MemoryStream(value))
+            using (var reader = new BinaryReader(stream))
+            {
+                var first = reader.ReadByte();
+                int offset = 1;
+                if ((first & 2) == 2)
+                {
+                    // uuid parsing is not implemented
+                    offset += 16;
+                }
 
-            document[fieldName] = value;
-
+                if ((first & 1) == 1) // 1 - embedded,0 - tree-based 
+                {
+                    var entriesSize = reader.ReadInt32EndianAware();
+                    for (int j = 0; j < entriesSize; j++)
+                    {
+                        var clusterid = reader.ReadInt16EndianAware();
+                        var clusterposition = reader.ReadInt64EndianAware();
+                        rids.Add(new ORID(clusterid, clusterposition));
+                    }                    
+                }
+                else
+                {
+                    throw new NotImplementedException("tree based ridbag");
+                }
+            }
+            document[fieldName] = rids;
             //move past ';'
             i++;
 
@@ -618,7 +644,7 @@ namespace Orient.Client.Protocol.Serializers
             // move to root value
             i = index + 6;
             index = recordString.IndexOf(',', i);
-            
+
             linkCollection.Root = new ORID(recordString.Substring(i, index - i));
 
             // move to keySize value

@@ -205,10 +205,10 @@ namespace Orient.Client.Protocol
                 throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
 
-            _networkStream = new BufferedStream( _socket.GetStream());
+            _networkStream = new BufferedStream(_socket.GetStream());
             _networkStream.Read(_readBuffer, 0, 2);
 
-            ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
+            OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
 
             // execute db_open operation
             DbOpen operation = new DbOpen();
@@ -235,10 +235,10 @@ namespace Orient.Client.Protocol
                 throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
 
-            _networkStream = new BufferedStream( _socket.GetStream());
+            _networkStream = new BufferedStream(_socket.GetStream());
             _networkStream.Read(_readBuffer, 0, 2);
 
-            ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
+            OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
 
             // execute connect operation
             Connect operation = new Connect();
@@ -251,7 +251,7 @@ namespace Orient.Client.Protocol
 
         private void Send(byte[] rawData)
         {
-//            Console.WriteLine(string.Join(", ", rawData.Select(x => x.ToString("X2"))));
+            //            Console.WriteLine(string.Join(", ", rawData.Select(x => x.ToString("X2"))));
 
             if ((_networkStream != null) && _networkStream.CanWrite)
             {

@@ -7,7 +7,7 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-   
+
 
     class CommitTransaction : IOperation
     {
@@ -50,7 +50,7 @@ namespace Orient.Client.Protocol.Operations
 
             request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)0) }); // zero terminated
 
-            request.AddDataItem((int) 0);
+            request.AddDataItem((int)0);
 
             //request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(-1) });  // data segment id
             //request.DataItems.Add(new RequestDataItem() { Type = "short", Data = BinarySerializer.ToArray((short)-1) });
@@ -90,16 +90,32 @@ namespace Orient.Client.Protocol.Operations
             }
             responseDocument.SetField("UpdatedRecordVersions", updateRecordVersions);
 
-            //int collectionChangesCount = reader.ReadInt32EndianAware();
-            //if (collectionChangesCount > 0)
-            //    throw new NotImplementedException("don't understand what to do with this yet");
+            if (OClient.ProtocolVersion >= 20)
+            {
+                try//if (reader.BaseStream.CanRead && reader.PeekChar() != -1)
+                {
+                    int collectionChangesCount = reader.ReadInt32EndianAware();
+                    for (var i = 0; i < collectionChangesCount; i++)
+                    {
+                        //    throw new NotImplementedException("don't understand what to do with this yet");
+                        long mBitsOfId = reader.ReadInt64EndianAware();
+                        long lBitsOfId = reader.ReadInt64EndianAware();
+                        var updatedFileId = reader.ReadInt64EndianAware();
+                        var updatedPageIndex = reader.ReadInt64EndianAware();
+                        var updatedPageOffset = reader.ReadInt32EndianAware();
+                    }
+                }
+                catch (Exception ex) 
+                {
+                }
+            }
 
             return responseDocument;
         }
 
         private ORID ReadORID(BinaryReader reader)
         {
-            ORID result =new ORID();
+            ORID result = new ORID();
             result.ClusterId = reader.ReadInt16EndianAware();
             result.ClusterPosition = reader.ReadInt64EndianAware();
             return result;
