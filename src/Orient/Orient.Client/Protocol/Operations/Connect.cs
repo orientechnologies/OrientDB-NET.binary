@@ -25,7 +25,7 @@ namespace Orient.Client.Protocol.Operations
             }
             if (OClient.ProtocolVersion > 21)
             {
-                request.DataItems.Add(new RequestDataItem { Type = "string", Data = BinarySerializer.ToArray("ORecordDocument2csv") });
+                request.DataItems.Add(new RequestDataItem { Type = "string", Data = BinarySerializer.ToArray(OClient.SerializationImpl) });
             }
             request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(UserName) });
             request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(UserPassword) });
