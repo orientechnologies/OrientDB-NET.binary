@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Orient.Client.API;
+using Orient.Client.API.Query;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
@@ -14,6 +17,9 @@ namespace Orient.Client
 
         public OSqlCreate Create { get { return new OSqlCreate(_connection); } }
         public OSqlDelete Delete { get { return new OSqlDelete(_connection); } }
+        public OLoadRecord Load { get { return new OLoadRecord(_connection);}}
+
+        public OTransaction Transaction { get; private set; }
 
         public ODatabase(string alias)
         {
@@ -21,11 +27,41 @@ namespace Orient.Client
             _connection.Database = this;
             _containsConnection = true;
             ClientCache = new Dictionary<ORID, ODocument>();
+            Transaction = new OTransaction(_connection);
         }
 
         public List<OCluster> GetClusters()
         {
             return _connection.Document.GetField<List<OCluster>>("Clusters");
+        }
+
+        public short GetClusterIdFor(string className)
+        {
+            var clusterName = CorrectClassName(className).ToLower();
+            OCluster oCluster = GetClusters().FirstOrDefault(x => x.Name == clusterName);
+            if (oCluster == null)
+            {
+                _connection.Reload();
+                oCluster = GetClusters().First(x => x.Name == clusterName);
+            }
+            return oCluster.Id;
+        }
+
+        private string CorrectClassName(string className)
+        {
+            if (className == "OVertex")
+                return "V";
+            if (className == "OEdge")
+                return "E";
+            return className;
+        }
+
+        public void AddCluster(string className, short clusterId)
+        {
+            var clusters = _connection.Document.GetField<List<OCluster>>("Clusters");
+            clusters.Add(new OCluster() {Id = clusterId, Name = className.ToLower()});
+            _connection.Document.SetField("Clusters", clusters);
+
         }
 
         public OSqlSelect Select(params string[] projections)
@@ -90,7 +126,7 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.Idempotent;
             operation.CommandPayload = payload;
 
-            ODocument document = _connection.ExecuteOperation<Command>(operation);
+            ODocument document = _connection.ExecuteOperation(operation);
 
             return document.GetField<List<ODocument>>("Content");
         }
@@ -112,7 +148,7 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.NonIdempotent;
             operation.CommandPayload = payload;
 
-            ODocument document = _connection.ExecuteOperation<Command>(operation);
+            ODocument document = _connection.ExecuteOperation(operation);
 
             return document.GetField<List<ODocument>>("Content");
         }
@@ -131,7 +167,7 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.NonIdempotent;
             operation.CommandPayload = payload;
 
-            ODocument document = _connection.ExecuteOperation<Command>(operation);
+            ODocument document = _connection.ExecuteOperation(operation);
 
             return new OCommandResult(document);
         }

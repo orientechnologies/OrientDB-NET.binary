@@ -9,16 +9,30 @@ using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client
 {
-    public class OSqlCreateVertex
+    public interface OSqlCreateVertex
+    {
+        OSqlCreateVertex Vertex(string className);
+        OSqlCreateVertex Vertex<T>(T obj);
+        OSqlCreateVertex Vertex<T>();
+        OSqlCreateVertex Cluster(string clusterName);
+        OSqlCreateVertex Cluster<T>();
+        OSqlCreateVertex Set<T>(string fieldName, T fieldValue);
+        OSqlCreateVertex Set<T>(T obj);
+        OVertex Run();
+        T Run<T>() where T : class, new();
+        string ToString();
+    }
+
+    public class OSqlCreateVertexViaSql : OSqlCreateVertex
     {
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;
 
-        public OSqlCreateVertex()
+        public OSqlCreateVertexViaSql()
         {
         }
 
-        internal OSqlCreateVertex(Connection connection)
+        internal OSqlCreateVertexViaSql(Connection connection)
         {
             _connection = connection;
         }
@@ -113,7 +127,7 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.NonIdempotent;
             operation.CommandPayload = payload;
 
-            OCommandResult result = new OCommandResult(_connection.ExecuteOperation<Command>(operation));
+            OCommandResult result = new OCommandResult(_connection.ExecuteOperation(operation));
 
             return result.ToSingle().To<OVertex>();
         }

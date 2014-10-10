@@ -26,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,9 +35,11 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Management" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -51,7 +54,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="DbRunner.cs" />
     <Compile Include="Graph\GraphClassesTests.cs" />
+    <Compile Include="Query\LoadRecordTests.cs" />
     <Compile Include="Query\SqlGenerateDeleteDocumentQueryTests.cs" />
     <Compile Include="Query\SqlGenerateDeleteVertexQueryTests.cs" />
     <Compile Include="Query\SqlGenerateDeleteEdgeQueryTests.cs" />
@@ -85,6 +90,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestDatabaseContext.cs" />
     <Compile Include="TestEdgeClass.cs" />
+    <Compile Include="Query\TestTransactions.cs" />
     <Compile Include="TestVertexClass.cs" />
   </ItemGroup>
   <ItemGroup>

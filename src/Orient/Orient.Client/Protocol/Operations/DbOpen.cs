@@ -20,12 +20,23 @@ namespace Orient.Client.Protocol.Operations
             request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)OperationType.DB_OPEN) });
             request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(sessionID) });
             // operation specific fields
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(OClient.DriverName) });
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(OClient.DriverVersion) });
-            request.DataItems.Add(new RequestDataItem() { Type = "short", Data = BinarySerializer.ToArray(OClient.ProtocolVersion) });
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(OClient.ClientID) });
+            if (OClient.ProtocolVersion >= 7)
+            {
+                request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(OClient.DriverName) });
+                request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(OClient.DriverVersion) });
+                request.DataItems.Add(new RequestDataItem() { Type = "short", Data = BinarySerializer.ToArray(OClient.ProtocolVersion) });
+                request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(OClient.ClientID) });
+            }
+            if (OClient.ProtocolVersion > 21)
+            {
+                request.DataItems.Add(new RequestDataItem { Type = "string", Data = BinarySerializer.ToArray(OClient.SerializationImpl) });
+            }
+
             request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(DatabaseName) });
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(DatabaseType.ToString().ToLower()) });
+            if (OClient.ProtocolVersion >= 8)
+            {
+                request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(DatabaseType.ToString().ToLower()) });
+            }
             request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(UserName) });
             request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(UserPassword) });
 
@@ -45,7 +56,13 @@ namespace Orient.Client.Protocol.Operations
 
             // operation specific fields
             document.SetField("SessionId", reader.ReadInt32EndianAware());
-            short clusterCount = reader.ReadInt16EndianAware();
+            int clusterCount = -1;
+
+            if (OClient.ProtocolVersion >= 7)
+                clusterCount = (int)reader.ReadInt16EndianAware();
+            else
+                clusterCount = reader.ReadInt32EndianAware();
+
             document.SetField("ClusterCount", clusterCount);
 
             if (clusterCount > 0)
@@ -62,13 +79,17 @@ namespace Orient.Client.Protocol.Operations
 
                     cluster.Id = reader.ReadInt16EndianAware();
 
-                    int clusterTypeLength = reader.ReadInt32EndianAware();
+                    if (OClient.ProtocolVersion < 24)
+                    {
+                        int clusterTypeLength = reader.ReadInt32EndianAware();
 
-                    string clusterType = System.Text.Encoding.Default.GetString(reader.ReadBytes(clusterTypeLength));
-                    cluster.Type = (OClusterType)Enum.Parse(typeof(OClusterType), clusterType, true);
-
-                    cluster.DataSegmentID = reader.ReadInt16EndianAware();
-
+                        string clusterType = System.Text.Encoding.Default.GetString(reader.ReadBytes(clusterTypeLength));
+                        //cluster.Type = (OClusterType)Enum.Parse(typeof(OClusterType), clusterType, true);
+                        if (OClient.ProtocolVersion >= 12)
+                            cluster.DataSegmentID = reader.ReadInt16EndianAware();
+                        else
+                            cluster.DataSegmentID = 0;
+                    }
                     clusters.Add(cluster);
                 }
 
@@ -81,9 +102,9 @@ namespace Orient.Client.Protocol.Operations
 
             if (clusterConfigLength > 0)
             {
-                 clusterConfig = reader.ReadBytes(clusterConfigLength);
+                clusterConfig = reader.ReadBytes(clusterConfigLength);
             }
-            
+
             document.SetField("ClusterConfig", clusterConfig);
 
             string release = reader.ReadInt32PrefixedString();

@@ -53,10 +53,10 @@ namespace Orient.Console
                         .To(spouse2)
                         .Run();
 
-                    List<ODocument> docs = database.Query("select Name from Person");
+                    List<ODocument> docs = database.Query("select from Person");
                 }
 
-                /*bool exit = false;
+               bool exit = false;
 
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
@@ -93,7 +93,7 @@ namespace Orient.Console
                     {
                         exit = true;
                     }
-                }*/
+                }
 
 
             }

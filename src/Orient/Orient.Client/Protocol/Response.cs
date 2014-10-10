@@ -45,7 +45,10 @@ namespace Orient.Client.Protocol
 
                     followByte = reader.ReadByte();
                 }
-
+                if (OClient.ProtocolVersion >= 19) {
+                    int serializedVersionLength = reader.ReadInt32EndianAware();
+                    var buffer = reader.ReadBytes(serializedVersionLength);
+                }
                 throw new OException(OExceptionType.Operation, exceptionString);
             }
         }

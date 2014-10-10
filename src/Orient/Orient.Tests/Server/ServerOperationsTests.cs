@@ -15,6 +15,13 @@ namespace Orient.Tests.Server
 
             bool exists = server.DatabaseExist(databaseName, OStorageType.PLocal);
 
+            if (exists)
+            {
+                server.DropDatabase(databaseName, OStorageType.PLocal);
+
+                exists = server.DatabaseExist(databaseName, OStorageType.PLocal);
+            }
+
             Assert.AreEqual(exists, false);
 
             if (!exists)

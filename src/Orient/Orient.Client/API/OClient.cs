@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Orient.Client.API.Types;
 using Orient.Client.Protocol;
 
 namespace Orient.Client
@@ -8,11 +9,20 @@ namespace Orient.Client
         private static object _syncRoot;
         private static List<DatabasePool> _databasePools;
         internal static string ClientID { get { return "null"; } }
-
+        private static short _protocolVersion = 21;
         public static string DriverName { get { return "OrientDB-NET.binary"; } }
         public static string DriverVersion { get { return "0.2.1"; } }
-        public static short ProtocolVersion { get { return 17; } }
+        public static short ProtocolVersion
+        {
+            get { return _protocolVersion; }
+            set
+            {
+                if (value != _protocolVersion)
+                    _protocolVersion = value;
+            }
+        }
         public static int BufferLenght { get; set; }
+        public static string SerializationImpl { get { return ORecordFormat.ORecordDocument2csv.ToString(); } }
 
         static OClient()
         {
@@ -79,7 +89,7 @@ namespace Orient.Client
                         // if the pool is empty - create new dedicated database connection
                         else if (pool.CurrentSize == 0)
                         {
-                            connection = new Connection(pool.Hostname, pool.Port, pool.DatabaseName, pool.DatabaseType, pool.UserName, pool.UserPassword, alias, true);                     
+                            connection = new Connection(pool.Hostname, pool.Port, pool.DatabaseName, pool.DatabaseType, pool.UserName, pool.UserPassword, alias, true);
                         }
                     }
                 }
@@ -96,7 +106,7 @@ namespace Orient.Client
 
                 // enqueue the connection back if it's active, reusable and the pool size is not full
                 // otherwise dispose it
-                if ((pool != null) && 
+                if ((pool != null) &&
                     (pool.CurrentSize < pool.PoolSize) &&
                     connection.IsActive &&
                     connection.IsReusable)

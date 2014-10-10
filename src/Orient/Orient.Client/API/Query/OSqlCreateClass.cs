@@ -1,4 +1,5 @@
-﻿using Orient.Client.Protocol;
+﻿using System.Collections.Generic;
+using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
 // syntax: 
@@ -12,6 +13,7 @@ namespace Orient.Client
     {
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;
+        private string _className;
 
         public OSqlCreateClass()
         {
@@ -26,14 +28,16 @@ namespace Orient.Client
 
         public OSqlCreateClass Class(string className)
         {
-            _sqlQuery.Class(className);
+            _className = className;
+            _sqlQuery.Class(_className);
 
             return this;
         }
 
         public OSqlCreateClass Class<T>()
         {
-            return Class(typeof(T).Name);
+            _className = typeof (T).Name;
+            return Class(_className);
         }
 
         #endregion
@@ -75,9 +79,13 @@ namespace Orient.Client
             operation.ClassType = CommandClassType.NonIdempotent;
             operation.CommandPayload = payload;
 
-            OCommandResult result = new OCommandResult(_connection.ExecuteOperation<Command>(operation));
+            OCommandResult result = new OCommandResult(_connection.ExecuteOperation(operation));
 
-            return short.Parse(result.ToDocument().GetField<string>("Content"));
+            var clusterId = short.Parse(result.ToDocument().GetField<string>("Content"));
+
+            _connection.Database.AddCluster(_className, clusterId);
+
+            return clusterId;
         }
 
         public override string ToString()

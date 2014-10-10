@@ -2,7 +2,7 @@
 
 namespace Orient.Client
 {
-    public abstract class OBaseRecord
+    public abstract class OBaseRecord : IBaseRecord
     {
         private string _oClassName;
 

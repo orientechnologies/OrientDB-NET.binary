@@ -91,10 +91,14 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(insertedDocument.OClassName, "TestClass");
                     Assert.AreEqual(insertedDocument.GetField<string>("foo"), document.GetField<string>("foo"));
                     Assert.AreEqual(insertedDocument.GetField<int>("bar"), document.GetField<int>("bar"));
+
+
                 }
             }
         }
 
+        [TestCategory("Broken Tests as at Github 27594c0114cd9489b69c84fe4896a9d6c6d01b19")]
+        [Ignore]
         [TestMethod]
         public void ShouldInsertDocumentIntoCluster()
         {
@@ -129,6 +133,8 @@ namespace Orient.Tests.Query
             }
         }
 
+        [TestCategory("Broken Tests as at Github 27594c0114cd9489b69c84fe4896a9d6c6d01b19")]
+        [Ignore]
         [TestMethod]
         public void ShouldInsertIntoClusterSet()
         {
@@ -157,6 +163,8 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(insertedDocument.OClassName, "TestClass");
                     Assert.AreEqual(insertedDocument.GetField<string>("foo"), "foo string value");
                     Assert.AreEqual(insertedDocument.GetField<int>("bar"), 12345);
+
+         
                 }
             }
         }

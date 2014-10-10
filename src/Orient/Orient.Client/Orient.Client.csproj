@@ -42,8 +42,14 @@
   <ItemGroup>
     <Compile Include="API\Exceptions\OException.cs" />
     <Compile Include="API\Exceptions\OExceptionType.cs" />
+    <Compile Include="API\OTransaction.cs" />
+    <Compile Include="API\Query\OCreateEdgeRecord.cs" />
+    <Compile Include="API\Query\OLoadRecord.cs" />
+    <Compile Include="API\Query\OCreateVertexRecord.cs" />
+    <Compile Include="API\Types\IBaseRecord.cs" />
     <Compile Include="API\Types\OBaseRecord.cs" />
     <Compile Include="API\Types\OEdge.cs" />
+    <Compile Include="API\Types\ORecordFormat.cs" />
     <Compile Include="API\Types\OVertex.cs" />
     <Compile Include="API\Query\OCommandResult.cs" />
     <Compile Include="API\OProperty.cs" />
@@ -68,7 +74,21 @@
     <Compile Include="API\Query\OSqlInsert.cs" />
     <Compile Include="API\Query\OSqlSelect.cs" />
     <Compile Include="API\Query\OSqlUpdate.cs" />
+    <Compile Include="Mapping\AllFieldMapping.cs" />
+    <Compile Include="Mapping\BasicFieldMapping.cs" />
+    <Compile Include="Mapping\ClassFieldMapping.cs" />
+    <Compile Include="Mapping\CollectionFieldMapping.cs" />
+    <Compile Include="Mapping\FastPropertyAccessor.cs" />
+    <Compile Include="Mapping\FieldMapping.cs" />
+    <Compile Include="Mapping\ORIDFieldMapping.cs" />
+    <Compile Include="Mapping\TypeMapper.cs" />
     <Compile Include="Protocol\BinaryReaderHelper.cs" />
+    <Compile Include="Protocol\Operations\CommitTransaction.cs" />
+    <Compile Include="Protocol\Operations\CreateRecord.cs" />
+    <Compile Include="Protocol\Operations\DbReload.cs" />
+    <Compile Include="Protocol\Operations\LoadRecord.cs" />
+    <Compile Include="Protocol\Operations\TransactionRecord.cs" />
+    <Compile Include="Protocol\Operations\TypedTransactionRecord.cs" />
     <Compile Include="Protocol\Query\QueryCompiler.cs" />
     <Compile Include="Protocol\Query\SqlQuery.cs" />
     <Compile Include="API\Types\OType.cs" />
@@ -101,6 +121,12 @@
     <Compile Include="Protocol\ResponseStatus.cs" />
     <Compile Include="Protocol\Serializers\BinarySerializer.cs" />
     <Compile Include="Protocol\Serializers\RecordSerializer.cs" />
+    <Compile Include="Transactions\ORIDArrayPropertyUpdater.cs" />
+    <Compile Include="Transactions\ORIDHashSetUpdater.cs" />
+    <Compile Include="Transactions\ORIDListPropertyUpdater.cs" />
+    <Compile Include="Transactions\ORIDPropertyUpdater.cs" />
+    <Compile Include="Transactions\ORIDSimplePropertyUpdater.cs" />
+    <Compile Include="Transactions\ORIDUpdater.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

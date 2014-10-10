@@ -11,7 +11,7 @@ namespace Orient.Client.Protocol
     internal class Connection : IDisposable
     {
         private TcpClient _socket;
-        private NetworkStream _networkStream;
+        private BufferedStream _networkStream;
         private byte[] _readBuffer;
 
         internal string Hostname { get; set; }
@@ -79,9 +79,9 @@ namespace Orient.Client.Protocol
             InitializeServerConnection(userName, userPassword);
         }
 
-        internal ODocument ExecuteOperation<T>(T operation)
+        internal ODocument ExecuteOperation(IOperation operation)
         {
-            Request request = ((IOperation)operation).Request(SessionId);
+            Request request = operation.Request(SessionId);
             byte[] buffer;
 
             foreach (RequestDataItem item in request.DataItems)
@@ -115,6 +115,8 @@ namespace Orient.Client.Protocol
                         break;
                 }
             }
+
+            _networkStream.Flush();
 
             if (request.OperationMode == OperationMode.Synchronous)
             {
@@ -162,7 +164,7 @@ namespace Orient.Client.Protocol
             SessionId = -1;
 
             DbClose operation = new DbClose();
-            ExecuteOperation<DbClose>(operation);
+            ExecuteOperation(operation);
 
             if ((_networkStream != null) && (_socket != null))
             {
@@ -177,6 +179,14 @@ namespace Orient.Client.Protocol
         public void Dispose()
         {
             Close();
+        }
+
+        public void Reload()
+        {
+            DbReload operation = new DbReload();
+            var document = ExecuteOperation(operation);
+            Document.SetField("Clusters", document.GetField<List<OCluster>>("Clusters"));
+            Document.SetField("ClusterCount", document.GetField<short>("ClusterCount"));
         }
 
         #region Private methods
@@ -195,10 +205,10 @@ namespace Orient.Client.Protocol
                 throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
 
-            _networkStream = _socket.GetStream();
+            _networkStream = new BufferedStream(_socket.GetStream());
             _networkStream.Read(_readBuffer, 0, 2);
 
-            ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
+            OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
 
             // execute db_open operation
             DbOpen operation = new DbOpen();
@@ -207,7 +217,7 @@ namespace Orient.Client.Protocol
             operation.UserName = userName;
             operation.UserPassword = userPassword;
 
-            Document = ExecuteOperation<DbOpen>(operation);
+            Document = ExecuteOperation(operation);
             SessionId = Document.GetField<int>("SessionId");
         }
 
@@ -225,22 +235,24 @@ namespace Orient.Client.Protocol
                 throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
 
-            _networkStream = _socket.GetStream();
+            _networkStream = new BufferedStream(_socket.GetStream());
             _networkStream.Read(_readBuffer, 0, 2);
 
-            ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
+            OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
 
             // execute connect operation
             Connect operation = new Connect();
             operation.UserName = userName;
             operation.UserPassword = userPassword;
 
-            Document = ExecuteOperation<Connect>(operation);
+            Document = ExecuteOperation(operation);
             SessionId = Document.GetField<int>("SessionId");
         }
 
         private void Send(byte[] rawData)
         {
+            //            Console.WriteLine(string.Join(", ", rawData.Select(x => x.ToString("X2"))));
+
             if ((_networkStream != null) && _networkStream.CanWrite)
             {
                 try

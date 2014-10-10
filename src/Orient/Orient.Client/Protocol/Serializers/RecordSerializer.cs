@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace Orient.Client.Protocol.Serializers
 {
@@ -12,12 +13,12 @@ namespace Orient.Client.Protocol.Serializers
     {
         internal static string Serialize(ODocument document)
         {
-            if (!document.HasField("@ClassName"))
+            if (!document.HasField("@OClassName"))
             {
-                throw new OException(OExceptionType.Serialization, "Document doesn't contain @ClassName field which is required for serialization.");
+                throw new OException(OExceptionType.Serialization, "Document doesn't contain @OClassName field which is required for serialization.");
             }
 
-            return document.GetField<string>("@ClassName") + "@" + SerializeDocument(document);
+            return document.GetField<string>("@OClassName") + "@" + SerializeDocument(document);
         }
 
         #region Deserialize
@@ -32,6 +33,11 @@ namespace Orient.Client.Protocol.Serializers
 
             string recordString = BinarySerializer.ToString(rawRecord).Trim();
 
+            return Deserialize(recordString, document);
+        }
+
+        public static ODocument Deserialize(string recordString, ODocument document)
+        {
             int atIndex = recordString.IndexOf('@');
             int colonIndex = recordString.IndexOf(':');
             int index = 0;
@@ -47,35 +53,15 @@ namespace Orient.Client.Protocol.Serializers
             do
             {
                 index = ParseFieldName(index, recordString, document);
-            }
-            while (index < recordString.Length);
+            } while (index < recordString.Length);
 
             return document;
         }
 
         internal static ODocument Deserialize(string recordString)
         {
-            ODocument document = new ODocument();
+            return Deserialize(recordString, new ODocument());
 
-            int atIndex = recordString.IndexOf('@');
-            int colonIndex = recordString.IndexOf(':');
-            int index = 0;
-
-            // parse class name
-            if ((atIndex != -1) && (atIndex < colonIndex))
-            {
-                document.OClassName = recordString.Substring(0, atIndex);
-                index = atIndex + 1;
-            }
-
-            // start document parsing with first field name
-            do
-            {
-                index = ParseFieldName(index, recordString, document);
-            }
-            while (index < recordString.Length);
-
-            return document;
         }
 
         #endregion
@@ -84,151 +70,111 @@ namespace Orient.Client.Protocol.Serializers
 
         private static string SerializeDocument(ODocument document)
         {
-            string serializedString = "";
+            StringBuilder bld = new StringBuilder();
 
             if (document.Keys.Count > 0)
             {
-                int iteration = 0;
-
                 foreach (KeyValuePair<string, object> field in document)
                 {
                     // serialize only fields which doesn't start with @ character
                     if ((field.Key.Length > 0) && (field.Key[0] != '@'))
                     {
-                        serializedString += field.Key + ":";
-                        serializedString += SerializeValue(field.Value);
+                        if (bld.Length > 0)
+                            bld.Append(",");
+
+
+                        bld.AppendFormat("{0}:{1}", field.Key, SerializeValue(field.Value));
                     }
 
-                    iteration++;
-
-                    if (iteration < document.Keys.Count)
-                    {
-                        if ((field.Key.Length > 0) && (field.Key[0] != '@'))
-                        {
-                            serializedString += ",";
-                        }
-                    }
                 }
             }
 
-            return serializedString;
+
+            return bld.ToString();
         }
 
         private static string SerializeValue(object value)
         {
-            string serializedString = "";
+            if (value == null)
+                return string.Empty;
 
-            if (value != null)
+            Type valueType = value.GetType();
+
+            switch (Type.GetTypeCode(valueType))
             {
-                Type valueType = value.GetType();
+                case TypeCode.Empty:
+                    // null case is empty
+                    break;
+                case TypeCode.Boolean:
+                    return value.ToString().ToLower();
+                case TypeCode.Byte:
+                    return value.ToString() + "b";
+                case TypeCode.Int16:
+                    return value.ToString() + "s";
+                case TypeCode.Int32:
+                    return value.ToString();
+                case TypeCode.Int64:
+                    return value.ToString() + "l";
+                case TypeCode.Single:
+                    return ((float)value).ToString(CultureInfo.InvariantCulture) + "f";
+                case TypeCode.Double:
+                    return ((double)value).ToString(CultureInfo.InvariantCulture) + "d";
+                case TypeCode.Decimal:
+                    return ((decimal)value).ToString(CultureInfo.InvariantCulture) + "c";
+                case TypeCode.DateTime:
+                    DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                    return ((long)((DateTime)value - unixEpoch).TotalMilliseconds).ToString() + "t";
+                case TypeCode.String:
+                case TypeCode.Char:
+                    // strings must escape these characters:
+                    // " -> \"
+                    // \ -> \\
+                    string stringValue = value.ToString();
+                    // escape quotes
+                    stringValue = stringValue.Replace("\\", "\\\\");
+                    // escape backslashes
+                    stringValue = stringValue.Replace("\"", "\\" + "\"");
 
-                switch (Type.GetTypeCode(valueType))
-                {
-                    case TypeCode.Empty:
-                        // null case is empty
-                        break;
-                    case TypeCode.Boolean:
-                        serializedString += value.ToString().ToLower();
-                        break;
-                    case TypeCode.Byte:
-                        serializedString += value.ToString() + "b";
-                        break;
-                    case TypeCode.Int16:
-                        serializedString += value.ToString() + "s";
-                        break;
-                    case TypeCode.Int32:
-                        serializedString += value.ToString();
-                        break;
-                    case TypeCode.Int64:
-                        serializedString += value.ToString() + "l";
-                        break;
-                    case TypeCode.Single:
-                        serializedString += ((float)value).ToString(CultureInfo.InvariantCulture) + "f";
-                        break;
-                    case TypeCode.Double:
-                        serializedString += ((double)value).ToString(CultureInfo.InvariantCulture) + "d";
-                        break;
-                    case TypeCode.Decimal:
-                        serializedString += ((decimal)value).ToString(CultureInfo.InvariantCulture) + "c";
-                        break;
-                    case TypeCode.DateTime:
-                        DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                        serializedString += ((long)((DateTime)value - unixEpoch).TotalMilliseconds).ToString() + "t";
-                        break;
-                    case TypeCode.String:
-                    case TypeCode.Char:
-                        // strings must escape these characters:
-                        // " -> \"
-                        // \ -> \\
-                        string stringValue = value.ToString();
-                        // escape quotes
-                        stringValue = stringValue.Replace("\\", "\\\\");
-                        // escape backslashes
-                        stringValue = stringValue.Replace("\"", "\\" + "\"");
-
-                        serializedString += "\"" + stringValue + "\"";
-                        break;
-                    case TypeCode.Object:
-                        if ((valueType.IsArray) || (valueType.IsGenericType))
-                        {
-                            if (valueType.Name == "HashSet`1")
-                            {
-                                serializedString += "<";
-                            }
-                            else
-                            {
-                                serializedString += "[";
-                            }
-
-                            IEnumerable collection = (IEnumerable)value;
-
-                            foreach (object val in collection)
-                            {
-                                if (valueType.IsArray)
-                                {
-                                    serializedString += SerializeValue(val);
-                                }
-                                else
-                                {
-                                    serializedString += SerializeValue(val);
-                                }
-
-                                serializedString += ",";
-                            }
-
-                            // remove last comma from currently parsed collection
-                            if (serializedString[serializedString.Length - 1] == ',')
-                            {
-                                serializedString = serializedString.Remove(serializedString.Length - 1);
-                            }
-
-                            if (valueType.Name == "HashSet`1")
-                            {
-                                serializedString += ">";
-                            }
-                            else
-                            {
-                                serializedString += "]";
-                            }
-                        }
-                        // if property is ORID type it needs to be serialized as ORID
-                        else if (valueType.IsClass && (valueType.Name == "ORID"))
-                        {
-                            serializedString += ((ORID)value).RID;
-                        }
-                        else if (valueType.IsClass && (valueType.Name == "ODocument"))
-                        {
-                            serializedString += "(";
-                            serializedString += SerializeDocument((ODocument)value);
-                            serializedString += ")";
-                        }
-                        break;
-                    default:
-                        break;
-                }
+                    return "\"" + stringValue + "\"";
+                case TypeCode.Object:
+                    return SerializeObjectValue(value, valueType);
             }
 
-            return serializedString;
+            throw new NotImplementedException();
+        }
+
+        private static string SerializeObjectValue(object value, Type valueType)
+        {
+            StringBuilder bld = new StringBuilder();
+
+            if ((valueType.IsArray) || (valueType.IsGenericType))
+            {
+                bld.Append(valueType.Name == "HashSet`1" ? "<" : "[");
+
+                IEnumerable collection = (IEnumerable)value;
+
+                bool first = true;
+                foreach (object val in collection)
+                {
+                    if (!first)
+                        bld.Append(",");
+
+                    first = false;
+                    bld.Append(SerializeValue(val));
+                }
+
+                bld.Append(valueType.Name == "HashSet`1" ? ">" : "]");
+            }
+            // if property is ORID type it needs to be serialized as ORID
+            else if (valueType.IsClass && (valueType.Name == "ORID"))
+            {
+                bld.Append(((ORID)value).RID);
+            }
+            else if (valueType.IsClass && (valueType.Name == "ODocument"))
+            {
+                bld.AppendFormat("({0})", SerializeDocument((ODocument)value));
+            }
+            return bld.ToString();
         }
 
         #endregion
@@ -239,16 +185,11 @@ namespace Orient.Client.Protocol.Serializers
         {
             int startIndex = i;
 
-            // iterate until colon is found since it's the character which ends the field name
-            while (recordString[i] != ':')
-            {
-                i++;
+            int iColonPos = recordString.IndexOf(':', i);
+            if (iColonPos == -1)
+                return recordString.Length;
 
-                if (i >= recordString.Length)
-                {
-                    return recordString.Length;
-                }
-            }
+            i = iColonPos;
 
             // parse field name string from raw document string
             string fieldName = recordString.Substring(startIndex, i - startIndex);
@@ -334,7 +275,7 @@ namespace Orient.Client.Protocol.Serializers
                 {
                     i = i + 2;
                 }
-                else 
+                else
                 {
                     i++;
                 }
@@ -372,16 +313,15 @@ namespace Orient.Client.Protocol.Serializers
 
             // search for end of parsed record ID value
             while (
-                (i < recordString.Length) && 
-                (recordString[i] != ',') && 
-                (recordString[i] != ')') && 
+                (i < recordString.Length) &&
+                (recordString[i] != ',') &&
+                (recordString[i] != ')') &&
                 (recordString[i] != ']') &&
                 (recordString[i] != '>'))
             {
                 i++;
             }
 
-            string orid = recordString.Substring(startIndex, i - startIndex);
 
             //assign field value
             if (document[fieldName] == null)
@@ -391,20 +331,20 @@ namespace Orient.Client.Protocol.Serializers
                 if (fieldName.Equals("in_") || fieldName.Equals("out_"))
                 {
                     document[fieldName] = new HashSet<ORID>();
-                    ((HashSet<ORID>)document[fieldName]).Add(new ORID(orid));
+                    ((HashSet<ORID>)document[fieldName]).Add(new ORID(recordString, startIndex));
                 }
                 else
                 {
-                    document[fieldName] = new ORID(orid);
+                    document[fieldName] = new ORID(recordString, startIndex);
                 }
             }
             else if (document[fieldName] is HashSet<object>)
             {
-                ((HashSet<object>)document[fieldName]).Add(new ORID(orid));
+                ((HashSet<object>)document[fieldName]).Add(new ORID(recordString, startIndex));
             }
             else
             {
-                ((List<object>)document[fieldName]).Add(new ORID(orid));
+                ((List<object>)document[fieldName]).Add(new ORID(recordString, startIndex));
             }
 
             return i;
@@ -482,9 +422,9 @@ namespace Orient.Client.Protocol.Serializers
 
             // search for end of parsed field value
             while (
-                (i < recordString.Length) && 
-                (recordString[i] != ',') && 
-                (recordString[i] != ')') && 
+                (i < recordString.Length) &&
+                (recordString[i] != ',') &&
+                (recordString[i] != ')') &&
                 (recordString[i] != ']') &&
                 (recordString[i] != '>'))
             {
@@ -581,6 +521,17 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
+        //public static int IntParseFast(string value)
+        //{
+        //    int result = 0;
+        //    for (int i = 0; i < value.Length; i++)
+        //    {
+        //        char letter = value[i];
+        //        result = 10 * result + (letter - 48);
+        //    }
+        //    return result;
+        //}
+
         /// <summary>
         /// Parse RidBags ex. %[content:binary]; where [content:binary] is the actual binary base64 content.
         /// </summary>
@@ -601,11 +552,36 @@ namespace Orient.Client.Protocol.Serializers
                 builder.Append(recordString[i]);
                 i++;
             }
+            var rids = new HashSet<ORID>();
 
             var value = Convert.FromBase64String(builder.ToString());
+            using(var stream = new MemoryStream(value))
+            using (var reader = new BinaryReader(stream))
+            {
+                var first = reader.ReadByte();
+                int offset = 1;
+                if ((first & 2) == 2)
+                {
+                    // uuid parsing is not implemented
+                    offset += 16;
+                }
 
-            document[fieldName] = value;
-
+                if ((first & 1) == 1) // 1 - embedded,0 - tree-based 
+                {
+                    var entriesSize = reader.ReadInt32EndianAware();
+                    for (int j = 0; j < entriesSize; j++)
+                    {
+                        var clusterid = reader.ReadInt16EndianAware();
+                        var clusterposition = reader.ReadInt64EndianAware();
+                        rids.Add(new ORID(clusterid, clusterposition));
+                    }                    
+                }
+                else
+                {
+                    throw new NotImplementedException("tree based ridbag");
+                }
+            }
+            document[fieldName] = rids;
             //move past ';'
             i++;
 
@@ -668,7 +644,7 @@ namespace Orient.Client.Protocol.Serializers
             // move to root value
             i = index + 6;
             index = recordString.IndexOf(',', i);
-            
+
             linkCollection.Root = new ORID(recordString.Substring(i, index - i));
 
             // move to keySize value
