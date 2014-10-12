@@ -27,6 +27,7 @@
         CONFIG_GET = 70,
         CONFIG_SET = 71,
         CONFIG_LIST = 72,
-        DB_RELOAD = 73
+        DB_RELOAD = 73,
+        DB_LIST = 74
     }
 }

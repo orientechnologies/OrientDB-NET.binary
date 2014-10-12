@@ -75,6 +75,21 @@ namespace Orient.Client
 
         #endregion
 
+        public Dictionary<string, string> Databases()
+        {
+            Dictionary<string, string> returnValue = new Dictionary<string, string>();
+            DBList operation = new DBList();
+            ODocument document = _connection.ExecuteOperation(operation);
+            string[] databases = document.GetField<string>("databases").Split(',');
+            foreach (var item in databases)
+            {
+                string[] keyValue = item.Split(':');
+                returnValue.Add(keyValue[0], keyValue[1] + ":" + keyValue[2]);
+            }
+            return returnValue;
+        }
+        
+        
         public void Close()
         {
             _connection.Dispose();
