@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Orient.Client.Protocol
@@ -10,6 +11,21 @@ namespace Orient.Client.Protocol
         internal void Class(string className)
         {
             _compiler.Unique(Q.Class, ParseClassName(className));
+        }
+
+        internal void Property(string propertyName, OType type)
+        {
+            _compiler.Unique(Q.Property, propertyName, type.ToString());
+        }
+
+        internal void LinkedType(OType type)
+        {
+            _compiler.Unique(Q.LinkedType, type.ToString());
+        }
+
+        internal void LinkedClass(string @class)
+        {
+            _compiler.Unique(Q.LinkedClass, @class);
         }
 
         #region Cluster
@@ -486,6 +502,8 @@ namespace Orient.Client.Protocol
             {
                 case QueryType.CreateClass:
                     return GenerateCreateClassQuery();
+                case QueryType.CreateProperty:
+                    return GenerateCreatePropertyQuery();
                 case QueryType.CreateCluster:
                     return GenerateCreateClusterQuery();
                 case QueryType.CreateEdge:
@@ -531,6 +549,19 @@ namespace Orient.Client.Protocol
             {
                 query += string.Join(" ", "", Q.Cluster, _compiler.Value(Q.Cluster));
             }
+
+            return query;
+        }
+
+        private string GenerateCreatePropertyQuery()
+        {
+            // CREATE PROPERTY <class>.<property> <type> [<linked-type>|<linked-class>]
+            string query = "";
+
+            // CREATE PROPERTY <class> 
+            query += string.Join(" ", Q.Create, Q.Property, ParsePropertyName(_compiler.Value(Q.Property)));
+            // [<linked-type>|<linked-class>]
+            query += string.Join(" ", "", _compiler.OrderedValue(Q.LinkedType, Q.LinkedClass));
 
             return query;
         }
@@ -727,7 +758,7 @@ namespace Orient.Client.Protocol
             {
                 query += string.Join(" ", "", Q.Where, _compiler.Value(Q.Where));
             }
-            
+
             // [BY <Fields>* [ASC|DESC](ORDER)*] 
             // TODO:
 
@@ -815,5 +846,16 @@ namespace Orient.Client.Protocol
 
             return className;
         }
+
+        private string ParsePropertyName(string propertyName)
+        {
+            if (_compiler.HasKey(Q.Class))
+            {
+                return _compiler[Q.Class] + "." + propertyName;
+            }
+
+            return propertyName;
+        }
+
     }
 }

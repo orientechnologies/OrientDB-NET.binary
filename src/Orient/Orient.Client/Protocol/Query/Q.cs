@@ -31,11 +31,14 @@ namespace Orient.Client.Protocol
         internal static string LesserEqual = "<=";
         internal static string Like = "LIKE";
         internal static string Limit = "LIMIT";
+        internal static string LinkedType = "LINKEDTYPE";
+        internal static string LinkedClass = "LINKEDCLASS";
         internal static string NotEquals = "!=";
         internal static string Null = "NULL";
         internal static string Or = "OR";
         internal static string OrderBy = "ORDER BY";
         internal static string Put = "PUT";
+        internal static string Property = "PROPERTY";
         internal static string Record = "RECORD";
         internal static string Remove = "REMOVE";
         internal static string Select = "SELECT";

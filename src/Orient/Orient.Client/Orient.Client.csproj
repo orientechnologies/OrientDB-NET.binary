@@ -46,6 +46,7 @@
     <Compile Include="API\Query\OCreateEdgeRecord.cs" />
     <Compile Include="API\Query\OLoadRecord.cs" />
     <Compile Include="API\Query\OCreateVertexRecord.cs" />
+    <Compile Include="API\Query\OSqlCreateProperty.cs" />
     <Compile Include="API\Types\IBaseRecord.cs" />
     <Compile Include="API\Types\OBaseRecord.cs" />
     <Compile Include="API\Types\OEdge.cs" />

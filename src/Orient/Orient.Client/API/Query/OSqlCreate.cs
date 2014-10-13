@@ -18,7 +18,11 @@ namespace Orient.Client
         {
             return new OSqlCreateClass(_connection).Class(className);
         }
-
+        public OSqlCreateProperty Property(string propertyName,OType type)
+        {
+            return new OSqlCreateProperty(_connection)
+                .Property(propertyName,type);
+        }
         public OSqlCreateClass Class<T>()
         {
             return Class(typeof(T).Name);
