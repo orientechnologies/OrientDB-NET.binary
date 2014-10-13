@@ -17,7 +17,8 @@ namespace Orient.Client
 
         public OSqlCreate Create { get { return new OSqlCreate(_connection); } }
         public OSqlDelete Delete { get { return new OSqlDelete(_connection); } }
-        public OLoadRecord Load { get { return new OLoadRecord(_connection);}}
+        public OLoadRecord Load { get { return new OLoadRecord(_connection); } }
+        public ORecordMetadata Metadata { get { return new ORecordMetadata(_connection); } }
 
         public OTransaction Transaction { get; private set; }
 
@@ -59,7 +60,7 @@ namespace Orient.Client
         public void AddCluster(string className, short clusterId)
         {
             var clusters = _connection.Document.GetField<List<OCluster>>("Clusters");
-            clusters.Add(new OCluster() {Id = clusterId, Name = className.ToLower()});
+            clusters.Add(new OCluster() { Id = clusterId, Name = className.ToLower() });
             _connection.Document.SetField("Clusters", clusters);
 
         }
@@ -186,7 +187,7 @@ namespace Orient.Client
                 {
                     _connection.Dispose();
                 }
-                
+
                 _containsConnection = false;
             }
         }
