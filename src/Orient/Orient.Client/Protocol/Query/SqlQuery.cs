@@ -277,6 +277,13 @@ namespace Orient.Client.Protocol
 
                 field += "]";
             }
+            else if (fieldValue is DateTime)
+            {
+                //DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                DateTime value = (DateTime)((object)fieldValue);
+                //field += ((long)(value - unixEpoch).TotalMilliseconds);
+                field += "'" + value.ToString("s").Replace('T', ' ') + "'";
+            }
             else
             {
                 field += fieldValue.ToString();
