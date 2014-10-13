@@ -84,7 +84,11 @@
     <Compile Include="Mapping\TypeMapper.cs" />
     <Compile Include="Protocol\BinaryReaderHelper.cs" />
     <Compile Include="Protocol\Operations\CommitTransaction.cs" />
+    <Compile Include="Protocol\Operations\ConfigGet.cs" />
+    <Compile Include="Protocol\Operations\ConfigList.cs" />
+    <Compile Include="Protocol\Operations\ConfigSet.cs" />
     <Compile Include="Protocol\Operations\CreateRecord.cs" />
+    <Compile Include="Protocol\Operations\DBList.cs" />
     <Compile Include="Protocol\Operations\DbReload.cs" />
     <Compile Include="Protocol\Operations\LoadRecord.cs" />
     <Compile Include="Protocol\Operations\TransactionRecord.cs" />

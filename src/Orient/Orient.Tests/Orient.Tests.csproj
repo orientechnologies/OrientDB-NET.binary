@@ -92,6 +92,7 @@
     <Compile Include="TestEdgeClass.cs" />
     <Compile Include="Query\TestTransactions.cs" />
     <Compile Include="TestVertexClass.cs" />
+    <Compile Include="TestConfigurationOperation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orient.Client\Orient.Client.csproj">
