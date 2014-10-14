@@ -26,14 +26,15 @@ namespace Orient.Client.Protocol.Operations
             Request request = new Request();
 
             // standard request fields
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)OperationType.RECORD_LOAD) });
-            request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(sessionID) });
-            request.DataItems.Add(new RequestDataItem() { Type = "short", Data = BinarySerializer.ToArray(_orid.ClusterId) });
-            request.DataItems.Add(new RequestDataItem() { Type = "long", Data = BinarySerializer.ToArray(_orid.ClusterPosition) });
-            request.DataItems.Add(new RequestDataItem() {Type = "string", Data = BinarySerializer.ToArray(_fetchPlan)} );
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)0) });
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)0) });
+            request.AddDataItem((byte)OperationType.RECORD_LOAD);
+            request.AddDataItem(sessionID);
+            request.AddDataItem(_orid);
+            request.AddDataItem(_fetchPlan);
 
+            if (OClient.ProtocolVersion >= 9) // Ignore Cache 1-true, 0-false
+                request.AddDataItem((byte)0);
+            if (OClient.ProtocolVersion >= 13) // Load tombstones 1-true , 0-false
+                request.AddDataItem((byte)0);
             return request;
         }
 
@@ -48,10 +49,9 @@ namespace Orient.Client.Protocol.Operations
 
             var reader = response.Reader;
 
-            int iRead = 0;
             while (true)
             {
-                PayloadStatus payload_status = (PayloadStatus) reader.ReadByte();
+                PayloadStatus payload_status = (PayloadStatus)reader.ReadByte();
 
                 bool done = false;
                 switch (payload_status)
@@ -71,14 +71,8 @@ namespace Orient.Client.Protocol.Operations
 
                 if (done)
                 {
-#if DEBUG
-                    if (iRead == 0)
-                        DumpRemaining(reader);
-#endif
                     break;
                 }
-
-                iRead++;
             }
 
             return responseDocument;
@@ -90,8 +84,8 @@ namespace Orient.Client.Protocol.Operations
             if (zero != 0)
                 throw new InvalidOperationException("Unsupported record format");
 
-            byte recordType = reader.ReadByte();
-            if (recordType != (byte) 'd')
+            ORecordType recordType = (ORecordType)reader.ReadByte();
+            if (recordType != ORecordType.Document)
                 throw new InvalidOperationException("Unsupported record type");
 
             short clusterId = reader.ReadInt16EndianAware();
@@ -113,26 +107,25 @@ namespace Orient.Client.Protocol.Operations
             var contentLength = reader.ReadInt32EndianAware();
             byte[] readBytes = reader.ReadBytes(contentLength);
             var version = reader.ReadInt32EndianAware();
-            var recordType = reader.ReadByte();
+            var recordType = (ORecordType)reader.ReadByte();
 
+            var document = new ODocument();
 
-            string serialized = System.Text.Encoding.Default.GetString(readBytes);
-            var document = RecordSerializer.Deserialize(serialized);
-            document.ORID = _orid;
-            document.OVersion = version;
-            //document.OType = type;
-            //document.OClassId = classId;
-            responseDocument.SetField("Content", document);
-        }
-
-        private void DumpRemaining(BinaryReader reader)
-        {
-            int i = 0;
-            while (true)
+            switch (recordType)
             {
-                i++;
-                var b = reader.ReadByte();
-                Trace.WriteLine(string.Format( "{2} {0:X02} {1},", b, (char)b, i));
+                case ORecordType.Document:
+                    string serialized = System.Text.Encoding.Default.GetString(readBytes);
+                    document = RecordSerializer.Deserialize(serialized);
+                    document.ORID = _orid;
+                    document.OVersion = version;
+                    responseDocument.SetField("Content", document);
+                    break;
+                case ORecordType.RawBytes:
+                    document.SetField("RawBytes", readBytes);
+                    responseDocument.SetField("Content", document);
+                    break;
+                case ORecordType.FlatData:
+                    break;
             }
         }
     }

@@ -39,7 +39,20 @@ namespace Orient.Tests.Query
                 }
             }
         }
+        [TestMethod]
+        public void TestLoadRawDataRecordType()
+        {
 
+            using (var testContext = new TestDatabaseContext())
+            {
+                using (var database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    var config = database.Load.ORID(new ORID(0, 0)).Run();
+                    Assert.IsInstanceOfType(config, typeof(ODocument));
+                    Assert.IsTrue(config.GetField<byte[]>("RawBytes").Length > 0);
+                }
+            }
+        }
         [TestMethod]
         public void TestLoadWithFetchPlanNoLinks()
         {
