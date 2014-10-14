@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
@@ -14,6 +16,8 @@ namespace Orient.Client
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;
         private string _className;
+        private Type _type;
+        private bool _autoProperties;
 
         public OSqlCreateClass()
         {
@@ -36,6 +40,7 @@ namespace Orient.Client
 
         public OSqlCreateClass Class<T>()
         {
+            _type = typeof (T);
             _className = typeof (T).Name;
             return Class(_className);
         }
@@ -50,6 +55,27 @@ namespace Orient.Client
 
             return this;
         }
+
+        public OSqlCreateClass CreateProperties()
+        {
+            if (_type == null)
+                throw new InvalidOperationException("Can only create properties automatically when a generic type parameter has been specified");
+
+            _autoProperties = true;
+            return this;
+        }
+
+        public OSqlCreateClass CreateProperties<T>()
+        {
+            if (_type != null && _type != typeof(T))
+                throw new InvalidOperationException("Inconsistent type specified - type for CreateProperties<T> must match type for Class<T>");
+
+            _type = typeof (T);
+
+            _autoProperties = true;
+            return this;
+        }
+
 
         public OSqlCreateClass Extends<T>()
         {
@@ -85,7 +111,46 @@ namespace Orient.Client
 
             _connection.Database.AddCluster(_className, clusterId);
 
+            if (_autoProperties)
+            {
+                CreateAutoProperties();
+            }
+
             return clusterId;
+        }
+
+        private void CreateAutoProperties()
+        {
+            foreach (var pi in _type.GetProperties(BindingFlags.DeclaredOnly))
+            {
+                if (pi.CanRead && pi.CanWrite)
+                {
+                    if (pi.PropertyType.IsPrimitive)
+                    {
+                        CreateProperty(pi);
+                    }
+                }
+            }
+        }
+
+        private void CreateProperty(PropertyInfo pi)
+        {
+            string propType = ConvertPropertyType(pi.PropertyType);
+            _connection.Database.Command(string.Format("create property {2}.{0} {1}", pi.Name, propType, _type.Name));
+        }
+
+        private string ConvertPropertyType(Type propertyType)
+        {
+            switch (propertyType.Name)
+            {
+                case "Int64":
+                    return "Long";
+                case "String":
+                    return "String";
+                case "Int32":
+                    return "Integer";
+            }
+            throw new ArgumentException("propertyType " + propertyType.Name + " is not yet supported.");
         }
 
         public override string ToString()
