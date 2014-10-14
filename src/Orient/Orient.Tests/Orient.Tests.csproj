@@ -69,6 +69,8 @@
     <Compile Include="Query\SqlDeleteVertexTests.cs" />
     <Compile Include="Query\SqlDeleteEdgeTests.cs" />
     <Compile Include="Query\GremlinTests.cs" />
+    <Compile Include="Query\SqlCreatePropertyTest.cs" />
+    <Compile Include="Query\TestRecordMetadata.cs" />
     <Compile Include="TestProfileClass.cs" />
     <Compile Include="Pool\ConnectionPoolTests.cs" />
     <Compile Include="Query\SqlSelectTests.cs" />
@@ -92,6 +94,7 @@
     <Compile Include="TestEdgeClass.cs" />
     <Compile Include="Query\TestTransactions.cs" />
     <Compile Include="TestVertexClass.cs" />
+    <Compile Include="TestConfigurationOperation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orient.Client\Orient.Client.csproj">

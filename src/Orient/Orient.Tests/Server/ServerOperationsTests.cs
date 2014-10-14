@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Orient.Client;
 
@@ -39,6 +40,14 @@ namespace Orient.Tests.Server
                     Assert.AreEqual(exists, false);
                 }
             }
+        }
+
+        [TestMethod]
+        public void TestDbList()
+        {
+            OServer server = TestConnection.GetServer();
+            Dictionary<string, string> databases = server.Databases();
+            Assert.IsTrue(databases.Count > 0);
         }
     }
 }

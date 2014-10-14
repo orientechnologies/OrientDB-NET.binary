@@ -46,6 +46,8 @@
     <Compile Include="API\Query\OCreateEdgeRecord.cs" />
     <Compile Include="API\Query\OLoadRecord.cs" />
     <Compile Include="API\Query\OCreateVertexRecord.cs" />
+    <Compile Include="API\Query\ORecordMetadata.cs" />
+    <Compile Include="API\Query\OSqlCreateProperty.cs" />
     <Compile Include="API\Types\IBaseRecord.cs" />
     <Compile Include="API\Types\OBaseRecord.cs" />
     <Compile Include="API\Types\OEdge.cs" />
@@ -84,9 +86,14 @@
     <Compile Include="Mapping\TypeMapper.cs" />
     <Compile Include="Protocol\BinaryReaderHelper.cs" />
     <Compile Include="Protocol\Operations\CommitTransaction.cs" />
+    <Compile Include="Protocol\Operations\ConfigGet.cs" />
+    <Compile Include="Protocol\Operations\ConfigList.cs" />
+    <Compile Include="Protocol\Operations\ConfigSet.cs" />
     <Compile Include="Protocol\Operations\CreateRecord.cs" />
+    <Compile Include="Protocol\Operations\DBList.cs" />
     <Compile Include="Protocol\Operations\DbReload.cs" />
     <Compile Include="Protocol\Operations\LoadRecord.cs" />
+    <Compile Include="Protocol\Operations\RecordMetadata.cs" />
     <Compile Include="Protocol\Operations\TransactionRecord.cs" />
     <Compile Include="Protocol\Operations\TypedTransactionRecord.cs" />
     <Compile Include="Protocol\Query\QueryCompiler.cs" />

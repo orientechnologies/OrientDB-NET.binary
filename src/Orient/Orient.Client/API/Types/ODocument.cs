@@ -15,16 +15,16 @@ namespace Orient.Client
 
         #region Properties which holds orient specific fields
 
-        public ORID ORID 
-        { 
-            get 
+        public ORID ORID
+        {
+            get
             {
-                return HasField("@ORID") ? GetField<ORID>("@ORID") : null; 
-            } 
+                return HasField("@ORID") ? GetField<ORID>("@ORID") : null;
+            }
             set { SetField("@ORID", value); }
         }
 
-        public int OVersion 
+        public int OVersion
         {
             get
             {
@@ -70,7 +70,7 @@ namespace Orient.Client
 
             if (TryGetValue(fieldPath, out fieldValue))
             {
-                if (fieldValue == null || fieldValue.GetType() == typeof (T))
+                if (fieldValue == null || fieldValue.GetType() == typeof(T))
                     return (T)fieldValue;
 
                 // if value is list or set type, get element type and enumerate over its elements
@@ -79,7 +79,7 @@ namespace Orient.Client
                     var value = (T)Activator.CreateInstance(type);
                     Type elementType = type.GetGenericArguments()[0];
                     IEnumerator enumerator = EnumerableFromField<T>(fieldValue).GetEnumerator();
-                        
+
                     while (enumerator.MoveNext())
                     {
                         // if current element is ODocument type which is Dictionary<string, object>
@@ -127,6 +127,14 @@ namespace Orient.Client
                     }
                     return value;
                 }
+                else if (type == typeof(DateTime))
+                {
+                    DateTime parsedValue;
+                    if (DateTime.TryParse((string)fieldValue, out parsedValue))
+                    {
+                        return (T)(object)parsedValue;
+                    }
+                }
 
                 return (T)fieldValue;
             }
@@ -141,7 +149,7 @@ namespace Orient.Client
                 return target.GetField<T>(fields.Last());
             }
 
-            var result =  type.IsPrimitive || type == typeof(string) || type.IsArray ? default(T) : (T) Activator.CreateInstance(type);
+            var result = type.IsPrimitive || type == typeof(string) || type.IsArray ? default(T) : (T)Activator.CreateInstance(type);
             SetField(fieldPath, result);
             return result;
         }
@@ -152,7 +160,7 @@ namespace Orient.Client
             if (_implementsMap.TryGetValue(type, out result))
                 return result;
 
-            result = type.GetInterfaces().Contains(typeof (IList));
+            result = type.GetInterfaces().Contains(typeof(IList));
             _implementsMap.AddOrUpdate(type, type1 => result, (type1, b) => result);
             return result;
         }
@@ -160,11 +168,11 @@ namespace Orient.Client
         private static IEnumerable EnumerableFromField<T>(object oField)
         {
             if (oField is IEnumerable)
-                return ((IEnumerable) oField);
+                return ((IEnumerable)oField);
             if (oField == null)
                 return (new object[0]);
 
-            return new[] {oField};
+            return new[] { oField };
         }
 
         public ODocument SetField<T>(string fieldPath, T value)
@@ -267,11 +275,11 @@ namespace Orient.Client
 
         public T ToUnique<T>(ICreationContext store) where T : class
         {
-            
-            if (store.AlreadyCreated(ORID))
-                return (T) store.GetExistingObject(ORID);
 
-            T genericObject = (T) store.CreateObject(OClassName);
+            if (store.AlreadyCreated(ORID))
+                return (T)store.GetExistingObject(ORID);
+
+            T genericObject = (T)store.CreateObject(OClassName);
             var result = ToObject(genericObject, "");
             store.AddObject(ORID, result);
             return result;
@@ -294,12 +302,12 @@ namespace Orient.Client
 
         private T ToObject<T>(T genericObject, string path) where T : class
         {
-                    
+
             TypeMapper<T>.Instance.ToObject(this, genericObject);
             return genericObject;
 
         }
-        
+
         private void Map(ref object obj)
         {
             if (obj is Dictionary<string, object>)

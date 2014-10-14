@@ -9,7 +9,7 @@
         DB_CLOSE = 5,
         DB_EXIST = 6,
         DB_DROP = 7,
-        DB_SIZE	= 8,
+        DB_SIZE = 8,
         DB_COUNTRECORDS = 9,
         DATACLUSTER_ADD = 10,
         DATACLUSTER_REMOVE = 11,
@@ -17,6 +17,7 @@
         DATACLUSTER_DATARANGE = 13,
         DATASEGMENT_ADD = 20,
         DATASEGMENT_REMOVE = 21,
+        RECORD_METADATA = 29,
         RECORD_LOAD = 30,
         RECORD_CREATE = 31,
         RECORD_UPDATE = 32,
@@ -27,6 +28,7 @@
         CONFIG_GET = 70,
         CONFIG_SET = 71,
         CONFIG_LIST = 72,
-        DB_RELOAD = 73
+        DB_RELOAD = 73,
+        DB_LIST = 74
     }
 }

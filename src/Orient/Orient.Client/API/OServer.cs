@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
@@ -45,6 +46,50 @@ namespace Orient.Client
             ODocument document = _connection.ExecuteOperation(operation);
         }
 
+        #region Configuration
+
+        public string ConfigGet(string key)
+        {
+            ConfigGet operation = new ConfigGet();
+            operation.ConfigKey = key;
+            ODocument document = _connection.ExecuteOperation(operation);
+            return document.GetField<string>(key);
+        }
+
+        public bool ConfigSet(string configKey, string configValue)
+        {
+            ConfigSet operation = new ConfigSet();
+            operation.Key = configKey;
+            operation.Value = configValue;
+            ODocument document = _connection.ExecuteOperation(operation);
+
+            return document.GetField<bool>("IsCreated");
+        }
+
+        public Dictionary<string, string> ConfigList()
+        {
+            ConfigList operation = new ConfigList();
+            ODocument document = _connection.ExecuteOperation(operation);
+            return document.GetField<Dictionary<string, string>>("config");
+        }
+
+        #endregion
+
+        public Dictionary<string, string> Databases()
+        {
+            Dictionary<string, string> returnValue = new Dictionary<string, string>();
+            DBList operation = new DBList();
+            ODocument document = _connection.ExecuteOperation(operation);
+            string[] databases = document.GetField<string>("databases").Split(',');
+            foreach (var item in databases)
+            {
+                string[] keyValue = item.Split(':');
+                returnValue.Add(keyValue[0], keyValue[1] + ":" + keyValue[2]);
+            }
+            return returnValue;
+        }
+        
+        
         public void Close()
         {
             _connection.Dispose();
