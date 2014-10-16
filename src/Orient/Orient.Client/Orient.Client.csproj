@@ -76,6 +76,7 @@
     <Compile Include="API\Query\OSqlInsert.cs" />
     <Compile Include="API\Query\OSqlSelect.cs" />
     <Compile Include="API\Query\OSqlUpdate.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Mapping\AllFieldMapping.cs" />
     <Compile Include="Mapping\BasicFieldMapping.cs" />
     <Compile Include="Mapping\ClassFieldMapping.cs" />

@@ -125,9 +125,17 @@ namespace Orient.Client
             {
                 if (pi.CanRead && pi.CanWrite)
                 {
+                    var oprop = pi.GetOPropertyAttribute();
+                    if (oprop != null && !oprop.Deserializable && !oprop.Serializable)
+                        continue;
+
                     if (pi.PropertyType.IsPrimitive)
                     {
                         CreateProperty(pi);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
                     }
                 }
             }
@@ -141,21 +149,45 @@ namespace Orient.Client
 
         private string ConvertPropertyType(Type propertyType)
         {
-            switch (propertyType.Name)
-            {
-                case "Int64":
-                    return "Long";
-                case "String":
-                    return "String";
-                case "Int32":
-                    return "Integer";
-            }
-            throw new ArgumentException("propertyType " + propertyType.Name + " is not yet supported.");
+            return TypeConverter.TypeToDbName(propertyType);
         }
 
         public override string ToString()
         {
             return _sqlQuery.ToString(QueryType.CreateClass);
+        }
+
+        class TypeConverter
+        {
+            static TypeConverter()
+            {
+                AddType<int>("Integer");
+                AddType<long>("Long");
+                AddType<short>("Short");
+                AddType<string>("string");
+                AddType<bool>("Boolean");
+                AddType<float>("Float");
+                AddType<double>("Double");
+                AddType<DateTime>("Datetime");
+                AddType<byte[]>("Binary");
+                AddType<byte>("Byte");
+            }
+
+            private static void AddType<T>(string name)
+            {
+                _types.Add(typeof(T), name);
+            }
+
+            static Dictionary<Type, string> _types = new Dictionary<Type, string>(); 
+
+            public static string TypeToDbName(Type t)
+            {
+                string result;
+                if (_types.TryGetValue(t, out result))
+                    return result;
+
+                throw new ArgumentException("propertyType " + t.Name + " is not yet supported.");
+            }
         }
     }
 }

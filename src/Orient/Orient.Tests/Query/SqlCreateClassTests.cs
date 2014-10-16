@@ -78,5 +78,34 @@ namespace Orient.Tests.Query
                 }
             }
         }
+
+        class TestClass
+        {
+            public int Value { get; set; }
+            public string Text { get; set; }
+            public bool Flag { get; set; }
+            public long LongValue { get; set; }
+            public short ShortValue { get; set; }
+            public byte Byte { get; set; }
+            public byte[] data { get; set; }
+        }
+
+        [TestMethod]
+        public void ShouldCreateClassWithProperties()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    short classId1 = database.Create.Class<TestClass>().CreateProperties().Run();
+
+                    Assert.IsTrue(classId1 > 0);
+
+                    // would like to test the properties have been created properly, but the server doesn't implement 'info' over the remove protocol 
+                    //var result = database.Command("info class TestClass");
+                    
+                }
+            }
+        }
     }
 }

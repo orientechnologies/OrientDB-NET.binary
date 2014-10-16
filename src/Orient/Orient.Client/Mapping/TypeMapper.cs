@@ -31,6 +31,9 @@ namespace Orient.Client.Mapping
 
         readonly List<IFieldMapping> _fields = new List<IFieldMapping>();
 
+      
+
+
         private TypeMapper()
         {
             Type genericObjectType = typeof (T);
@@ -68,17 +71,14 @@ namespace Orient.Client.Mapping
                         continue;
                 }
 
-                object[] oProperties = propertyInfo.GetCustomAttributes(typeof(OProperty), true);
 
-                if (oProperties.Any())
+                var oProperty = propertyInfo.GetOPropertyAttribute();
+
+                if (oProperty != null)
                 {
-                    OProperty oProperty = oProperties.First() as OProperty;
-                    if (oProperty != null)
-                    {
-                        if (!oProperty.Deserializable)
-                            continue;
-                        propertyName = oProperty.Alias;
-                    }
+                    if (!oProperty.Deserializable)
+                        continue;
+                    propertyName = oProperty.Alias;
                 }
 
                 string fieldPath = propertyName;
