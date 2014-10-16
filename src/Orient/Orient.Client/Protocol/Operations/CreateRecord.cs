@@ -71,24 +71,19 @@ namespace Orient.Client.Protocol.Operations
                 _document.OVersion = reader.ReadInt32EndianAware();
             }
 
-            if (OClient.ProtocolVersion >= 20)
+            if (_database.ProtocolVersion > 21)
             {
-                try//if (reader.BaseStream.CanRead && reader.PeekChar() != -1)
-                {
+    
                     int collectionChangesCount = reader.ReadInt32EndianAware();
                     for (var i = 0; i < collectionChangesCount; i++)
                     {
-                        //    throw new NotImplementedException("don't understand what to do with this yet");
+                        throw new NotImplementedException("don't understand what to do with this yet");
                         var mostSigBits = reader.ReadInt64EndianAware();
                         var leastSigBits = reader.ReadInt64EndianAware();
                         var updatedFileId = reader.ReadInt64EndianAware();
                         var updatedPageIndex = reader.ReadInt64EndianAware();
                         var updatedPageOffset = reader.ReadInt32EndianAware();
                     }
-                }
-                catch (Exception ex) 
-                { 
-                }
             }
             return responseDocument;
 
