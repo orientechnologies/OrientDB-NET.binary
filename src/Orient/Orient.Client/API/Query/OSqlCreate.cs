@@ -25,7 +25,7 @@ namespace Orient.Client
         }
         public OSqlCreateClass Class<T>()
         {
-            return Class(typeof(T).Name);
+            return new OSqlCreateClass(_connection).Class<T>();
         }
 
         #endregion
