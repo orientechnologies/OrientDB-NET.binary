@@ -90,6 +90,13 @@ namespace Orient.Client.Protocol.Operations
             }
             responseDocument.SetField("UpdatedRecordVersions", updateRecordVersions);
 
+            if (_database.ProtocolVersion >= 25)
+            {
+                int collectionChanges = reader.ReadInt32EndianAware();
+                if (collectionChanges > 0)
+                    throw new NotSupportedException("Not supported yet");
+            }
+
             //int collectionChangesCount = reader.ReadInt32EndianAware();
             //if (collectionChangesCount > 0)
             //    throw new NotImplementedException("don't understand what to do with this yet");

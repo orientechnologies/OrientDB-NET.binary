@@ -65,6 +65,13 @@ namespace Orient.Client.Protocol.Operations
             _document.ORID.ClusterPosition = reader.ReadInt64EndianAware();
             _document.OVersion = reader.ReadInt32EndianAware();
 
+            if (_database.ProtocolVersion > 21)
+            {
+                int collectionChanges = reader.ReadInt32EndianAware();
+                if (collectionChanges != 0)
+                    throw new NotSupportedException();
+            }
+
             return responseDocument;
 
 

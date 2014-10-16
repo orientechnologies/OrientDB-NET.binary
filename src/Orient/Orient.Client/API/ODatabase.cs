@@ -30,6 +30,11 @@ namespace Orient.Client
             Transaction = new OTransaction(_connection);
         }
 
+        public int ProtocolVersion
+        {
+            get { return _connection.ProtocolVersion; }
+        }
+
         public List<OCluster> GetClusters()
         {
             return _connection.Document.GetField<List<OCluster>>("Clusters");

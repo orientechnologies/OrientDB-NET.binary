@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Globalization;
 using System.Collections;
@@ -554,7 +555,24 @@ namespace Orient.Client.Protocol.Serializers
 
             var value = Convert.FromBase64String(builder.ToString());
 
-            document[fieldName] = value;
+            BinaryReader br = new BinaryReader(new MemoryStream(value));
+            var flags = br.ReadByte();
+
+            if ((flags & 1) == 0)
+                throw new NotSupportedException("No support for tree based ridBags yet ");
+
+            int count = br.ReadInt32EndianAware();
+
+            List<ORID> orids = new List<ORID>();
+
+            for (int j = 0; j < count; j++)
+            {
+                var cluster = br.ReadInt16EndianAware();
+                var position = br.ReadInt64EndianAware();
+                orids.Add(new ORID(cluster, position));
+            }
+
+            document[fieldName] = orids;
 
             //move past ';'
             i++;
