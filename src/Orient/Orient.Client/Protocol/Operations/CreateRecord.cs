@@ -73,17 +73,16 @@ namespace Orient.Client.Protocol.Operations
 
             if (_database.ProtocolVersion > 21)
             {
-    
-                    int collectionChangesCount = reader.ReadInt32EndianAware();
-                    for (var i = 0; i < collectionChangesCount; i++)
-                    {
-                        throw new NotImplementedException("don't understand what to do with this yet");
-                        var mostSigBits = reader.ReadInt64EndianAware();
-                        var leastSigBits = reader.ReadInt64EndianAware();
-                        var updatedFileId = reader.ReadInt64EndianAware();
-                        var updatedPageIndex = reader.ReadInt64EndianAware();
-                        var updatedPageOffset = reader.ReadInt32EndianAware();
-                    }
+                int collectionChangesCount = reader.ReadInt32EndianAware();
+                for (var i = 0; i < collectionChangesCount; i++)
+                {
+                    throw new NotImplementedException("Collection changes not yet handled - failing rather than ignoring potentially significant information");
+                    //var mostSigBits = reader.ReadInt64EndianAware();
+                    //var leastSigBits = reader.ReadInt64EndianAware();
+                    //var updatedFileId = reader.ReadInt64EndianAware();
+                    //var updatedPageIndex = reader.ReadInt64EndianAware();
+                    //var updatedPageOffset = reader.ReadInt32EndianAware();
+                }
             }
             return responseDocument;
 

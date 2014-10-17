@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
+using System.Linq;
 using System.Globalization;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.IO;
 
 namespace Orient.Client.Protocol.Serializers
 {
@@ -556,7 +554,7 @@ namespace Orient.Client.Protocol.Serializers
             var rids = new HashSet<ORID>();
 
             var value = Convert.FromBase64String(builder.ToString());
-            using(var stream = new MemoryStream(value))
+            using (var stream = new MemoryStream(value))
             using (var reader = new BinaryReader(stream))
             {
                 var first = reader.ReadByte();
@@ -575,20 +573,15 @@ namespace Orient.Client.Protocol.Serializers
                         var clusterid = reader.ReadInt16EndianAware();
                         var clusterposition = reader.ReadInt64EndianAware();
                         rids.Add(new ORID(clusterid, clusterposition));
-                    }                    
+                    }
                 }
-            if (orids.Count == 1)
-                document[fieldName] = orids[0];
-            else
+                else
                 {
                     throw new NotImplementedException("tree based ridbag");
                 }
             }
-            
-			 if (orids.Count == 1)
-                document[fieldName] = rids[0];
-            else
-				document[fieldName] = rids;
+
+            document[fieldName] = rids;
             //move past ';'
             i++;
 

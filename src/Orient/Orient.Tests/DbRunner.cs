@@ -59,7 +59,7 @@ namespace Orient.Tests
                     {
                         p.Kill();
                     }
-                    catch (Exception ex)
+                    catch (Exception )
                     {
                         //Log error?
                     }

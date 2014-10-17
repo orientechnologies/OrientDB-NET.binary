@@ -128,7 +128,7 @@ namespace Orient.Client.Protocol
 
                     return ((IOperation)operation).Response(response);
                 }
-                catch (Exception exception)
+                catch (Exception )
                 {
                     //reset connection as the socket may contains unread data and is considered unstable
                     Reconnect();
