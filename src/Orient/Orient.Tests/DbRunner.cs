@@ -2,33 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Management;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-
-namespace Workshare.Hogweed.Db.Tests
+namespace Orient.Tests
 {
-    [TestClass]
-    public class AssemblySetup
-    {
-        [AssemblyInitialize()]
-        public static void Setup(TestContext context)
-        {
-            var dbDir = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\..\..\orient.server"));
-            DbRunner.StartOrientDb(dbDir, @"C:\Program Files\Java\jre7");
-        }
-
-        [AssemblyCleanup()]
-        public static void TearDown()
-        {
-            DbRunner.StopOrientDb();
-        }
-    }
-
     public class DbRunner
     {
         private static Process _process;
