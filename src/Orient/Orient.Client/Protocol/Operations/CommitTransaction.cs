@@ -94,13 +94,16 @@ namespace Orient.Client.Protocol.Operations
             {
                 int collectionChanges = reader.ReadInt32EndianAware();
                 if (collectionChanges > 0)
-                    throw new NotSupportedException("Not supported yet");
-					
-                      long mBitsOfId = reader.ReadInt64EndianAware();
-                        long lBitsOfId = reader.ReadInt64EndianAware();
-                        var updatedFileId = reader.ReadInt64EndianAware();
-                        var updatedPageIndex = reader.ReadInt64EndianAware();
-                        var updatedPageOffset = reader.ReadInt32EndianAware();
+                    throw new NotSupportedException("Processing of collection changes is not implemented. Failing rather than ignoring potentially significant data");
+
+                //for (int i = 0; i < collectionChanges; i++)
+                //{
+                //    long mBitsOfId = reader.ReadInt64EndianAware();
+                //    long lBitsOfId = reader.ReadInt64EndianAware();
+                //    var updatedFileId = reader.ReadInt64EndianAware();
+                //    var updatedPageIndex = reader.ReadInt64EndianAware();
+                //    var updatedPageOffset = reader.ReadInt32EndianAware();
+                //}
             }
 
 
