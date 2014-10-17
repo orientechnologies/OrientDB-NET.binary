@@ -572,7 +572,10 @@ namespace Orient.Client.Protocol.Serializers
                 orids.Add(new ORID(cluster, position));
             }
 
-            document[fieldName] = orids;
+            if (orids.Count == 1)
+                document[fieldName] = orids[0];
+            else
+                document[fieldName] = orids;
 
             //move past ';'
             i++;

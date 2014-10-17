@@ -73,6 +73,9 @@ namespace Orient.Client
                 if (fieldValue == null || fieldValue.GetType() == typeof (T))
                     return (T)fieldValue;
 
+                if (fieldValue is IList && (fieldValue as IList).Count == 1 && (fieldValue as IList)[0] is T)
+                    return (T) (fieldValue as IList)[0];
+
                 // if value is list or set type, get element type and enumerate over its elements
                 if (!type.IsPrimitive && ImplementsIList(type) && !type.IsArray)
                 {
