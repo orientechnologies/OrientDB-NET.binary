@@ -44,7 +44,6 @@ namespace Workshare.Hogweed.Db.Tests
             _process.StartInfo.EnvironmentVariables.Add("ORIENTDB_HOME", dbDir);
             _process.StartInfo.EnvironmentVariables.Add("JAVA_HOME", javaDir);
             _process.StartInfo.WorkingDirectory = dbDir;
-            _process.StartInfo.CreateNoWindow = false;
             //_process.StartInfo.RedirectStandardError = true;
             //_process.StartInfo.RedirectStandardOutput = true;
             _process.Start();

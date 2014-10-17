@@ -577,12 +577,18 @@ namespace Orient.Client.Protocol.Serializers
                         rids.Add(new ORID(clusterid, clusterposition));
                     }                    
                 }
-                else
+            if (orids.Count == 1)
+                document[fieldName] = orids[0];
+            else
                 {
                     throw new NotImplementedException("tree based ridbag");
                 }
             }
-            document[fieldName] = rids;
+            
+			 if (orids.Count == 1)
+                document[fieldName] = rids[0];
+            else
+				document[fieldName] = rids;
             //move past ';'
             i++;
 
