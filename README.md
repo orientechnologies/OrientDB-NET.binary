@@ -3,6 +3,7 @@ OrientDB-NET.binary is C#/.NET driver for [OrientDB](http://www.orientdb.org/) d
 Check out [wiki docs](https://github.com/yojimbo87/OrientDB-NET.binary/wiki) to learn more.
 
 This fork contains the following improvements 
+---------------------------------------------
 
 * Better handling of ordered edges
 * Support for LoadRecord and CreateRecord operations - faster than performing the same action via SQL commands
