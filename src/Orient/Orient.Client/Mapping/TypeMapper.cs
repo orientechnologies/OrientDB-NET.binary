@@ -89,7 +89,12 @@ namespace Orient.Client.Mapping
                 }
                 else if (propertyInfo.PropertyType.IsGenericType)
                 {
-                    _fields.Add(new ListNamedFieldMapping<T>(propertyInfo, fieldPath));
+                    if (propertyInfo.PropertyType.Name.StartsWith("List"))
+                        _fields.Add(new ListNamedFieldMapping<T>(propertyInfo, fieldPath));
+                    else if (propertyInfo.PropertyType.Name.StartsWith("HashSet"))
+                        _fields.Add(new HashSetNamedFieldMapping<T>(propertyInfo, fieldPath));
+                    else
+                        throw new NotImplementedException("No mapping implemented for type " + propertyInfo.PropertyType.Name);
                 }
                     // property is class except the string or ORID type since string and ORID values are parsed differently
                 else if (propertyInfo.PropertyType.IsClass &&

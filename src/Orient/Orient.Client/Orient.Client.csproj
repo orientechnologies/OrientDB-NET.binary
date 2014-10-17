@@ -81,8 +81,10 @@
     <Compile Include="Mapping\BasicFieldMapping.cs" />
     <Compile Include="Mapping\ClassFieldMapping.cs" />
     <Compile Include="Mapping\CollectionFieldMapping.cs" />
+    <Compile Include="Mapping\CollectionNamedFieldMapping.cs" />
     <Compile Include="Mapping\FastPropertyAccessor.cs" />
     <Compile Include="Mapping\FieldMapping.cs" />
+    <Compile Include="Mapping\HashSetNamedFieldMapping.cs" />
     <Compile Include="Mapping\ORIDFieldMapping.cs" />
     <Compile Include="Mapping\TypeMapper.cs" />
     <Compile Include="Protocol\BinaryReaderHelper.cs" />

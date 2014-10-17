@@ -57,6 +57,7 @@
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="DbRunner.cs" />
     <Compile Include="Graph\GraphClassesTests.cs" />
+    <Compile Include="Graph\OrderedEdgesTest.cs" />
     <Compile Include="Query\LoadRecordTests.cs" />
     <Compile Include="Query\SqlGenerateDeleteDocumentQueryTests.cs" />
     <Compile Include="Query\SqlGenerateDeleteVertexQueryTests.cs" />

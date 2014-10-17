@@ -63,4 +63,22 @@ namespace Orient.Client.Mapping
             return lambda.Compile();
         }
     }
+
+    class FastCall
+    {
+       
+
+        public static Action<object, object> BuildCaller(MethodInfo methodInfo)
+        {
+            var targetType = methodInfo.DeclaringType;
+            var param1Type = methodInfo.GetParameters()[0].ParameterType;
+            var exTarget = Expression.Parameter(typeof(object), "t");
+            var exValue = Expression.Parameter(typeof(object), "p");
+            var exBody = Expression.Call(Expression.Convert(exTarget, targetType), methodInfo, Expression.Convert(exValue, param1Type));
+            var lambda = Expression.Lambda<Action<object, object>>(exBody, exTarget, exValue);
+
+            return lambda.Compile();
+        }
+
+    }
 }

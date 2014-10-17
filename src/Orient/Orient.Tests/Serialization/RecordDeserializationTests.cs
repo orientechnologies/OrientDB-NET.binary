@@ -368,7 +368,7 @@ namespace Orient.Tests.Serialization
             //    db.Command("create property Person.in_FriendOf ANY");
             //    db.Command("alter property Person.in_FriendOf custom ordered=true");
 
-            string recordString = "single:#10:12345,list:[#11:123,#22:1234,#33:1234567]";
+            string recordString = "single:#10:12345,list:[#11:123,#22:1234,#33:1234567],ORID:#10:123,Link:#10:234,Value:17";
 
             ODocument document = ODocument.Deserialize(recordString);
 
@@ -382,6 +382,40 @@ namespace Orient.Tests.Serialization
             Assert.IsNotNull(testObj.list);
             Assert.AreEqual(1, testObj.single.Count);
             Assert.AreEqual(3, testObj.list.Count);
+        }
+
+        [TestMethod]
+        public void ShouldDeserializeSingleItemToOneElementListFieldOfObjectViaDB()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // important if you use ordered edges, since if more than 1 they appear as a list, if only one then as a single object, ie
+                    //    db.Create.Class<Person>().Extends("V").Run();
+                    //    db.Command("create property Person.in_FriendOf ANY");
+                    //    db.Command("alter property Person.in_FriendOf custom ordered=true");
+
+                    string recordString = "single:#10:12345,list:[#11:123,#22:1234,#33:1234567],ORID:#10:123,Link:#10:234,Value:17";
+
+                    ODocument document = ODocument.Deserialize(recordString);
+
+                    var vertex = database.Create.Vertex("V").Set(document).Run();
+
+                    var loaded = database.Load.ORID(vertex.ORID).Run();
+
+
+                    var testObj = loaded.To<TestObject>();
+
+                    Assert.IsNotNull(testObj);
+                    Assert.IsNotNull(testObj.single);
+                    Assert.IsNotNull(testObj.list);
+                    Assert.IsNotNull(testObj.ORID);
+                    Assert.IsNotNull(testObj.Link);
+                    Assert.AreEqual(1, testObj.single.Count);
+                    Assert.AreEqual(3, testObj.list.Count);
+                }
+            }
         }
 
         class TestArray

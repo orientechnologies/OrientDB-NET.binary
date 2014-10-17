@@ -551,7 +551,9 @@ namespace Orient.Client.Protocol.Serializers
                 builder.Append(recordString[i]);
                 i++;
             }
-            var rids = new HashSet<ORID>();
+
+            // use a list as it preserves order at this stage which may be important when using ordered edges
+            var rids = new List<ORID>();
 
             var value = Convert.FromBase64String(builder.ToString());
             using (var stream = new MemoryStream(value))
