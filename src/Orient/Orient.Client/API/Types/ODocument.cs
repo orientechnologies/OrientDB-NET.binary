@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Orient.Client.API.Types;
 using Orient.Client.Mapping;
 using Orient.Client.Protocol.Serializers;
 
@@ -294,7 +295,10 @@ namespace Orient.Client
 
         public string Serialize()
         {
-            return RecordSerializer.Serialize(this);
+            if (OClient.SerializationImpl == ORecordFormat.ORecordDocument2csv.ToString())
+                return RecordSerializer.Serialize(this);
+            else
+                return RecordBinarySerializer.Serialize(this);
         }
 
         public static ODocument Deserialize(string recordString)

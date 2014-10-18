@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Orient.Client.API.Types;
 using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
@@ -31,16 +32,18 @@ namespace Orient.Client.Protocol.Operations
             _document.ORID = new ORID(clusterId, -1);
 
             // standard request fields
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)OperationType.RECORD_CREATE) });
-            request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(sessionID) });
+            request.AddDataItem((byte)OperationType.RECORD_CREATE);
+            request.AddDataItem(sessionID);
+
             if (OClient.ProtocolVersion < 24)
             {
-                request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray((int)-1) });  // data segment id
+                request.AddDataItem((int)-1);  // data segment id
             }
-            request.DataItems.Add(new RequestDataItem() { Type = "short", Data = BinarySerializer.ToArray((short)-1) });
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(_document.Serialize()) });
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)'d') });
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)0) });
+
+            request.AddDataItem((short)clusterId);
+            request.AddDataItem(_document.Serialize());
+            request.AddDataItem((byte)ORecordType.Document);
+            request.AddDataItem((byte)0);
 
             return request;
         }

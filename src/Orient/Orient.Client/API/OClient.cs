@@ -22,7 +22,7 @@ namespace Orient.Client
             }
         }
         public static int BufferLenght { get; set; }
-        public static string SerializationImpl { get { return ORecordFormat.ORecordDocument2csv.ToString(); } }
+        public static string SerializationImpl { get { return ORecordFormat.ORecordSerializerBinary.ToString(); } }
 
         static OClient()
         {

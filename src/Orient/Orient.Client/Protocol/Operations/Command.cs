@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Orient.Client.API.Types;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Serializers;
 
@@ -15,7 +16,7 @@ namespace Orient.Client.Protocol.Operations
         public Request Request(int sessionId)
         {
             Request request = new Request();
-            
+
             // standard request fields
             request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)OperationType.COMMAND) });
             request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(sessionId) });
@@ -50,17 +51,21 @@ namespace Orient.Client.Protocol.Operations
             }
 
             // TODO: sql script case length
-            request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(
-                //4 + // this int
-                4 + // class name int length
-                BinarySerializer.Length(className) + 
-                4 + // limit int length
-                4 + // text int length
-                BinarySerializer.Length(CommandPayload.Text) + 
-                4 + // fetch plant int length
-                BinarySerializer.Length(CommandPayload.FetchPlan) +
-                4 // serialized params int (disable)
-            ) });
+            request.DataItems.Add(new RequestDataItem()
+            {
+                Type = "int",
+                Data = BinarySerializer.ToArray(
+                    //4 + // this int
+                    4 + // class name int length
+                    BinarySerializer.Length(className) +
+                    4 + // limit int length
+                    4 + // text int length
+                    BinarySerializer.Length(CommandPayload.Text) +
+                    4 + // fetch plant int length
+                    BinarySerializer.Length(CommandPayload.FetchPlan) +
+                    4 // serialized params int (disable)
+                    )
+            });
             request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(className) });
 
             if (CommandPayload.Type == CommandPayloadType.SqlScript)
@@ -74,14 +79,14 @@ namespace Orient.Client.Protocol.Operations
             //request.DataItems.Add(new RequestDataItem() { Type = "bytes", Data = CommandPayload.SerializedParams });
             // HACK: 0:int means disable
             request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(0) });
-            
+
             return request;
         }
 
         public ODocument Response(Response response)
         {
             ODocument responseDocument = new ODocument();
-            
+
             if (response == null)
             {
                 return responseDocument;
@@ -202,7 +207,16 @@ namespace Orient.Client.Protocol.Operations
                 int version = reader.ReadInt32EndianAware();
                 int recordLength = reader.ReadInt32EndianAware();
                 byte[] rawRecord = reader.ReadBytes(recordLength);
-                document = RecordSerializer.Deserialize(orid, version, type, classId, rawRecord);
+                if (OClient.SerializationImpl == ORecordFormat.ORecordDocument2csv.ToString())
+                    document = RecordSerializer.Deserialize(orid, version, type, classId, rawRecord);
+                else
+                {
+                    document = RecordBinarySerializer.Deserialize(rawRecord);
+                    document.ORID = orid;
+                    document.OVersion = version;
+                    document.OType = type;
+                }
+
             }
 
             return document;
