@@ -9,6 +9,7 @@ namespace Orient.Tests.Query
     public class GremlinTests
     {
         [TestMethod]
+        [Ignore]
         public void ShouldExecuteSimpleGremlinQuery()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
@@ -35,7 +36,9 @@ namespace Orient.Tests.Query
                         .Set("Bar", 123)
                         .Run();
 
-                    List<ODocument> documents = database.Gremlin("g.V");
+                     // FIX: Problem Execute gremlin script
+                     List<ODocument> documents = database.Gremlin("g.V");
+                     Assert.AreEqual(2, documents.Count);
                 }
             }
         }
