@@ -120,16 +120,14 @@ namespace Orient.Client
 
         public List<ODocument> Query(string sql, string fetchPlan)
         {
-            CommandPayload payload = new CommandPayload();
-            payload.Type = CommandPayloadType.Sql;
+            CommandPayloadQuery payload = new CommandPayloadQuery();
             payload.Text = sql;
             payload.NonTextLimit = -1;
             payload.FetchPlan = fetchPlan;
-            payload.SerializedParams = new byte[] { 0 };
+            //payload.SerializedParams = new byte[] { 0 };
 
             Command operation = new Command();
             operation.OperationMode = OperationMode.Asynchronous;
-            operation.ClassType = CommandClassType.Idempotent;
             operation.CommandPayload = payload;
 
             ODocument document = _connection.ExecuteOperation(operation);
@@ -141,17 +139,12 @@ namespace Orient.Client
 
         public List<ODocument> Gremlin(string query)
         {
-            CommandPayload payload = new CommandPayload();
+            CommandPayloadScript payload = new CommandPayloadScript();
             payload.Language = "gremlin";
-            payload.Type = CommandPayloadType.Sql;
             payload.Text = query;
-            payload.NonTextLimit = -1;
-            payload.FetchPlan = "";
-            payload.SerializedParams = new byte[] { 0 };
 
             Command operation = new Command();
             operation.OperationMode = OperationMode.Asynchronous;
-            operation.ClassType = CommandClassType.NonIdempotent;
             operation.CommandPayload = payload;
 
             ODocument document = _connection.ExecuteOperation(operation);
@@ -161,16 +154,11 @@ namespace Orient.Client
 
         public OCommandResult Command(string sql)
         {
-            CommandPayload payload = new CommandPayload();
-            payload.Type = CommandPayloadType.Sql;
+            CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = sql;
-            payload.NonTextLimit = -1;
-            payload.FetchPlan = "";
-            payload.SerializedParams = new byte[] { 0 };
 
             Command operation = new Command();
             operation.OperationMode = OperationMode.Synchronous;
-            operation.ClassType = CommandClassType.NonIdempotent;
             operation.CommandPayload = payload;
 
             ODocument document = _connection.ExecuteOperation(operation);

@@ -83,16 +83,11 @@ namespace Orient.Client
 
         public ODocument Run()
         {
-            CommandPayload payload = new CommandPayload();
-            payload.Type = CommandPayloadType.Sql;
+            CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = ToString();
-            payload.NonTextLimit = -1;
-            payload.FetchPlan = "";
-            payload.SerializedParams = new byte[] { 0 };
 
             Command operation = new Command();
             operation.OperationMode = OperationMode.Synchronous;
-            operation.ClassType = CommandClassType.NonIdempotent;
             operation.CommandPayload = payload;
 
             OCommandResult result = new OCommandResult(_connection.ExecuteOperation(operation));
