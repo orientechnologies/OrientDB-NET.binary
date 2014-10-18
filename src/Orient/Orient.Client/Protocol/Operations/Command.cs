@@ -10,77 +10,66 @@ namespace Orient.Client.Protocol.Operations
     internal class Command : IOperation
     {
         internal OperationMode OperationMode { get; set; }
-        internal CommandClassType ClassType { get; set; }
-        internal CommandPayload CommandPayload { get; set; }
+        internal CommandPayloadBase CommandPayload { get; set; }
 
         public Request Request(int sessionId)
         {
             Request request = new Request();
 
             // standard request fields
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)OperationType.COMMAND) });
-            request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(sessionId) });
+            request.AddDataItem((byte)OperationType.COMMAND);
+            request.AddDataItem(sessionId);
             // operation specific fields
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)OperationMode) });
+            request.AddDataItem((byte)OperationMode);
 
-            // class name field
-            string className = "x";
-            switch (ClassType)
+            // idempotent command (e.g. select)
+            var queryPayload = CommandPayload as CommandPayloadQuery;
+            if (queryPayload != null)
             {
-                // idempotent command (e.g. select)
-                case CommandClassType.Idempotent:
-                    className = "com.orientechnologies.orient.core.sql.query.OSQLSynchQuery";
-                    break;
-                // non-idempotent command (e.g. insert)
-                case CommandClassType.NonIdempotent:
-                    if (!string.IsNullOrEmpty(CommandPayload.Language) && CommandPayload.Language.Equals("gremlin"))
-                    {
-                        className = "com.orientechnologies.orient.graph.gremlin.OCommandGremlin";
-                    }
-                    else
-                    {
-                        className = "com.orientechnologies.orient.core.sql.OCommandSQL";
-                    }
-                    break;
-                // script command
-                case CommandClassType.Script:
-                    className = "com.orientechnologies.orient.core.command.script.OCommandScript";
-                    break;
-                default:
-                    break;
+                // Write command payload length
+                request.AddDataItem(queryPayload.PayLoadLength);
+                request.AddDataItem(queryPayload.ClassName);
+                //(text:string)(non-text-limit:int)[(fetch-plan:string)](serialized-params:bytes[])
+                request.AddDataItem(queryPayload.Text);
+                request.AddDataItem(queryPayload.NonTextLimit);
+                request.AddDataItem(queryPayload.FetchPlan);
+
+                // TODO: Implement Serialized Params for Idempotent query
+                // HACK: 0:int means disable
+                request.AddDataItem((int)0);
+                return request;
             }
-
-            // TODO: sql script case length
-            request.DataItems.Add(new RequestDataItem()
+            // non-idempotent command (e.g. insert)
+            var scriptPayload = CommandPayload as CommandPayloadScript;
+            if (scriptPayload != null)
             {
-                Type = "int",
-                Data = BinarySerializer.ToArray(
-                    //4 + // this int
-                    4 + // class name int length
-                    BinarySerializer.Length(className) +
-                    4 + // limit int length
-                    4 + // text int length
-                    BinarySerializer.Length(CommandPayload.Text) +
-                    4 + // fetch plant int length
-                    BinarySerializer.Length(CommandPayload.FetchPlan) +
-                    4 // serialized params int (disable)
-                    )
-            });
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(className) });
+                // Write command payload length
+                request.AddDataItem(scriptPayload.PayLoadLength);
+                request.AddDataItem(scriptPayload.ClassName);
+                request.AddDataItem(scriptPayload.Language);
+                request.AddDataItem(scriptPayload.Text);
+                request.AddDataItem((byte)0);
+                request.AddDataItem((byte)0);
 
-            if (CommandPayload.Type == CommandPayloadType.SqlScript)
-            {
-                request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(CommandPayload.Language) });
+                return request;
             }
-
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(CommandPayload.Text) });
-            request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(CommandPayload.NonTextLimit) });
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(CommandPayload.FetchPlan) });
-            //request.DataItems.Add(new RequestDataItem() { Type = "bytes", Data = CommandPayload.SerializedParams });
-            // HACK: 0:int means disable
-            request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(0) });
-
-            return request;
+            var commandPayload = CommandPayload as CommandPayloadCommand;
+            if (commandPayload != null)
+            {
+                // Write command payload length
+                request.AddDataItem(commandPayload.PayLoadLength);
+                request.AddDataItem(commandPayload.ClassName);
+                // (text:string)(has-simple-parameters:boolean)(simple-paremeters:bytes[])(has-complex-parameters:boolean)(complex-parameters:bytes[])
+                request.AddDataItem(commandPayload.Text);
+                // has-simple-parameters boolean
+                request.AddDataItem((byte)0); // 0 - false, 1 - true
+                //request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(0) });
+                // has-complex-parameters
+                request.AddDataItem((byte)0); // 0 - false, 1 - true
+                //request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(0) });
+                return request;
+            }
+            throw new OException(OExceptionType.Operation, "Invalid payload");
         }
 
         public ODocument Response(Response response)
