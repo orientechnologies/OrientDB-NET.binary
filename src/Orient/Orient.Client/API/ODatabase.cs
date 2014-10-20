@@ -144,14 +144,27 @@ namespace Orient.Client
             payload.Text = query;
 
             Command operation = new Command();
-            operation.OperationMode = OperationMode.Asynchronous;
+            operation.OperationMode = OperationMode.Synchronous;
             operation.CommandPayload = payload;
 
             ODocument document = _connection.ExecuteOperation(operation);
 
             return document.GetField<List<ODocument>>("Content");
         }
+        public List<ODocument> JavaScript(string query)
+        {
+            CommandPayloadScript payload = new CommandPayloadScript();
+            payload.Language = "javascript";
+            payload.Text = query;
 
+            Command operation = new Command();
+            operation.OperationMode = OperationMode.Synchronous;
+            operation.CommandPayload = payload;
+
+            ODocument document = _connection.ExecuteOperation(operation);
+
+            return document.GetField<List<ODocument>>("Content");
+        }
         public OCommandResult Command(string sql)
         {
             CommandPayloadCommand payload = new CommandPayloadCommand();

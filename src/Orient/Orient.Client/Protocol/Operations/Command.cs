@@ -32,7 +32,7 @@ namespace Orient.Client.Protocol.Operations
                 request.AddDataItem(queryPayload.Text);
                 request.AddDataItem(queryPayload.NonTextLimit);
                 request.AddDataItem(queryPayload.FetchPlan);
-                
+
                 // TODO: Implement Serialized Params for Idempotent query
                 // HACK: 0:int means disable
                 request.AddDataItem((int)0);
@@ -45,7 +45,8 @@ namespace Orient.Client.Protocol.Operations
                 // Write command payload length
                 request.AddDataItem(scriptPayload.PayLoadLength);
                 request.AddDataItem(scriptPayload.ClassName);
-                request.AddDataItem(scriptPayload.Language);
+                if (scriptPayload.Language != "gremlin")
+                    request.AddDataItem(scriptPayload.Language);
                 request.AddDataItem(scriptPayload.Text);
                 request.AddDataItem((byte)0);
                 request.AddDataItem((byte)0);
