@@ -46,7 +46,8 @@ namespace Orient.Client.Protocol.Operations
                 // Write command payload length
                 request.AddDataItem(scriptPayload.PayLoadLength);
                 request.AddDataItem(scriptPayload.ClassName);
-                request.AddDataItem(scriptPayload.Language);
+                if (scriptPayload.Language != "gremlin")
+                    request.AddDataItem(scriptPayload.Language);
                 request.AddDataItem(scriptPayload.Text);
                 request.AddDataItem((byte)0);
                 request.AddDataItem((byte)0);

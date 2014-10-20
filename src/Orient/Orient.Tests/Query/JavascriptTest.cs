@@ -6,11 +6,11 @@ using Orient.Client;
 namespace Orient.Tests.Query
 {
     [TestClass]
-    public class GremlinTests
+    public class JavascriptTest
     {
         [TestMethod]
         [TestCategory("Script")]
-        public void ShouldExecuteSimpleGremlinQuery()
+        public void ShouldExecuteSimpleJavascriptQuery()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
@@ -36,7 +36,7 @@ namespace Orient.Tests.Query
                         .Set("Bar", 123)
                         .Run();
 
-                    List<ODocument> documents = database.Gremlin("g.V");
+                    List<ODocument> documents = database.JavaScript("db.command('select from V');");
                     Assert.AreEqual(2, documents.Count);
                     var loadedVertex1 = documents.Find(d => d.ORID.Equals(vertex1.ORID));
                     var loadedVertex2 = documents.Find(d => d.ORID.Equals(vertex2.ORID));

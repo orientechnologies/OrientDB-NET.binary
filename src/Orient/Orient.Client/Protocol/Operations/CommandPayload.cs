@@ -72,8 +72,8 @@ namespace Orient.Client.Protocol.Operations
         {
             get
             {
-                return base.PayLoadLength
-                    + sizeof(int) + BinarySerializer.Length(Language);
+                var res = base.PayLoadLength;
+                return (Language == "gremlin") ? res : res + sizeof(int) + BinarySerializer.Length(Language);
             }
         }
 
