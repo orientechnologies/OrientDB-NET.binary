@@ -32,9 +32,9 @@ namespace Orient.Tests.Query
                         .Into("TestClass")
                         .Run();
                     var loaded = database.Load.ORID(insertedDocument.ORID).Run();
-                    Assert.AreEqual(loaded.OClassName, "TestClass");
-                    Assert.AreEqual(loaded.GetField<string>("foo"), document.GetField<string>("foo"));
-                    Assert.AreEqual(loaded.GetField<int>("bar"), document.GetField<int>("bar"));
+                    Assert.AreEqual("TestClass", loaded.OClassName);
+                    Assert.AreEqual(document.GetField<string>("foo"), loaded.GetField<string>("foo"));
+                    Assert.AreEqual(document.GetField<int>("bar"), loaded.GetField<int>("bar"));
                     Assert.AreEqual(insertedDocument.ORID, loaded.ORID);
                 }
             }
@@ -74,9 +74,9 @@ namespace Orient.Tests.Query
                         .Into("TestClass")
                         .Run();
                     var loaded = database.Load.ORID(insertedDocument.ORID).FetchPlan("*:1").Run();
-                    Assert.AreEqual(loaded.OClassName, "TestClass");
-                    Assert.AreEqual(loaded.GetField<string>("foo"), document.GetField<string>("foo"));
-                    Assert.AreEqual(loaded.GetField<int>("bar"), document.GetField<int>("bar"));
+                    Assert.AreEqual("TestClass", loaded.OClassName);
+                    Assert.AreEqual(document.GetField<string>("foo"), loaded.GetField<string>("foo"));
+                    Assert.AreEqual(document.GetField<int>("bar"), loaded.GetField<int>("bar"));
                     Assert.AreEqual(insertedDocument.ORID, loaded.ORID);
                 }
             }
@@ -119,9 +119,9 @@ namespace Orient.Tests.Query
 
 
                     var loaded = database.Load.ORID(insertedDocument.ORID).FetchPlan("*:1").Run();
-                    Assert.AreEqual(loaded.OClassName, "TestClass");
-                    Assert.AreEqual(loaded.GetField<string>("foo"), document.GetField<string>("foo"));
-                    Assert.AreEqual(loaded.GetField<int>("bar"), document.GetField<int>("bar"));
+                    Assert.AreEqual("TestClass", loaded.OClassName);
+                    Assert.AreEqual(document.GetField<string>("foo"), loaded.GetField<string>("foo"));
+                    Assert.AreEqual(document.GetField<int>("bar"), loaded.GetField<int>("bar"));
                     Assert.AreEqual(insertedDocument.ORID, loaded.ORID);
                 }
             }

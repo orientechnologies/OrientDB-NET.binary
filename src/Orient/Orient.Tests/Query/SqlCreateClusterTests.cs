@@ -24,7 +24,7 @@ namespace Orient.Tests.Query
                         .Create.Cluster<TestProfileClass>(OClusterType.Physical)
                         .Run();
 
-                    Assert.AreEqual(clusterId2, clusterId1 + 1);
+                    Assert.AreEqual(clusterId1 + 1, clusterId2);
                 }
             }
         }

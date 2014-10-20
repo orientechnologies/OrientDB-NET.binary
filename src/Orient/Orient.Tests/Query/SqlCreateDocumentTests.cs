@@ -29,10 +29,10 @@ namespace Orient.Tests.Query
                         .Create.Document(document)
                         .Run();
 
-                    Assert.IsTrue(createdDocument.ORID != null);
-                    Assert.AreEqual(createdDocument.OClassName, "TestClass");
-                    Assert.AreEqual(createdDocument.GetField<string>("foo"), document.GetField<string>("foo"));
-                    Assert.AreEqual(createdDocument.GetField<int>("bar"), document.GetField<int>("bar"));
+                    Assert.IsNotNull(createdDocument.ORID);
+                    Assert.AreEqual("TestClass", createdDocument.OClassName);
+                    Assert.AreEqual(document.GetField<string>("foo"), createdDocument.GetField<string>("foo"));
+                    Assert.AreEqual(document.GetField<int>("bar"), createdDocument.GetField<int>("bar"));
                 }
             }
         }
@@ -57,10 +57,10 @@ namespace Orient.Tests.Query
                         .Create.Document(profile)
                         .Run<TestProfileClass>();
 
-                    Assert.IsTrue(createdObject.ORID != null);
-                    Assert.AreEqual(createdObject.OClassName, typeof(TestProfileClass).Name);
-                    Assert.AreEqual(createdObject.Name, profile.Name);
-                    Assert.AreEqual(createdObject.Surname, profile.Surname);
+                    Assert.IsNotNull(createdObject.ORID);
+                    Assert.AreEqual(typeof(TestProfileClass).Name, createdObject.OClassName);
+                    Assert.AreEqual(profile.Name, createdObject.Name);
+                    Assert.AreEqual(profile.Surname, createdObject.Surname);
                 }
             }
         }
@@ -88,10 +88,10 @@ namespace Orient.Tests.Query
                         .Set(document)
                         .Run();
 
-                    Assert.IsTrue(createdDocument.ORID != null);
-                    Assert.AreEqual(createdDocument.OClassName, "TestClass");
-                    Assert.AreEqual(createdDocument.GetField<string>("foo"), document.GetField<string>("foo"));
-                    Assert.AreEqual(createdDocument.GetField<int>("bar"), document.GetField<int>("bar"));
+                    Assert.IsNotNull(createdDocument.ORID);
+                    Assert.AreEqual("TestClass", createdDocument.OClassName);
+                    Assert.AreEqual(document.GetField<string>("foo"), createdDocument.GetField<string>("foo"));
+                    Assert.AreEqual(document.GetField<int>("bar"), createdDocument.GetField<int>("bar"));
                 }
             }
         }
