@@ -253,16 +253,14 @@ namespace Orient.Client
 
         public List<ODocument> ToList(string fetchPlan)
         {
-            CommandPayload payload = new CommandPayload();
-            payload.Type = CommandPayloadType.Sql;
+            CommandPayloadQuery payload = new CommandPayloadQuery();
             payload.Text = ToString();
             payload.NonTextLimit = -1;
             payload.FetchPlan = fetchPlan;
-            payload.SerializedParams = new byte[] { 0 };
+            //payload.SerializedParams = new byte[] { 0 };
 
             Command operation = new Command();
             operation.OperationMode = OperationMode.Asynchronous;
-            operation.ClassType = CommandClassType.Idempotent;
             operation.CommandPayload = payload;
 
             OCommandResult commandResult = new OCommandResult(_connection.ExecuteOperation(operation));

@@ -45,9 +45,13 @@ namespace Orient.Tests.Server
         [TestMethod]
         public void TestDbList()
         {
-            OServer server = TestConnection.GetServer();
-            Dictionary<string, string> databases = server.Databases();
-            Assert.IsTrue(databases.Count > 0);
+            using (var context = new TestDatabaseContext())
+            using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+            {
+                OServer server = TestConnection.GetServer();
+                Dictionary<string, string> databases = server.Databases();
+                Assert.IsTrue(databases.Count > 0);
+            }
         }
     }
 }

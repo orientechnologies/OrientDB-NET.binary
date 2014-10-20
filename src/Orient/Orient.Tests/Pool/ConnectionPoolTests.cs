@@ -13,21 +13,21 @@ namespace Orient.Tests.Pool
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
                 Assert.AreEqual(
-                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias), 
-                    TestConnection.GlobalTestDatabasePoolSize
+                    TestConnection.GlobalTestDatabasePoolSize,
+                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias)
                 );
 
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
                     Assert.AreEqual(
-                        OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias),
-                        TestConnection.GlobalTestDatabasePoolSize - 1
+                        TestConnection.GlobalTestDatabasePoolSize - 1,
+                        OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias)
                     );
                 }
 
                 Assert.AreEqual(
-                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias), 
-                    TestConnection.GlobalTestDatabasePoolSize
+                    TestConnection.GlobalTestDatabasePoolSize,
+                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias)
                 );
             }
         }
@@ -38,29 +38,29 @@ namespace Orient.Tests.Pool
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
                 Assert.AreEqual(
-                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias),
-                    TestConnection.GlobalTestDatabasePoolSize
+                    TestConnection.GlobalTestDatabasePoolSize,
+                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias)
                 );
 
                 ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias);
 
                 Assert.AreEqual(
-                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias),
-                    TestConnection.GlobalTestDatabasePoolSize - 1
+                    TestConnection.GlobalTestDatabasePoolSize - 1,
+                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias)
                 );
 
                 database.Close();
 
                 Assert.AreEqual(
-                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias),
-                    TestConnection.GlobalTestDatabasePoolSize
+                    TestConnection.GlobalTestDatabasePoolSize,
+                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias)
                 );
 
                 database.Dispose();
 
                 Assert.AreEqual(
-                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias),
-                    TestConnection.GlobalTestDatabasePoolSize
+                    TestConnection.GlobalTestDatabasePoolSize,
+                    OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias)
                 );
             }
         }
