@@ -105,5 +105,18 @@ namespace Orient.Client
         {
             return (ClusterId * 17) ^ ClusterPosition.GetHashCode();
         }
+
+        public static bool operator ==(ORID left, ORID right)
+        {
+            if (Equals(left, null))
+                return Equals(right, null);
+
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ORID left, ORID right)
+        {
+            return !(left == right);
+        }
     }
 }
