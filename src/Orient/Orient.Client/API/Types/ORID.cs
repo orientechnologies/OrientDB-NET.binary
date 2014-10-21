@@ -1,16 +1,17 @@
-﻿
+﻿using System;
+
 namespace Orient.Client
 {
-    public class ORID
+    public class ORID : IEquatable<ORID>
     {
-        static readonly char[] colon = new char[] {':'};
+        static readonly char[] colon = new char[] { ':' };
         public short ClusterId { get; set; }
         public long ClusterPosition { get; set; }
-        public string RID 
+        public string RID
         {
             get
             {
-                return string.Format("#{0}:{1}",  ClusterId , ClusterPosition);
+                return string.Format("#{0}:{1}", ClusterId, ClusterPosition);
             }
 
             set
@@ -22,7 +23,7 @@ namespace Orient.Client
 
                 //ClusterId = short.Parse(split[0].Substring(1));
                 //ClusterPosition = long.Parse(split[1]);
-            } 
+            }
         }
 
         long FastParse(string s, ref int offset)
@@ -92,13 +93,13 @@ namespace Orient.Client
 
             // if parameter cannot be cast to ORID return false.
             ORID orid = obj as ORID;
-            
+
             if (orid == null)
             {
                 return false;
             }
 
-            return ClusterId == orid.ClusterId && ClusterPosition == orid.ClusterPosition;
+            return Equals(orid);
         }
 
         public override int GetHashCode()
@@ -108,8 +109,15 @@ namespace Orient.Client
 
         public static bool operator ==(ORID left, ORID right)
         {
-            if (Equals(left, null))
-                return Equals(right, null);
+            if (System.Object.ReferenceEquals(left, right))
+            {
+                return true;
+            }
+
+            if (((object)left == null) || ((object)right == null))
+            {
+                return false;
+            }
 
             return left.Equals(right);
         }
@@ -117,6 +125,14 @@ namespace Orient.Client
         public static bool operator !=(ORID left, ORID right)
         {
             return !(left == right);
+        }
+
+        public bool Equals(ORID other)
+        {
+            if (other == null)
+                return false;
+
+            return ClusterId == other.ClusterId && ClusterPosition == other.ClusterPosition;
         }
     }
 }
