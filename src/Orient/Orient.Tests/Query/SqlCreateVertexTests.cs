@@ -26,10 +26,10 @@ namespace Orient.Tests.Query
                         .Set("bar", 12345)
                         .Run();
 
-                    Assert.IsTrue(createdVertex.ORID != null);
-                    Assert.AreEqual(createdVertex.OClassName, "TestVertexClass");
-                    Assert.AreEqual(createdVertex.GetField<string>("foo"), "foo string value");
-                    Assert.AreEqual(createdVertex.GetField<int>("bar"), 12345);
+                    Assert.IsNotNull(createdVertex.ORID);
+                    Assert.AreEqual("TestVertexClass", createdVertex.OClassName);
+                    Assert.AreEqual("foo string value", createdVertex.GetField<string>("foo"));
+                    Assert.AreEqual(12345, createdVertex.GetField<int>("bar"));
                 }
             }
         }
@@ -57,10 +57,10 @@ namespace Orient.Tests.Query
                         .Create.Vertex(document)
                         .Run();
 
-                    Assert.IsTrue(createdVertex.ORID != null);
-                    Assert.AreEqual(createdVertex.OClassName, "TestVertexClass");
-                    Assert.AreEqual(createdVertex.GetField<string>("foo"), document.GetField<string>("foo"));
-                    Assert.AreEqual(createdVertex.GetField<int>("bar"), document.GetField<int>("bar"));
+                    Assert.IsNotNull(createdVertex.ORID);
+                    Assert.AreEqual("TestVertexClass", createdVertex.OClassName);
+                    Assert.AreEqual(document.GetField<string>("foo"), createdVertex.GetField<string>("foo"));
+                    Assert.AreEqual(document.GetField<int>("bar"), createdVertex.GetField<int>("bar"));
                 }
             }
         }
@@ -81,10 +81,10 @@ namespace Orient.Tests.Query
                         .Create.Vertex(vertex)
                         .Run();
 
-                    Assert.IsTrue(createdVertex.ORID != null);
-                    Assert.AreEqual(createdVertex.OClassName, "V");
-                    Assert.AreEqual(createdVertex.GetField<string>("foo"), vertex.GetField<string>("foo"));
-                    Assert.AreEqual(createdVertex.GetField<int>("bar"), vertex.GetField<int>("bar"));
+                    Assert.IsNotNull(createdVertex.ORID);
+                    Assert.AreEqual("V", createdVertex.OClassName);
+                    Assert.AreEqual(vertex.GetField<string>("foo"), createdVertex.GetField<string>("foo"));
+                    Assert.AreEqual(vertex.GetField<int>("bar"), createdVertex.GetField<int>("bar"));
                 }
             }
         }
@@ -110,10 +110,10 @@ namespace Orient.Tests.Query
                         .Create.Vertex(profile)
                         .Run<TestProfileClass>();
 
-                    Assert.IsTrue(createdVertex.ORID != null);
-                    Assert.AreEqual(createdVertex.OClassName, typeof(TestProfileClass).Name);
-                    Assert.AreEqual(createdVertex.Name, profile.Name);
-                    Assert.AreEqual(createdVertex.Surname, profile.Surname);
+                    Assert.IsNotNull(createdVertex.ORID);
+                    Assert.AreEqual(typeof(TestProfileClass).Name, createdVertex.OClassName);
+                    Assert.AreEqual(profile.Name, createdVertex.Name);
+                    Assert.AreEqual(profile.Surname, createdVertex.Surname);
                 }
             }
         }

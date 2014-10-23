@@ -19,6 +19,7 @@ namespace Orient.Client
         public OSqlDelete Delete { get { return new OSqlDelete(_connection); } }
         public OLoadRecord Load { get { return new OLoadRecord(_connection); } }
         public ORecordMetadata Metadata { get { return new ORecordMetadata(_connection); } }
+        public OSqlSchema Schema { get { return new OSqlSchema(_connection); } }
 
         public OTransaction Transaction { get; private set; }
 

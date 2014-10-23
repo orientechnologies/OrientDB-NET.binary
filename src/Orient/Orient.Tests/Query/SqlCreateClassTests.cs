@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Orient.Client;
+using System.Linq;
 
 namespace Orient.Tests.Query
 {
@@ -24,7 +25,9 @@ namespace Orient.Tests.Query
                         .Create.Class("TestClass2")
                         .Run();
 
-                    Assert.AreEqual(classId2, classId1 + 1);
+                    Assert.IsTrue(classId2 > 0);
+
+                    Assert.AreEqual(classId1 + 1, classId2);
                 }
             }
         }
@@ -48,13 +51,13 @@ namespace Orient.Tests.Query
                         .Extends<OVertex>()
                         .Run();
 
-                    Assert.AreEqual(classId2, classId1 + 1);
+                    Assert.IsTrue(classId2 > 0);
+
+                    Assert.AreEqual(classId1 + 1, classId2);
                 }
             }
         }
 
-        [TestCategory("Broken Tests as at Github 27594c0114cd9489b69c84fe4896a9d6c6d01b19")]
-        [Ignore]
         [TestMethod]
         public void ShouldCreateClassCluster()
         {
@@ -62,19 +65,29 @@ namespace Orient.Tests.Query
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
+                    short clusterid1 = database
+                        .Create
+                        .Cluster("ClasterForTest1", OClusterType.None)
+                        .Run();
+
+                    short clusterid2 = database
+                        .Create
+                        .Cluster("ClasterForTest2", OClusterType.None)
+                        .Run();
+
                     short classId1 = database
                         .Create.Class("TestClass1")
-                        .Cluster(6)
+                        .Cluster(clusterid1)
                         .Run();
 
                     Assert.IsTrue(classId1 > 0);
 
                     short classId2 = database
                         .Create.Class("TestClass2")
-                        .Cluster(6)
+                        .Cluster(clusterid2)
                         .Run();
 
-                    Assert.AreEqual(classId2, classId1 + 1);
+                    Assert.AreEqual(classId1 + 1, classId2);
                 }
             }
         }
@@ -101,9 +114,10 @@ namespace Orient.Tests.Query
 
                     Assert.IsTrue(classId1 > 0);
 
-                    // would like to test the properties have been created properly, but the server doesn't implement 'info' over the remove protocol 
+                    // would like to test the properties have been created properly, but the server doesn't implement 'info' over the remove protocol
                     //var result = database.Command("info class TestClass");
                     
+                    var schema = database.Schema.Properties<TestClass>();
                 }
             }
         }

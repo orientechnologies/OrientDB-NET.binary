@@ -39,11 +39,11 @@ namespace Orient.Tests.Query
                         .To(vertex2.ORID)
                         .Run();
 
-                    Assert.IsTrue(!string.IsNullOrEmpty(createdEdge.ORID.ToString()));
-                    Assert.AreEqual(createdEdge.Label, "TestEdgeClass");
-                    Assert.AreEqual(createdEdge.OClassName, "TestEdgeClass");
-                    Assert.AreEqual(createdEdge.InV, vertex2.ORID);
-                    Assert.AreEqual(createdEdge.OutV, vertex1.ORID);
+                    Assert.IsNotNull(createdEdge.ORID);
+                    Assert.AreEqual("TestEdgeClass", createdEdge.Label);
+                    Assert.AreEqual("TestEdgeClass", createdEdge.OClassName);
+                    Assert.AreEqual(vertex2.ORID, createdEdge.InV);
+                    Assert.AreEqual(vertex1.ORID, createdEdge.OutV);
                 }
             }
         }
@@ -73,13 +73,13 @@ namespace Orient.Tests.Query
                         .To(vertex2)
                         .Run();
 
-                    Assert.IsTrue(!string.IsNullOrEmpty(createdEdge.ORID.ToString()));
-                    Assert.AreEqual(createdEdge.Label, "E");
-                    Assert.AreEqual(createdEdge.OClassName, "E");
-                    Assert.AreEqual(createdEdge.InV, vertex2.ORID);
-                    Assert.AreEqual(createdEdge.OutV, vertex1.ORID);
-                    Assert.AreEqual(createdEdge.GetField<string>("Foo"), edge.GetField<string>("Foo"));
-                    Assert.AreEqual(createdEdge.GetField<int>("Bar"), edge.GetField<int>("Bar"));
+                    Assert.IsNotNull(createdEdge.ORID);
+                    Assert.AreEqual("E", createdEdge.Label);
+                    Assert.AreEqual("E", createdEdge.OClassName);
+                    Assert.AreEqual(vertex2.ORID, createdEdge.InV);
+                    Assert.AreEqual(vertex1.ORID, createdEdge.OutV);
+                    Assert.AreEqual(edge.GetField<string>("Foo"), createdEdge.GetField<string>("Foo"));
+                    Assert.AreEqual(edge.GetField<int>("Bar"), createdEdge.GetField<int>("Bar"));
                 }
             }
         }
@@ -113,13 +113,13 @@ namespace Orient.Tests.Query
                         .Set("bar", 12345)
                         .Run();
 
-                    Assert.IsTrue(!string.IsNullOrEmpty(createdEdge.ORID.ToString()));
-                    Assert.AreEqual(createdEdge.Label, "TestEdgeClass");
-                    Assert.AreEqual(createdEdge.OClassName, "TestEdgeClass");
-                    Assert.AreEqual(createdEdge.InV, vertex2.ORID);
-                    Assert.AreEqual(createdEdge.OutV, vertex1.ORID);
-                    Assert.AreEqual(createdEdge.GetField<string>("foo"), "foo string value");
-                    Assert.AreEqual(createdEdge.GetField<int>("bar"), 12345);
+                    Assert.IsNotNull(createdEdge.ORID);
+                    Assert.AreEqual("TestEdgeClass", createdEdge.Label);
+                    Assert.AreEqual("TestEdgeClass", createdEdge.OClassName);
+                    Assert.AreEqual(vertex2.ORID, createdEdge.InV);
+                    Assert.AreEqual(vertex1.ORID, createdEdge.OutV);
+                    Assert.AreEqual("foo string value", createdEdge.GetField<string>("foo"));
+                    Assert.AreEqual(12345, createdEdge.GetField<int>("bar"));
                 }
             }
         }
@@ -155,9 +155,9 @@ namespace Orient.Tests.Query
                         .To(vertex2)
                         .Run<TestProfileClass>();
 
-                    Assert.IsTrue(createdEdge.ORID != null);
-                    Assert.AreEqual(createdEdge.Name, profile.Name);
-                    Assert.AreEqual(createdEdge.Surname, profile.Surname);
+                    Assert.IsNotNull(createdEdge.ORID);
+                    Assert.AreEqual(profile.Name, createdEdge.Name);
+                    Assert.AreEqual(profile.Surname, createdEdge.Surname);
                 }
             }
         }
@@ -193,9 +193,9 @@ namespace Orient.Tests.Query
                         .To(vertex2)
                         .Run<TestProfileClass>();
 
-                    Assert.IsTrue(createdEdge.ORID != null);
-                    Assert.AreEqual(createdEdge.Name, profile.Name);
-                    Assert.AreEqual(createdEdge.Surname, profile.Surname);
+                    Assert.IsNotNull(createdEdge.ORID);
+                    Assert.AreEqual(profile.Name, createdEdge.Name);
+                    Assert.AreEqual(profile.Surname, createdEdge.Surname);
                 }
             }
         }
