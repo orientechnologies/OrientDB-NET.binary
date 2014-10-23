@@ -81,7 +81,10 @@ namespace Orient.Client.Protocol
 
         internal ODocument ExecuteOperation(IOperation operation)
         {
-            Request request = operation.Request(SessionId);
+            var req = new Request(this);
+            req.SetSessionId(SessionId);
+
+            Request request = operation.Request(req);
             byte[] buffer;
 
             foreach (RequestDataItem item in request.DataItems)
@@ -128,7 +131,7 @@ namespace Orient.Client.Protocol
 
                     return ((IOperation)operation).Response(response);
                 }
-                catch (Exception )
+                catch (Exception)
                 {
                     //reset connection as the socket may contains unread data and is considered unstable
                     Reconnect();
@@ -239,6 +242,8 @@ namespace Orient.Client.Protocol
             _networkStream.Read(_readBuffer, 0, 2);
 
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
+            if (ProtocolVersion <= 0)
+                throw new OException(OExceptionType.Connection, "Incorect Protocol Version " + ProtocolVersion);
 
             // execute connect operation
             Connect operation = new Connect();

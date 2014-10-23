@@ -10,13 +10,11 @@ namespace Orient.Client.Protocol.Operations
         public string Key { get; set; }
         public string Value { get; set; }
 
-        public Request Request(int sessionID)
+        public Request Request(Request request)
         {
-            Request request = new Request();
-
             // standard request fields
             request.AddDataItem((byte)OperationType.CONFIG_SET);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
 
             request.AddDataItem(Key);
             request.AddDataItem(Value);

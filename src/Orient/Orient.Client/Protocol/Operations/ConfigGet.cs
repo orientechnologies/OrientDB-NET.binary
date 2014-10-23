@@ -11,13 +11,12 @@ namespace Orient.Client.Protocol.Operations
     {
         internal string ConfigKey { get; set; }
 
-        public Request Request(int sessionID)
+        public Request Request(Request request)
         {
-            Request request = new Request();
 
             // standard request fields
             request.AddDataItem((byte)OperationType.CONFIG_GET);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
 
             request.AddDataItem(ConfigKey);
             return request;

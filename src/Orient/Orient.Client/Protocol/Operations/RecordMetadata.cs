@@ -14,12 +14,11 @@ namespace Orient.Client.Protocol.Operations
         {
             _orid = rid;
         }
-        public Request Request(int sessionID)
+        public Request Request(Request request)
         {
-            Request request = new Request();
 
             request.AddDataItem((byte)OperationType.RECORD_METADATA);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
 
             request.AddDataItem((short)_orid.ClusterId);
             request.AddDataItem((long)_orid.ClusterPosition);

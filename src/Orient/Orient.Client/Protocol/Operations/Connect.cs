@@ -8,27 +8,26 @@ namespace Orient.Client.Protocol.Operations
         internal string UserName { get; set; }
         internal string UserPassword { get; set; }
 
-        public Request Request(int sessionID)
+        public Request Request(Request request)
         {
-            Request request = new Request();
 
             // standard request fields
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)OperationType.CONNECT) });
-            request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(sessionID) });
+            request.AddDataItem((byte)OperationType.CONNECT);
+            request.AddDataItem(request.SessionId);
             // operation specific fields
             if (OClient.ProtocolVersion > 7)
             {
-                request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(OClient.DriverName) });
-                request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(OClient.DriverVersion) });
-                request.DataItems.Add(new RequestDataItem() { Type = "short", Data = BinarySerializer.ToArray(OClient.ProtocolVersion) });
-                request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(OClient.ClientID) });
+                request.AddDataItem(OClient.DriverName);
+                request.AddDataItem(OClient.DriverVersion);
+                request.AddDataItem(OClient.ProtocolVersion);
+                request.AddDataItem(OClient.ClientID);
             }
             if (OClient.ProtocolVersion > 21)
             {
-                request.DataItems.Add(new RequestDataItem { Type = "string", Data = BinarySerializer.ToArray(OClient.SerializationImpl) });
+                request.AddDataItem(OClient.SerializationImpl);
             }
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(UserName) });
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(UserPassword) });
+            request.AddDataItem(UserName);
+            request.AddDataItem(UserPassword);
 
             return request;
         }

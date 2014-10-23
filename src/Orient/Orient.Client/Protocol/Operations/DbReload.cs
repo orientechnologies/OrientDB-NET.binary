@@ -8,16 +8,15 @@ namespace Orient.Client.Protocol.Operations
 {
     class DbReload : IOperation
     {
-       
 
 
-        public Request Request(int sessionID)
+
+        public Request Request(Request request)
         {
-            Request request = new Request();
             // standard request fields
-            request.AddDataItem((byte) OperationType.DB_RELOAD);
-            request.AddDataItem(sessionID);
-       
+            request.AddDataItem((byte)OperationType.DB_RELOAD);
+            request.AddDataItem(request.SessionId);
+
             return request;
         }
 

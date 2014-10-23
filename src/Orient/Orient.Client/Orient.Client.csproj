@@ -130,9 +130,12 @@
     <Compile Include="Protocol\Response.cs" />
     <Compile Include="API\Types\ODocument.cs" />
     <Compile Include="Protocol\ResponseStatus.cs" />
+    <Compile Include="Protocol\Serializers\BinaryBuffer.cs" />
     <Compile Include="Protocol\Serializers\BinarySerializer.cs" />
+    <Compile Include="Protocol\Serializers\IRecordSerializer.cs" />
     <Compile Include="Protocol\Serializers\RecordBinarySerializer.cs" />
-    <Compile Include="Protocol\Serializers\RecordSerializer.cs" />
+    <Compile Include="Protocol\Serializers\RecordCSVSerializer.cs" />
+    <Compile Include="Protocol\Serializers\RecordSerializerFactory.cs" />
     <Compile Include="Transactions\ORIDArrayPropertyUpdater.cs" />
     <Compile Include="Transactions\ORIDHashSetUpdater.cs" />
     <Compile Include="Transactions\ORIDListPropertyUpdater.cs" />

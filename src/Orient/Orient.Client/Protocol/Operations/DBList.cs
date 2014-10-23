@@ -8,11 +8,10 @@ namespace Orient.Client.Protocol.Operations
 {
     internal class DBList : IOperation
     {
-        public Request Request(int sessionID)
+        public Request Request(Request request)
         {
-            Request request = new Request();
             request.AddDataItem((byte)OperationType.DB_LIST);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
             return request;
         }
 
@@ -26,7 +25,7 @@ namespace Orient.Client.Protocol.Operations
             var reader = response.Reader;
             int recordLength = reader.ReadInt32EndianAware();
             byte[] rawRecord = reader.ReadBytes(recordLength);
-            document = RecordSerializer.Deserialize(BinarySerializer.ToString(rawRecord).Trim(), document);
+            document = RecordSerializerFactory.GetSerializer(OClient.Serializer).Deserialize(rawRecord, document);
             return document;
         }
     }

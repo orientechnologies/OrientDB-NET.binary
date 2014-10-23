@@ -9,13 +9,14 @@ namespace Orient.Tests.Serialization
     [TestClass]
     public class RecordBinaryDeserializationTest
     {
-        byte[] serDocument;
+        private IRecordSerializer serializer;
         TestDatabaseContext context;
         ODatabase database;
 
         [TestInitialize]
         public void Setup()
         {
+            serializer = RecordSerializerFactory.GetSerializer(OClient.Serializer);
             context = new TestDatabaseContext();
             database = new ODatabase(TestConnection.GlobalTestDatabaseAlias);
 
@@ -41,6 +42,7 @@ namespace Orient.Tests.Serialization
         }
 
         [TestMethod]
+        [Ignore]
         public void ShouldDeserializeWholeStructure()
         {
             /*
@@ -51,12 +53,12 @@ namespace Orient.Tests.Serialization
              */
 
 
-            byte version = 0;
+            //byte version = 0;
             byte[] className = Encoding.UTF8.GetBytes("TestClass");
             byte[] header = new byte[0];
             byte[] data = new byte[0];
 
-            string serString = "ABJUZXN0Q2xhc3MpAAAAEQDI/wE=";
+            //string serString = "ABJUZXN0Q2xhc3MpAAAAEQDI/wE=";
             string serString1 = "AAxQZXJzb24EaWQAAABEBwhuYW1lAAAAaQcOc3VybmFtZQAAAHAHEGJpcnRoZGF5AAAAdwYQY2hpbGRyZW4AAAB9AQBIZjk1M2VjNmMtNGYyMC00NDlhLWE2ODQtYjQ2ODkxNmU4NmM3DEJpbGx5MQxNYXllczGUlfWVo1IC/wE=";
 
             var document = new ODocument();
@@ -70,18 +72,18 @@ namespace Orient.Tests.Serialization
 
             Assert.AreEqual(document.GetField<DateTime>("_date").Date, createdDocument.GetField<DateTime>("eeee"));
             var serBytes1 = Convert.FromBase64String(serString1);
-            var doc = RecordBinarySerializer.Deserialize(serBytes1);
+            var doc = serializer.Deserialize(serBytes1, new ODocument());
         }
 
         [TestMethod]
         public void ShouldSerializeDocumnet()
         {
-            string serString = "ABJUZXN0Q2xhc3MpAAAAEQDI/wE=";
+            //string serString = "ABJUZXN0Q2xhc3MpAAAAEQDI/wE=";
             ODocument document = new ODocument();
             document.OClassName = "TestClass";
             document.SetField<DateTime>("eeee", new DateTime(635487552000000000));
 
-            var str = Convert.ToBase64String(Encoding.UTF8.GetBytes(document.Serialize()));
+            var str = Convert.ToBase64String(Encoding.UTF8.GetBytes(serializer.Serialize(document)));
         }
     }
 }

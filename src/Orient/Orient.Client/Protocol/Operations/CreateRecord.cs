@@ -19,10 +19,8 @@ namespace Orient.Client.Protocol.Operations
             _database = database;
         }
 
-        public Request Request(int sessionID)
+        public Request Request(Request request)
         {
-            Request request = new Request();
-
             if (_document.ORID != null)
                 throw new InvalidOperationException();
 
@@ -33,15 +31,17 @@ namespace Orient.Client.Protocol.Operations
 
             // standard request fields
             request.AddDataItem((byte)OperationType.RECORD_CREATE);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
 
             if (OClient.ProtocolVersion < 24)
             {
                 request.AddDataItem((int)-1);  // data segment id
             }
 
+
+
             request.AddDataItem((short)clusterId);
-            request.AddDataItem(_document.Serialize());
+            request.AddDataItem(RecordSerializerFactory.GetSerializer(OClient.Serializer).Serialize(_document));
             request.AddDataItem((byte)ORecordType.Document);
             request.AddDataItem((byte)0);
 

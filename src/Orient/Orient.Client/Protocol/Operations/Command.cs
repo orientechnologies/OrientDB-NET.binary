@@ -12,13 +12,11 @@ namespace Orient.Client.Protocol.Operations
         internal OperationMode OperationMode { get; set; }
         internal CommandPayloadBase CommandPayload { get; set; }
 
-        public Request Request(int sessionId)
+        public Request Request(Request request)
         {
-            Request request = new Request();
-
             // standard request fields
             request.AddDataItem((byte)OperationType.COMMAND);
-            request.AddDataItem(sessionId);
+            request.AddDataItem(request.SessionId);
             // operation specific fields
             request.AddDataItem((byte)OperationMode);
 
@@ -197,19 +195,20 @@ namespace Orient.Client.Protocol.Operations
                 int version = reader.ReadInt32EndianAware();
                 int recordLength = reader.ReadInt32EndianAware();
                 byte[] rawRecord = reader.ReadBytes(recordLength);
+
+                document = new ODocument { ORID = orid, OVersion = version, OType = ORecordType.Document, OClassId = classId };
+
                 if (OClient.SerializationImpl == ORecordFormat.ORecordDocument2csv.ToString())
-                    document = RecordSerializer.Deserialize(orid, version, type, classId, rawRecord);
+                    document = RecordSerializerFactory.GetSerializer(OClient.Serializer).Deserialize(rawRecord, document);
                 else
                 {
-                    document = RecordBinarySerializer.Deserialize(rawRecord);
-                    document.ORID = orid;
-                    document.OVersion = version;
-                    document.OType = type;
+                    document = RecordSerializerFactory.GetSerializer(OClient.Serializer).Deserialize(rawRecord, document);
                 }
 
             }
 
             return document;
         }
+
     }
 }

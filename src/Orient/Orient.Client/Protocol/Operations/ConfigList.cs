@@ -8,13 +8,11 @@ namespace Orient.Client.Protocol.Operations
 {
     internal class ConfigList : IOperation
     {
-        public Request Request(int sessionID)
+        public Request Request(Request request)
         {
-            Request request = new Request();
-
             // standard request fields
             request.AddDataItem((byte)OperationType.CONFIG_LIST);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
             return request;
         }
 

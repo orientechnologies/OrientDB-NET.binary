@@ -9,16 +9,15 @@ namespace Orient.Client.Protocol.Operations
         internal ODatabaseType DatabaseType { get; set; }
         internal OStorageType StorageType { get; set; }
 
-        public Request Request(int sessionID)
+        public Request Request(Request request)
         {
-            Request request = new Request();
             // standard request fields
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)OperationType.DB_CREATE) });
-            request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(sessionID) });
+            request.AddDataItem((byte)OperationType.DB_CREATE);
+            request.AddDataItem(request.SessionId);
             // operation specific fields
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(DatabaseName) });
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(DatabaseType.ToString().ToLower()) });
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(StorageType.ToString().ToLower()) });
+            request.AddDataItem(DatabaseName);
+            request.AddDataItem(DatabaseType.ToString().ToLower());
+            request.AddDataItem(StorageType.ToString().ToLower());
 
             return request;
         }

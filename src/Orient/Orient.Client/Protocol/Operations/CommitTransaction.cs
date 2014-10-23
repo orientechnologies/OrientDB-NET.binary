@@ -20,10 +20,8 @@ namespace Orient.Client.Protocol.Operations
             _database = database;
         }
 
-        public Request Request(int sessionID)
+        public Request Request(Request request)
         {
-            Request request = new Request();
-
             //if (_document.ORID != null)
             //    throw new InvalidOperationException();
 
@@ -36,11 +34,11 @@ namespace Orient.Client.Protocol.Operations
             // standard request fields
             int transactionId = 1;
 
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)OperationType.TX_COMMIT) });
-            request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(sessionID) });
+            request.AddDataItem((byte)OperationType.TX_COMMIT);
+            request.AddDataItem(request.SessionId);
 
-            request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(transactionId) });
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)0) }); // use log 0 = no, 1 = yes
+            request.AddDataItem(transactionId);
+            request.AddDataItem((byte)0); // use log 0 = no, 1 = yes
 
             foreach (var item in _records)
             {
@@ -48,7 +46,7 @@ namespace Orient.Client.Protocol.Operations
                 item.AddToRequest(request);
             }
 
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)0) }); // zero terminated
+            request.AddDataItem((byte)0); // zero terminated
 
             request.AddDataItem((int)0);
 

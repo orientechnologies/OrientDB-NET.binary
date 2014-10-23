@@ -80,16 +80,27 @@ namespace Orient.Client
             Dictionary<string, string> returnValue = new Dictionary<string, string>();
             DBList operation = new DBList();
             ODocument document = _connection.ExecuteOperation(operation);
-            string[] databases = document.GetField<string>("databases").Split(',');
-            foreach (var item in databases)
+            if (OClient.Serializer == API.Types.ORecordFormat.ORecordDocument2csv)
             {
-                string[] keyValue = item.Split(':');
-                returnValue.Add(keyValue[0], keyValue[1] + ":" + keyValue[2]);
+                string[] databases = document.GetField<string>("databases").Split(',');
+                foreach (var item in databases)
+                {
+                    string[] keyValue = item.Split(new char[] { ':' }, 2);
+                    returnValue.Add(keyValue[0].Replace("\"", ""), keyValue[1].Replace("\"", ""));
+                }
+            }
+            else
+            {
+                var databases = document.GetField<Dictionary<string, object>>("databases");
+                foreach (var item in databases)
+                {
+                    returnValue.Add(item.Key, item.Value.ToString());
+                }
             }
             return returnValue;
         }
-        
-        
+
+
         public void Close()
         {
             _connection.Dispose();

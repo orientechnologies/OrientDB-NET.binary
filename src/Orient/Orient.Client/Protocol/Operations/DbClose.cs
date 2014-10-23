@@ -5,14 +5,13 @@ namespace Orient.Client.Protocol.Operations
 {
     internal class DbClose : IOperation
     {
-        public Request Request(int sessionID)
+        public Request Request(Request request)
         {
-            Request request = new Request();
             request.OperationMode = OperationMode.Asynchronous;
 
             // standard request fields
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)OperationType.DB_CLOSE) });
-            request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(sessionID) });
+            request.AddDataItem((byte)OperationType.DB_CLOSE);
+            request.AddDataItem(request.SessionId);
 
             return request;
         }

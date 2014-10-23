@@ -1,20 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Orient.Client;
+using Orient.Client.API.Types;
 using Orient.Client.Mapping;
+using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Tests.Serialization
 {
     [TestClass]
     public class RecordDeserializationTests
     {
+        private IRecordSerializer serializer;
+        [TestInitialize]
+        public void Init()
+        {
+            OClient.Serializer = ORecordFormat.ORecordDocument2csv;
+            serializer = RecordSerializerFactory.GetSerializer(OClient.Serializer);
+        }
         [TestMethod]
         public void ShouldDeserializeDocSimpleExample()
         {
             string recordString = "Profile@nick:\"ThePresident\",follows:[],followers:[#10:5,#10:6],name:\"Barack\",surname:\"Obama\",location:#3:2,invitedBy:,salary_cloned:,salary:120.3f";
-
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawDocument = Encoding.UTF8.GetBytes(recordString);
+            //ODocument document = ODocument.Deserialize(recordString);
+            ODocument document = serializer.Deserialize(rawDocument, new ODocument());
 
             Assert.AreEqual(document.OClassName, "Profile");
 
@@ -41,7 +52,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(recordFollowers.Count, followers.Count);
             Assert.AreEqual(recordFollowers[0], followers[0]);
             Assert.AreEqual(recordFollowers[1], followers[1]);
-            
+
             Assert.AreEqual(document.GetField<string>("name"), "Barack");
             Assert.AreEqual(document.GetField<string>("surname"), "Obama");
             Assert.AreEqual(document.GetField<ORID>("location"), new ORID("#3:2"));
@@ -53,8 +64,8 @@ namespace Orient.Tests.Serialization
         [TestMethod]
         public void ShouldDeserializeDocComplexExample()
         {
-            string recordString = 
-                "name:\"ORole\"," + 
+            string recordString =
+                "name:\"ORole\"," +
                 "id:0," +
                 "defaultClusterId:3," +
                 "clusterIds:[3]," +
@@ -62,8 +73,8 @@ namespace Orient.Tests.Serialization
                     "(name:\"mode\",type:17,offset:0,mandatory:false,notNull:false,min:,max:,linkedClass:,linkedType:,index:)," +
                     "(name:\"rules\",type:12,offset:1,mandatory:false,notNull:false,min:,max:,linkedClass:,linkedType:17,index:)" +
                 "]";
-
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             // check for fields existence
             Assert.AreEqual(document.HasField("name"), true);
@@ -106,7 +117,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "single:_AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGx_,embedded:(binary:_AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGx_),array:[_AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGx_,_AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGx_]";
 
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             // check for fields existence
             Assert.AreEqual(document.HasField("single"), true);
@@ -129,7 +141,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "datetime:1296279468000t,date:1306281600000a,embedded:(datetime:1296279468000t,date:1306281600000a),array:[1296279468000t,1306281600000a]";
 
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             // check for fields existence
             Assert.AreEqual(document.HasField("datetime"), true);
@@ -155,7 +168,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "singleT:true,singleF:false,embedded:(singleT:true,singleF:false),array:[true,false]";
 
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             // check for fields existence
             Assert.AreEqual(document.HasField("singleT"), true);
@@ -169,7 +183,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(document.GetField<bool>("singleF"), false);
             Assert.AreEqual(document.GetField<bool>("embedded.singleT"), true);
             Assert.AreEqual(document.GetField<bool>("embedded.singleF"), false);
-            
+
             List<bool> array = document.GetField<List<bool>>("array");
             Assert.AreEqual(array.Count, 2);
             Assert.AreEqual(array[0], true);
@@ -181,7 +195,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "nick:,embedded:(nick:,joe:),joe:";
 
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             // check for fields existence
             Assert.AreEqual(document.HasField("nick"), true);
@@ -201,7 +216,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "byte:123b,short:23456s,int:1543345,long:13243432455l,float:1234.432f,double:123123.4324d,bigdecimal:300.5c,embedded:(byte:123b,short:23456s,int:1543345,long:13243432455l,float:1234.432f,double:123123.4324d,bigdecimal:300.5c),array:[123b,23456s,1543345,13243432455l,1234.432f,123123.4324d,300.5c]";
 
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             // check for fields existence
             Assert.AreEqual(document.HasField("byte"), true);
@@ -252,7 +268,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "simple:\"whoa this is awesome\",singleQuoted:\"a" + "\\" + "\"\",doubleQuoted:\"" + "\\" + "\"adsf" + "\\" + "\"\",twoBackslashes:\"" + "\\a" + "\\a" + "\"";
 
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             // check for fields existence
             Assert.AreEqual(document.HasField("simple"), true);
@@ -272,7 +289,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "array:[(joe1:\"js1\"),(joe2:\"js2\"),(joe3:\"js3\")]";
 
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             // check for fields existence
             Assert.AreEqual(document.HasField("array"), true);
@@ -290,7 +308,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "array:[(zak1:(nick:[(joe1:\"js1\"),(joe2:\"js2\"),(joe3:\"js3\")])),(zak2:(nick:[(joe4:\"js4\"),(joe5:\"js5\"),(joe6:\"js6\")]))]";
 
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             // check for fields existence
             Assert.AreEqual(document.HasField("array"), true);
@@ -317,7 +336,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "single:#10:12345,list:[#11:123,#22:1234,#33:1234567]";
 
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             // check for fields existence
             Assert.AreEqual(document.HasField("single"), true);
@@ -337,7 +357,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "single:#10:12345,list:[#11:123,#22:1234,#33:1234567]";
 
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             // check for fields existence
             Assert.AreEqual(document.HasField("single"), true);
@@ -370,7 +391,8 @@ namespace Orient.Tests.Serialization
 
             string recordString = "single:#10:12345,list:[#11:123,#22:1234,#33:1234567],ORID:#10:123,Link:#10:234,Value:17";
 
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             // check for fields existence
             Assert.AreEqual(document.HasField("single"), true);
@@ -398,7 +420,8 @@ namespace Orient.Tests.Serialization
 
                     string recordString = "single:#10:12345,list:[#11:123,#22:1234,#33:1234567],ORID:#10:123,Link:#10:234,Value:17";
 
-                    ODocument document = ODocument.Deserialize(recordString);
+                    var rawRecord = Encoding.UTF8.GetBytes(recordString);
+                    ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
                     var vertex = database.Create.Vertex("V").Set(document).Run();
 
@@ -433,8 +456,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "values:[1,2,3,4,5]";
 
-            ODocument document = ODocument.Deserialize(recordString);
-
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             TypeMapper<TestArray> tm = TypeMapper<TestArray>.Instance;
             var t = new TestArray();
@@ -451,8 +474,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "values:[1,2,3,4,5]";
 
-            ODocument document = ODocument.Deserialize(recordString);
-
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             TypeMapper<TestList> tm = TypeMapper<TestList>.Instance;
             var t = new TestList();
@@ -480,8 +503,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "TheThing:(Value:17,Text:\"blah\")";
 
-            ODocument document = ODocument.Deserialize(recordString);
-
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             TypeMapper<TestHasAThing> tm = TypeMapper<TestHasAThing>.Instance;
             var t = new TestHasAThing();
@@ -503,8 +526,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "TheThings:[(Value:17,Text:\"blah\"),(Value:18,Text:\"foo\")]";
 
-            ODocument document = ODocument.Deserialize(recordString);
-
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             TypeMapper<TestHasThings> tm = TypeMapper<TestHasThings>.Instance;
             var t = new TestHasThings();
@@ -522,8 +545,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "TheThings:[(Value:18,Text:\"foo\")]";
 
-            ODocument document = ODocument.Deserialize(recordString);
-
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             TypeMapper<TestHasThings> tm = TypeMapper<TestHasThings>.Instance;
             var t = new TestHasThings();
@@ -541,8 +564,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "TheThings:[]";
 
-            ODocument document = ODocument.Deserialize(recordString);
-
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             TypeMapper<TestHasThings> tm = TypeMapper<TestHasThings>.Instance;
             var t = new TestHasThings();
@@ -563,8 +586,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "TheThings:[(Value:17,Text:\"blah\"),(Value:18,Text:\"foo\")]";
 
-            ODocument document = ODocument.Deserialize(recordString);
-
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             TypeMapper<TestHasListThings> tm = TypeMapper<TestHasListThings>.Instance;
             var t = new TestHasListThings();
@@ -582,8 +605,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "TheThings:[(Value:18,Text:\"foo\")]";
 
-            ODocument document = ODocument.Deserialize(recordString);
-
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             TypeMapper<TestHasListThings> tm = TypeMapper<TestHasListThings>.Instance;
             var t = new TestHasListThings();
@@ -605,7 +628,9 @@ namespace Orient.Tests.Serialization
 
             string recordString = "single:#10:12345,list:[#11:123,#22:1234,#33:1234567],Link:#11:123,Value:17,Text:\"some text\"";
 
-            ODocument document = ODocument.Deserialize(recordString);
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument()); 
+            
             document.ORID = new ORID("#123:45");
             Assert.AreEqual(document.HasField("single"), true);
             Assert.AreEqual(document.HasField("Link"), true);
@@ -635,8 +660,8 @@ namespace Orient.Tests.Serialization
         {
             string recordString = "single:#10:12345,set:<#11:123,#22:1234,#33:1234567>,singleSet:<#44:44>";
 
-            ODocument document = ODocument.Deserialize(recordString);
-
+            var rawRecord = Encoding.UTF8.GetBytes(recordString);
+            ODocument document = serializer.Deserialize(rawRecord, new ODocument());
 
             // check for fields existence
             Assert.AreEqual(document.HasField("single"), true);

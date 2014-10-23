@@ -6,35 +6,38 @@ using System.Text;
 
 namespace Orient.Client.Protocol.Serializers
 {
-    public class RecordBinarySerializer
+    public class RecordBinarySerializer : IRecordSerializer
     {
-        private static long MILLISEC_PER_DAY = 86400000;
-        private string _metadataQuery = "select expand(properties) from (select expand(classes) from #0:1) where name='TestClass'";
+        private long MILLISEC_PER_DAY = 86400000;
+
+        public RecordBinarySerializer()
+        {
+
+        }
+
         #region Deserialize
 
-        public static ODocument Deserialize(byte[] recordString)
+        public ODocument Deserialize(byte[] recordString, ODocument document)
         {
             using (var stream = new MemoryStream(recordString))
             using (var reader = new BinaryReader(stream))
             {
 
-                return Deserialize(reader, new ODocument());
+                return Deserialize(reader, document);
             }
         }
 
-        private static ODocument Deserialize(BinaryReader reader, ODocument document)
+        private ODocument Deserialize(BinaryReader reader, ODocument document)
         {
-            var version = reader.ReadByte();
-            document.OVersion = version;
+            var serializerVersion = reader.ReadByte();
             var classNameLength = readAsInteger(reader);
             var className = Encoding.UTF8.GetString(reader.ReadBytesRequired(classNameLength));
             document.OClassName = className;
 
-
             return parseDocument(reader, document);
         }
 
-        private static ODocument parseDocument(BinaryReader reader, ODocument document)
+        private ODocument parseDocument(BinaryReader reader, ODocument document)
         {
             List<FieldDefinition> fd = new List<FieldDefinition>();
             var prop = String.Empty;
@@ -76,7 +79,7 @@ namespace Orient.Client.Protocol.Serializers
             return document;
         }
 
-        private static void readOType(BinaryReader reader, string fieldName, ODocument document, OType type)
+        private void readOType(BinaryReader reader, string fieldName, ODocument document, OType type)
         {
             switch (type)
             {
@@ -136,6 +139,50 @@ namespace Orient.Client.Protocol.Serializers
                     }
                     document.SetField(fieldName, embeddedSet);
                     break;
+                case OType.EmbeddedMap:
+                    /* 
+                     * header:headerStructure | values:valueStructure
+                     * headerStructure
+                     * ===============
+                     * keyType:byte | keyValue:byte[]
+                     * 
+                     * valueStructure
+                     * ==============
+                     * valueType:byte | value:byte[]
+                    */
+                    var size = readAsInteger(reader);
+
+                    var fd = new FieldDefinition[size];
+                    Dictionary<string, Object> map = new Dictionary<string, object>();
+                    for (int i = 0; i < size; i++)
+                    {
+                        fd[i] = new FieldDefinition();
+
+                        var d = new ODocument();
+                        var keyType = (OType)reader.ReadByte();
+                        if (keyType != OType.String)
+                            throw new NotImplementedException("key type " + keyType + " not implemented for EmbededMap");
+                        readOType(reader, "key", d, keyType);
+
+                        fd[i].FieldName = d.GetField<string>("key");
+                        fd[i].Pointer = reader.ReadInt32EndianAware();
+                        fd[i].DataType = (OType)reader.ReadByte();
+                    }
+                    for (int i = 0; i < size; i++)
+                    {
+                        var d = new ODocument();
+                        if (fd[i].Pointer > 0)
+                        {
+                            readOType(reader, "value", d, fd[i].DataType);
+                            map.Add(fd[i].FieldName, d.GetField<object>("value"));
+                        }
+                        else
+                        {
+                            map.Add(fd[i].FieldName, null);
+                        }
+                    }
+                    document.SetField<Dictionary<string, Object>>(fieldName, map);
+                    break;
                 case OType.Embedded:
                     var version = reader.ReadByte();
                     parseDocument(reader, document);
@@ -179,84 +226,84 @@ namespace Orient.Client.Protocol.Serializers
 
         #endregion
 
-        public static string Serialize(ODocument document)
+        public string Serialize(ODocument document)
         {
-            using (var stream = new MemoryStream())
+            var buffer = new BinaryBuffer();
+
+            // Version
+            buffer.Add((byte)document.OVersion);
+
+            // Class Name
+            if (!String.IsNullOrEmpty(document.OClassName))
             {
-                // Version
-                stream.WriteByte((byte)document.OVersion);
-
-                // Class Name
-                if (!String.IsNullOrEmpty(document.OClassName))
-                {
-                    var length = BinarySerializer.ToArray(document.OClassName.Length);
-                    stream.Write(length, 0, length.Length);
-                    var buffer = BinarySerializer.ToArray(document.OClassName);
-                    stream.Write(buffer, 0, buffer.Length);
-                }
-                else
-                {
-                    var length = BinarySerializer.ToArray((int)0);
-                    stream.Write(length, 0, length.Length);
-                }
-
-                // Header
-                var propNames = document.Keys.Where(k => !k.StartsWith("@")).ToArray();
-                foreach (var prop in propNames)
-                {
-                    
-                }
-                stream.Write(BinarySerializer.ToArray((int)0), 0, 1);
-
-                // Data
-                return Encoding.UTF8.GetString(stream.ToArray());
+                var length = BinarySerializer.ToArray(document.OClassName.Length);
+                buffer.AddRange(length);
+                var className = BinarySerializer.ToArray(document.OClassName);
+                buffer.AddRange(className);
             }
+            else
+            {
+                var length = BinarySerializer.ToArray((int)0);
+                buffer.AddRange(length);
+            }
+
+            // Header
+            var propNames = document.Keys.Where(k => !k.StartsWith("@")).ToArray();
+            foreach (var prop in propNames)
+            {
+
+            }
+            buffer.AddRange(BinarySerializer.ToArray((int)0));
+
+            // Data
+            return Encoding.UTF8.GetString(buffer.ToArray());
+
         }
 
-        private static string readString(BinaryReader reader)
+        private string readString(BinaryReader reader)
         {
             int len = readAsInteger(reader);
             return Encoding.UTF8.GetString(reader.ReadBytesRequired(len));
         }
 
-        private static int readInteger(BinaryReader reader)
+        private int readInteger(BinaryReader reader)
         {
             return reader.ReadInt32();
         }
 
-        private static int readAsInteger(BinaryReader reader)
+        private int readAsInteger(BinaryReader reader)
         {
             return (int)readSignedVarLong(reader);
         }
 
-        public static short readAsShort(BinaryReader reader)
+        public short readAsShort(BinaryReader reader)
         {
             return (short)readSignedVarLong(reader);
         }
 
-        private static long readLong(BinaryReader reader)
+        private long readLong(BinaryReader reader)
         {
             return (long)reader.ReadInt64EndianAware();
         }
 
-        public static long readAsLong(BinaryReader reader)
+        public long readAsLong(BinaryReader reader)
         {
             return readSignedVarLong(reader);
         }
 
-        public static float readFloat(BinaryReader reader)
+        public float readFloat(BinaryReader reader)
         {
             return BitConverter.ToSingle(reader.ReadBytesRequired(sizeof(Int32)).CheckEndianess(), 0);
         }
 
-        private static long readSignedVarLong(BinaryReader reader)
+        private long readSignedVarLong(BinaryReader reader)
         {
             long raw = readUnsignedVarLong(reader);
             long temp = (((raw << 63) >> 63) ^ raw) >> 1;
             return temp ^ (raw & (1L << 63));
         }
 
-        private static long readUnsignedVarLong(BinaryReader reader)
+        private long readUnsignedVarLong(BinaryReader reader)
         {
             long value = 0L;
             int i = 0;
@@ -272,19 +319,20 @@ namespace Orient.Client.Protocol.Serializers
             return value | (b << i);
         }
 
-        private static DateTime readDateTime(BinaryReader reader)
+        private DateTime readDateTime(BinaryReader reader)
         {
             var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Unspecified);
             var ticks = readAsLong(reader);
             return unixEpoch.Add(TimeSpan.FromMilliseconds(ticks));
         }
 
-        private static DateTime readDate(BinaryReader reader)
+        private DateTime readDate(BinaryReader reader)
         {
             var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Unspecified);
             var ticks = readAsLong(reader) * MILLISEC_PER_DAY;
             return unixEpoch.Add(TimeSpan.FromMilliseconds(ticks));
         }
+
     }
 
     internal struct FieldDefinition
