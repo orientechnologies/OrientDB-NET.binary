@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -77,6 +78,7 @@
     <Compile Include="API\Query\OSqlInsert.cs" />
     <Compile Include="API\Query\OSqlSelect.cs" />
     <Compile Include="API\Query\OSqlUpdate.cs" />
+    <Compile Include="API\Types\TypeConverter.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Mapping\AllFieldMapping.cs" />
     <Compile Include="Mapping\BasicFieldMapping.cs" />

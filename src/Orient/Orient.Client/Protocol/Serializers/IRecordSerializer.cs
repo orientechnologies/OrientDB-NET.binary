@@ -7,7 +7,7 @@ namespace Orient.Client.Protocol.Serializers
 {
     public interface IRecordSerializer
     {
-        string Serialize(ODocument document);
+        byte[] Serialize(ODocument document);
         ODocument Deserialize(byte[] rawRecord, ODocument document);
     }
 }

@@ -22,6 +22,11 @@ namespace Orient.Client.Protocol
         {
             DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray(b) });
         }
+        internal void AddDataItem(byte[] b)
+        {
+            DataItems.Add(new RequestDataItem() { Type = "bytes", Data = b });
+        }
+
         internal void AddDataItem(short s)
         {
             DataItems.Add(new RequestDataItem() { Type = "short", Data = BinarySerializer.ToArray(s) });

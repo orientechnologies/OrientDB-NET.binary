@@ -9,11 +9,82 @@ namespace Orient.Client.Protocol.Serializers
     {
         public int Length { get { return Count; } }
 
-        public int Allocate(int allocationSize)
+        internal int Allocate(int allocationSize)
         {
             var currentPosition = Length;
             AddRange(new Byte[allocationSize]);
             return currentPosition;
+        }
+
+        internal void Write(int offset, int value)
+        {
+            var rawValue = BinarySerializer.ToArray(value);
+            for (int i = 0; i < rawValue.Length; i++)
+            {
+                this[offset + i] = rawValue[i];
+            }
+        }
+
+        internal void Write(int offset, byte value)
+        {
+            this[offset] = value;
+        }
+
+        internal int WriteVariant(long value)
+        {
+            var pos = Length;
+            var unsignedValue = signedToUnsigned(value);
+            writeUnsignedVarLong(unsignedValue);
+            return pos;
+        }
+
+        private void writeUnsignedVarLong(ulong value)
+        {
+            while ((value & 0xFFFFFFFFFFFFFF80L) != 0L)
+            {
+                Add((byte)(value & 0x7F | 0x80));
+                value >>= 7;
+            }
+            Add((byte)(value & 0x7F));
+        }
+
+        private uint signedToUnsigned(int value)
+        {
+            return (uint)((value << 1) ^ (value >> 31));
+        }
+
+        private ulong signedToUnsigned(long value)
+        {
+            return (ulong)((value << 1) ^ (value >> 63));
+        }
+
+        internal int WriteString(string value)
+        {
+            var pos = Length;
+            WriteVariant(value.Length);
+            AddRange(BinarySerializer.ToArray(value));
+            return pos;
+        }
+
+        internal int WriteDouble(double value)
+        {
+            var pos = Length;
+            AddRange(BitConverter.GetBytes(value).CheckEndianess());
+            return pos;
+        }
+
+        internal int WriteFloat(float value)
+        {
+            var pos = Length;
+            AddRange(BitConverter.GetBytes(value).CheckEndianess());
+            return pos;
+        }
+
+        internal int WriteByte(byte value)
+        {
+            var pos = Length;
+            Add(value);
+            return pos;
         }
     }
 }

@@ -90,7 +90,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(3, t.values[2]);
 
             ODocument newODocument = ODocument.ToDocument(t);
-            var serialized = serializer.Serialize(newODocument);
+            var serialized = Encoding.UTF8.GetString(serializer.Serialize(newODocument));
             Assert.AreEqual(recordString, serialized);
         }
 
@@ -112,7 +112,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(3, t.values[2]);
 
             ODocument newODocument = ODocument.ToDocument(t);
-            var serialized = serializer.Serialize(newODocument);
+            var serialized = Encoding.UTF8.GetString(serializer.Serialize(newODocument));
             Assert.AreEqual(recordString, serialized);
         }
 
@@ -145,7 +145,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual("blah", t.TheThing.Text);
 
             ODocument newODocument = ODocument.ToDocument(t);
-            var serialized = serializer.Serialize(newODocument);
+            var serialized = Encoding.UTF8.GetString(serializer.Serialize(newODocument));
             Assert.AreEqual(recordString, serialized);
 
         }
@@ -174,7 +174,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual("foo", t.TheThings[1].Text);
 
             ODocument newODocument = ODocument.ToDocument(t);
-            var serialized = serializer.Serialize(newODocument);
+            var serialized = Encoding.UTF8.GetString(serializer.Serialize(newODocument));
             Assert.AreEqual(recordString, serialized);
         }
 
@@ -196,7 +196,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual("foo", t.TheThings[0].Text);
 
             ODocument newODocument = ODocument.ToDocument(t);
-            var serialized = serializer.Serialize(newODocument);
+            var serialized = Encoding.UTF8.GetString(serializer.Serialize(newODocument));
             Assert.AreEqual(recordString, serialized);
         }
 
@@ -216,7 +216,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(0, t.TheThings.Length);
 
             ODocument newODocument = ODocument.ToDocument(t);
-            var serialized = serializer.Serialize(newODocument);
+            var serialized = Encoding.UTF8.GetString(serializer.Serialize(newODocument));
             Assert.AreEqual(recordString, serialized);
         }
 
@@ -243,7 +243,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual("foo", t.TheThings[1].Text);
 
             ODocument newODocument = ODocument.ToDocument(t);
-            var serialized = serializer.Serialize(newODocument);
+            var serialized = Encoding.UTF8.GetString(serializer.Serialize(newODocument));
             Assert.AreEqual(recordString, serialized);
         }
 
@@ -263,7 +263,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(1, t.TheThings.Count);
 
             ODocument newODocument = ODocument.ToDocument(t);
-            var serialized = serializer.Serialize(newODocument);
+            var serialized = Encoding.UTF8.GetString(serializer.Serialize(newODocument));
             Assert.AreEqual(recordString, serialized);
         }
 
@@ -315,7 +315,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(3, testObj.list.Count);
 
             ODocument newODocument = ODocument.ToDocument(testObj);
-            var serialized = serializer.Serialize(newODocument);
+            var serialized = Encoding.UTF8.GetString(serializer.Serialize(newODocument));
             Assert.AreEqual(recordString, serialized);
         }
 
@@ -343,7 +343,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(singleSet.Count, 1);
             Assert.IsTrue(singleSet.Contains(new ORID(44, 44)));
 
-            var serialized = serializer.Serialize(document);
+            var serialized = Encoding.UTF8.GetString(serializer.Serialize(document));
             Assert.AreEqual(recordString, serialized);
         }
 

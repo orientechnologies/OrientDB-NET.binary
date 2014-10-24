@@ -198,12 +198,7 @@ namespace Orient.Client.Protocol.Operations
 
                 document = new ODocument { ORID = orid, OVersion = version, OType = ORecordType.Document, OClassId = classId };
 
-                if (OClient.SerializationImpl == ORecordFormat.ORecordDocument2csv.ToString())
-                    document = RecordSerializerFactory.GetSerializer(OClient.Serializer).Deserialize(rawRecord, document);
-                else
-                {
-                    document = RecordSerializerFactory.GetSerializer(OClient.Serializer).Deserialize(rawRecord, document);
-                }
+                document = RecordSerializerFactory.GetSerializer(OClient.Serializer).Deserialize(rawRecord, document);
 
             }
 

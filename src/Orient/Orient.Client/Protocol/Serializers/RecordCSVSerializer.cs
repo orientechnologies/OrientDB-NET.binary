@@ -14,14 +14,14 @@ namespace Orient.Client.Protocol.Serializers
         {
         }
 
-        public string Serialize(ODocument document)
+        public byte[] Serialize(ODocument document)
         {
             if (!document.HasField("@OClassName"))
             {
                 throw new OException(OExceptionType.Serialization, "Document doesn't contain @OClassName field which is required for serialization.");
             }
 
-            return document.GetField<string>("@OClassName") + "@" + SerializeDocument(document);
+            return Encoding.UTF8.GetBytes(document.GetField<string>("@OClassName") + "@" + SerializeDocument(document));
         }
 
         #region Deserialize

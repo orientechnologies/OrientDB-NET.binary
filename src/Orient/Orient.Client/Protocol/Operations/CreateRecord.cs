@@ -12,6 +12,7 @@ namespace Orient.Client.Protocol.Operations
     {
         private readonly ODocument _document;
         private readonly ODatabase _database;
+        internal OperationMode OperationMode { get; set; }
 
         public CreateRecord(ODocument document, ODatabase database)
         {
@@ -43,7 +44,8 @@ namespace Orient.Client.Protocol.Operations
             request.AddDataItem((short)clusterId);
             request.AddDataItem(RecordSerializerFactory.GetSerializer(OClient.Serializer).Serialize(_document));
             request.AddDataItem((byte)ORecordType.Document);
-            request.AddDataItem((byte)0);
+            request.AddDataItem((byte)((OperationMode == OperationMode.Synchronous) ? 0 : 1));
+
 
             return request;
         }

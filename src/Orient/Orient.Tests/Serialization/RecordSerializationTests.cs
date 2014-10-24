@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Orient.Client;
+using Orient.Client.API.Types;
 using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Tests.Serialization
@@ -14,6 +15,7 @@ namespace Orient.Tests.Serialization
         [TestInitialize]
         public void Init()
         {
+            OClient.Serializer = ORecordFormat.ORecordDocument2csv;
             serializer = RecordSerializerFactory.GetSerializer(OClient.Serializer);
         }
         [TestMethod]
@@ -28,7 +30,7 @@ namespace Orient.Tests.Serialization
                 .SetField("@ORID", new ORID(8, 0))
                 .SetField<bool>("foo", true);
 
-            string serializedRecord = serializer.Serialize(document);
+            string serializedRecord = Encoding.UTF8.GetString(serializer.Serialize(document));
 
             Assert.AreEqual(serializedRecord, recordString);
         }
@@ -43,7 +45,7 @@ namespace Orient.Tests.Serialization
                 .SetField<object>("null", null)
                 .SetField<object>("embedded.null", null);
 
-            string serializedRecord = serializer.Serialize(document);
+            string serializedRecord = Encoding.UTF8.GetString(serializer.Serialize(document));
 
             Assert.AreEqual(serializedRecord, recordString);
         }
@@ -61,7 +63,7 @@ namespace Orient.Tests.Serialization
                 .SetField("embedded.isFalse", false)
                 .SetField<List<bool>>("array", new List<bool> { true, false });
 
-            string serializedRecord = serializer.Serialize(document);
+            string serializedRecord = Encoding.UTF8.GetString(serializer.Serialize(document));
 
             Assert.AreEqual(serializedRecord, recordString);
         }
@@ -88,7 +90,7 @@ namespace Orient.Tests.Serialization
                 .SetField("embedded.DoubleNumber", 3.14)
                 .SetField("embedded.DecimalNumber", new Decimal(1234567.8901));
 
-            string serializedRecord = serializer.Serialize(document);
+            string serializedRecord = Encoding.UTF8.GetString(serializer.Serialize(document));
 
             Assert.AreEqual(serializedRecord, recordString);
         }
@@ -109,7 +111,7 @@ namespace Orient.Tests.Serialization
                 .SetField("DateTime", dateTime)
                 .SetField("embedded.DateTime", dateTime);
 
-            string serializedRecord = serializer.Serialize(document);
+            string serializedRecord = Encoding.UTF8.GetString(serializer.Serialize(document));
 
             Assert.AreEqual(serializedRecord, recordString);
         }
@@ -127,7 +129,7 @@ namespace Orient.Tests.Serialization
                 .SetField("embedded.Array", new List<string> { "foo", "bar" });
 
 
-            string serializedString = serializer.Serialize(document);
+            string serializedString = Encoding.UTF8.GetString(serializer.Serialize(document));
 
             Assert.AreEqual(serializedString, recordString);
         }
@@ -144,7 +146,7 @@ namespace Orient.Tests.Serialization
                 .SetField("embedded.Single", new ORID(9, 0))
                 .SetField("embedded.Array", new List<ORID> { new ORID(9, 1), new ORID(9, 2) });
 
-            string serializedString = serializer.Serialize(document);
+            string serializedString = Encoding.UTF8.GetString(serializer.Serialize(document));
 
             Assert.AreEqual(serializedString, recordString);
         }
@@ -160,7 +162,7 @@ namespace Orient.Tests.Serialization
                 .SetField("Array", new List<ORID> { new ORID(8, 1), new ORID(8, 2) })
                 .SetField("embedded.Array", new List<ORID> { new ORID(9, 1), new ORID(9, 2) });
 
-            string serializedString = serializer.Serialize(document);
+            string serializedString = Encoding.UTF8.GetString(serializer.Serialize(document));
 
             Assert.AreEqual(serializedString, recordString);
         }
@@ -176,7 +178,7 @@ namespace Orient.Tests.Serialization
                 .SetField("Set", new HashSet<ORID> { new ORID(8, 1), new ORID(8, 2) })
                 .SetField("embedded.Set", new HashSet<ORID> { new ORID(9, 1), new ORID(9, 2) });
 
-            string serializedString = serializer.Serialize(document);
+            string serializedString = Encoding.UTF8.GetString(serializer.Serialize(document));
 
             Assert.AreEqual(serializedString, recordString);
         }

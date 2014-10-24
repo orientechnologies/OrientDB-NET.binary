@@ -83,7 +83,7 @@ namespace Orient.Tests.Serialization
             document.OClassName = "TestClass";
             document.SetField<DateTime>("eeee", new DateTime(635487552000000000));
 
-            var str = Convert.ToBase64String(Encoding.UTF8.GetBytes(serializer.Serialize(document)));
+            var str = Convert.ToBase64String(serializer.Serialize(document));
         }
     }
 }
