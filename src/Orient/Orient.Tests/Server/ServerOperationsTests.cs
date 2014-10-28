@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Orient.Client;
 using Orient.Client.API.Types;
+using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Tests.Server
 {
     [TestClass]
     public class ServerOperationsTests
     {
+        [TestInitialize]
+        public void Init()
+        {
+            OClient.Serializer = ORecordFormat.ORecordSerializerBinary;
+        }
+
         [TestMethod]
         public void ShouldCreateAndDeleteDatabase()
         {

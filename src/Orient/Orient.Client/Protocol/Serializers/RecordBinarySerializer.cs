@@ -12,6 +12,7 @@ namespace Orient.Client.Protocol.Serializers
     {
         private long MILLISEC_PER_DAY = 86400000;
         private const int SERIALIZER_VERSION = 0;
+        private ORID NULL_RECORD_ID = new ORID(-2, -1);
 
         public RecordBinarySerializer()
         {
@@ -104,6 +105,35 @@ namespace Orient.Client.Protocol.Serializers
                     break;
                 case OType.Float:
                     document.SetField<float>(fieldName, readFloat(reader));
+                    break;
+                case OType.Decimal:
+                    var scale = reader.ReadInt32EndianAware();
+
+                    var valueSize = reader.ReadInt32EndianAware();
+
+                    // read Fine the value
+                    var valuex = reader.ReadBytesRequired(valueSize);
+
+                    Int64 x1 = 0;
+
+                    if ((valuex[0] & 0x80) == 0x80)
+                        x1 = (sbyte)valuex[0];
+                    else
+                        x1 = valuex[0];
+
+                    for (int i = 1; i < valuex.Length; i++)
+                    {
+                        x1 = (x1 << 8) | valuex[i];
+                    }
+
+                    try
+                    {
+                        document.SetField(fieldName, new Decimal(x1 * Math.Pow(10, (-1) * scale)));
+                    }
+                    catch (OverflowException)
+                    {
+                        document.SetField(fieldName, x1 * Math.Pow(10, (-1) * scale));
+                    }
                     break;
                 case OType.Byte:
                     document.SetField<byte>(fieldName, reader.ReadByte());
@@ -221,11 +251,35 @@ namespace Orient.Client.Protocol.Serializers
                     }
                     document.SetField(fieldName, rids);
                     break;
+                case OType.LinkList:
+                    var linkList = readLinkCollection(reader);
+                    document.SetField(fieldName, linkList);
+                    break;
+                case OType.LinkSet:
+                    var linkSet = new HashSet<ORID>(readLinkCollection(reader));
+                    document.SetField(fieldName, linkSet);
+                    break;
                 case OType.Any:
                     break;
                 default:
                     throw new OException(OExceptionType.Deserialization, "The field type: " + type.ToString() + "not implemented");
             }
+        }
+
+        private IEnumerable<ORID> readLinkCollection(BinaryReader reader)
+        {
+            var links = new List<ORID>();
+            var collectionLength = readAsLong(reader);
+            for (int i = 0; i < collectionLength; i++)
+            {
+                var clusterid = readAsInteger(reader);
+                var clusterPosition = readAsLong(reader);
+                if (clusterid == NULL_RECORD_ID.ClusterId && clusterPosition == NULL_RECORD_ID.ClusterPosition)
+                    links.Add(null);
+                else
+                    links.Add(new ORID((short)clusterid, clusterPosition));
+            }
+            return links;
         }
 
         #endregion
@@ -307,39 +361,62 @@ namespace Orient.Client.Protocol.Serializers
                     pointer = buffer.WriteVariant(Convert.ToInt32(value));
                     break;
                 case OType.String:
-                    pointer = buffer.WriteString((string)value);
+                    pointer = buffer.Write((string)value);
                     break;
                 case OType.Double:
-                    pointer = buffer.WriteDouble((double)value);
+                    pointer = buffer.Write((double)value);
                     break;
                 case OType.Float:
-                    pointer = buffer.WriteFloat((float)value);
+                    pointer = buffer.Write((float)value);
                     break;
                 case OType.Byte:
-                    pointer = buffer.WriteByte((byte)value);
+                    pointer = buffer.Write((byte)value);
                     break;
                 case OType.Boolean:
-                    pointer = buffer.WriteByte(((bool)value) ? (byte)1 : (byte)0);
+                    pointer = buffer.Write(((bool)value) ? (byte)1 : (byte)0);
                     break;
                 case OType.DateTime:
                     DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                     pointer = buffer.WriteVariant((long)((DateTime)value - unixEpoch).TotalMilliseconds);
                     break;
-                case OType.Decimal:
-                    /*
-                     * The Decimal is converted to an integer and stored as scale and value 
-                     * (example "10234.546" is stored as scale "3" and value as:"10234546")
-                     *  +---------------+-------------------+--------------+
-                     *  | scale:byte[4] | valueSize:byte[4] | value:byte[] |
-                     *  +---------------+-------------------+--------------+
-                     *  scale an 4 byte integer that represent the scale of the value 
-                     *  valueSize the length of the value 
-                     *  bytes value the bytes that represent the value of the   decimal in big-endian order.
-                     */
-                    var dec = ((decimal)value);
-                    var unscaledValueBytes = FromDecimal(dec);
-                    var unscaledValue = new BigInteger(unscaledValueBytes);
+                //case OType.Decimal:
+                //    /*
+                //     * The Decimal is converted to an integer and stored as scale and value 
+                //     * (example "10234.546" is stored as scale "3" and value as:"10234546")
+                //     *  +---------------+-------------------+--------------+
+                //     *  | scale:byte[4] | valueSize:byte[4] | value:byte[] |
+                //     *  +---------------+-------------------+--------------+
+                //     *  scale an 4 byte integer that represent the scale of the value 
+                //     *  valueSize the length of the value 
+                //     *  bytes value the bytes that represent the value of the   decimal in big-endian order.
+                //     */
+                //    var dec = ((decimal)value);
+                //    byte[] bytes = BinarySerializer.ToArray(dec);
+                //    var unscaledValueBytes = FromDecimal(dec);
+                //    var unscaledValue = new BigInteger(unscaledValueBytes);
+                //    break;
+                case OType.Link:
+                    ORID rid = (ORID)value;
+                    pointer = buffer.Write(rid);
+                    break;
+                case OType.LinkList:
+                case OType.LinkSet:
+                    var col = (ICollection<ORID>)value;
+                    pointer = buffer.WriteVariant(col.Count);
 
+                    foreach (var item in col)
+                    {
+                        if (item == null)
+                        {
+                            buffer.Write(NULL_RECORD_ID);
+                        }
+                        else
+                        {
+                            buffer.Write(item);
+                        }
+                    }
+                    break;
+                case OType.LinkBag:
                     break;
                 default:
                     throw new NotImplementedException("Type " + valueType + " still not supported");

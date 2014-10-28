@@ -75,6 +75,8 @@ namespace Orient.Client.Protocol
             IsReusable = false;
             ProtocolVersion = 0;
             SessionId = -1;
+            UserName = userName;
+            UserPassword = userPassword;
 
             InitializeServerConnection(userName, userPassword);
         }

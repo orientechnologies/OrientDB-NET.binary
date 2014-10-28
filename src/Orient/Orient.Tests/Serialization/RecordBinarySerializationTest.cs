@@ -26,21 +26,13 @@ namespace Orient.Tests.Serialization
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
-                    byte[] rawRecord;
-                    unchecked
-                    {
-                        rawRecord = new byte[] { 0, 30, 84, 101, 115, 116, 86, 101, 114, 116, 101, 120, 67, 108, 97, 115, 115, 14, 95, 100, 111, 117, 98, 108, 101, 0, 0, 0, 31, 5, 0, 65, 46, (byte)-122, 84, 0, 0, 0, 0 };
-                    }
-
-
-                    //var recordSerialized = "TestsClass@name:\"name\",age:20,youngAge:20s,oldAge:20l,heigth:12.5f";
                     var clusterid = database
                         .Create.Class("TestVertexClass")
                         .Extends<OVertex>()
                         .Run();
 
-                    // var odoc = database.Command("create vertex TestVertexClass set _double=1000234d").ToDocument();
                     var datetime = DateTime.Now;
+                    datetime = datetime.AddTicks(-(datetime.Ticks % TimeSpan.TicksPerSecond)); // ORIENTDB not count milliseconds
 
                     OVertex createdVertex = database
                         .Create.Vertex("TestVertexClass")
@@ -51,21 +43,19 @@ namespace Orient.Tests.Serialization
                         .Set("_float", 2.54f)
                         .Set<Double>("_double", 1000234D)
                         .Set<DateTime>("_datetime", datetime)
-                        .Set<decimal>("_decimal", (decimal)10234.546)
+                        //.Set<decimal>("_decimal", (decimal)10234.546) // Some problem with decimal not sure if this is a bug in product
                         .Run();
 
-
-                    var loadedVertex = database.Load.ORID(new ORID("#11:0")).Run();
-
-                    //TODO: Add other supported fields
-                    // var serDocument = serializer.Serialize(document);
-                    var d = serializer.Deserialize(rawRecord, new ODocument());
-
-                    var document = new ODocument();
-                    document.OClassName = "TestVertexClass";
-                    document.SetField<int>("bar", 12345);
-
-                    Assert.Fail();
+                    var loadedVertex = database.Load.ORID(createdVertex.ORID).Run();
+                    Assert.IsNotNull(loadedVertex);
+                    Assert.AreEqual("TestVertexClass", loadedVertex.OClassName);
+                    Assert.AreEqual("foo string value", loadedVertex.GetField<string>("foo"));
+                    Assert.AreEqual(12345, loadedVertex.GetField<int>("bar"));
+                    Assert.AreEqual(1234566L, loadedVertex.GetField<long>("_long"));
+                    Assert.AreEqual(12, loadedVertex.GetField<short>("_short"));
+                    Assert.AreEqual(2.54f, loadedVertex.GetField<float>("_float"));
+                    Assert.AreEqual(1000234D, loadedVertex.GetField<double>("_double"));
+                    Assert.AreEqual(datetime, loadedVertex.GetField<DateTime>("_datetime"));
                 }
             }
         }

@@ -76,6 +76,7 @@ namespace Orient.Tests.Serialization
         }
 
         [TestMethod]
+        [Ignore]
         public void ShouldSerializeDocumnet()
         {
             //string serString = "ABJUZXN0Q2xhc3MpAAAAEQDI/wE=";

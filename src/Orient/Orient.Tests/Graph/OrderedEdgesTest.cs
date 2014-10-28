@@ -25,7 +25,7 @@ namespace Orient.Tests.Graph
         class WidgetVersion
         {
             public int Value { get; set; }
-            public ORID in_VersionOf { get; set; }
+            public HashSet<ORID> in_VersionOf { get; set; }
 
         }
 

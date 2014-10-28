@@ -20,6 +20,9 @@ namespace Orient.Client.API.Types
             AddType<byte[]>(OType.Binary);
             AddType<byte>(OType.Byte);
             AddType<decimal>(OType.Decimal);
+            AddType<HashSet<ORID>>(OType.LinkSet);
+            AddType<List<ORID>>(OType.LinkList);
+            AddType<ORID>(OType.Link);
         }
 
         private static void AddType<T>(OType name)

@@ -58,7 +58,7 @@ namespace Orient.Client.Protocol.Serializers
             return (ulong)((value << 1) ^ (value >> 63));
         }
 
-        internal int WriteString(string value)
+        internal int Write(string value)
         {
             var pos = Length;
             WriteVariant(value.Length);
@@ -66,25 +66,34 @@ namespace Orient.Client.Protocol.Serializers
             return pos;
         }
 
-        internal int WriteDouble(double value)
+        internal int Write(double value)
         {
             var pos = Length;
             AddRange(BitConverter.GetBytes(value).CheckEndianess());
             return pos;
         }
 
-        internal int WriteFloat(float value)
+        internal int Write(float value)
         {
             var pos = Length;
             AddRange(BitConverter.GetBytes(value).CheckEndianess());
             return pos;
         }
 
-        internal int WriteByte(byte value)
+        internal int Write(byte value)
         {
             var pos = Length;
             Add(value);
             return pos;
         }
+
+        internal int Write(ORID rid)
+        {
+            var pos = Length;
+            WriteVariant(rid.ClusterId);
+            WriteVariant(rid.ClusterPosition);
+            return pos;
+        }
+
     }
 }
