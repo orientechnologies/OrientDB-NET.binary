@@ -8,19 +8,20 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class CreateRecord : IOperation
+    internal class CreateRecord : BaseOperation
     {
         private readonly ODocument _document;
-        private readonly ODatabase _database;
+        //private readonly ODatabase _database;
         internal OperationMode OperationMode { get; set; }
 
         public CreateRecord(ODocument document, ODatabase database)
+            :base(database)
         {
             _document = document;
             _database = database;
         }
 
-        public Request Request(Request request)
+        public override Request Request(Request request)
         {
             if (_document.ORID != null)
                 throw new InvalidOperationException();
@@ -42,7 +43,7 @@ namespace Orient.Client.Protocol.Operations
 
 
             request.AddDataItem((short)clusterId);
-            request.AddDataItem(RecordSerializerFactory.GetSerializer(OClient.Serializer).Serialize(_document));
+            request.AddDataItem(Serializer.Serialize(_document));
             request.AddDataItem((byte)ORecordType.Document);
             request.AddDataItem((byte)((OperationMode == OperationMode.Synchronous) ? 0 : 1));
 
@@ -58,7 +59,7 @@ namespace Orient.Client.Protocol.Operations
                 _document.OClassName = "E";
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument responseDocument = _document;
 
@@ -93,5 +94,6 @@ namespace Orient.Client.Protocol.Operations
 
 
         }
+
     }
 }

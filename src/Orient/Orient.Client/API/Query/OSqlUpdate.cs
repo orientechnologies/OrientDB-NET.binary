@@ -250,7 +250,7 @@ namespace Orient.Client
             CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = ToString();
 
-            Command operation = new Command();
+            Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Synchronous;
             operation.CommandPayload = payload;
 

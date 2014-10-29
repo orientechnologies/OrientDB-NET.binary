@@ -3,12 +3,17 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class Connect : IOperation
+    internal class Connect : BaseOperation
     {
+        public Connect(ODatabase database)
+            : base(database)
+        {
+
+        }
         internal string UserName { get; set; }
         internal string UserPassword { get; set; }
 
-        public Request Request(Request request)
+        public override Request Request(Request request)
         {
 
             // standard request fields
@@ -32,7 +37,7 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument document = new ODocument();
 
@@ -48,5 +53,6 @@ namespace Orient.Client.Protocol.Operations
 
             return document;
         }
+
     }
 }

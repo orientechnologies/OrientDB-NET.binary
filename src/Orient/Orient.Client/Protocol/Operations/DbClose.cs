@@ -3,9 +3,14 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class DbClose : IOperation
+    internal class DbClose : BaseOperation
     {
-        public Request Request(Request request)
+        public DbClose(ODatabase database)
+            : base(database)
+        {
+
+        }
+        public override Request Request(Request request)
         {
             request.OperationMode = OperationMode.Asynchronous;
 
@@ -16,11 +21,12 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             // there are no specific response fields which have to be processed for this operation
 
             return null;
         }
+
     }
 }

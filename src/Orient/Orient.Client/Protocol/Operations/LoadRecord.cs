@@ -8,20 +8,26 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    class LoadRecord : IOperation
+    class LoadRecord : BaseOperation
     {
+        public LoadRecord(ODatabase database)
+            : base(database)
+        {
+
+        }
         private readonly ORID _orid;
         private readonly string _fetchPlan;
-        private readonly ODatabase _database;
+        //private readonly ODatabase _database;
 
         public LoadRecord(ORID orid, string fetchPlan, ODatabase database)
+            :base(database)
         {
             _orid = orid;
             _fetchPlan = fetchPlan;
             _database = database;
         }
 
-        public Request Request(Request request)
+        public override Request Request(Request request)
         {
             // standard request fields
             request.AddDataItem((byte)OperationType.RECORD_LOAD);
@@ -36,7 +42,7 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument responseDocument = new ODocument();
 
@@ -92,10 +98,10 @@ namespace Orient.Client.Protocol.Operations
 
             var recordLength = reader.ReadInt32EndianAware();
             var record = reader.ReadBytes(recordLength);
-            
+
             //var document = RecordCSVSerializer.Deserialize(new ORID(clusterId, clusterPosition), recordVersion, ORecordType.Document, 0, record);
-            var document = RecordSerializerFactory.GetSerializer(OClient.Serializer)
-                .Deserialize(record, new ODocument { ORID = new ORID(clusterId, clusterPosition) ,OVersion = recordVersion,OType = ORecordType.Document});
+            var document = Serializer
+                .Deserialize(record, new ODocument { ORID = new ORID(clusterId, clusterPosition), OVersion = recordVersion, OType = ORecordType.Document });
 
             _database.ClientCache[document.ORID] = document;
         }
@@ -114,7 +120,7 @@ namespace Orient.Client.Protocol.Operations
             switch (recordType)
             {
                 case ORecordType.Document:
-                    document = RecordSerializerFactory.GetSerializer(OClient.Serializer).Deserialize(readBytes, new ODocument());
+                    document = Serializer.Deserialize(readBytes, new ODocument());
                     document.ORID = _orid;
                     document.OVersion = version;
                     responseDocument.SetField("Content", document);
@@ -127,5 +133,6 @@ namespace Orient.Client.Protocol.Operations
                     break;
             }
         }
+
     }
 }

@@ -91,6 +91,7 @@
     <Compile Include="Mapping\ORIDFieldMapping.cs" />
     <Compile Include="Mapping\TypeMapper.cs" />
     <Compile Include="Protocol\BinaryReaderHelper.cs" />
+    <Compile Include="Protocol\Operations\BaseOperation.cs" />
     <Compile Include="Protocol\Operations\CommitTransaction.cs" />
     <Compile Include="Protocol\Operations\ConfigGet.cs" />
     <Compile Include="Protocol\Operations\ConfigList.cs" />

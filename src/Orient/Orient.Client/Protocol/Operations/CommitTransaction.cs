@@ -9,18 +9,19 @@ namespace Orient.Client.Protocol.Operations
 {
 
 
-    class CommitTransaction : IOperation
+    class CommitTransaction : BaseOperation
     {
-        private readonly ODatabase _database;
+        //private readonly ODatabase _database;
         private List<TransactionRecord> _records;
 
         public CommitTransaction(List<TransactionRecord> records, ODatabase database)
+            :base(database)
         {
             _records = records;
-            _database = database;
+           // _database = database;
         }
 
-        public Request Request(Request request)
+        public override Request Request(Request request)
         {
             //if (_document.ORID != null)
             //    throw new InvalidOperationException();
@@ -62,7 +63,7 @@ namespace Orient.Client.Protocol.Operations
 
 
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument responseDocument = new ODocument();
 
@@ -115,5 +116,6 @@ namespace Orient.Client.Protocol.Operations
             result.ClusterPosition = reader.ReadInt64EndianAware();
             return result;
         }
+
     }
 }

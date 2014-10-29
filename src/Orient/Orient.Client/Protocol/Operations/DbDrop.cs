@@ -3,12 +3,17 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class DbDrop : IOperation
+    internal class DbDrop : BaseOperation
     {
+        public DbDrop(ODatabase database)
+            :base(database)
+        {
+
+        }
         internal string DatabaseName { get; set; }
         internal OStorageType StorageType { get; set; }
 
-        public Request Request(Request request)
+        public override Request Request(Request request)
         {
             // standard request fields
             request.AddDataItem((byte)OperationType.DB_DROP);
@@ -21,11 +26,12 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             // there are no specific response fields processing for this operation
 
             return null;
         }
+
     }
 }

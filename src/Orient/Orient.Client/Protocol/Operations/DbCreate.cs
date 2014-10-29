@@ -3,13 +3,18 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class DbCreate : IOperation
+    internal class DbCreate : BaseOperation
     {
+        public DbCreate(ODatabase database)
+            :base(database)
+        {
+
+        }
         internal string DatabaseName { get; set; }
         internal ODatabaseType DatabaseType { get; set; }
         internal OStorageType StorageType { get; set; }
 
-        public Request Request(Request request)
+        public override Request Request(Request request)
         {
             // standard request fields
             request.AddDataItem((byte)OperationType.DB_CREATE);
@@ -22,7 +27,7 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument document = new ODocument();
 
@@ -42,5 +47,6 @@ namespace Orient.Client.Protocol.Operations
 
             return document;
         }
+
     }
 }

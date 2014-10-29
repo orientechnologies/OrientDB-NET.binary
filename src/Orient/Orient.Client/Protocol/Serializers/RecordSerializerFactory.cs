@@ -21,6 +21,7 @@ namespace Orient.Client.Protocol.Serializers
             {
                 case ORecordFormat.ORecordDocument2csv:
                     return new RecordCSVSerializer();
+                
                 case ORecordFormat.ORecordSerializerBinary:
                     return new RecordBinarySerializer();
             }

@@ -7,12 +7,17 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class Command : IOperation
+    internal class Command : BaseOperation
     {
+        public Command(ODatabase database)
+            : base(database)
+        {
+
+        }
         internal OperationMode OperationMode { get; set; }
         internal CommandPayloadBase CommandPayload { get; set; }
 
-        public Request Request(Request request)
+        public override Request Request(Request request)
         {
             // standard request fields
             request.AddDataItem((byte)OperationType.COMMAND);
@@ -71,7 +76,7 @@ namespace Orient.Client.Protocol.Operations
             throw new OException(OExceptionType.Operation, "Invalid payload");
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument responseDocument = new ODocument();
 
@@ -198,12 +203,11 @@ namespace Orient.Client.Protocol.Operations
 
                 document = new ODocument { ORID = orid, OVersion = version, OType = ORecordType.Document, OClassId = classId };
 
-                document = RecordSerializerFactory.GetSerializer(OClient.Serializer).Deserialize(rawRecord, document);
+                document = Serializer.Deserialize(rawRecord, document);
 
             }
 
             return document;
         }
-
     }
 }

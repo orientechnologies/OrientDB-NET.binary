@@ -5,15 +5,20 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class DbOpen : IOperation
+    internal class DbOpen : BaseOperation
     {
+        public DbOpen(ODatabase database)
+            : base(database)
+        {
+
+        }
         internal string DatabaseName { get; set; }
         internal ODatabaseType DatabaseType { get; set; }
         internal string UserName { get; set; }
         internal string UserPassword { get; set; }
         internal string ClusterConfig { get { return "null"; } }
 
-        public Request Request(Request request)
+        public override Request Request(Request request)
         {
             // standard request fields
             request.AddDataItem((byte)OperationType.DB_OPEN);
@@ -42,7 +47,7 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument document = new ODocument();
 
@@ -111,5 +116,6 @@ namespace Orient.Client.Protocol.Operations
 
             return document;
         }
+
     }
 }

@@ -52,8 +52,8 @@ namespace Orient.Tests.Graph
                     var v2 = database.Create.Vertex(wv1).Run();
                     var v3 = database.Create.Vertex(wv2).Run();
 
-                    database.Create.Edge("VersionOf").From(v1).To(v2).Run();
-                    database.Create.Edge("VersionOf").From(v1).To(v3).Run();
+                    var e1 = database.Create.Edge("VersionOf").From(v1).To(v2).Run();
+                    var e2 = database.Create.Edge("VersionOf").From(v1).To(v3).Run();
 
                     var loaded1 = database.Load.ORID(v1.ORID).Run();
                     var typed1 = loaded1.To<UnorderedWidget>();
@@ -63,7 +63,7 @@ namespace Orient.Tests.Graph
                     var loaded2 = database.Load.ORID(v2.ORID).Run();
                     var typed2 = loaded2.To<WidgetVersion>();
                     Assert.IsNotNull(typed2.in_VersionOf);
-
+                    var x = database.Command("select from E");
                 }
             }
         }

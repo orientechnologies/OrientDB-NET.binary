@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class ConfigList : IOperation
+    internal class ConfigList : BaseOperation
     {
-        public Request Request(Request request)
+        public ConfigList(ODatabase database)
+            :base(database)
+        {
+
+        }
+        public override Request Request(Request request)
         {
             // standard request fields
             request.AddDataItem((byte)OperationType.CONFIG_LIST);
@@ -16,7 +22,7 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument document = new ODocument();
 
@@ -37,5 +43,6 @@ namespace Orient.Client.Protocol.Operations
             document.SetField<Dictionary<string, string>>("config", configList);
             return document;
         }
+
     }
 }
