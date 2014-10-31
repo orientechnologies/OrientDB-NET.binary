@@ -100,6 +100,7 @@
     <Compile Include="Query\TestTransactions.cs" />
     <Compile Include="TestVertexClass.cs" />
     <Compile Include="TestConfigurationOperation.cs" />
+    <Compile Include="ClusterEqutableTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orient.Client\Orient.Client.csproj">
