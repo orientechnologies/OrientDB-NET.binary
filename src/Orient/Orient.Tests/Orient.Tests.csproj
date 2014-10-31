@@ -55,6 +55,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AssemblySetup.cs" />
+    <Compile Include="Database\TestDatabaseOperations.cs" />
     <Compile Include="DbRunner.cs" />
     <Compile Include="Graph\GraphClassesTests.cs" />
     <Compile Include="Graph\OrderedEdgesTest.cs" />

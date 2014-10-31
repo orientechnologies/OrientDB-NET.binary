@@ -180,7 +180,15 @@ namespace Orient.Client
 
             return new OCommandResult(document);
         }
-
+        public long Size
+        {
+            get
+            {
+                var operation = new DBSize();
+                var document = _connection.ExecuteOperation(operation);
+                return document.GetField<long>("size");
+            }
+        }
         public void Close()
         {
             if (_containsConnection)

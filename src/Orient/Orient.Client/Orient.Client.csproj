@@ -99,6 +99,7 @@
     <Compile Include="Protocol\Operations\CreateRecord.cs" />
     <Compile Include="Protocol\Operations\DBList.cs" />
     <Compile Include="Protocol\Operations\DbReload.cs" />
+    <Compile Include="Protocol\Operations\DBSize.cs" />
     <Compile Include="Protocol\Operations\LoadRecord.cs" />
     <Compile Include="Protocol\Operations\RecordMetadata.cs" />
     <Compile Include="Protocol\Operations\TransactionRecord.cs" />
