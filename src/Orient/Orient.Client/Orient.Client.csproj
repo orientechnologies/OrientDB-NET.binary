@@ -44,6 +44,7 @@
     <Compile Include="API\Exceptions\OExceptionType.cs" />
     <Compile Include="API\OTransaction.cs" />
     <Compile Include="API\Query\OCreateEdgeRecord.cs" />
+    <Compile Include="API\Query\ODataClasterAdd.cs" />
     <Compile Include="API\Query\OLoadRecord.cs" />
     <Compile Include="API\Query\OCreateVertexRecord.cs" />
     <Compile Include="API\Query\ORecordMetadata.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Protocol\Operations\ConfigList.cs" />
     <Compile Include="Protocol\Operations\ConfigSet.cs" />
     <Compile Include="Protocol\Operations\CreateRecord.cs" />
+    <Compile Include="Protocol\Operations\DataClusterAdd.cs" />
     <Compile Include="Protocol\Operations\DBCountRecords.cs" />
     <Compile Include="Protocol\Operations\DBList.cs" />
     <Compile Include="Protocol\Operations\DbReload.cs" />

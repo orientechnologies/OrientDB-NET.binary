@@ -1,4 +1,5 @@
-﻿using Orient.Client.Protocol;
+﻿using Orient.Client.API.Query;
+using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client
@@ -34,7 +35,8 @@ namespace Orient.Client
 
         public OSqlCreateCluster Cluster(string clusterName, OClusterType clusterType)
         {
-            return new OSqlCreateCluster(_connection).Cluster(clusterName, clusterType);
+            //return new OSqlCreateClusterViaSql(_connection).Cluster(clusterName, clusterType);            
+            return new ODataClasterAdd(_connection).Cluster(clusterName, clusterType);
         }
 
         public OSqlCreateCluster Cluster<T>(OClusterType clusterType)

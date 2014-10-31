@@ -72,6 +72,14 @@ namespace Orient.Client
 
         }
 
+        public void AddCluster(string className, short clusterId, OClusterType clusterType)
+        {
+            var clusters = _connection.Document.GetField<List<OCluster>>("Clusters");
+            clusters.Add(new OCluster() { Id = clusterId, Name = className.ToLower(), Type = clusterType });
+            _connection.Document.SetField("Clusters", clusters);
+
+        }
+
         public OSqlSelect Select(params string[] projections)
         {
             return new OSqlSelect(_connection).Select(projections);
@@ -180,7 +188,7 @@ namespace Orient.Client
 
             return new OCommandResult(document);
         }
-        
+
         public long Size
         {
             get
@@ -190,7 +198,7 @@ namespace Orient.Client
                 return document.GetField<long>("size");
             }
         }
-        
+
         public long CountRecords
         {
             get
