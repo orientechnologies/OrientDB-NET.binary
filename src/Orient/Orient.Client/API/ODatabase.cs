@@ -180,6 +180,7 @@ namespace Orient.Client
 
             return new OCommandResult(document);
         }
+        
         public long Size
         {
             get
@@ -189,6 +190,17 @@ namespace Orient.Client
                 return document.GetField<long>("size");
             }
         }
+        
+        public long CountRecords
+        {
+            get
+            {
+                var operation = new DBCountRecords();
+                var document = _connection.ExecuteOperation(operation);
+                return document.GetField<long>("count");
+            }
+        }
+
         public void Close()
         {
             if (_containsConnection)

@@ -97,6 +97,7 @@
     <Compile Include="Protocol\Operations\ConfigList.cs" />
     <Compile Include="Protocol\Operations\ConfigSet.cs" />
     <Compile Include="Protocol\Operations\CreateRecord.cs" />
+    <Compile Include="Protocol\Operations\DBCountRecords.cs" />
     <Compile Include="Protocol\Operations\DBList.cs" />
     <Compile Include="Protocol\Operations\DbReload.cs" />
     <Compile Include="Protocol\Operations\DBSize.cs" />
