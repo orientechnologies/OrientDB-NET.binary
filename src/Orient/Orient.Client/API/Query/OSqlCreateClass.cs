@@ -117,7 +117,7 @@ namespace Orient.Client
 
         private void CreateAutoProperties()
         {
-            foreach (var pi in _type.GetProperties(BindingFlags.DeclaredOnly))
+            foreach (var pi in _type.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public))
             {
                 if (pi.CanRead && pi.CanWrite)
                 {
@@ -125,14 +125,7 @@ namespace Orient.Client
                     if (oprop != null && !oprop.Deserializable && !oprop.Serializable)
                         continue;
 
-                    if (pi.PropertyType.IsPrimitive)
-                    {
-                        CreateProperty(pi);
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                    }
+                    CreateProperty(pi);
                 }
             }
         }
@@ -167,6 +160,8 @@ namespace Orient.Client
                 AddType<DateTime>("Datetime");
                 AddType<byte[]>("Binary");
                 AddType<byte>("Byte");
+                AddType<List<ORID>>("LinkList");
+                AddType<ORID>("Link");
             }
 
             private static void AddType<T>(string name)
