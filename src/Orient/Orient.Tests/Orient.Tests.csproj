@@ -60,6 +60,7 @@
     <Compile Include="Graph\GraphClassesTests.cs" />
     <Compile Include="Graph\OrderedEdgesTest.cs" />
     <Compile Include="Query\LoadRecordTests.cs" />
+    <Compile Include="Query\SqlDeleteClusterTest.cs" />
     <Compile Include="Query\SqlGenerateDeleteDocumentQueryTests.cs" />
     <Compile Include="Query\SqlGenerateDeleteVertexQueryTests.cs" />
     <Compile Include="Query\SqlGenerateDeleteEdgeQueryTests.cs" />

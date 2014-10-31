@@ -64,21 +64,21 @@ namespace Orient.Client
             return className;
         }
 
-        public void AddCluster(string className, short clusterId)
+        internal void AddCluster(OCluster cluster)
         {
             var clusters = _connection.Document.GetField<List<OCluster>>("Clusters");
-            clusters.Add(new OCluster() { Id = clusterId, Name = className.ToLower() });
-            _connection.Document.SetField("Clusters", clusters);
-
+            clusters.Add(cluster);
         }
 
-        public void AddCluster(string className, short clusterId, OClusterType clusterType)
+        internal void RemoveCluster(short clusterid)
         {
             var clusters = _connection.Document.GetField<List<OCluster>>("Clusters");
-            clusters.Add(new OCluster() { Id = clusterId, Name = className.ToLower(), Type = clusterType });
-            _connection.Document.SetField("Clusters", clusters);
+            var cluster = clusters.SingleOrDefault(c => c.Id == clusterid);
 
+            if (cluster != null)
+                clusters.Remove(cluster);
         }
+
 
         public OSqlSelect Select(params string[] projections)
         {
@@ -232,5 +232,6 @@ namespace Orient.Client
         {
             Close();
         }
+
     }
 }

@@ -49,6 +49,7 @@
     <Compile Include="API\Query\OCreateVertexRecord.cs" />
     <Compile Include="API\Query\ORecordMetadata.cs" />
     <Compile Include="API\Query\OSqlCreateProperty.cs" />
+    <Compile Include="API\Query\OSqlDeleteCluster.cs" />
     <Compile Include="API\Query\OSqlSchema.cs" />
     <Compile Include="API\Types\IBaseRecord.cs" />
     <Compile Include="API\Types\OBaseRecord.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Protocol\Operations\ConfigSet.cs" />
     <Compile Include="Protocol\Operations\CreateRecord.cs" />
     <Compile Include="Protocol\Operations\DataClusterAdd.cs" />
+    <Compile Include="Protocol\Operations\DataClusterDrop.cs" />
     <Compile Include="Protocol\Operations\DBCountRecords.cs" />
     <Compile Include="Protocol\Operations\DBList.cs" />
     <Compile Include="Protocol\Operations\DbReload.cs" />

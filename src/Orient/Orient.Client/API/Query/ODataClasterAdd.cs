@@ -43,7 +43,7 @@ namespace Orient.Client.API.Query
             var document = _connection.ExecuteOperation(operation);
             var clusterid = document.GetField<short>("clusterid");
             if (clusterid != -1)
-                _connection.Database.AddCluster(ClusterName, clusterid, ClusterType);
+                _connection.Database.AddCluster(new OCluster { Name = ClusterName, Id = clusterid, Type = ClusterType });
             return clusterid;
         }
 

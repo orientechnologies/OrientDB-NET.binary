@@ -41,8 +41,8 @@ namespace Orient.Client
 
         public OSqlCreateClass Class<T>()
         {
-            _type = typeof (T);
-            _className = typeof (T).Name;
+            _type = typeof(T);
+            _className = typeof(T).Name;
             return Class(_className);
         }
 
@@ -71,7 +71,7 @@ namespace Orient.Client
             if (_type != null && _type != typeof(T))
                 throw new InvalidOperationException("Inconsistent type specified - type for CreateProperties<T> must match type for Class<T>");
 
-            _type = typeof (T);
+            _type = typeof(T);
 
             _autoProperties = true;
             return this;
@@ -105,7 +105,7 @@ namespace Orient.Client
 
             var clusterId = short.Parse(result.ToDocument().GetField<string>("Content"));
 
-            _connection.Database.AddCluster(_className, clusterId);
+            _connection.Database.AddCluster(new OCluster { Name = _className, Id = clusterId });
 
             if (_autoProperties)
             {
@@ -174,7 +174,7 @@ namespace Orient.Client
                 _types.Add(typeof(T), name);
             }
 
-            static Dictionary<Type, string> _types = new Dictionary<Type, string>(); 
+            static Dictionary<Type, string> _types = new Dictionary<Type, string>();
 
             public static string TypeToDbName(Type t)
             {
