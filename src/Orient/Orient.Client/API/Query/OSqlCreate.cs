@@ -35,7 +35,7 @@ namespace Orient.Client
 
         public OSqlCreateCluster Cluster(string clusterName, OClusterType clusterType)
         {
-            //return new OSqlCreateClusterViaSql(_connection).Cluster(clusterName, clusterType);            
+            //return new OSqlCreateClusterViaSql(_connection).Cluster(clusterName, clusterType);
             return new ODataClasterAdd(_connection).Cluster(clusterName, clusterType);
         }
 

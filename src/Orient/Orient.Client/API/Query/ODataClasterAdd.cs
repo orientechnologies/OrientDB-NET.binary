@@ -46,6 +46,5 @@ namespace Orient.Client.API.Query
                 _connection.Database.AddCluster(new OCluster { Name = ClusterName, Id = clusterid, Type = ClusterType });
             return clusterid;
         }
-
     }
 }
