@@ -79,7 +79,6 @@ namespace Orient.Client
                 clusters.Remove(cluster);
         }
 
-
         public OSqlSelect Select(params string[] projections)
         {
             return new OSqlSelect(_connection).Select(projections);
@@ -233,5 +232,24 @@ namespace Orient.Client
             Close();
         }
 
+        public OClusterCountQuery Clusters(params string[] clusterNames)
+        {
+            return Clusters(clusterNames.Select(n => GetClusterIdFor(n)));
+        }
+
+        private OClusterCountQuery Clusters(IEnumerable<short> clusterIds)
+        {
+            var query = new OClusterCountQuery(_connection);
+            foreach (var id in clusterIds)
+            {
+                query.AddClusterId(id);
+            }
+            return query;
+        }
+
+        public OClusterCountQuery Clusters(params short[] clusterIds)
+        {
+            return Clusters(clusterIds);
+        }
     }
 }
