@@ -10,16 +10,23 @@ using Orient.Client.Protocol.Operations.Command;
 
 namespace Orient.Client
 {
-    public class OSqlCreateCluster
+    public interface OSqlCreateCluster {
+        OSqlCreateCluster Cluster(string clusterName, OClusterType clusterType);
+        OSqlCreateCluster Cluster<T>(OClusterType clusterType);
+        short Run();
+        string ToString();
+    }
+
+    public class OSqlCreateClusterViaSql : OSqlCreateCluster
     {
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;
 
-        public OSqlCreateCluster()
+        public OSqlCreateClusterViaSql()
         {
         }
 
-        internal OSqlCreateCluster(Connection connection)
+        internal OSqlCreateClusterViaSql(Connection connection)
         {
             _connection = connection;
         }

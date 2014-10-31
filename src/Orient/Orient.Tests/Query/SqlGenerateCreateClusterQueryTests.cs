@@ -10,7 +10,7 @@ namespace Orient.Tests.Query
         [TestMethod]
         public void ShouldGenerateCreateClusterQuery()
         {
-            string generatedQuery = new OSqlCreateCluster()
+            string generatedQuery = new OSqlCreateClusterViaSql()
                 .Cluster("TestVertexClass", OClusterType.Physical)
                 .ToString();
 
