@@ -39,6 +39,25 @@ namespace Orient.Client.Mapping
             document.OVersion = (int)GetPropertyValue(typedObject);
         }
     }
+    
+    internal class OTypeFieldMapping<TTarget> : FieldMapping<TTarget>
+    {
+        public OTypeFieldMapping(PropertyInfo propertyInfo)
+            : base(propertyInfo, "OType")
+        {
+            
+        }
+        
+        public override void MapToObject(ODocument document, TTarget typedObject)
+        {
+            SetPropertyValue(typedObject, document.OType);
+        }
+        
+        public override void MapToDocument(TTarget typedObject, ODocument document)
+        {
+            document.OType = (ORecordType)GetPropertyValue(typedObject);
+        }
+    }
 
     internal class OClassIdFieldMapping<TTarget> : FieldMapping<TTarget>
     {
