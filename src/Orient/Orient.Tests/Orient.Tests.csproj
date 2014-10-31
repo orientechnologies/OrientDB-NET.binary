@@ -55,10 +55,14 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AssemblySetup.cs" />
+    <Compile Include="Database\DataClusterCountTest.cs" />
+    <Compile Include="Database\TestDatabaseOperations.cs" />
     <Compile Include="DbRunner.cs" />
     <Compile Include="Graph\GraphClassesTests.cs" />
     <Compile Include="Graph\OrderedEdgesTest.cs" />
+    <Compile Include="Issues\StackOverflow_q_26661636.cs" />
     <Compile Include="Query\LoadRecordTests.cs" />
+    <Compile Include="Query\SqlDeleteClusterTest.cs" />
     <Compile Include="Query\SqlGenerateDeleteDocumentQueryTests.cs" />
     <Compile Include="Query\SqlGenerateDeleteVertexQueryTests.cs" />
     <Compile Include="Query\SqlGenerateDeleteEdgeQueryTests.cs" />
@@ -101,6 +105,7 @@
     <Compile Include="Query\TestTransactions.cs" />
     <Compile Include="TestVertexClass.cs" />
     <Compile Include="TestConfigurationOperation.cs" />
+    <Compile Include="ClusterEqutableTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orient.Client\Orient.Client.csproj">

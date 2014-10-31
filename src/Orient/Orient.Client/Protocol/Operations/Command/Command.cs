@@ -5,7 +5,7 @@ using Orient.Client.API.Types;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Serializers;
 
-namespace Orient.Client.Protocol.Operations
+namespace Orient.Client.Protocol.Operations.Command
 {
     internal class Command : BaseOperation
     {

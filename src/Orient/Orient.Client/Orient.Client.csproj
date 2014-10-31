@@ -44,11 +44,14 @@
     <Compile Include="API\Exceptions\OException.cs" />
     <Compile Include="API\Exceptions\OExceptionType.cs" />
     <Compile Include="API\OTransaction.cs" />
+    <Compile Include="API\Query\OClusterCountQuery.cs" />
     <Compile Include="API\Query\OCreateEdgeRecord.cs" />
+    <Compile Include="API\Query\ODataClasterAdd.cs" />
     <Compile Include="API\Query\OLoadRecord.cs" />
     <Compile Include="API\Query\OCreateVertexRecord.cs" />
     <Compile Include="API\Query\ORecordMetadata.cs" />
     <Compile Include="API\Query\OSqlCreateProperty.cs" />
+    <Compile Include="API\Query\OSqlDeleteCluster.cs" />
     <Compile Include="API\Query\OSqlSchema.cs" />
     <Compile Include="API\Types\IBaseRecord.cs" />
     <Compile Include="API\Types\OBaseRecord.cs" />
@@ -92,13 +95,21 @@
     <Compile Include="Mapping\TypeMapper.cs" />
     <Compile Include="Protocol\BinaryReaderHelper.cs" />
     <Compile Include="Protocol\Operations\BaseOperation.cs" />
+    <Compile Include="Protocol\Operations\Command\CommandPayloadCommand.cs" />
+    <Compile Include="Protocol\Operations\Command\CommandPayloadQuery.cs" />
+    <Compile Include="Protocol\Operations\Command\CommandPayloadScript.cs" />
     <Compile Include="Protocol\Operations\CommitTransaction.cs" />
     <Compile Include="Protocol\Operations\ConfigGet.cs" />
     <Compile Include="Protocol\Operations\ConfigList.cs" />
     <Compile Include="Protocol\Operations\ConfigSet.cs" />
     <Compile Include="Protocol\Operations\CreateRecord.cs" />
+    <Compile Include="Protocol\Operations\DataClusterAdd.cs" />
+    <Compile Include="Protocol\Operations\DataClusterCount.cs" />
+    <Compile Include="Protocol\Operations\DataClusterDrop.cs" />
+    <Compile Include="Protocol\Operations\DBCountRecords.cs" />
     <Compile Include="Protocol\Operations\DBList.cs" />
     <Compile Include="Protocol\Operations\DbReload.cs" />
+    <Compile Include="Protocol\Operations\DBSize.cs" />
     <Compile Include="Protocol\Operations\LoadRecord.cs" />
     <Compile Include="Protocol\Operations\RecordMetadata.cs" />
     <Compile Include="Protocol\Operations\TransactionRecord.cs" />
@@ -122,10 +133,8 @@
     <Compile Include="Protocol\RequestDataItem.cs" />
     <Compile Include="Protocol\Operations\IOperation.cs" />
     <Compile Include="Protocol\Operations\OperationMode.cs" />
-    <Compile Include="Protocol\Operations\Command.cs" />
-    <Compile Include="Protocol\Operations\CommandClassType.cs" />
-    <Compile Include="Protocol\Operations\CommandPayload.cs" />
-    <Compile Include="Protocol\Operations\CommandPayloadType.cs" />
+    <Compile Include="Protocol\Operations\Command\Command.cs" />
+    <Compile Include="Protocol\Operations\Command\CommandPayloadBase.cs" />
     <Compile Include="Protocol\Operations\DbClose.cs" />
     <Compile Include="Protocol\Operations\DbOpen.cs" />
     <Compile Include="Protocol\Operations\OperationType.cs" />
@@ -148,7 +157,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

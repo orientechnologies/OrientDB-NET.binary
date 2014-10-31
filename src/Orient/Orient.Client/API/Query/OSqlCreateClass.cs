@@ -4,6 +4,7 @@ using System.Reflection;
 using Orient.Client.API.Types;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 // syntax: 
 // CREATE CLASS <class> 
@@ -105,7 +106,7 @@ namespace Orient.Client
 
             var clusterId = short.Parse(result.ToDocument().GetField<string>("Content"));
 
-            _connection.Database.AddCluster(_className, clusterId);
+            _connection.Database.AddCluster(new OCluster { Name = _className, Id = clusterId });
 
             if (_autoProperties)
             {
@@ -117,7 +118,7 @@ namespace Orient.Client
 
         private void CreateAutoProperties()
         {
-            foreach (var pi in _type.GetProperties(BindingFlags.DeclaredOnly))
+            foreach (var pi in _type.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public))
             {
                 if (pi.CanRead && pi.CanWrite)
                 {
@@ -125,14 +126,7 @@ namespace Orient.Client
                     if (oprop != null && !oprop.Deserializable && !oprop.Serializable)
                         continue;
 
-                    if (pi.PropertyType.IsPrimitive)
-                    {
-                        CreateProperty(pi);
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                    }
+                    CreateProperty(pi);
                 }
             }
         }

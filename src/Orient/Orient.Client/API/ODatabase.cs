@@ -5,6 +5,7 @@ using Orient.Client.API;
 using Orient.Client.API.Query;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 namespace Orient.Client
 {
@@ -63,12 +64,19 @@ namespace Orient.Client
             return className;
         }
 
-        public void AddCluster(string className, short clusterId)
+        internal void AddCluster(OCluster cluster)
         {
             var clusters = _connection.Document.GetField<List<OCluster>>("Clusters");
-            clusters.Add(new OCluster() { Id = clusterId, Name = className.ToLower() });
-            _connection.Document.SetField("Clusters", clusters);
+            clusters.Add(cluster);
+        }
 
+        internal void RemoveCluster(short clusterid)
+        {
+            var clusters = _connection.Document.GetField<List<OCluster>>("Clusters");
+            var cluster = clusters.SingleOrDefault(c => c.Id == clusterid);
+
+            if (cluster != null)
+                clusters.Remove(cluster);
         }
 
         public OSqlSelect Select(params string[] projections)
@@ -182,6 +190,26 @@ namespace Orient.Client
             return new OCommandResult(document);
         }
 
+        public long Size
+        {
+            get
+            {
+                var operation = new DBSize(_connection.Database);
+                var document = _connection.ExecuteOperation(operation);
+                return document.GetField<long>("size");
+            }
+        }
+
+        public long CountRecords
+        {
+            get
+            {
+                var operation = new DBCountRecords(_connection.Database);
+                var document = _connection.ExecuteOperation(operation);
+                return document.GetField<long>("count");
+            }
+        }
+
         public void Close()
         {
             if (_containsConnection)
@@ -204,6 +232,26 @@ namespace Orient.Client
         public void Dispose()
         {
             Close();
+        }
+
+        public OClusterCountQuery Clusters(params string[] clusterNames)
+        {
+            return Clusters(clusterNames.Select(n => GetClusterIdFor(n)));
+        }
+
+        private OClusterCountQuery Clusters(IEnumerable<short> clusterIds)
+        {
+            var query = new OClusterCountQuery(_connection);
+            foreach (var id in clusterIds)
+            {
+                query.AddClusterId(id);
+            }
+            return query;
+        }
+
+        public OClusterCountQuery Clusters(params short[] clusterIds)
+        {
+            return Clusters(clusterIds);
         }
     }
 }

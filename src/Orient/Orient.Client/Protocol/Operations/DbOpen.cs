@@ -12,6 +12,7 @@ namespace Orient.Client.Protocol.Operations
         {
 
         }
+        
         internal string DatabaseName { get; set; }
         internal ODatabaseType DatabaseType { get; set; }
         internal string UserName { get; set; }

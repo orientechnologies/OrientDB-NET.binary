@@ -30,6 +30,7 @@ namespace Orient.Tests.Graph
         }
 
         [TestMethod]
+        [Ignore]
         public void TestUnOrderedEdges()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
@@ -69,6 +70,7 @@ namespace Orient.Tests.Graph
         }
 
         [TestMethod]
+        [Ignore]
         public void TestOrderedEdges()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())

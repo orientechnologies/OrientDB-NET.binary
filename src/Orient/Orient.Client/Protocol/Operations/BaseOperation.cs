@@ -15,14 +15,14 @@ namespace Orient.Client.Protocol.Operations
             _database = database;
         }
 
-        public Serializers.IRecordSerializer Serializer
+        public IRecordSerializer Serializer
         {
             get { return RecordSerializerFactory.GetSerializer(OClient.Serializer); }
         }
 
         public abstract ODocument Response(Response response);
 
-        public abstract Request Request(Request req);
+        public abstract Request Request(Request request);
 
     }
 }
