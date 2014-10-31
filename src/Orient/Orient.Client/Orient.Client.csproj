@@ -89,6 +89,9 @@
     <Compile Include="Mapping\ORIDFieldMapping.cs" />
     <Compile Include="Mapping\TypeMapper.cs" />
     <Compile Include="Protocol\BinaryReaderHelper.cs" />
+    <Compile Include="Protocol\Operations\Command\CommandPayloadCommand.cs" />
+    <Compile Include="Protocol\Operations\Command\CommandPayloadQuery.cs" />
+    <Compile Include="Protocol\Operations\Command\CommandPayloadScript.cs" />
     <Compile Include="Protocol\Operations\CommitTransaction.cs" />
     <Compile Include="Protocol\Operations\ConfigGet.cs" />
     <Compile Include="Protocol\Operations\ConfigList.cs" />
@@ -119,10 +122,8 @@
     <Compile Include="Protocol\RequestDataItem.cs" />
     <Compile Include="Protocol\Operations\IOperation.cs" />
     <Compile Include="Protocol\Operations\OperationMode.cs" />
-    <Compile Include="Protocol\Operations\Command.cs" />
-    <Compile Include="Protocol\Operations\CommandClassType.cs" />
-    <Compile Include="Protocol\Operations\CommandPayload.cs" />
-    <Compile Include="Protocol\Operations\CommandPayloadType.cs" />
+    <Compile Include="Protocol\Operations\Command\Command.cs" />
+    <Compile Include="Protocol\Operations\Command\CommandPayloadBase.cs" />
     <Compile Include="Protocol\Operations\DbClose.cs" />
     <Compile Include="Protocol\Operations\DbOpen.cs" />
     <Compile Include="Protocol\Operations\OperationType.cs" />

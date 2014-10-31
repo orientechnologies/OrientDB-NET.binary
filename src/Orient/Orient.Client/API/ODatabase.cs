@@ -5,6 +5,7 @@ using Orient.Client.API;
 using Orient.Client.API.Query;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 namespace Orient.Client
 {

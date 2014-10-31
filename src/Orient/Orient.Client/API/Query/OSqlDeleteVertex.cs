@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Orient.Client.Protocol;
+﻿using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 // syntax:
 // DELETE VERTEX <rid>|<[<class>] 

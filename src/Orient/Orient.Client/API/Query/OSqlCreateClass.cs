@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 // syntax: 
 // CREATE CLASS <class> 

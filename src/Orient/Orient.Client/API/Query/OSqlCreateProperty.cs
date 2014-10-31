@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Orient.Client.Protocol;
+﻿using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 namespace Orient.Client
 {

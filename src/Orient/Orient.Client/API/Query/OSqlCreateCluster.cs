@@ -1,5 +1,6 @@
 ﻿using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 // syntax:
 // CREATE CLUSTER <name> <type> 
