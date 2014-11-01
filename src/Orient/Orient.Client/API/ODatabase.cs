@@ -55,6 +55,17 @@ namespace Orient.Client
             return oCluster.Id;
         }
 
+        public string GetClusterNameFor(short clusterId)
+        {
+            OCluster oCluster = GetClusters().FirstOrDefault(x => x.Id == clusterId);
+            if (oCluster == null)
+            {
+                _connection.Reload();
+                oCluster = GetClusters().FirstOrDefault(x => x.Id == clusterId);
+            }
+            return oCluster.Name;
+        }
+
         private string CorrectClassName(string className)
         {
             if (className == "OVertex")
@@ -232,24 +243,25 @@ namespace Orient.Client
             Close();
         }
 
-        public OClusterCountQuery Clusters(params string[] clusterNames)
+        public OClusterQuery Clusters(params string[] clusterNames)
         {
-            return Clusters(clusterNames.Select(n => GetClusterIdFor(n)));
+            return Clusters(clusterNames.Select(n => new OCluster { Name = n, Id = GetClusterIdFor(n) }));
         }
 
-        private OClusterCountQuery Clusters(IEnumerable<short> clusterIds)
+        private OClusterQuery Clusters(IEnumerable<OCluster> clusters)
         {
-            var query = new OClusterCountQuery(_connection);
-            foreach (var id in clusterIds)
+            var query = new OClusterQuery(_connection);
+            foreach (var id in clusters)
             {
                 query.AddClusterId(id);
             }
             return query;
         }
 
-        public OClusterCountQuery Clusters(params short[] clusterIds)
+        public OClusterQuery Clusters(params short[] clusterIds)
         {
-            return Clusters(clusterIds);
+            //return Clusters(clusterIds.Select(id => new OCluster { Name = GetClusterNameFor(id), Id = id }));
+            return Clusters(clusterIds.Select(id => new OCluster { Id = id }));
         }
     }
 }

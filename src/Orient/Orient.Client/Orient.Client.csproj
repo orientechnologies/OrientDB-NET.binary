@@ -43,7 +43,7 @@
     <Compile Include="API\Exceptions\OException.cs" />
     <Compile Include="API\Exceptions\OExceptionType.cs" />
     <Compile Include="API\OTransaction.cs" />
-    <Compile Include="API\Query\OClusterCountQuery.cs" />
+    <Compile Include="API\Query\OClusterQuery.cs" />
     <Compile Include="API\Query\OCreateEdgeRecord.cs" />
     <Compile Include="API\Query\ODataClasterAdd.cs" />
     <Compile Include="API\Query\OLoadRecord.cs" />
@@ -102,6 +102,7 @@
     <Compile Include="Protocol\Operations\CreateRecord.cs" />
     <Compile Include="Protocol\Operations\DataClusterAdd.cs" />
     <Compile Include="Protocol\Operations\DataClusterCount.cs" />
+    <Compile Include="Protocol\Operations\DataClusterDataRange.cs" />
     <Compile Include="Protocol\Operations\DataClusterDrop.cs" />
     <Compile Include="Protocol\Operations\DBCountRecords.cs" />
     <Compile Include="Protocol\Operations\DBList.cs" />
