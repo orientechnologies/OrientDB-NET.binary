@@ -63,6 +63,9 @@ namespace Orient.Client.Mapping
                     case "OVersion":
                         _fields.Add(new OVersionFieldMapping<T>(propertyInfo));
                         continue;
+                    case "OType":
+                        _fields.Add(new OTypeFieldMapping<T>(propertyInfo));
+                        continue;
                     case "OClassId":
                         _fields.Add(new OClassIdFieldMapping<T>(propertyInfo));
                         continue;
