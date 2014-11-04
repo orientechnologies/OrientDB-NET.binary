@@ -48,7 +48,13 @@ namespace Orient.Client.Protocol.Operations.Command
                 if (scriptPayload.Language != "gremlin")
                     request.AddDataItem(scriptPayload.Language);
                 request.AddDataItem(scriptPayload.Text);
-                request.AddDataItem((byte)0);
+                if (scriptPayload.SimpleParams == null)
+                    request.AddDataItem((byte)0); // 0 - false, 1 - true
+                else
+                {
+                    request.AddDataItem((byte)1);
+                    request.AddDataItem(scriptPayload.SimpleParams);
+                }
                 request.AddDataItem((byte)0);
 
                 return request;
@@ -62,7 +68,13 @@ namespace Orient.Client.Protocol.Operations.Command
                 // (text:string)(has-simple-parameters:boolean)(simple-paremeters:bytes[])(has-complex-parameters:boolean)(complex-parameters:bytes[])
                 request.AddDataItem(commandPayload.Text);
                 // has-simple-parameters boolean
-                request.AddDataItem((byte)0); // 0 - false, 1 - true
+                if (commandPayload.SimpleParams == null)
+                    request.AddDataItem((byte)0); // 0 - false, 1 - true
+                else
+                {
+                    request.AddDataItem((byte)1);
+                    request.AddDataItem(commandPayload.SimpleParams);
+                }
                 //request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(0) });
                 // has-complex-parameters
                 request.AddDataItem((byte)0); // 0 - false, 1 - true

@@ -20,11 +20,10 @@ namespace Orient.Client.Protocol.Operations.Command
             {
                 // TODO: Implement Simple Complex params               
                 return base.PayLoadLength
-                    + (SimpleParams != null ? SimpleParams.Length : 0)
-                    + (ComplexParams != null ? ComplexParams.Length : 0)
-                    + sizeof(int) + BinarySerializer.Length(ClassName)
-                    + sizeof(byte) + (SimpleParams != null ? SimpleParams.Length : 0)  // Has SimpleParams 0 - false , 1 - true
-                    + sizeof(byte) + (ComplexParams != null ? ComplexParams.Length : 0); // Has ComplexParams 0 - false , 1 - true
+                    + sizeof(byte) // Has SimpleParams 0 - false , 1 - true
+                    + (SimpleParams != null ? sizeof(int) + SimpleParams.Length : 0)
+                    + sizeof(byte) // Has ComplexParams 0 - false , 1 - true
+                    + (ComplexParams != null ? sizeof(int) + ComplexParams.Length : 0);
             }
         }
     }

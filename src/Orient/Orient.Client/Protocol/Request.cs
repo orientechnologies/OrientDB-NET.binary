@@ -17,7 +17,7 @@ namespace Orient.Client.Protocol
 
         internal void AddDataItem(byte b)
         {
-            DataItems.Add(new RequestDataItem() {Type="byte", Data = BinarySerializer.ToArray(b)});
+            DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray(b) });
         }
         internal void AddDataItem(short s)
         {
@@ -39,6 +39,11 @@ namespace Orient.Client.Protocol
         {
             DataItems.Add(new RequestDataItem() { Type = "short", Data = BinarySerializer.ToArray(_orid.ClusterId) });
             DataItems.Add(new RequestDataItem() { Type = "long", Data = BinarySerializer.ToArray(_orid.ClusterPosition) });
+        }
+
+        internal void AddDataItem(byte[] value)
+        {
+            DataItems.Add(new RequestDataItem() { Type = "bytes", Data = value });
         }
     }
 }
