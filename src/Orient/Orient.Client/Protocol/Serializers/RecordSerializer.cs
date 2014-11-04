@@ -148,21 +148,42 @@ namespace Orient.Client.Protocol.Serializers
 
             if ((valueType.IsArray) || (valueType.IsGenericType))
             {
-                bld.Append(valueType.Name == "HashSet`1" ? "<" : "[");
-
-                IEnumerable collection = (IEnumerable)value;
-
-                bool first = true;
-                foreach (object val in collection)
+                if (valueType.Name == "Dictionary`2")
                 {
-                    if (!first)
-                        bld.Append(",");
+                    bld.Append("{");
 
-                    first = false;
-                    bld.Append(SerializeValue(val));
+                    IDictionary<string, object> collection = (IDictionary<string, object>)value;
+
+                    bool first = true;
+                    foreach (var keyVal in collection)
+                    {
+                        if (!first)
+                            bld.Append(",");
+
+                        first = false;
+                        bld.Append("\"" + keyVal.Key + "\":" + SerializeValue(keyVal.Value));
+                    }
+
+                    bld.Append("}");
                 }
+                else
+                {
+                    bld.Append(valueType.Name == "HashSet`1" ? "<" : "[");
 
-                bld.Append(valueType.Name == "HashSet`1" ? ">" : "]");
+                    IEnumerable collection = (IEnumerable)value;
+
+                    bool first = true;
+                    foreach (object val in collection)
+                    {
+                        if (!first)
+                            bld.Append(",");
+
+                        first = false;
+                        bld.Append(SerializeValue(val));
+                    }
+
+                    bld.Append(valueType.Name == "HashSet`1" ? ">" : "]");
+                }
             }
             // if property is ORID type it needs to be serialized as ORID
             else if (valueType.IsClass && (valueType.Name == "ORID"))

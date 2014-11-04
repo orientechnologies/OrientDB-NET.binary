@@ -10,7 +10,8 @@ namespace Orient.Client.Protocol.Operations.Command
         {
             get
             {
-                return sizeof(int) + BinarySerializer.Length(Text);
+                return sizeof(int) + BinarySerializer.Length(ClassName) +
+                       sizeof(int) + BinarySerializer.Length(Text);
             }
         }
     }

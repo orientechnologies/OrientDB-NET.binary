@@ -157,7 +157,7 @@ namespace Orient.Client
 
         #endregion
 
-        public List<ODocument> Gremlin(string query)
+        public OCommandResult Gremlin(string query)
         {
             CommandPayloadScript payload = new CommandPayloadScript();
             payload.Language = "gremlin";
@@ -169,21 +169,16 @@ namespace Orient.Client
 
             ODocument document = _connection.ExecuteOperation(operation);
 
-            return document.GetField<List<ODocument>>("Content");
+            return new OCommandResult(document);
         }
-        public List<ODocument> JavaScript(string query)
+        public OCommandQuery JavaScript(string query)
         {
             CommandPayloadScript payload = new CommandPayloadScript();
             payload.Language = "javascript";
             payload.Text = query;
-
-            Command operation = new Command();
-            operation.OperationMode = OperationMode.Synchronous;
-            operation.CommandPayload = payload;
-
-            ODocument document = _connection.ExecuteOperation(operation);
-
-            return document.GetField<List<ODocument>>("Content");
+            
+            return new OCommandQuery(_connection, payload);
+            
         }
         public OCommandResult Command(string sql)
         {
@@ -198,6 +193,7 @@ namespace Orient.Client
 
             return new OCommandResult(document);
         }
+
 
         public long Size
         {

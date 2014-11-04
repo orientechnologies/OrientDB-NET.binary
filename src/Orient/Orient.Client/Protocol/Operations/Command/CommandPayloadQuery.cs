@@ -20,10 +20,9 @@ namespace Orient.Client.Protocol.Operations.Command
             get
             {
                 return base.PayLoadLength
-                    + sizeof(int) + BinarySerializer.Length(ClassName)
                     + sizeof(int) // NonTextLimit
                     + sizeof(int) + BinarySerializer.Length(FetchPlan)
-                    + sizeof(int) + (SerializedParams != null ? SerializedParams.Length : 0);
+                    + sizeof(int) + (SerializedParams != null ? sizeof(int) + SerializedParams.Length : 0);
             }
         }
     }

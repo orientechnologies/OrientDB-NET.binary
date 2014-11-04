@@ -25,6 +25,10 @@ namespace Orient.Client
                 case PayloadStatus.RecordCollection:
                     document = _document.GetField<List<ODocument>>("Content").FirstOrDefault();
                     break;
+                case PayloadStatus.SerializedResult:
+                    document = new ODocument();
+                    document.SetField<object>("value",_document.GetField<object>("Content"));
+                    break;
                 default:
                     break;
             }
