@@ -37,7 +37,7 @@ namespace Orient.Client.API.Query
 
         public short Run()
         {
-            var operation = new DataClusterAdd();
+            var operation = new DataClusterAdd(_connection.Database);
             operation.ClusterType = ClusterType;
             operation.ClusterName = ClusterName;
             var document = _connection.ExecuteOperation(operation);

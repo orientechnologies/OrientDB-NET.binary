@@ -7,23 +7,27 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class ConfigGet : IOperation
+    internal class ConfigGet : BaseOperation
     {
+        public ConfigGet(ODatabase database)
+            : base(database)
+        {
+
+        }
         internal string ConfigKey { get; set; }
 
-        public Request Request(int sessionID)
+        public override Request Request(Request request)
         {
-            Request request = new Request();
 
             // standard request fields
             request.AddDataItem((byte)OperationType.CONFIG_GET);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
 
             request.AddDataItem(ConfigKey);
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument document = new ODocument();
 
@@ -37,5 +41,6 @@ namespace Orient.Client.Protocol.Operations
             document.SetField(ConfigKey, value);
             return document;
         }
+
     }
 }

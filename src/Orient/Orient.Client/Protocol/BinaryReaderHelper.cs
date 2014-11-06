@@ -63,9 +63,17 @@ namespace Orient.Client.Protocol
             int length = binRdr.ReadInt32EndianAware();
 
             if (length < 0)
-              return null;
+                return null;
 
             return System.Text.Encoding.Default.GetString(binRdr.ReadBytes(length));
+        }
+
+        public static ORID ReadRid(this BinaryReader binRdr)
+        {
+            ORID orid = new ORID();
+            orid.ClusterId = binRdr.ReadInt16EndianAware();
+            orid.ClusterPosition = binRdr.ReadInt64EndianAware();
+            return orid;
         }
     }
 }

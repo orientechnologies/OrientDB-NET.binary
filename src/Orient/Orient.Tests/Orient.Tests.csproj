@@ -76,7 +76,10 @@
     <Compile Include="Query\SqlDeleteEdgeTests.cs" />
     <Compile Include="Query\GremlinTests.cs" />
     <Compile Include="Query\SqlCreatePropertyTest.cs" />
+    <Compile Include="Query\TestCreateVertex.cs" />
     <Compile Include="Query\TestRecordMetadata.cs" />
+    <Compile Include="Serialization\RecordBinaryDeserializationTest.cs" />
+    <Compile Include="Serialization\RecordBinarySerializationTest.cs" />
     <Compile Include="Query\JavascriptTest.cs" />
     <Compile Include="TestProfileClass.cs" />
     <Compile Include="Pool\ConnectionPoolTests.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
@@ -77,10 +78,11 @@ namespace Orient.Client.Protocol.Operations
             request.AddDataItem(ORID.ClusterPosition);
             request.AddDataItem((byte)ORecordType.Document);
 
+            var serializedDocument = RecordSerializerFactory.GetSerializer(request.Connection.Database).Serialize(GetDocument());
             switch (RecordType)
             {
                 case RecordType.Create:
-                    request.AddDataItem(GetDocument().Serialize());
+                    request.AddDataItem(serializedDocument);
                     break;
                 case RecordType.Delete:
                     request.AddDataItem(Version);
@@ -88,7 +90,7 @@ namespace Orient.Client.Protocol.Operations
                 case RecordType.Update:
                     request.AddDataItem(Version);
                     //request.AddDataItem((byte)1);
-                    request.AddDataItem(GetDocument().Serialize());
+                    request.AddDataItem(serializedDocument);
                     if (OClient.ProtocolVersion >= 23)
                     {
                         request.AddDataItem((byte)1); // updateContent flag 
@@ -101,7 +103,7 @@ namespace Orient.Client.Protocol.Operations
 
         }
 
-     
+
 
         private ODocument GetDocument()
         {

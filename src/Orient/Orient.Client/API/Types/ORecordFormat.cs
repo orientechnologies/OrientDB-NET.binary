@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Orient.Client.API.Types
 {
-    internal enum ORecordFormat
+    public enum ORecordFormat
     {
         ORecordDocument2csv, // default in protocol < v22
         ORecordSerializerBinary

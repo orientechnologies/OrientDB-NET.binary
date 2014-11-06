@@ -5,45 +5,50 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class DbOpen : IOperation
+    internal class DbOpen : BaseOperation
     {
+        public DbOpen(ODatabase database)
+            : base(database)
+        {
+
+        }
+        
         internal string DatabaseName { get; set; }
         internal ODatabaseType DatabaseType { get; set; }
         internal string UserName { get; set; }
         internal string UserPassword { get; set; }
         internal string ClusterConfig { get { return "null"; } }
 
-        public Request Request(int sessionID)
+        public override Request Request(Request request)
         {
-            Request request = new Request();
             // standard request fields
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)OperationType.DB_OPEN) });
-            request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(sessionID) });
+            request.AddDataItem((byte)OperationType.DB_OPEN);
+            request.AddDataItem(request.SessionId);
             // operation specific fields
             if (OClient.ProtocolVersion >= 7)
             {
-                request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(OClient.DriverName) });
-                request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(OClient.DriverVersion) });
-                request.DataItems.Add(new RequestDataItem() { Type = "short", Data = BinarySerializer.ToArray(OClient.ProtocolVersion) });
-                request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(OClient.ClientID) });
+                request.AddDataItem(OClient.DriverName);
+                request.AddDataItem(OClient.DriverVersion);
+                request.AddDataItem(OClient.ProtocolVersion);
+                request.AddDataItem(OClient.ClientID);
             }
             if (OClient.ProtocolVersion > 21)
             {
-                request.DataItems.Add(new RequestDataItem { Type = "string", Data = BinarySerializer.ToArray(OClient.SerializationImpl) });
+                request.AddDataItem(OClient.SerializationImpl);
             }
 
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(DatabaseName) });
+            request.AddDataItem(DatabaseName);
             if (OClient.ProtocolVersion >= 8)
             {
-                request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(DatabaseType.ToString().ToLower()) });
+                request.AddDataItem(DatabaseType.ToString().ToLower());
             }
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(UserName) });
-            request.DataItems.Add(new RequestDataItem() { Type = "string", Data = BinarySerializer.ToArray(UserPassword) });
+            request.AddDataItem(UserName);
+            request.AddDataItem(UserPassword);
 
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument document = new ODocument();
 
@@ -112,5 +117,6 @@ namespace Orient.Client.Protocol.Operations
 
             return document;
         }
+
     }
 }

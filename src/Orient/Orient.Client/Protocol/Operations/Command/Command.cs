@@ -1,23 +1,27 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Orient.Client.API.Types;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations.Command
 {
-    internal class Command : IOperation
+    internal class Command : BaseOperation
     {
+        public Command(ODatabase database)
+            : base(database)
+        {
+
+        }
         internal OperationMode OperationMode { get; set; }
         internal CommandPayloadBase CommandPayload { get; set; }
 
-        public Request Request(int sessionId)
+        public override Request Request(Request request)
         {
-            Request request = new Request();
-
             // standard request fields
             request.AddDataItem((byte)OperationType.COMMAND);
-            request.AddDataItem(sessionId);
+            request.AddDataItem(request.SessionId);
             // operation specific fields
             request.AddDataItem((byte)OperationMode);
 
@@ -84,7 +88,7 @@ namespace Orient.Client.Protocol.Operations.Command
             throw new OException(OExceptionType.Operation, "Invalid payload");
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument responseDocument = new ODocument();
 
@@ -208,7 +212,11 @@ namespace Orient.Client.Protocol.Operations.Command
                 int version = reader.ReadInt32EndianAware();
                 int recordLength = reader.ReadInt32EndianAware();
                 byte[] rawRecord = reader.ReadBytes(recordLength);
-                document = RecordSerializer.Deserialize(orid, version, type, classId, rawRecord);
+
+                document = new ODocument { ORID = orid, OVersion = version, OType = ORecordType.Document, OClassId = classId };
+
+                document = Serializer.Deserialize(rawRecord, document);
+
             }
 
             return document;

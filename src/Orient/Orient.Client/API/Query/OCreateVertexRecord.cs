@@ -117,7 +117,7 @@ namespace Orient.Client
             //            var operation = CreateSQLOperation();
 
             var operation = new CreateRecord(_document, _connection.Database);
-
+            operation.OperationMode = OperationMode.Synchronous;
             return _connection.ExecuteOperation(operation).To<OVertex>();
         }
 

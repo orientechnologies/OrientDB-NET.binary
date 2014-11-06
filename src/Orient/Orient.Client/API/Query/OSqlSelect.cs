@@ -260,7 +260,7 @@ namespace Orient.Client
             payload.FetchPlan = fetchPlan;
             //payload.SerializedParams = new byte[] { 0 };
 
-            Command operation = new Command();
+            Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Asynchronous;
             operation.CommandPayload = payload;
 

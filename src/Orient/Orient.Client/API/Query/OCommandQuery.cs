@@ -28,10 +28,10 @@ namespace Orient.Client.API.Query
                 var paramsDocument = new ODocument();
                 paramsDocument.OClassName = "";
                 paramsDocument.SetField<Dictionary<string, object>>("parameters", _simpleParams);
-                ((CommandPayloadCommand)_payload).SimpleParams = BinarySerializer.ToArray(paramsDocument.Serialize());
+                ((CommandPayloadCommand)_payload).SimpleParams = RecordSerializerFactory.GetSerializer(_connection.Database).Serialize(paramsDocument);
             }
 
-            Command operation = new Command();
+            Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Synchronous;
             operation.CommandPayload = _payload;
 

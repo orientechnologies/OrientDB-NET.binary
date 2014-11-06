@@ -25,7 +25,7 @@ namespace Orient.Client.API.Query
 
         public long Count()
         {
-            var operation = new DataClusterCount();
+            var operation = new DataClusterCount(_connection.Database);
             operation.Clusters = _clusterIds.Select(c => c.Id).ToList();
             var document = _connection.ExecuteOperation(operation);
             return document.GetField<long>("count");
@@ -35,7 +35,7 @@ namespace Orient.Client.API.Query
             var document = new ODocument();
             foreach (var cluster in _clusterIds)
             {
-                var operation = new DataClusterDataRange();
+                var operation = new DataClusterDataRange(_connection.Database);
                 operation.ClusterId = cluster.Id;
                 var d = _connection.ExecuteOperation(operation);
                 if (!string.IsNullOrEmpty(cluster.Name))

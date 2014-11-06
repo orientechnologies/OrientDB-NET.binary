@@ -8,17 +8,25 @@ namespace Orient.Client.Protocol
     {
         internal OperationMode OperationMode { get; set; }
         internal List<RequestDataItem> DataItems { get; set; }
+        internal Connection Connection { get; private set; }
+        internal int SessionId { get; private set; }
 
-        internal Request()
+        internal Request(Connection connection)
         {
             OperationMode = OperationMode.Synchronous;
             DataItems = new List<RequestDataItem>();
+            this.Connection = connection;
         }
 
         internal void AddDataItem(byte b)
         {
             DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray(b) });
         }
+        internal void AddDataItem(byte[] b)
+        {
+            DataItems.Add(new RequestDataItem() { Type = "bytes", Data = b });
+        }
+
         internal void AddDataItem(short s)
         {
             DataItems.Add(new RequestDataItem() { Type = "short", Data = BinarySerializer.ToArray(s) });
@@ -41,9 +49,9 @@ namespace Orient.Client.Protocol
             DataItems.Add(new RequestDataItem() { Type = "long", Data = BinarySerializer.ToArray(_orid.ClusterPosition) });
         }
 
-        internal void AddDataItem(byte[] value)
+        internal void SetSessionId(int SessionId)
         {
-            DataItems.Add(new RequestDataItem() { Type = "bytes", Data = value });
+            this.SessionId = SessionId;
         }
     }
 }

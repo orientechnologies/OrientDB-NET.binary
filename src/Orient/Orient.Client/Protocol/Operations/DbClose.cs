@@ -3,25 +3,30 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class DbClose : IOperation
+    internal class DbClose : BaseOperation
     {
-        public Request Request(int sessionID)
+        public DbClose(ODatabase database)
+            : base(database)
         {
-            Request request = new Request();
+
+        }
+        public override Request Request(Request request)
+        {
             request.OperationMode = OperationMode.Asynchronous;
 
             // standard request fields
-            request.DataItems.Add(new RequestDataItem() { Type = "byte", Data = BinarySerializer.ToArray((byte)OperationType.DB_CLOSE) });
-            request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(sessionID) });
+            request.AddDataItem((byte)OperationType.DB_CLOSE);
+            request.AddDataItem(request.SessionId);
 
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             // there are no specific response fields which have to be processed for this operation
 
             return null;
         }
+
     }
 }
