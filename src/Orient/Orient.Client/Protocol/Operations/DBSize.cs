@@ -6,21 +6,23 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class DBSize : IOperation
+    internal class DBSize : BaseOperation
     {
-        public Request Request(int sessionID)
+        public DBSize(ODatabase database)
+            : base(database)
         {
-            Request request = new Request();
-            request.OperationMode = OperationMode.Synchronous;
 
+        }
+        public override Request Request(Request request)
+        {
             // standard request fields
             request.AddDataItem((byte)OperationType.DB_SIZE);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
 
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument document = new ODocument();
             if (response == null)

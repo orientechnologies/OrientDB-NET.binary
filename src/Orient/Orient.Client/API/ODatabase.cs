@@ -146,7 +146,7 @@ namespace Orient.Client
             payload.FetchPlan = fetchPlan;
             //payload.SerializedParams = new byte[] { 0 };
 
-            Command operation = new Command();
+            Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Asynchronous;
             operation.CommandPayload = payload;
 
@@ -163,7 +163,7 @@ namespace Orient.Client
             payload.Language = "gremlin";
             payload.Text = query;
 
-            Command operation = new Command();
+            Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Synchronous;
             operation.CommandPayload = payload;
 
@@ -180,12 +180,13 @@ namespace Orient.Client
             return new OCommandQuery(_connection, payload);
             
         }
+        
         public OCommandResult Command(string sql)
         {
             CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = sql;
 
-            Command operation = new Command();
+            Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Synchronous;
             operation.CommandPayload = payload;
 
@@ -199,7 +200,7 @@ namespace Orient.Client
         {
             get
             {
-                var operation = new DBSize();
+                var operation = new DBSize(_connection.Database);
                 var document = _connection.ExecuteOperation(operation);
                 return document.GetField<long>("size");
             }
@@ -209,7 +210,7 @@ namespace Orient.Client
         {
             get
             {
-                var operation = new DBCountRecords();
+                var operation = new DBCountRecords(_connection.Database);
                 var document = _connection.ExecuteOperation(operation);
                 return document.GetField<long>("count");
             }

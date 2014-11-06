@@ -5,18 +5,20 @@ using System.Text;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class DataClusterDrop : IOperation
+    internal class DataClusterDrop : BaseOperation
     {
         public short ClusterId { get; set; }
 
-        public Request Request(int sessionID)
+        public DataClusterDrop(ODatabase database)
+            : base(database)
         {
-            Request request = new Request();
-            request.OperationMode = OperationMode.Synchronous;
-
+                
+        }
+        public override Request Request(Request request)
+        {
             // standard request fields
             request.AddDataItem((byte)OperationType.DATACLUSTER_DROP);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
 
             if (OClient.ProtocolVersion >= 18)
             {
@@ -25,7 +27,7 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument document = new ODocument();
             if (response == null)

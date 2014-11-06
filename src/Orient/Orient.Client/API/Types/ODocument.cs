@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Orient.Client.API.Types;
 using Orient.Client.Mapping;
 using Orient.Client.Protocol.Serializers;
 
@@ -77,7 +78,7 @@ namespace Orient.Client
                 {
                     var first = (fieldValue as IEnumerable).OfType<object>().First();
                     if (first is T)
-                        return (T) first;
+                        return (T)first;
                 }
 
                 // if value is list or set type, get element type and enumerate over its elements
@@ -290,16 +291,6 @@ namespace Orient.Client
             var result = ToObject(genericObject, "");
             store.AddObject(ORID, result);
             return result;
-        }
-
-        public string Serialize()
-        {
-            return RecordSerializer.Serialize(this);
-        }
-
-        public static ODocument Deserialize(string recordString)
-        {
-            return RecordSerializer.Deserialize(recordString);
         }
 
         public static ODocument ToDocument<T>(T genericObject)

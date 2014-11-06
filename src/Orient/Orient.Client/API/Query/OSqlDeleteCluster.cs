@@ -25,7 +25,7 @@ namespace Orient.Client.API.Query
         public bool Run()
         {
             bool result = false;
-            var operation = new DataClusterDrop();
+            var operation = new DataClusterDrop(_connection.Database);
             operation.ClusterId = _clusterid;
             var document = _connection.ExecuteOperation(operation);
             result = document.GetField<bool>("remove_localy");

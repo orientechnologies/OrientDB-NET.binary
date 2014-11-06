@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Orient.Client.API.Types;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 using Orient.Client.Protocol.Operations.Command;
@@ -97,7 +98,7 @@ namespace Orient.Client
             CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = ToString();
 
-            Command operation = new Command();
+            Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Synchronous;
             operation.CommandPayload = payload;
 
@@ -132,11 +133,17 @@ namespace Orient.Client
 
         private void CreateProperty(PropertyInfo pi)
         {
-            string propType = ConvertPropertyType(pi.PropertyType);
-            _connection.Database.Command(string.Format("create property {2}.{0} {1}", pi.Name, propType, _type.Name));
+            var propType = ConvertPropertyType(pi.PropertyType);
+            var @class = (_type != null) ? _type.Name : _className;
+
+            var propid = _connection.Database
+                .Create
+                .Property(pi.Name, propType)
+                .Class(@class)
+                .Run();
         }
 
-        private string ConvertPropertyType(Type propertyType)
+        private OType ConvertPropertyType(Type propertyType)
         {
             return TypeConverter.TypeToDbName(propertyType);
         }
@@ -144,41 +151,6 @@ namespace Orient.Client
         public override string ToString()
         {
             return _sqlQuery.ToString(QueryType.CreateClass);
-        }
-
-        class TypeConverter
-        {
-            static TypeConverter()
-            {
-                AddType<int>("Integer");
-                AddType<long>("Long");
-                AddType<short>("Short");
-                AddType<string>("string");
-                AddType<bool>("Boolean");
-                AddType<float>("Float");
-                AddType<double>("Double");
-                AddType<DateTime>("Datetime");
-                AddType<byte[]>("Binary");
-                AddType<byte>("Byte");
-                AddType<List<ORID>>("LinkList");
-                AddType<ORID>("Link");
-            }
-
-            private static void AddType<T>(string name)
-            {
-                _types.Add(typeof(T), name);
-            }
-
-            static Dictionary<Type, string> _types = new Dictionary<Type, string>();
-
-            public static string TypeToDbName(Type t)
-            {
-                string result;
-                if (_types.TryGetValue(t, out result))
-                    return result;
-
-                throw new ArgumentException("propertyType " + t.Name + " is not yet supported.");
-            }
         }
     }
 }

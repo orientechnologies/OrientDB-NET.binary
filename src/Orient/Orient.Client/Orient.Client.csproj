@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -81,6 +82,7 @@
     <Compile Include="API\Query\OSqlInsert.cs" />
     <Compile Include="API\Query\OSqlSelect.cs" />
     <Compile Include="API\Query\OSqlUpdate.cs" />
+    <Compile Include="API\Types\TypeConverter.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Mapping\AllFieldMapping.cs" />
     <Compile Include="Mapping\BasicFieldMapping.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="Mapping\ORIDFieldMapping.cs" />
     <Compile Include="Mapping\TypeMapper.cs" />
     <Compile Include="Protocol\BinaryReaderHelper.cs" />
+    <Compile Include="Protocol\Operations\BaseOperation.cs" />
     <Compile Include="Protocol\Operations\Command\CommandPayloadCommand.cs" />
     <Compile Include="Protocol\Operations\Command\CommandPayloadQuery.cs" />
     <Compile Include="Protocol\Operations\Command\CommandPayloadScript.cs" />
@@ -143,8 +146,12 @@
     <Compile Include="Protocol\Response.cs" />
     <Compile Include="API\Types\ODocument.cs" />
     <Compile Include="Protocol\ResponseStatus.cs" />
+    <Compile Include="Protocol\Serializers\BinaryBuffer.cs" />
     <Compile Include="Protocol\Serializers\BinarySerializer.cs" />
-    <Compile Include="Protocol\Serializers\RecordSerializer.cs" />
+    <Compile Include="Protocol\Serializers\IRecordSerializer.cs" />
+    <Compile Include="Protocol\Serializers\RecordBinarySerializer.cs" />
+    <Compile Include="Protocol\Serializers\RecordCSVSerializer.cs" />
+    <Compile Include="Protocol\Serializers\RecordSerializerFactory.cs" />
     <Compile Include="Transactions\ORIDArrayPropertyUpdater.cs" />
     <Compile Include="Transactions\ORIDHashSetUpdater.cs" />
     <Compile Include="Transactions\ORIDListPropertyUpdater.cs" />

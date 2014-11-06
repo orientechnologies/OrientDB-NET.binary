@@ -83,7 +83,10 @@ namespace Orient.Client.Protocol
 
         internal ODocument ExecuteOperation(IOperation operation)
         {
-            Request request = operation.Request(SessionId);
+            var req = new Request(this);
+            req.SetSessionId(SessionId);
+
+            Request request = operation.Request(req);
             byte[] buffer;
 
             foreach (RequestDataItem item in request.DataItems)
@@ -130,7 +133,7 @@ namespace Orient.Client.Protocol
 
                     return ((IOperation)operation).Response(response);
                 }
-                catch (Exception )
+                catch (Exception)
                 {
                     //reset connection as the socket may contains unread data and is considered unstable
                     Reconnect();
@@ -165,7 +168,7 @@ namespace Orient.Client.Protocol
         {
             SessionId = -1;
 
-            DbClose operation = new DbClose();
+            DbClose operation = new DbClose(this.Database);
             ExecuteOperation(operation);
 
             if ((_networkStream != null) && (_socket != null))
@@ -185,7 +188,7 @@ namespace Orient.Client.Protocol
 
         public void Reload()
         {
-            DbReload operation = new DbReload();
+            DbReload operation = new DbReload(Database);
             var document = ExecuteOperation(operation);
             Document.SetField("Clusters", document.GetField<List<OCluster>>("Clusters"));
             Document.SetField("ClusterCount", document.GetField<short>("ClusterCount"));
@@ -213,7 +216,7 @@ namespace Orient.Client.Protocol
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
 
             // execute db_open operation
-            DbOpen operation = new DbOpen();
+            DbOpen operation = new DbOpen(null);
             operation.DatabaseName = databaseName;
             operation.DatabaseType = databaseType;
             operation.UserName = userName;
@@ -241,9 +244,11 @@ namespace Orient.Client.Protocol
             _networkStream.Read(_readBuffer, 0, 2);
 
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
+            if (ProtocolVersion <= 0)
+                throw new OException(OExceptionType.Connection, "Incorect Protocol Version " + ProtocolVersion);
 
             // execute connect operation
-            Connect operation = new Connect();
+            Connect operation = new Connect(null);
             operation.UserName = userName;
             operation.UserPassword = userPassword;
 

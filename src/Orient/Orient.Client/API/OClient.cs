@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Orient.Client.API.Types;
 using Orient.Client.Protocol;
+using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client
 {
@@ -12,6 +13,7 @@ namespace Orient.Client
         private static short _protocolVersion = 21;
         public static string DriverName { get { return "OrientDB-NET.binary"; } }
         public static string DriverVersion { get { return "0.2.1"; } }
+
         public static short ProtocolVersion
         {
             get { return _protocolVersion; }
@@ -21,14 +23,18 @@ namespace Orient.Client
                     _protocolVersion = value;
             }
         }
+
         public static int BufferLenght { get; set; }
-        public static string SerializationImpl { get { return ORecordFormat.ORecordDocument2csv.ToString(); } }
+        public static ORecordFormat Serializer { get; set; }
+
+        public static string SerializationImpl { get { return Serializer.ToString(); } }
 
         static OClient()
         {
             _syncRoot = new object();
             _databasePools = new List<DatabasePool>();
             BufferLenght = 1024;
+            Serializer = ORecordFormat.ORecordSerializerBinary;
         }
 
         public static string CreateDatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias)

@@ -5,18 +5,21 @@ using System.Text;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class DataClusterCount : IOperation
+    internal class DataClusterCount : BaseOperation
     {
         public List<short> Clusters { get; set; }
-        public Boolean CountTombStones;
-        public Request Request(int sessionID)
-        {
-            Request request = new Request();
-            request.OperationMode = OperationMode.Synchronous;
+        public Boolean CountTombStones = false;
 
+        public DataClusterCount(ODatabase database)
+            :base(database)
+        {
+
+        }
+        public override Request Request(Request request)
+        {
             // standard request fields
             request.AddDataItem((byte)OperationType.DATACLUSTER_COUNT);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
 
             request.AddDataItem((short)Clusters.Count);
             foreach (var item in Clusters)
@@ -34,7 +37,7 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument document = new ODocument();
             if (response == null)

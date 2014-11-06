@@ -103,8 +103,16 @@ namespace Orient.Client.Protocol.Serializers
             return Encoding.UTF8.GetBytes(data);
         }
 
-	internal static int Length(string data){
-		return Encoding.UTF8.GetBytes(data).Length;
-	}
+        internal static int Length(string data)
+        {
+            return Encoding.UTF8.GetBytes(data).Length;
+        }
+
+        internal static byte[] ToArray(decimal value)
+        {
+            byte[] res = null;
+            var bits = Decimal.GetBits(value);
+            return res;
+        }
     }
 }
