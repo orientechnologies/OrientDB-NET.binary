@@ -24,6 +24,11 @@ namespace Orient.Client
 
         public OTransaction Transaction { get; private set; }
 
+        internal Connection GetConnection()
+        {
+            return _connection;
+        }
+
         public ODatabase(string alias)
         {
             _connection = OClient.ReleaseConnection(alias);
@@ -176,11 +181,11 @@ namespace Orient.Client
             CommandPayloadScript payload = new CommandPayloadScript();
             payload.Language = "javascript";
             payload.Text = query;
-            
+
             return new OCommandQuery(_connection, payload);
-            
+
         }
-        
+
         public OCommandResult Command(string sql)
         {
             CommandPayloadCommand payload = new CommandPayloadCommand();

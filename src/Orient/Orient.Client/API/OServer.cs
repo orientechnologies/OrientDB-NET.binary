@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Orient.Client.API.Types;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
@@ -80,7 +81,7 @@ namespace Orient.Client
             Dictionary<string, string> returnValue = new Dictionary<string, string>();
             DBList operation = new DBList(null);
             ODocument document = _connection.ExecuteOperation(operation);
-            if (OClient.Serializer == API.Types.ORecordFormat.ORecordDocument2csv)
+            if (OClient.Serializer == ORecordFormat.ORecordDocument2csv)
             {
                 string[] databases = document.GetField<string>("databases").Split(',');
                 foreach (var item in databases)

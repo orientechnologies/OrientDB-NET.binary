@@ -49,11 +49,6 @@ namespace Orient.Client.Protocol
             DataItems.Add(new RequestDataItem() { Type = "long", Data = BinarySerializer.ToArray(_orid.ClusterPosition) });
         }
 
-        internal void AddDataItem(byte[] value)
-        {
-            DataItems.Add(new RequestDataItem() { Type = "bytes", Data = value });
-	}
-
         internal void SetSessionId(int SessionId)
         {
             this.SessionId = SessionId;

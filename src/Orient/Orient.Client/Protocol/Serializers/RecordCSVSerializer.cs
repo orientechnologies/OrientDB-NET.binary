@@ -11,8 +11,10 @@ namespace Orient.Client.Protocol.Serializers
 {
     internal class RecordCSVSerializer : IRecordSerializer
     {
-        public RecordCSVSerializer()
+        private Connection _connection;
+        public RecordCSVSerializer(Connection connection)
         {
+            _connection = connection;
         }
 
         public byte[] Serialize(ODocument document)
@@ -611,6 +613,9 @@ namespace Orient.Client.Protocol.Serializers
                 }
                 else
                 {
+                    if (_connection == null || !_connection.IsActive)
+                        throw new OException(OExceptionType.Connection, "Connection is not opened or is null");
+
                     List<ORID> ridbag = new List<ORID>();
 
                     // Tree based RidBag - (collectionPointer)(size:int)(changes)
@@ -627,42 +632,50 @@ namespace Orient.Client.Protocol.Serializers
                     var changesSize = reader.ReadInt32EndianAware();
                     for (int j = 0; j < changesSize; j++)
                     {
-                        throw new NotImplementedException("RidBag Changes not implemented");
+                        throw new NotImplementedException("RidBag Changes not yet implemented");
                     }
 
-                    // TODO: Need to implement connection
-                    var connection = OClient.ReleaseConnection("myTestDatabaseAlias");
-
-                    var operation = new SBTreeBonsaiFirstKey();
+                    var operation = new SBTreeBonsaiFirstKey(null);
                     operation.FileId = fileId;
                     operation.PageIndex = pageIndex;
                     operation.PageOffset = pageOffset;
 
-                    var orid = connection.ExecuteOperation(operation);
-                    var ft = true;
-                    var key = orid.GetField<ORID>("rid");
+
+                    // Not realy quiete about this
+                    var connection = OClient.ReleaseConnection(_connection.Alias);
+
                     var entries = new Dictionary<ORID, int>();
-                    do
+                    try
                     {
-                        var op = new SBTreeBonsaiGetEntriesMajor();
-                        op.FileId = fileId;
-                        op.PageIndex = pageIndex;
-                        op.PageOffset = pageOffset;
-                        op.FirstKey = key;
-                        op.Inclusive = ft;
+                        var orid = connection.ExecuteOperation(operation);
+                        var ft = true;
+                        var key = orid.GetField<ORID>("rid");
+                        do
+                        {
+                            var op = new SBTreeBonsaiGetEntriesMajor(null);
+                            op.FileId = fileId;
+                            op.PageIndex = pageIndex;
+                            op.PageOffset = pageOffset;
+                            op.FirstKey = key;
+                            op.Inclusive = ft;
 
-                        var res = connection.ExecuteOperation(op);
-                        entries = res.GetField<Dictionary<ORID, int>>("entries");
+                            var res = connection.ExecuteOperation(op);
+                            entries = res.GetField<Dictionary<ORID, int>>("entries");
 
-                        rids.AddRange(entries.Keys);
+                            rids.AddRange(entries.Keys);
 
-                        if (entries.Count == 0)
-                            break;
+                            if (entries.Count == 0)
+                                break;
 
-                        key = entries.Last().Key;
-                        ft = false;
+                            key = entries.Last().Key;
+                            ft = false;
 
-                    } while (true);
+                        } while (true);
+                    }
+                    finally
+                    {
+                        OClient.ReturnConnection(connection);
+                    }
                 }
             }
 

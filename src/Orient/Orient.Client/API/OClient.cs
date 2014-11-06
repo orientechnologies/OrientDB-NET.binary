@@ -34,7 +34,7 @@ namespace Orient.Client
             _syncRoot = new object();
             _databasePools = new List<DatabasePool>();
             BufferLenght = 1024;
-            Serializer = ORecordFormat.ORecordSerializerBinary;
+            Serializer = ORecordFormat.ORecordDocument2csv;
         }
 
         public static string CreateDatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias)
@@ -125,5 +125,7 @@ namespace Orient.Client
                 }
             }
         }
+
+
     }
 }

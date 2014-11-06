@@ -5,29 +5,29 @@ using System.Text;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class DataClusterDataRange : IOperation
+    internal class DataClusterDataRange : BaseOperation
     {
         public short ClusterId { get; set; }
 
-        public DataClusterDataRange()
+        public DataClusterDataRange(ODatabase database)
+            : base(database)
         {
 
         }
 
-        public Request Request(int sessionID)
+        public override Request Request(Request request)
         {
-            Request request = new Request();
             request.OperationMode = OperationMode.Synchronous;
 
             // standard request fields
             request.AddDataItem((byte)OperationType.DATACLUSTER_DATARANGE);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
             request.AddDataItem(ClusterId);
 
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument document = new ODocument();
             if (response == null)

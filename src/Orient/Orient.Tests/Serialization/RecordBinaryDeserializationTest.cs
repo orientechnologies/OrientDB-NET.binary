@@ -14,11 +14,11 @@ namespace Orient.Tests.Serialization
         ODatabase database;
 
         [TestInitialize]
-        public void Setup()
+        public void Init()
         {
-            serializer = RecordSerializerFactory.GetSerializer(OClient.Serializer);
             context = new TestDatabaseContext();
             database = new ODatabase(TestConnection.GlobalTestDatabaseAlias);
+            serializer = RecordSerializerFactory.GetSerializer(database);
 
             database
                 .Create

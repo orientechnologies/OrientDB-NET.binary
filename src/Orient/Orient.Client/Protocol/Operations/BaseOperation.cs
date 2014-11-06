@@ -17,7 +17,7 @@ namespace Orient.Client.Protocol.Operations
 
         public IRecordSerializer Serializer
         {
-            get { return RecordSerializerFactory.GetSerializer(OClient.Serializer); }
+            get { return RecordSerializerFactory.GetSerializer(_database); }
         }
 
         public abstract ODocument Response(Response response);

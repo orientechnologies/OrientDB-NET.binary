@@ -78,7 +78,7 @@ namespace Orient.Client.Protocol.Operations
             request.AddDataItem(ORID.ClusterPosition);
             request.AddDataItem((byte)ORecordType.Document);
 
-            var serializedDocument = RecordSerializerFactory.GetSerializer(OClient.Serializer).Serialize(GetDocument());
+            var serializedDocument = RecordSerializerFactory.GetSerializer(request.Connection.Database).Serialize(GetDocument());
             switch (RecordType)
             {
                 case RecordType.Create:

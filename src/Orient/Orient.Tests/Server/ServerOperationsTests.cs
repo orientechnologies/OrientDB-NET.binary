@@ -10,12 +10,6 @@ namespace Orient.Tests.Server
     [TestClass]
     public class ServerOperationsTests
     {
-        [TestInitialize]
-        public void Init()
-        {
-            OClient.Serializer = ORecordFormat.ORecordSerializerBinary;
-        }
-
         [TestMethod]
         public void ShouldCreateAndDeleteDatabase()
         {

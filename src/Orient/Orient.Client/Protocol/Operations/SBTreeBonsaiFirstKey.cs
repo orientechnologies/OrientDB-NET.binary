@@ -5,20 +5,24 @@ using System.Text;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class SBTreeBonsaiFirstKey : IOperation
+    internal class SBTreeBonsaiFirstKey : BaseOperation
     {
         internal long FileId;
         internal long PageIndex;
         internal int PageOffset;
 
-        public Request Request(int sessionID)
+        public SBTreeBonsaiFirstKey(ODatabase database)
+            : base(database)
         {
-            Request request = new Request();
+
+        }
+        public override Request Request(Request request)
+        {
             request.OperationMode = OperationMode.Synchronous;
 
             // standard request fields
             request.AddDataItem((byte)OperationType.SBTREE_BONSAI_FIRST_KEY);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
 
             // collection pointer
             request.AddDataItem(FileId);
@@ -28,7 +32,7 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument document = new ODocument();
             if (response == null)
@@ -44,7 +48,7 @@ namespace Orient.Client.Protocol.Operations
             short clusterId = reader.ReadInt16EndianAware();
             long clusterPosition = reader.ReadInt64EndianAware();
 
-            document.SetField<ORID>("rid", new ORID(clusterId,clusterPosition));
+            document.SetField<ORID>("rid", new ORID(clusterId, clusterPosition));
 
             return document;
         }

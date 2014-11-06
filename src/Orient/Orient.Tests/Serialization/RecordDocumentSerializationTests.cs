@@ -16,8 +16,7 @@ namespace Orient.Tests.Serialization
         [TestInitialize]
         public void Init()
         {
-            OClient.Serializer = ORecordFormat.ORecordDocument2csv;
-            serializer = RecordSerializerFactory.GetSerializer(OClient.Serializer);
+            serializer = RecordSerializerFactory.GetSerializer(ORecordFormat.ORecordDocument2csv);
         }
 
         [TestMethod]

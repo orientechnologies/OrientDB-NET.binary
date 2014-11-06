@@ -6,7 +6,7 @@ using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class SBTreeBonsaiGetEntriesMajor : IOperation
+    internal class SBTreeBonsaiGetEntriesMajor : BaseOperation
     {
         internal long FileId;
         internal long PageIndex;
@@ -14,15 +14,21 @@ namespace Orient.Client.Protocol.Operations
         internal ORID FirstKey;
         internal bool Inclusive;
 
-        public Request Request(int sessionID)
+        public SBTreeBonsaiGetEntriesMajor(ODatabase database)
+            : base(database)
+        {
+
+        }
+
+        public override Request Request(Request request)
         {
             // (collectionPointer)(key:binary)(inclusive:boolean)(pageSize:int)
-            Request request = new Request();
+
             request.OperationMode = OperationMode.Synchronous;
 
             // standard request fields
             request.AddDataItem((byte)OperationType.SBTREE_BONSAI_GET_ENTRIES_MAJOR);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
 
             // collection pointer
             request.AddDataItem(FileId);
@@ -47,7 +53,7 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             Dictionary<ORID, int> entries = new Dictionary<ORID, int>();
 

@@ -8,15 +8,16 @@ using Orient.Client.API.Types;
 
 namespace Orient.Client.Protocol.Serializers
 {
-    public class RecordBinarySerializer : IRecordSerializer
+    internal class RecordBinarySerializer : IRecordSerializer
     {
         private long MILLISEC_PER_DAY = 86400000;
         private const int SERIALIZER_VERSION = 0;
         private ORID NULL_RECORD_ID = new ORID(-2, -1);
+        private Connection _connection;
 
-        public RecordBinarySerializer()
+        public RecordBinarySerializer(Connection connection)
         {
-
+            _connection = connection;
         }
 
         #region Deserialize
