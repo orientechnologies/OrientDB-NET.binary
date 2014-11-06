@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client.Protocol.Serializers
 {
@@ -600,7 +601,58 @@ namespace Orient.Client.Protocol.Serializers
                 }
                 else
                 {
-                    throw new NotImplementedException("tree based ridbag");
+                    List<ORID> ridbag = new List<ORID>();
+
+                    // Tree based RidBag - (collectionPointer)(size:int)(changes)
+
+                    // Collection Pointer - (fileId:long)(pageIndex:long)(pageOffset:int)
+                    var fileId = reader.ReadInt64EndianAware();
+                    var pageIndex = reader.ReadInt64EndianAware();
+                    var pageOffset = reader.ReadInt32EndianAware();
+
+                    // size
+                    var size = reader.ReadInt32EndianAware();
+
+                    // Changes - (changesSize:int)[(link:rid)(changeType:byte)(value:int)]*
+                    var changesSize = reader.ReadInt32EndianAware();
+                    for (int j = 0; j < changesSize; j++)
+                    {
+                        throw new NotImplementedException("RidBag Changes not implemented");
+                    }
+
+                    // TODO: Need to implement connection
+                    var connection = OClient.ReleaseConnection("myTestDatabaseAlias");
+
+                    var operation = new SBTreeBonsaiFirstKey();
+                    operation.FileId = fileId;
+                    operation.PageIndex = pageIndex;
+                    operation.PageOffset = pageOffset;
+
+                    var orid = connection.ExecuteOperation(operation);
+                    var ft = true;
+                    var key = orid.GetField<ORID>("rid");
+                    var entries = new Dictionary<ORID, int>();
+                    do
+                    {
+                        var op = new SBTreeBonsaiGetEntriesMajor();
+                        op.FileId = fileId;
+                        op.PageIndex = pageIndex;
+                        op.PageOffset = pageOffset;
+                        op.FirstKey = key;
+                        op.Inclusive = ft;
+
+                        var res = connection.ExecuteOperation(op);
+                        entries = res.GetField<Dictionary<ORID, int>>("entries");
+
+                        rids.AddRange(entries.Keys);
+
+                        if (entries.Count == 0)
+                            break;
+
+                        key = entries.Last().Key;
+                        ft = false;
+
+                    } while (true);
                 }
             }
 

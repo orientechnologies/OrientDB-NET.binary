@@ -29,6 +29,11 @@
         CONFIG_SET = 71,
         CONFIG_LIST = 72,
         DB_RELOAD = 73,
-        DB_LIST = 74
+        DB_LIST = 74,
+        CREATE_SBTREE_BONSAI = 110,
+        SBTREE_BONSAI_GET = 111,
+        SBTREE_BONSAI_FIRST_KEY = 112,
+        SBTREE_BONSAI_GET_ENTRIES_MAJOR = 113,
+        RIDBAG_GET_SIZE = 114
     }
 }

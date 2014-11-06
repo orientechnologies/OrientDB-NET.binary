@@ -111,6 +111,8 @@
     <Compile Include="Protocol\Operations\DBSize.cs" />
     <Compile Include="Protocol\Operations\LoadRecord.cs" />
     <Compile Include="Protocol\Operations\RecordMetadata.cs" />
+    <Compile Include="Protocol\Operations\SBTreeBonsaiFirstKey.cs" />
+    <Compile Include="Protocol\Operations\SBTreeBonsaiGetEntriesMajor.cs" />
     <Compile Include="Protocol\Operations\TransactionRecord.cs" />
     <Compile Include="Protocol\Operations\TypedTransactionRecord.cs" />
     <Compile Include="Protocol\Query\QueryCompiler.cs" />
