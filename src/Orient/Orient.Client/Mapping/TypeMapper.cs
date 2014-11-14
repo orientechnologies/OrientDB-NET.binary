@@ -31,22 +31,20 @@ namespace Orient.Client.Mapping
 
         readonly List<IFieldMapping> _fields = new List<IFieldMapping>();
 
-      
+
 
 
         private TypeMapper()
         {
             Type genericObjectType = typeof (T);
 
-            if (genericObjectType.Name.Equals("ODocument") ||
-                genericObjectType.Name.Equals("OVertex") ||
-                genericObjectType.Name.Equals("OEdge"))
+            if (typeof(ODocument).IsAssignableFrom(genericObjectType))
             {
                 _fields.Add(new AllFieldMapping<T>());
                 return;
             }
 
-            
+
             foreach (PropertyInfo propertyInfo in genericObjectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 if (!propertyInfo.CanRead || !propertyInfo.CanWrite)
@@ -99,14 +97,14 @@ namespace Orient.Client.Mapping
                     else
                         throw new NotImplementedException("No mapping implemented for type " + propertyInfo.PropertyType.Name);
                 }
-                    // property is class except the string or ORID type since string and ORID values are parsed differently
+                // property is class except the string or ORID type since string and ORID values are parsed differently
                 else if (propertyInfo.PropertyType.IsClass &&
                          (propertyInfo.PropertyType.Name != "String") &&
                          (propertyInfo.PropertyType.Name != "ORID"))
                 {
                     AddClassProperty(propertyInfo, fieldPath);
                 }
-                    // property is basic type
+                // property is basic type
                 else
                 {
                     AddBasicProperty(propertyInfo, fieldPath);
@@ -201,7 +199,7 @@ namespace Orient.Client.Mapping
             //    }
             //}
 
-      
+
 
             //return document;
         }
