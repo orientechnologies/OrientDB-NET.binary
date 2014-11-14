@@ -144,7 +144,6 @@ namespace Orient.Client.Protocol.Operations.Command
                         responseDocument.SetField("Content", document);
                         break;
                     case PayloadStatus.SerializedResult: // 'a'
-                        // TODO: how to parse result - string?
                         contentLength = reader.ReadInt32EndianAware();
                         string serialized = System.Text.Encoding.Default.GetString(reader.ReadBytes(contentLength));
                         responseDocument.SetField("Content", serialized);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using Orient.Client.API.Types;
@@ -95,25 +96,29 @@ namespace Orient.Client
 
         public short Run()
         {
-            CommandPayloadCommand payload = new CommandPayloadCommand();
-            payload.Text = ToString();
+            var cluster = _connection.Database.GetClusters().FirstOrDefault(c => c.Name == _className);
+            if (cluster == null)
+            {
+                CommandPayloadCommand payload = new CommandPayloadCommand();
+                payload.Text = ToString();
 
-            Command operation = new Command(_connection.Database);
-            operation.OperationMode = OperationMode.Synchronous;
-            operation.CommandPayload = payload;
+                Command operation = new Command(_connection.Database);
+                operation.OperationMode = OperationMode.Synchronous;
+                operation.CommandPayload = payload;
 
-            OCommandResult result = new OCommandResult(_connection.ExecuteOperation(operation));
+                OCommandResult result = new OCommandResult(_connection.ExecuteOperation(operation));
 
-            var clusterId = short.Parse(result.ToDocument().GetField<string>("Content"));
+                var clusterId = short.Parse(result.ToDocument().GetField<string>("Content"));
 
-            _connection.Database.AddCluster(new OCluster { Name = _className, Id = clusterId });
+                cluster = _connection.Database.AddCluster(new OCluster { Name = _className, Id = clusterId });
+            }
 
             if (_autoProperties)
             {
                 CreateAutoProperties();
             }
 
-            return clusterId;
+            return cluster.Id;
         }
 
         private void CreateAutoProperties()

@@ -7,6 +7,7 @@ using Orient.Client;
 namespace Orient.Tests.Issues
 {
     // http://stackoverflow.com/questions/26661636/orientdb-net-binary-for-models
+    using q26661636;
 
     [TestClass]
     public class StackOverflow_q_26661636
@@ -65,22 +66,25 @@ namespace Orient.Tests.Issues
         }
     }
 
-    public class Person
+    namespace q26661636
     {
-        public string Name { get; set; }
-        public List<ORID> out_Lives { get; set; }
-        public List<ORID> out_Owns { get; set; }
-    }
+        public class Person
+        {
+            public string Name { get; set; }
+            public List<ORID> out_Lives { get; set; }
+            public List<ORID> out_Owns { get; set; }
+        }
 
-    public class Country
-    {
-        public string Name { get; set; }
-        public List<ORID> in_Lives { get; set; }
-    }
+        public class Country
+        {
+            public string Name { get; set; }
+            public List<ORID> in_Lives { get; set; }
+        }
 
-    public class Car
-    {
-        public string Name { get; set; }
-        public List<ORID> in_Owns { get; set; }
+        public class Car
+        {
+            public string Name { get; set; }
+            public List<ORID> in_Owns { get; set; }
+        }
     }
 }

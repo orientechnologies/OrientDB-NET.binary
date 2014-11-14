@@ -80,10 +80,12 @@ namespace Orient.Client
             return className;
         }
 
-        internal void AddCluster(OCluster cluster)
+        internal OCluster AddCluster(OCluster cluster)
         {
             var clusters = _connection.Document.GetField<List<OCluster>>("Clusters");
-            clusters.Add(cluster);
+            if (!clusters.Contains(cluster))
+                clusters.Add(cluster);
+            return cluster;
         }
 
         internal void RemoveCluster(short clusterid)
