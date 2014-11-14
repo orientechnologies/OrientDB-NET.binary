@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.API.Types;
 
 namespace Orient.Client.Protocol.Serializers
 {
@@ -207,6 +208,25 @@ namespace Orient.Client.Protocol.Serializers
             {
                 bld.AppendFormat("({0})", SerializeDocument((ODocument)value));
             }
+            else if (valueType.IsClass && (valueType.Name == "OEmbeddedRidBag"))
+            {
+                //bld.AppendFormat("({0})", SerializeDocument((ODocument)value));
+                OEmbeddedRidBag ridbag = (OEmbeddedRidBag)value;
+                if (ridbag.Count > 0)
+                {
+                    BinaryBuffer buffer = new BinaryBuffer();
+                    bld.Append("%");
+                    buffer.Write((byte)1); // config
+                    buffer.Write(ridbag.Count); //size
+                    foreach (var item in ridbag)
+                    {
+                        buffer.Write(item);
+                    }
+                    bld.Append(Convert.ToBase64String(buffer.ToArray()));
+                    bld.Append(";");
+                }
+            }
+
             return bld.ToString();
         }
 

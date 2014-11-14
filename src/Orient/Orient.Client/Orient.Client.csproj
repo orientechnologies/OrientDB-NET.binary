@@ -57,6 +57,7 @@
     <Compile Include="API\Types\IBaseRecord.cs" />
     <Compile Include="API\Types\OBaseRecord.cs" />
     <Compile Include="API\Types\OEdge.cs" />
+    <Compile Include="API\Types\OEmbeddedRidBag.cs" />
     <Compile Include="API\Types\ORecordFormat.cs" />
     <Compile Include="API\Types\OVertex.cs" />
     <Compile Include="API\Query\OCommandResult.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="API\Query\OSqlInsert.cs" />
     <Compile Include="API\Query\OSqlSelect.cs" />
     <Compile Include="API\Query\OSqlUpdate.cs" />
+    <Compile Include="API\Types\ORidBag.cs" />
     <Compile Include="API\Types\TypeConverter.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Mapping\AllFieldMapping.cs" />
