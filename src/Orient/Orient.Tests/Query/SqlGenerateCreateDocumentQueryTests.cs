@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Orient.Client;
+using Orient.Client.API.Query;
 
 namespace Orient.Tests.Query
 {

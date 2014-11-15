@@ -10,7 +10,7 @@ namespace Orient.Tests.Query
         [TestMethod]
         public void ShouldGenerateCreateEdgeClusterFromToQuery()
         {
-            string generatedQuery = new OSqlCreateEdgeViaSql()
+            string generatedQuery = new OSqlCreateEdge()
                 .Edge("TestEdgeClass")
                 .Cluster("TestCluster")
                 .From(new ORID(8, 0))
@@ -28,7 +28,7 @@ namespace Orient.Tests.Query
         [TestMethod]
         public void ShouldGenerateCreateEdgeFromToSetQuery()
         {
-            string generatedQuery = new OSqlCreateEdgeViaSql()
+            string generatedQuery = new OSqlCreateEdge()
                 .Edge("TestEdgeClass")
                 .From(new ORID(8, 0))
                 .To(new ORID(8, 1))
@@ -58,7 +58,7 @@ namespace Orient.Tests.Query
             ODocument vertexTo = new ODocument();
             vertexTo.ORID = new ORID(8, 1);
 
-            string generatedQuery = new OSqlCreateEdgeViaSql()
+            string generatedQuery = new OSqlCreateEdge()
                 .Edge(profile)
                 .From(vertexFrom)
                 .To(vertexTo)
@@ -86,7 +86,7 @@ namespace Orient.Tests.Query
             TestProfileClass vertexTo = new TestProfileClass();
             vertexTo.ORID = new ORID(8, 1);
 
-            string generatedQuery = new OSqlCreateEdgeViaSql()
+            string generatedQuery = new OSqlCreateEdge()
                 .Edge(profile)
                 .From(vertexFrom)
                 .To(vertexTo)

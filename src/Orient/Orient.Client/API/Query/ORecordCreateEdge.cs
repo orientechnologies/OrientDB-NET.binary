@@ -2,38 +2,39 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Orient.Client.API.Query.Interfaces;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client.API.Query
 {
-    class OCreateEdgeRecord : OSqlCreateEdge
+    class ORecordCreateEdge : IOCreateEdge
     {
-         private Connection _connection;
+        private Connection _connection;
         private ODocument _document;
         private ORID _source;
         private ORID _dest;
         private string _edgeName;
 
-        public OCreateEdgeRecord()
+        public ORecordCreateEdge()
         {
         }
 
-        internal OCreateEdgeRecord(Connection connection)
+        internal ORecordCreateEdge(Connection connection)
         {
             _connection = connection;
         }
 
         #region Edge
 
-        public OSqlCreateEdge Edge(string className)
+        public IOCreateEdge Edge(string className)
         {
             _edgeName = className;
 
             return this;
         }
 
-        public OSqlCreateEdge Edge<T>(T obj)
+        public IOCreateEdge Edge<T>(T obj)
         {
 
             if (obj is ODocument)
@@ -53,7 +54,7 @@ namespace Orient.Client.API.Query
             return this;
         }
 
-        public OSqlCreateEdge Edge<T>()
+        public IOCreateEdge Edge<T>()
         {
             return Edge(typeof(T).Name);
         }
@@ -62,7 +63,7 @@ namespace Orient.Client.API.Query
 
         #region Cluster
 
-        public OSqlCreateEdge Cluster(string clusterName)
+        public IOCreateEdge Cluster(string clusterName)
         {
             if (_document.ORID == null)
                 _document.ORID = new ORID();
@@ -72,7 +73,7 @@ namespace Orient.Client.API.Query
             return this;
         }
 
-        public OSqlCreateEdge Cluster<T>()
+        public IOCreateEdge Cluster<T>()
         {
             return Cluster(typeof(T).Name);
         }
@@ -81,7 +82,7 @@ namespace Orient.Client.API.Query
 
         #region Set
 
-        public OSqlCreateEdge Set<T>(string fieldName, T fieldValue)
+        public IOCreateEdge Set<T>(string fieldName, T fieldValue)
         {
             if (_document == null)
                 _document = new ODocument();
@@ -90,7 +91,7 @@ namespace Orient.Client.API.Query
             return this;
         }
 
-        public OSqlCreateEdge Set<T>(T obj)
+        public IOCreateEdge Set<T>(T obj)
         {
             var document = obj is ODocument ? obj as ODocument : ODocument.ToDocument(obj);
 
@@ -109,7 +110,7 @@ namespace Orient.Client.API.Query
 
         #endregion
 
-     
+
 
         public OEdge Run()
         {
@@ -119,44 +120,41 @@ namespace Orient.Client.API.Query
             }
             else
             {
-                
+
             }
 
             //            var operation = CreateSQLOperation();
 
-            var operation = new CreateRecord(_document, _connection.Database);
+            var operation = new RecordCreate(_document, _connection.Database);
             operation.OperationMode = OperationMode.Synchronous;
             return _connection.ExecuteOperation(operation).To<OEdge>();
         }
-
-       
-
+        
         public T Run<T>() where T : class, new()
         {
             return Run().To<T>();
         }
 
-
-        public OSqlCreateEdge From(ORID orid)
+        public IOCreateEdge From(ORID orid)
         {
             _source = orid;
             return this;
         }
 
-        public OSqlCreateEdge From<T>(T obj)
+        public IOCreateEdge From<T>(T obj)
         {
             _source = ToODocument(obj).ORID;
             return this;
 
         }
 
-        public OSqlCreateEdge To(ORID orid)
+        public IOCreateEdge To(ORID orid)
         {
             _dest = orid;
             return this;
         }
 
-        public OSqlCreateEdge To<T>(T obj)
+        public IOCreateEdge To<T>(T obj)
         {
             _dest = ToODocument(obj).ORID;
             return this;

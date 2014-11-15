@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Orient.Client.API.Query.Interfaces;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client.API.Query
 {
-    public class ODataClasterAdd : OSqlCreateCluster
+    public class ODataClasterAdd : IOCreateCluster
     {
         private Connection _connection;
         public string ClusterName { get; set; }
@@ -23,14 +24,14 @@ namespace Orient.Client.API.Query
             _connection = connection;
         }
 
-        public OSqlCreateCluster Cluster(string clusterName, OClusterType clusterType)
+        public IOCreateCluster Cluster(string clusterName, OClusterType clusterType)
         {
             ClusterName = clusterName;
             ClusterType = clusterType;
             return this;
         }
 
-        public OSqlCreateCluster Cluster<T>(OClusterType clusterType)
+        public IOCreateCluster Cluster<T>(OClusterType clusterType)
         {
             return Cluster(typeof(T).Name, clusterType);
         }

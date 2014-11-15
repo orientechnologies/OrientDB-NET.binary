@@ -1,4 +1,5 @@
-﻿using Orient.Client.Protocol;
+﻿using Orient.Client.API.Query.Interfaces;
+using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 using Orient.Client.Protocol.Operations.Command;
 
@@ -10,37 +11,30 @@ using Orient.Client.Protocol.Operations.Command;
 
 namespace Orient.Client
 {
-    public interface OSqlCreateCluster {
-        OSqlCreateCluster Cluster(string clusterName, OClusterType clusterType);
-        OSqlCreateCluster Cluster<T>(OClusterType clusterType);
-        short Run();
-        string ToString();
-    }
-
-    public class OSqlCreateClusterViaSql : OSqlCreateCluster
+    public class OSqlCreateCluster : IOCreateCluster
     {
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;
 
-        public OSqlCreateClusterViaSql()
+        public OSqlCreateCluster()
         {
         }
 
-        internal OSqlCreateClusterViaSql(Connection connection)
+        internal OSqlCreateCluster(Connection connection)
         {
             _connection = connection;
         }
 
         #region Cluster
 
-        public OSqlCreateCluster Cluster(string clusterName, OClusterType clusterType)
+        public IOCreateCluster Cluster(string clusterName, OClusterType clusterType)
         {
             _sqlQuery.Cluster(clusterName, clusterType);
 
             return this;
         }
 
-        public OSqlCreateCluster Cluster<T>(OClusterType clusterType)
+        public IOCreateCluster Cluster<T>(OClusterType clusterType)
         {
             return Cluster(typeof(T).Name, clusterType);
         }

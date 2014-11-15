@@ -44,13 +44,17 @@
     <Compile Include="API\Exceptions\OException.cs" />
     <Compile Include="API\Exceptions\OExceptionType.cs" />
     <Compile Include="API\OTransaction.cs" />
+    <Compile Include="API\Query\Interfaces\IOCreateCluster.cs" />
+    <Compile Include="API\Query\Interfaces\IOCreateEdge.cs" />
+    <Compile Include="API\Query\Interfaces\IOCreateVertex.cs" />
     <Compile Include="API\Query\OClusterQuery.cs" />
     <Compile Include="API\Query\OCommandQuery.cs" />
-    <Compile Include="API\Query\OCreateEdgeRecord.cs" />
+    <Compile Include="API\Query\ORecordCreateEdge.cs" />
     <Compile Include="API\Query\ODataClasterAdd.cs" />
     <Compile Include="API\Query\OLoadRecord.cs" />
-    <Compile Include="API\Query\OCreateVertexRecord.cs" />
+    <Compile Include="API\Query\ORecordCreateVertex.cs" />
     <Compile Include="API\Query\ORecordMetadata.cs" />
+    <Compile Include="API\Query\Interfaces\IOCreateDocument.cs" />
     <Compile Include="API\Query\OSqlCreateProperty.cs" />
     <Compile Include="API\Query\OSqlDeleteCluster.cs" />
     <Compile Include="API\Query\OSqlSchema.cs" />
@@ -105,7 +109,7 @@
     <Compile Include="Protocol\Operations\ConfigGet.cs" />
     <Compile Include="Protocol\Operations\ConfigList.cs" />
     <Compile Include="Protocol\Operations\ConfigSet.cs" />
-    <Compile Include="Protocol\Operations\CreateRecord.cs" />
+    <Compile Include="Protocol\Operations\RecordCreate.cs" />
     <Compile Include="Protocol\Operations\DataClusterAdd.cs" />
     <Compile Include="Protocol\Operations\DataClusterCount.cs" />
     <Compile Include="Protocol\Operations\DataClusterDataRange.cs" />
@@ -116,6 +120,7 @@
     <Compile Include="Protocol\Operations\DBSize.cs" />
     <Compile Include="Protocol\Operations\LoadRecord.cs" />
     <Compile Include="Protocol\Operations\RecordMetadata.cs" />
+    <Compile Include="Protocol\Operations\RecordUpdate.cs" />
     <Compile Include="Protocol\Operations\SBTreeBonsaiFirstKey.cs" />
     <Compile Include="Protocol\Operations\SBTreeBonsaiGetEntriesMajor.cs" />
     <Compile Include="Protocol\Operations\TransactionRecord.cs" />

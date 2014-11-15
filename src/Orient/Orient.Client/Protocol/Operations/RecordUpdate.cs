@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
-using Orient.Client.API.Types;
-using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class CreateRecord : BaseOperation
+    internal class RecordUpdate : BaseOperation
     {
         private readonly ODocument _document;
-        //private readonly ODatabase _database;
         internal OperationMode OperationMode { get; set; }
 
-        public CreateRecord(ODocument document, ODatabase database)
-            :base(database)
+        public RecordUpdate(ODocument document, ODatabase database)
+            : base(database)
         {
             _document = document;
             _database = database;
@@ -28,35 +24,22 @@ namespace Orient.Client.Protocol.Operations
 
             CorrectClassName();
 
-            var clusterId = _database.GetClusterIdFor(_document.OClassName);
-            _document.ORID = new ORID(clusterId, -1);
-
             // standard request fields
-            request.AddDataItem((byte)OperationType.RECORD_CREATE);
+            request.AddDataItem((byte)OperationType.RECORD_UPDATE);
             request.AddDataItem(request.SessionId);
 
-            if (OClient.ProtocolVersion < 24)
+            request.AddDataItem(_document.ORID);
+            if (OClient.ProtocolVersion >= 23)
             {
-                request.AddDataItem((int)-1);  // data segment id
+                request.AddDataItem((int)1);  // update content  1 - true , 0 - false
             }
 
-
-
-            request.AddDataItem((short)clusterId);
             request.AddDataItem(Serializer.Serialize(_document));
+            request.AddDataItem(_document.OVersion);
             request.AddDataItem((byte)ORecordType.Document);
             request.AddDataItem((byte)((OperationMode == OperationMode.Synchronous) ? 0 : 1));
 
-
             return request;
-        }
-
-        private void CorrectClassName()
-        {
-            if (_document.OClassName == "OVertex")
-                _document.OClassName = "V";
-            if (_document.OClassName == "OEdge")
-                _document.OClassName = "E";
         }
 
         public override ODocument Response(Response response)
@@ -71,13 +54,9 @@ namespace Orient.Client.Protocol.Operations
 
             var reader = response.Reader;
 
-            _document.ORID.ClusterPosition = reader.ReadInt64EndianAware();
-            if (OClient.ProtocolVersion >= 11)
-            {
-                _document.OVersion = reader.ReadInt32EndianAware();
-            }
+            _document.OVersion = reader.ReadInt32EndianAware();
 
-            if (_database.ProtocolVersion > 21)
+            if (_database.ProtocolVersion >= 20)
             {
                 int collectionChangesCount = reader.ReadInt32EndianAware();
                 for (var i = 0; i < collectionChangesCount; i++)
@@ -91,9 +70,14 @@ namespace Orient.Client.Protocol.Operations
                 }
             }
             return responseDocument;
-
-
         }
 
+        private void CorrectClassName()
+        {
+            if (_document.OClassName == "OVertex")
+                _document.OClassName = "V";
+            if (_document.OClassName == "OEdge")
+                _document.OClassName = "E";
+        }
     }
 }

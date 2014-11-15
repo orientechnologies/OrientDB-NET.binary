@@ -10,7 +10,7 @@ namespace Orient.Tests.Query
         [TestMethod]
         public void ShouldGenerateCreateVertexQuery()
         {
-            string generatedQuery = new OSqlCreateVertexViaSql()
+            string generatedQuery = new OSqlCreateVertex()
                 .Vertex("TestVertexClass")
                 .ToString();
 
@@ -29,7 +29,7 @@ namespace Orient.Tests.Query
                 .SetField("foo", "foo string value")
                 .SetField("bar", 12345);
 
-            string generatedQuery = new OSqlCreateVertexViaSql()
+            string generatedQuery = new OSqlCreateVertex()
                 .Vertex(document)
                 .ToString();
 
@@ -48,7 +48,7 @@ namespace Orient.Tests.Query
             profile.Name = "Johny";
             profile.Surname = "Bravo";
 
-            string generatedQuery = new OSqlCreateVertexViaSql()
+            string generatedQuery = new OSqlCreateVertex()
                 .Vertex(profile)
                 .ToString();
 
@@ -63,7 +63,7 @@ namespace Orient.Tests.Query
         [TestMethod]
         public void ShouldGenerateCreateVertexClusterQuery()
         {
-            string generatedQuery = new OSqlCreateVertexViaSql()
+            string generatedQuery = new OSqlCreateVertex()
                 .Vertex("TestVertexClass")
                 .Cluster("TestCluster")
                 .ToString();
@@ -78,7 +78,7 @@ namespace Orient.Tests.Query
         [TestMethod]
         public void ShouldGenerateCreateVertexClusterSetQuery()
         {
-            string generatedQuery = new OSqlCreateVertexViaSql()
+            string generatedQuery = new OSqlCreateVertex()
                 .Vertex("TestVertexClass")
                 .Cluster("TestCluster")
                 .Set("foo", "foo string value")
@@ -103,7 +103,7 @@ namespace Orient.Tests.Query
                 .SetField("foo", "foo string value")
                 .SetField("bar", 12345);
 
-            string generatedQuery = new OSqlCreateVertexViaSql()
+            string generatedQuery = new OSqlCreateVertex()
                 .Vertex("TestVertexClass")
                 .Cluster("TestCluster")
                 .Set(document)
