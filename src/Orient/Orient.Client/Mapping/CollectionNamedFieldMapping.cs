@@ -30,14 +30,28 @@ namespace Orient.Client.Mapping
 
         protected override void MapToNamedField(ODocument document, TTarget typedObject)
         {
+
             object sourcePropertyValue = document.GetField<object>(_fieldPath);
 
-            IList collection = sourcePropertyValue as IList;
+            var collection = sourcePropertyValue as IList;
             if (collection == null) // if we only have one item currently stored (but scope for more) we create a temporary list and put our single item in it.
             {
                 collection = new ArrayList();
                 if (sourcePropertyValue != null)
-                    collection.Add(sourcePropertyValue);
+                {
+                    // TODO: Implement in derived class due Different collection mapings
+                    if (typeof(HashSet<Object>).IsAssignableFrom(sourcePropertyValue.GetType()))
+                    {
+                        foreach (var item in (HashSet<Object>)sourcePropertyValue)
+                        {
+                            collection.Add(item);
+                        }
+                    }
+                    else
+                    {
+                        collection.Add(sourcePropertyValue);
+                    }
+                }
             }
 
             // create instance of property type
@@ -50,7 +64,7 @@ namespace Orient.Client.Mapping
                 if (_needsMapping)
                 {
                     object element = _elementFactory();
-                    _mapper.ToObject((ODocument) t, element);
+                    _mapper.ToObject((ODocument)t, element);
                     oMapped = element;
                 }
 
@@ -74,19 +88,19 @@ namespace Orient.Client.Mapping
         private static bool NeedsNoConversion(Type elementType)
         {
             return elementType.IsPrimitive ||
-                   (elementType == typeof (string)) ||
-                   (elementType == typeof (DateTime)) ||
-                   (elementType == typeof (decimal)) ||
-                   (elementType == typeof (ORID));
+                   (elementType == typeof(string)) ||
+                   (elementType == typeof(DateTime)) ||
+                   (elementType == typeof(decimal)) ||
+                   (elementType == typeof(ORID));
         }
 
         public override void MapToDocument(TTarget typedObject, ODocument document)
         {
-            var targetElementType = _needsMapping ? typeof (ODocument) : _targetElementType;
-            var listType = typeof (List<>).MakeGenericType(targetElementType);
-            var targetList = (IList) Activator.CreateInstance(listType);
+            var targetElementType = _needsMapping ? typeof(ODocument) : _targetElementType;
+            var listType = typeof(List<>).MakeGenericType(targetElementType);
+            var targetList = (IList)Activator.CreateInstance(listType);
 
-            var sourceList = (IEnumerable) GetPropertyValue(typedObject);
+            var sourceList = (IEnumerable)GetPropertyValue(typedObject);
             if (sourceList != null)
             {
                 foreach (var item in sourceList)
