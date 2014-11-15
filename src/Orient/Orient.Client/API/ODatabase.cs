@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Orient.Client.API;
 using Orient.Client.API.Query;
+using Orient.Client.API.Query.Interfaces;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 using Orient.Client.Protocol.Operations.Command;
@@ -16,7 +17,7 @@ namespace Orient.Client
 
         public IDictionary<ORID, ODocument> ClientCache { get; private set; }
 
-        public OSqlCreate Create { get { return new OSqlCreate(_connection); } }
+        public OCreate Create { get { return new OCreate(_connection); } }
         public OSqlDelete Delete { get { return new OSqlDelete(_connection); } }
         public OLoadRecord Load { get { return new OLoadRecord(_connection); } }
         public ORecordMetadata Metadata { get { return new ORecordMetadata(_connection); } }
@@ -104,12 +105,12 @@ namespace Orient.Client
 
         #region Insert
 
-        public OSqlInsert Insert()
+        public IOInsert Insert()
         {
             return new OSqlInsert(_connection);
         }
 
-        public OSqlInsert Insert<T>(T obj)
+        public IOInsert Insert<T>(T obj)
         {
             return new OSqlInsert(_connection)
                 .Insert(obj);

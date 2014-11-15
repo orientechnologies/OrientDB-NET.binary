@@ -1,4 +1,5 @@
 ﻿using Orient.Client.API.Query;
+using Orient.Client.API.Query.Interfaces;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 using Orient.Client.Protocol.Operations.Command;
@@ -7,7 +8,7 @@ using Orient.Client.Protocol.Operations.Command;
 
 namespace Orient.Client
 {
-    public class OSqlCreateDocument : Orient.Client.API.Query.IOCreateDocument
+    public class OSqlCreateDocument : IOCreateDocument
     {
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;

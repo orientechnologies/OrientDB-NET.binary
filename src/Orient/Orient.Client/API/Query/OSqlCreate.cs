@@ -5,11 +5,11 @@ using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client
 {
-    public class OSqlCreate
+    public class OCreate
     {
         private Connection _connection;
 
-        internal OSqlCreate(Connection connection)
+        internal OCreate(Connection connection)
         {
             _connection = connection;
         }
@@ -50,8 +50,7 @@ namespace Orient.Client
 
         public IOCreateDocument Document(string className)
         {
-            return new OSqlCreateDocument(_connection)
-                .Document(className);
+            return new ORecordCreateDocument(_connection).Document(className);
         }
 
         public IOCreateDocument Document<T>()
@@ -61,8 +60,7 @@ namespace Orient.Client
 
         public IOCreateDocument Document<T>(T obj)
         {
-            return new OSqlCreateDocument(_connection)
-                .Document(obj);
+            return new ORecordCreateDocument(_connection).Document(obj);
         }
 
         #endregion

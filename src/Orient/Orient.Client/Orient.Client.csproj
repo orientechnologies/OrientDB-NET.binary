@@ -47,8 +47,10 @@
     <Compile Include="API\Query\Interfaces\IOCreateCluster.cs" />
     <Compile Include="API\Query\Interfaces\IOCreateEdge.cs" />
     <Compile Include="API\Query\Interfaces\IOCreateVertex.cs" />
+    <Compile Include="API\Query\Interfaces\IOInsert.cs" />
     <Compile Include="API\Query\OClusterQuery.cs" />
     <Compile Include="API\Query\OCommandQuery.cs" />
+    <Compile Include="API\Query\ORecordCreateDocument.cs" />
     <Compile Include="API\Query\ORecordCreateEdge.cs" />
     <Compile Include="API\Query\ODataClasterAdd.cs" />
     <Compile Include="API\Query\OLoadRecord.cs" />

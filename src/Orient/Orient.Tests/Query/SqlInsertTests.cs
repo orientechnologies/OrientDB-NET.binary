@@ -97,8 +97,6 @@ namespace Orient.Tests.Query
             }
         }
 
-        [TestCategory("Broken Tests as at Github 27594c0114cd9489b69c84fe4896a9d6c6d01b19")]
-        [Ignore]
         [TestMethod]
         public void ShouldInsertDocumentIntoCluster()
         {
@@ -114,6 +112,8 @@ namespace Orient.Tests.Query
                     database
                         .Create.Cluster("TestCluster", OClusterType.Physical)
                         .Run();
+
+                    database.Command("alter class TestClass addcluster TestCluster");
 
                     ODocument document = new ODocument()
                         .SetField("foo", "foo string value")
@@ -133,8 +133,6 @@ namespace Orient.Tests.Query
             }
         }
 
-        [TestCategory("Broken Tests as at Github 27594c0114cd9489b69c84fe4896a9d6c6d01b19")]
-        [Ignore]
         [TestMethod]
         public void ShouldInsertIntoClusterSet()
         {
@@ -150,6 +148,8 @@ namespace Orient.Tests.Query
                     database
                         .Create.Cluster("TestCluster", OClusterType.Physical)
                         .Run();
+                    
+                    database.Command("alter class TestClass addcluster TestCluster");
 
                     ODocument insertedDocument = database
                         .Insert()

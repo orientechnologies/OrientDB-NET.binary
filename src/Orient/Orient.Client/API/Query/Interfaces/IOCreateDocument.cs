@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Orient.Client.API.Query
+namespace Orient.Client.API.Query.Interfaces
 {
     public interface IOCreateDocument
     {
