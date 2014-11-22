@@ -71,7 +71,11 @@ namespace Orient.Client.Protocol.Operations
 
             var reader = response.Reader;
 
+            if (OClient.ProtocolVersion > 25)
+                _document.ORID.ClusterId = reader.ReadInt16EndianAware();
+
             _document.ORID.ClusterPosition = reader.ReadInt64EndianAware();
+
             if (OClient.ProtocolVersion >= 11)
             {
                 _document.OVersion = reader.ReadInt32EndianAware();

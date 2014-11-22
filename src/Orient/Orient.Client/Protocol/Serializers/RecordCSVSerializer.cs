@@ -633,6 +633,9 @@ namespace Orient.Client.Protocol.Serializers
                 }
                 else
                 {
+                    // Maybe not parse this type of Field and only then Requested retrieve ?
+                    // Lazy loading
+
                     if (_connection == null || !_connection.IsActive)
                         throw new OException(OExceptionType.Connection, "Connection is not opened or is null");
 
