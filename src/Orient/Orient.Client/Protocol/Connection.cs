@@ -10,6 +10,7 @@ namespace Orient.Client.Protocol
 {
     internal class Connection : IDisposable
     {
+        private readonly UInt16 _retryCount = 2;
         private TcpClient _socket;
         private BufferedStream _networkStream;
         private byte[] _readBuffer;
@@ -81,7 +82,27 @@ namespace Orient.Client.Protocol
             InitializeServerConnection(userName, userPassword);
         }
 
+        // Implement retry pattern
         internal ODocument ExecuteOperation(IOperation operation)
+        {           
+            var retry = _retryCount;
+            while (retry-- > 0)
+            {
+                try
+                {
+                    return ExecuteOperationInternal(operation);
+                }
+                catch (Exception)
+                {
+                    Reconnect();
+                    if (retry == 0)
+                        throw;
+                }
+            }
+            Close();
+            throw new OException(OExceptionType.Connection, "An error ocured.");
+        }
+        private ODocument ExecuteOperationInternal(IOperation operation)
         {
             var req = new Request(this);
             req.SetSessionId(SessionId);
@@ -167,18 +188,26 @@ namespace Orient.Client.Protocol
         internal void Close()
         {
             SessionId = -1;
-
-            DbClose operation = new DbClose(this.Database);
-            ExecuteOperation(operation);
-
-            if ((_networkStream != null) && (_socket != null))
+            try
             {
-                _networkStream.Close();
-                _socket.Close();
-            }
+                DbClose operation = new DbClose(this.Database);
+                ExecuteOperation(operation);
 
-            _networkStream = null;
-            _socket = null;
+                if ((_networkStream != null) && (_socket != null))
+                {
+                    _networkStream.Close();
+                    _socket.Close();
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+            finally
+            {
+                _networkStream = null;
+                _socket = null;
+            }
         }
 
         public void Dispose()
@@ -258,8 +287,6 @@ namespace Orient.Client.Protocol
 
         private void Send(byte[] rawData)
         {
-            //            Console.WriteLine(string.Join(", ", rawData.Select(x => x.ToString("X2"))));
-
             if ((_networkStream != null) && _networkStream.CanWrite)
             {
                 try
