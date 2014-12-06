@@ -10,7 +10,6 @@ namespace Orient.Client.Protocol
 {
     internal class Connection : IDisposable
     {
-        private readonly UInt16 _retryCount = 2;
         private TcpClient _socket;
         private BufferedStream _networkStream;
         private byte[] _readBuffer;
@@ -82,88 +81,57 @@ namespace Orient.Client.Protocol
             InitializeServerConnection(userName, userPassword);
         }
 
-        // Implement retry pattern
         internal ODocument ExecuteOperation(IOperation operation)
-        {           
-            var retry = _retryCount;
-            while (retry-- > 0)
-            {
-                try
-                {
-                    return ExecuteOperationInternal(operation);
-                }
-                catch (Exception)
-                {
-                    Reconnect();
-                    if (retry == 0)
-                        throw;
-                }
-            }
-            Close();
-            throw new OException(OExceptionType.Connection, "An error ocured.");
-        }
-        private ODocument ExecuteOperationInternal(IOperation operation)
         {
-            var req = new Request(this);
-            req.SetSessionId(SessionId);
 
-            Request request = operation.Request(req);
-            byte[] buffer;
-
-            foreach (RequestDataItem item in request.DataItems)
+            try
             {
-                switch (item.Type)
-                {
-                    case "byte":
-                    case "short":
-                    case "int":
-                    case "long":
-                        Send(item.Data);
-                        break;
-                    case "record":
-                        buffer = new byte[2 + item.Data.Length];
-                        Buffer.BlockCopy(BinarySerializer.ToArray(item.Data.Length), 0, buffer, 0, 2);
-                        Buffer.BlockCopy(item.Data, 0, buffer, 2, item.Data.Length);
-                        Send(buffer);
-                        break;
-                    case "bytes":
-                    case "string":
-                    case "strings":
-                        //buffer = new byte[4 + item.Data.Length];
-                        //Buffer.BlockCopy(BinarySerializer.ToArray(item.Data.Length), 0, buffer, 0, 4);
-                        //Buffer.BlockCopy(item.Data, 0, buffer, 4, item.Data.Length);
-                        //Send(buffer);
+                var req = new Request(this);
+                req.SetSessionId(SessionId);
 
-                        Send(BinarySerializer.ToArray(item.Data.Length));
-                        Send(item.Data);
-                        break;
-                    default:
-                        break;
+                Request request = operation.Request(req);
+                byte[] buffer;
+
+                foreach (RequestDataItem item in request.DataItems)
+                {
+                    switch (item.Type)
+                    {
+                        case "byte":
+                        case "short":
+                        case "int":
+                        case "long":
+                            Send(item.Data);
+                            break;
+                        case "record":
+                            buffer = new byte[2 + item.Data.Length];
+                            Buffer.BlockCopy(BinarySerializer.ToArray(item.Data.Length), 0, buffer, 0, 2);
+                            Buffer.BlockCopy(item.Data, 0, buffer, 2, item.Data.Length);
+                            Send(buffer);
+                            break;
+                        case "bytes":
+                        case "string":
+                        case "strings":
+                            Send(BinarySerializer.ToArray(item.Data.Length));
+                            Send(item.Data);
+                            break;
+                        default:
+                            break;
+                    }
                 }
+
+                _networkStream.Flush();
+
+                if (request.OperationMode != OperationMode.Synchronous)
+                    return null;
+
+                Response response = new Response(this);
+                response.Receive();
+                return ((IOperation)operation).Response(response);
             }
-
-            _networkStream.Flush();
-
-            if (request.OperationMode == OperationMode.Synchronous)
+            catch (IOException)
             {
-                try
-                {
-                    Response response = new Response(this);
-
-                    response.Receive();
-
-                    return ((IOperation)operation).Response(response);
-                }
-                catch (Exception)
-                {
-                    //reset connection as the socket may contains unread data and is considered unstable
-                    Reconnect();
-                    throw;
-                }
-            }
-            else
-            {
-                return null;
+                Destroy();
+                throw;
             }
         }
 
@@ -185,29 +153,25 @@ namespace Orient.Client.Protocol
             return _networkStream;
         }
 
-        internal void Close()
+        internal void Destroy()
         {
             SessionId = -1;
-            try
-            {
-                DbClose operation = new DbClose(this.Database);
-                ExecuteOperation(operation);
 
-                if ((_networkStream != null) && (_socket != null))
-                {
-                    _networkStream.Close();
-                    _socket.Close();
-                }
-            }
-            catch (Exception)
+            if ((_networkStream != null) && (_socket != null))
             {
+                _networkStream.Close();
+                _socket.Close();
+            }
 
-            }
-            finally
-            {
-                _networkStream = null;
-                _socket = null;
-            }
+            _networkStream = null;
+            _socket = null;
+        }
+
+        internal void Close()
+        {
+            DbClose operation = new DbClose(this.Database);
+            ExecuteOperation(operation);
+            Destroy();
         }
 
         public void Dispose()

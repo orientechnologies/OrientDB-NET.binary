@@ -2,6 +2,8 @@ OrientDB-NET.binary is C#/.NET driver for [OrientDB](http://www.orientdb.org/) d
 
 Check out [wiki docs](https://github.com/yojimbo87/OrientDB-NET.binary/wiki) to learn more. (NOTE: this link goes to the wiki of the repo yojimbo87/OrientDB-NET.binary, from which this code is forked)
 
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/GoorMoon/OrientDB-NET.binary?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This fork contains the following improvements 
 ---------------------------------------------
 
