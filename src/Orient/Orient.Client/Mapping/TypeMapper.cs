@@ -85,7 +85,14 @@ namespace Orient.Client.Mapping
 
                 if (propertyInfo.PropertyType.IsArray)
                 {
-                    _fields.Add(new ArrayNamedFieldMapping<T>(propertyInfo, fieldPath));
+                    if (propertyInfo.PropertyType == typeof (byte[]))
+                    {
+                        _fields.Add(new BasicNamedFieldMapping<T>(propertyInfo, fieldPath));
+                    }
+                    else
+                    {
+                        _fields.Add(new ArrayNamedFieldMapping<T>(propertyInfo, fieldPath));
+                    }
                 }
                 else if (propertyInfo.PropertyType.IsGenericType)
                 {

@@ -97,7 +97,14 @@ namespace Orient.Client.Protocol.Serializers
             if (value == null)
                 return string.Empty;
 
+            var bytes = value as byte[];
+            if (bytes != null)
+            {
+                return "_" + Convert.ToBase64String(bytes) + "_";
+            }
+
             Type valueType = value.GetType();
+
 
             switch (Type.GetTypeCode(valueType))
             {
