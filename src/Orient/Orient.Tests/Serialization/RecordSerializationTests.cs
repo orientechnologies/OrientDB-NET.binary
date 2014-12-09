@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Orient.Client;
 
@@ -154,6 +155,24 @@ namespace Orient.Tests.Serialization
             string serializedString = document.Serialize();
 
             Assert.AreEqual(serializedString, recordString);
+        }
+
+        [TestMethod]
+        public void ShouldSerializeByteArray()
+        {
+            string recordString = "TestClass@data:_AQIDBAU=_";
+
+            ODocument document = new ODocument()
+                .SetField("@OClassName", "TestClass")
+                .SetField("data", new byte[] {1, 2, 3, 4, 5});
+
+            string serializedString = document.Serialize();
+
+            Assert.AreEqual(serializedString, recordString);
+
+            var deserialized = ODocument.Deserialize(serializedString);
+            byte[] data = deserialized.GetField<byte[]>("data");
+            Assert.IsTrue(data.SequenceEqual(new byte[] { 1, 2, 3, 4, 5 }));
         }
 
         [TestMethod]

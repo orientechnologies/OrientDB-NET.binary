@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Orient.Client;
 using Orient.Client.Mapping;
@@ -261,6 +262,7 @@ namespace Orient.Tests.Serialization
             public List<ORID> list { get; set; }
 
             public ORID ORID { get; set; }
+            public byte[] data { get; set; }
         }
 
         [TestMethod]
@@ -271,7 +273,7 @@ namespace Orient.Tests.Serialization
             //    db.Command("create property Person.in_FriendOf ANY");
             //    db.Command("alter property Person.in_FriendOf custom ordered=true");
 
-            string recordString = "TestObject@Value:17,Text:\"some text\",Link:#11:123,single:[#10:12345],list:[#11:123,#22:1234,#33:1234567]";
+            string recordString = "TestObject@Value:17,Text:\"some text\",Link:#11:123,single:[#10:12345],list:[#11:123,#22:1234,#33:1234567],data:_AQIDBAU=_";
 
             ODocument document = ODocument.Deserialize(recordString);
             document.ORID = new ORID("#123:45");
@@ -279,6 +281,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(document.HasField("Link"), true);
             Assert.AreEqual(document.HasField("Value"), true);
             Assert.AreEqual(document.HasField("Text"), true);
+            Assert.AreEqual(document.HasField("data"), true);
 
 
             TypeMapper<TestObject> tm = TypeMapper<TestObject>.Instance;
@@ -286,6 +289,7 @@ namespace Orient.Tests.Serialization
             tm.ToObject(document, testObj);
 
             Assert.AreEqual("#123:45", testObj.ORID.RID);
+            Assert.IsTrue(testObj.data.SequenceEqual(new byte[] { 1, 2, 3, 4, 5 }));
 
             Assert.AreEqual(17, testObj.Value);
             Assert.AreEqual("some text", testObj.Text);
