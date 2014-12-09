@@ -1,5 +1,7 @@
-﻿using Orient.Client.Protocol;
+﻿using Orient.Client.API.Query.Interfaces;
+using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 // syntax:
 // CREATE CLUSTER <name> <type> 
@@ -9,7 +11,7 @@ using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client
 {
-    public class OSqlCreateCluster
+    public class OSqlCreateCluster : IOCreateCluster
     {
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;
@@ -25,14 +27,14 @@ namespace Orient.Client
 
         #region Cluster
 
-        public OSqlCreateCluster Cluster(string clusterName, OClusterType clusterType)
+        public IOCreateCluster Cluster(string clusterName, OClusterType clusterType)
         {
             _sqlQuery.Cluster(clusterName, clusterType);
 
             return this;
         }
 
-        public OSqlCreateCluster Cluster<T>(OClusterType clusterType)
+        public IOCreateCluster Cluster<T>(OClusterType clusterType)
         {
             return Cluster(typeof(T).Name, clusterType);
         }
@@ -44,7 +46,7 @@ namespace Orient.Client
             CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = ToString();
 
-            Command operation = new Command();
+            Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Synchronous;
             operation.CommandPayload = payload;
 

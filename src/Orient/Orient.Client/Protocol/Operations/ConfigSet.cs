@@ -2,21 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class ConfigSet : IOperation
+    internal class ConfigSet : BaseOperation
     {
+        public ConfigSet(ODatabase database)
+            : base(database)
+        {
+
+        }
         public string Key { get; set; }
         public string Value { get; set; }
 
-        public Request Request(int sessionID)
+        public override Request Request(Request request)
         {
-            Request request = new Request();
-
             // standard request fields
             request.AddDataItem((byte)OperationType.CONFIG_SET);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
 
             request.AddDataItem(Key);
             request.AddDataItem(Value);
@@ -24,7 +28,7 @@ namespace Orient.Client.Protocol.Operations
 
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument document = new ODocument();
 
@@ -44,5 +48,6 @@ namespace Orient.Client.Protocol.Operations
 
             return document;
         }
+
     }
 }

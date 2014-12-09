@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Orient.Client.API.Query.Interfaces;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
@@ -10,23 +11,23 @@ using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client
 {
-    public class OCreateVertexRecord : OSqlCreateVertex
+    public class ORecordCreateVertex : IOCreateVertex
     {
         private Connection _connection;
         private ODocument _document;
 
-        public OCreateVertexRecord()
+        public ORecordCreateVertex()
         {
         }
 
-        internal OCreateVertexRecord(Connection connection)
+        internal ORecordCreateVertex(Connection connection)
         {
             _connection = connection;
         }
 
         #region Vertex
 
-        public OSqlCreateVertex Vertex(string className)
+        public IOCreateVertex Vertex(string className)
         {
             if (_document == null)
                 _document = new ODocument();
@@ -36,7 +37,7 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateVertex Vertex<T>(T obj)
+        public IOCreateVertex Vertex<T>(T obj)
         {
 
             if (obj is ODocument)
@@ -56,7 +57,7 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateVertex Vertex<T>()
+        public IOCreateVertex Vertex<T>()
         {
             return Vertex(typeof(T).Name);
         }
@@ -65,7 +66,7 @@ namespace Orient.Client
 
         #region Cluster
 
-        public OSqlCreateVertex Cluster(string clusterName)
+        public IOCreateVertex Cluster(string clusterName)
         {
             if (_document.ORID == null)
                 _document.ORID = new ORID();
@@ -75,7 +76,7 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateVertex Cluster<T>()
+        public IOCreateVertex Cluster<T>()
         {
             return Cluster(typeof(T).Name);
         }
@@ -84,14 +85,14 @@ namespace Orient.Client
 
         #region Set
 
-        public OSqlCreateVertex Set<T>(string fieldName, T fieldValue)
+        public IOCreateVertex Set<T>(string fieldName, T fieldValue)
         {
             _document.SetField(fieldName, fieldValue);
 
             return this;
         }
 
-        public OSqlCreateVertex Set<T>(T obj)
+        public IOCreateVertex Set<T>(T obj)
         {
             var document = obj is ODocument ? obj as ODocument : ODocument.ToDocument(obj);
 
@@ -116,8 +117,8 @@ namespace Orient.Client
         {
             //            var operation = CreateSQLOperation();
 
-            var operation = new CreateRecord(_document, _connection.Database);
-
+            var operation = new RecordCreate(_document, _connection.Database);
+            operation.OperationMode = OperationMode.Synchronous;
             return _connection.ExecuteOperation(operation).To<OVertex>();
         }
 

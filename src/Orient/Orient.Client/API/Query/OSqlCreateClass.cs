@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
+using Orient.Client.API.Types;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 // syntax: 
 // CREATE CLASS <class> 
@@ -40,8 +43,8 @@ namespace Orient.Client
 
         public OSqlCreateClass Class<T>()
         {
-            _type = typeof (T);
-            _className = typeof (T).Name;
+            _type = typeof(T);
+            _className = typeof(T).Name;
             return Class(_className);
         }
 
@@ -70,7 +73,7 @@ namespace Orient.Client
             if (_type != null && _type != typeof(T))
                 throw new InvalidOperationException("Inconsistent type specified - type for CreateProperties<T> must match type for Class<T>");
 
-            _type = typeof (T);
+            _type = typeof(T);
 
             _autoProperties = true;
             return this;
@@ -93,30 +96,34 @@ namespace Orient.Client
 
         public short Run()
         {
-            CommandPayloadCommand payload = new CommandPayloadCommand();
-            payload.Text = ToString();
+            var cluster = _connection.Database.GetClusters().FirstOrDefault(c => c.Name == _className);
+            if (cluster == null)
+            {
+                CommandPayloadCommand payload = new CommandPayloadCommand();
+                payload.Text = ToString();
 
-            Command operation = new Command();
-            operation.OperationMode = OperationMode.Synchronous;
-            operation.CommandPayload = payload;
+                Command operation = new Command(_connection.Database);
+                operation.OperationMode = OperationMode.Synchronous;
+                operation.CommandPayload = payload;
 
-            OCommandResult result = new OCommandResult(_connection.ExecuteOperation(operation));
+                OCommandResult result = new OCommandResult(_connection.ExecuteOperation(operation));
 
-            var clusterId = short.Parse(result.ToDocument().GetField<string>("Content"));
+                var clusterId = short.Parse(result.ToDocument().GetField<string>("Content"));
 
-            _connection.Database.AddCluster(_className, clusterId);
+                cluster = _connection.Database.AddCluster(new OCluster { Name = _className, Id = clusterId });
+            }
 
             if (_autoProperties)
             {
                 CreateAutoProperties();
             }
 
-            return clusterId;
+            return cluster.Id;
         }
 
         private void CreateAutoProperties()
         {
-            foreach (var pi in _type.GetProperties(BindingFlags.DeclaredOnly))
+            foreach (var pi in _type.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public))
             {
                 if (pi.CanRead && pi.CanWrite)
                 {
@@ -124,25 +131,24 @@ namespace Orient.Client
                     if (oprop != null && !oprop.Deserializable && !oprop.Serializable)
                         continue;
 
-                    if (pi.PropertyType.IsPrimitive)
-                    {
-                        CreateProperty(pi);
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                    }
+                    CreateProperty(pi);
                 }
             }
         }
 
         private void CreateProperty(PropertyInfo pi)
         {
-            string propType = ConvertPropertyType(pi.PropertyType);
-            _connection.Database.Command(string.Format("create property {2}.{0} {1}", pi.Name, propType, _type.Name));
+            var propType = ConvertPropertyType(pi.PropertyType);
+            var @class = (_type != null) ? _type.Name : _className;
+
+            var propid = _connection.Database
+                .Create
+                .Property(pi.Name, propType)
+                .Class(@class)
+                .Run();
         }
 
-        private string ConvertPropertyType(Type propertyType)
+        private OType ConvertPropertyType(Type propertyType)
         {
             return TypeConverter.TypeToDbName(propertyType);
         }
@@ -150,39 +156,6 @@ namespace Orient.Client
         public override string ToString()
         {
             return _sqlQuery.ToString(QueryType.CreateClass);
-        }
-
-        class TypeConverter
-        {
-            static TypeConverter()
-            {
-                AddType<int>("Integer");
-                AddType<long>("Long");
-                AddType<short>("Short");
-                AddType<string>("string");
-                AddType<bool>("Boolean");
-                AddType<float>("Float");
-                AddType<double>("Double");
-                AddType<DateTime>("Datetime");
-                AddType<byte[]>("Binary");
-                AddType<byte>("Byte");
-            }
-
-            private static void AddType<T>(string name)
-            {
-                _types.Add(typeof(T), name);
-            }
-
-            static Dictionary<Type, string> _types = new Dictionary<Type, string>(); 
-
-            public static string TypeToDbName(Type t)
-            {
-                string result;
-                if (_types.TryGetValue(t, out result))
-                    return result;
-
-                throw new ArgumentException("propertyType " + t.Name + " is not yet supported.");
-            }
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Orient.Client.API.Query.Interfaces;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 // syntax: 
 // CREATE EDGE [<class>] 
@@ -11,48 +13,30 @@ using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client
 {
-    public interface OSqlCreateEdge
-    {
-        OSqlCreateEdge Edge(string className);
-        OSqlCreateEdge Edge<T>(T obj);
-        OSqlCreateEdge Edge<T>();
-        OSqlCreateEdge Cluster(string clusterName);
-        OSqlCreateEdge Cluster<T>();
-        OSqlCreateEdge From(ORID orid);
-        OSqlCreateEdge From<T>(T obj);
-        OSqlCreateEdge To(ORID orid);
-        OSqlCreateEdge To<T>(T obj);
-        OSqlCreateEdge Set<T>(string fieldName, T fieldValue);
-        OSqlCreateEdge Set<T>(T obj);
-        OEdge Run();
-        T Run<T>() where T : class, new();
-        string ToString();
-    }
-
-    public class OSqlCreateEdgeViaSql : OSqlCreateEdge
+    public class OSqlCreateEdge : IOCreateEdge
     {
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;
 
-        public OSqlCreateEdgeViaSql()
+        public OSqlCreateEdge()
         {
         }
 
-        internal OSqlCreateEdgeViaSql(Connection connection)
+        internal OSqlCreateEdge(Connection connection)
         {
             _connection = connection;
         }
 
         #region Edge
 
-        public OSqlCreateEdge Edge(string className)
+        public IOCreateEdge Edge(string className)
         {
             _sqlQuery.Edge(className);
 
             return this;
         }
 
-        public OSqlCreateEdge Edge<T>(T obj)
+        public IOCreateEdge Edge<T>(T obj)
         {
             ODocument document;
 
@@ -82,7 +66,7 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateEdge Edge<T>()
+        public IOCreateEdge Edge<T>()
         {
             return Edge(typeof(T).Name);
         }
@@ -91,14 +75,14 @@ namespace Orient.Client
 
         #region Cluster
 
-        public OSqlCreateEdge Cluster(string clusterName)
+        public IOCreateEdge Cluster(string clusterName)
         {
             _sqlQuery.Cluster(clusterName);
 
             return this;
         }
 
-        public OSqlCreateEdge Cluster<T>()
+        public IOCreateEdge Cluster<T>()
         {
             return Cluster(typeof(T).Name);
         }
@@ -107,14 +91,14 @@ namespace Orient.Client
 
         #region From
 
-        public OSqlCreateEdge From(ORID orid)
+        public IOCreateEdge From(ORID orid)
         {
             _sqlQuery.From(orid);
 
             return this;
         }
 
-        public OSqlCreateEdge From<T>(T obj)
+        public IOCreateEdge From<T>(T obj)
         {
             ODocument document;
 
@@ -141,14 +125,14 @@ namespace Orient.Client
 
         #region To
 
-        public OSqlCreateEdge To(ORID orid)
+        public IOCreateEdge To(ORID orid)
         {
             _sqlQuery.To(orid);
 
             return this;
         }
 
-        public OSqlCreateEdge To<T>(T obj)
+        public IOCreateEdge To<T>(T obj)
         {
             ODocument document;
 
@@ -175,14 +159,14 @@ namespace Orient.Client
 
         #region Set
 
-        public OSqlCreateEdge Set<T>(string fieldName, T fieldValue)
+        public IOCreateEdge Set<T>(string fieldName, T fieldValue)
         {
             _sqlQuery.Set<T>(fieldName, fieldValue);
 
             return this;
         }
 
-        public OSqlCreateEdge Set<T>(T obj)
+        public IOCreateEdge Set<T>(T obj)
         {
             _sqlQuery.Set(obj);
 
@@ -198,7 +182,7 @@ namespace Orient.Client
             CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = ToString();
 
-            Command operation = new Command();
+            Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Synchronous;
             operation.CommandPayload = payload;
 

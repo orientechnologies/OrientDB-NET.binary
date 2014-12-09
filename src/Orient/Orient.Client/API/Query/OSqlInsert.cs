@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Orient.Client.API.Query.Interfaces;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 // syntax:
 // INSERT INTO <Class>|cluster:<cluster>|index:<index> 
@@ -9,7 +10,7 @@ using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client
 {
-    public class OSqlInsert
+    public class OSqlInsert : IOInsert
     {
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;
@@ -25,17 +26,17 @@ namespace Orient.Client
 
         #region Insert
 
-        public OSqlInsert Insert(string className)
+        public IOInsert Insert(string className)
         {
             return Into(className);
         }
 
-        public OSqlInsert Insert<T>()
+        public IOInsert Insert<T>()
         {
             return Into<T>();
         }
 
-        public OSqlInsert Insert<T>(T obj)
+        public IOInsert Insert<T>(T obj)
         {
             // check for OClassName shouldn't have be here since INTO clause might specify it
 
@@ -48,14 +49,14 @@ namespace Orient.Client
 
         #region Into
 
-        public OSqlInsert Into(string className)
+        public IOInsert Into(string className)
         {
             _sqlQuery.Class(className);
 
             return this;
         }
 
-        public OSqlInsert Into<T>()
+        public IOInsert Into<T>()
         {
             Into(typeof(T).Name);
 
@@ -66,14 +67,14 @@ namespace Orient.Client
 
         #region Cluster
 
-        public OSqlInsert Cluster(string clusterName)
+        public IOInsert Cluster(string clusterName)
         {
             _sqlQuery.Cluster(clusterName);
 
             return this;
         }
 
-        public OSqlInsert Cluster<T>()
+        public IOInsert Cluster<T>()
         {
             return Cluster(typeof(T).Name);
         }
@@ -82,14 +83,14 @@ namespace Orient.Client
 
         #region Set
 
-        public OSqlInsert Set<T>(string fieldName, T fieldValue)
+        public IOInsert Set<T>(string fieldName, T fieldValue)
         {
             _sqlQuery.Set<T>(fieldName, fieldValue);
 
             return this;
         }
 
-        public OSqlInsert Set<T>(T obj)
+        public IOInsert Set<T>(T obj)
         {
             _sqlQuery.Set(obj);
 
@@ -105,7 +106,7 @@ namespace Orient.Client
             CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = ToString();
 
-            Command operation = new Command();
+            Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Synchronous;
             operation.CommandPayload = payload;
 

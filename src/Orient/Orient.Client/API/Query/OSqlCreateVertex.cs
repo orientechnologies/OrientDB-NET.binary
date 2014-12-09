@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Orient.Client.API.Query.Interfaces;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 // syntax: 
 // CREATE VERTEX [<class>] 
@@ -9,44 +10,30 @@ using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client
 {
-    public interface OSqlCreateVertex
-    {
-        OSqlCreateVertex Vertex(string className);
-        OSqlCreateVertex Vertex<T>(T obj);
-        OSqlCreateVertex Vertex<T>();
-        OSqlCreateVertex Cluster(string clusterName);
-        OSqlCreateVertex Cluster<T>();
-        OSqlCreateVertex Set<T>(string fieldName, T fieldValue);
-        OSqlCreateVertex Set<T>(T obj);
-        OVertex Run();
-        T Run<T>() where T : class, new();
-        string ToString();
-    }
-
-    public class OSqlCreateVertexViaSql : OSqlCreateVertex
+    public class OSqlCreateVertex : IOCreateVertex
     {
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;
 
-        public OSqlCreateVertexViaSql()
+        public OSqlCreateVertex()
         {
         }
 
-        internal OSqlCreateVertexViaSql(Connection connection)
+        internal OSqlCreateVertex(Connection connection)
         {
             _connection = connection;
         }
 
         #region Vertex
 
-        public OSqlCreateVertex Vertex(string className)
+        public IOCreateVertex Vertex(string className)
         {
             _sqlQuery.Vertex(className);
 
             return this;
         }
 
-        public OSqlCreateVertex Vertex<T>(T obj)
+        public IOCreateVertex Vertex<T>(T obj)
         {
             ODocument document;
 
@@ -70,7 +57,7 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateVertex Vertex<T>()
+        public IOCreateVertex Vertex<T>()
         {
             return Vertex(typeof(T).Name);
         }
@@ -79,14 +66,14 @@ namespace Orient.Client
 
         #region Cluster
 
-        public OSqlCreateVertex Cluster(string clusterName)
+        public IOCreateVertex Cluster(string clusterName)
         {
             _sqlQuery.Cluster(clusterName);
 
             return this;
         }
 
-        public OSqlCreateVertex Cluster<T>()
+        public IOCreateVertex Cluster<T>()
         {
             return Cluster(typeof(T).Name);
         }
@@ -95,14 +82,14 @@ namespace Orient.Client
 
         #region Set
 
-        public OSqlCreateVertex Set<T>(string fieldName, T fieldValue)
+        public IOCreateVertex Set<T>(string fieldName, T fieldValue)
         {
             _sqlQuery.Set<T>(fieldName, fieldValue);
 
             return this;
         }
 
-        public OSqlCreateVertex Set<T>(T obj)
+        public IOCreateVertex Set<T>(T obj)
         {
             _sqlQuery.Set(obj);
 
@@ -118,7 +105,7 @@ namespace Orient.Client
             CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = ToString();
 
-            Command operation = new Command();
+            Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Synchronous;
             operation.CommandPayload = payload;
 

@@ -92,14 +92,14 @@ namespace Orient.Tests.Query
                     var createdVertex = database.Load.ORID(testVertex.ORID).Run().To<OVertex>();
 
                     Assert.IsTrue(createdVertex.ORID != null);
-                    Assert.AreEqual(createdVertex.OClassName, "TestVertexClass");
-                    Assert.AreEqual(createdVertex.GetField<string>("foo"), "foo string value");
-                    Assert.AreEqual(createdVertex.GetField<int>("bar"), 12345);
+                    Assert.AreEqual("TestVertexClass", createdVertex.OClassName);
+                    Assert.AreEqual("foo string value", createdVertex.GetField<string>("foo"));
+                    Assert.AreEqual(12345, createdVertex.GetField<int>("bar"));
                 }
 
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
-                 
+
 
                     OVertex testVertex = new OVertex();
                     testVertex.OClassName = "TestVertexClass";
@@ -182,18 +182,18 @@ namespace Orient.Tests.Query
                         .Extends<OVertex>()
                         .Run();
 
-                   
+
                     var testVertex1 = CreateTestVertex(1);
                     var testVertex2 = CreateTestVertex(2);
                     database.Transaction.Add(testVertex1);
                     database.Transaction.Add(testVertex2);
                     testVertex1.OutE.Add(testVertex2.ORID);
                     testVertex2.InE.Add(testVertex1.ORID);
-                   
+
 
                     database.Transaction.Commit();
 
-                    Assert.AreEqual( testVertex2.ORID, testVertex1.OutE.First());
+                    Assert.AreEqual(testVertex2.ORID, testVertex1.OutE.First());
                     Assert.AreEqual(testVertex1.ORID, testVertex2.InE.First());
 
                     var createdVertices = database.Select().From("V").ToList<OVertex>();
@@ -224,8 +224,8 @@ namespace Orient.Tests.Query
                     database.Create.Class<Widget>().Extends<OVertex>().Run();
 
 
-                    var w1 = new Widget() {Foo = "foo", Bar = 1};
-                    var w2 = new Widget() {Foo = "woo", Bar = 2};
+                    var w1 = new Widget() { Foo = "foo", Bar = 1 };
+                    var w2 = new Widget() { Foo = "woo", Bar = 2 };
 
                     database.Transaction.Add(w1);
                     database.Transaction.Add(w2);

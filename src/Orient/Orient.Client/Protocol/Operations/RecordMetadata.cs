@@ -3,23 +3,29 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
 {
-    internal class RecordMetadata : IOperation
+    internal class RecordMetadata : BaseOperation
     {
+        public RecordMetadata(ODatabase database)
+            : base(database)
+        {
+
+        }
         public ORID _orid { get; set; }
 
         public RecordMetadata(ORID rid)
+            :base(null)
         {
             _orid = rid;
         }
-        public Request Request(int sessionID)
+        public override Request Request(Request request)
         {
-            Request request = new Request();
 
             request.AddDataItem((byte)OperationType.RECORD_METADATA);
-            request.AddDataItem(sessionID);
+            request.AddDataItem(request.SessionId);
 
             request.AddDataItem((short)_orid.ClusterId);
             request.AddDataItem((long)_orid.ClusterPosition);
@@ -27,7 +33,7 @@ namespace Orient.Client.Protocol.Operations
             return request;
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument document = new ODocument();
 
@@ -50,5 +56,6 @@ namespace Orient.Client.Protocol.Operations
             result.ClusterPosition = reader.ReadInt64EndianAware();
             return result;
         }
+
     }
 }

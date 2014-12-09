@@ -12,7 +12,7 @@
         DB_SIZE = 8,
         DB_COUNTRECORDS = 9,
         DATACLUSTER_ADD = 10,
-        DATACLUSTER_REMOVE = 11,
+        DATACLUSTER_DROP = 11,
         DATACLUSTER_COUNT = 12,
         DATACLUSTER_DATARANGE = 13,
         DATASEGMENT_ADD = 20,
@@ -29,6 +29,11 @@
         CONFIG_SET = 71,
         CONFIG_LIST = 72,
         DB_RELOAD = 73,
-        DB_LIST = 74
+        DB_LIST = 74,
+        CREATE_SBTREE_BONSAI = 110,
+        SBTREE_BONSAI_GET = 111,
+        SBTREE_BONSAI_FIRST_KEY = 112,
+        SBTREE_BONSAI_GET_ENTRIES_MAJOR = 113,
+        RIDBAG_GET_SIZE = 114
     }
 }

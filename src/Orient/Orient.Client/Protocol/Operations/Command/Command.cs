@@ -1,23 +1,27 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Orient.Client.API.Types;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Serializers;
 
-namespace Orient.Client.Protocol.Operations
+namespace Orient.Client.Protocol.Operations.Command
 {
-    internal class Command : IOperation
+    internal class Command : BaseOperation
     {
+        public Command(ODatabase database)
+            : base(database)
+        {
+
+        }
         internal OperationMode OperationMode { get; set; }
         internal CommandPayloadBase CommandPayload { get; set; }
 
-        public Request Request(int sessionId)
+        public override Request Request(Request request)
         {
-            Request request = new Request();
-
             // standard request fields
             request.AddDataItem((byte)OperationType.COMMAND);
-            request.AddDataItem(sessionId);
+            request.AddDataItem(request.SessionId);
             // operation specific fields
             request.AddDataItem((byte)OperationMode);
 
@@ -48,7 +52,13 @@ namespace Orient.Client.Protocol.Operations
                 if (scriptPayload.Language != "gremlin")
                     request.AddDataItem(scriptPayload.Language);
                 request.AddDataItem(scriptPayload.Text);
-                request.AddDataItem((byte)0);
+                if (scriptPayload.SimpleParams == null)
+                    request.AddDataItem((byte)0); // 0 - false, 1 - true
+                else
+                {
+                    request.AddDataItem((byte)1);
+                    request.AddDataItem(scriptPayload.SimpleParams);
+                }
                 request.AddDataItem((byte)0);
 
                 return request;
@@ -62,7 +72,13 @@ namespace Orient.Client.Protocol.Operations
                 // (text:string)(has-simple-parameters:boolean)(simple-paremeters:bytes[])(has-complex-parameters:boolean)(complex-parameters:bytes[])
                 request.AddDataItem(commandPayload.Text);
                 // has-simple-parameters boolean
-                request.AddDataItem((byte)0); // 0 - false, 1 - true
+                if (commandPayload.SimpleParams == null)
+                    request.AddDataItem((byte)0); // 0 - false, 1 - true
+                else
+                {
+                    request.AddDataItem((byte)1);
+                    request.AddDataItem(commandPayload.SimpleParams);
+                }
                 //request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(0) });
                 // has-complex-parameters
                 request.AddDataItem((byte)0); // 0 - false, 1 - true
@@ -72,7 +88,7 @@ namespace Orient.Client.Protocol.Operations
             throw new OException(OExceptionType.Operation, "Invalid payload");
         }
 
-        public ODocument Response(Response response)
+        public override ODocument Response(Response response)
         {
             ODocument responseDocument = new ODocument();
 
@@ -128,7 +144,6 @@ namespace Orient.Client.Protocol.Operations
                         responseDocument.SetField("Content", document);
                         break;
                     case PayloadStatus.SerializedResult: // 'a'
-                        // TODO: how to parse result - string?
                         contentLength = reader.ReadInt32EndianAware();
                         string serialized = System.Text.Encoding.Default.GetString(reader.ReadBytes(contentLength));
                         responseDocument.SetField("Content", serialized);
@@ -196,7 +211,11 @@ namespace Orient.Client.Protocol.Operations
                 int version = reader.ReadInt32EndianAware();
                 int recordLength = reader.ReadInt32EndianAware();
                 byte[] rawRecord = reader.ReadBytes(recordLength);
-                document = RecordSerializer.Deserialize(orid, version, type, classId, rawRecord);
+
+                document = new ODocument { ORID = orid, OVersion = version, OType = ORecordType.Document, OClassId = classId };
+
+                document = Serializer.Deserialize(rawRecord, document);
+
             }
 
             return document;

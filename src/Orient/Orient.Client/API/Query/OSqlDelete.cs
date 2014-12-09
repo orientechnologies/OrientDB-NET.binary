@@ -1,4 +1,5 @@
-﻿using Orient.Client.Protocol;
+﻿using Orient.Client.API.Query;
+using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client
@@ -89,6 +90,26 @@ namespace Orient.Client
         {
             return new OSqlDeleteEdge(_connection)
                 .Delete(obj);
+        }
+
+        #endregion
+
+        #region Cluster
+
+        public OSqlDeleteCluster Cluster(short clusterid)
+        {
+            return new OSqlDeleteCluster(_connection, clusterid);
+        }
+
+        public OSqlDeleteCluster Cluster(string clusterName)
+        {
+            var clusterid = _connection.Database.GetClusterIdFor(clusterName);
+            return Cluster(clusterid);
+        }
+
+        public OSqlDeleteCluster Cluster<T>()
+        {
+            return Cluster(typeof(T).Name);
         }
 
         #endregion

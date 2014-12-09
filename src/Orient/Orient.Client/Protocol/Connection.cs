@@ -75,69 +75,63 @@ namespace Orient.Client.Protocol
             IsReusable = false;
             ProtocolVersion = 0;
             SessionId = -1;
+            UserName = userName;
+            UserPassword = userPassword;
 
             InitializeServerConnection(userName, userPassword);
         }
 
         internal ODocument ExecuteOperation(IOperation operation)
         {
-            Request request = operation.Request(SessionId);
-            byte[] buffer;
 
-            foreach (RequestDataItem item in request.DataItems)
+            try
             {
-                switch (item.Type)
-                {
-                    case "byte":
-                    case "short":
-                    case "int":
-                    case "long":
-                        Send(item.Data);
-                        break;
-                    case "record":
-                        buffer = new byte[2 + item.Data.Length];
-                        Buffer.BlockCopy(BinarySerializer.ToArray(item.Data.Length), 0, buffer, 0, 2);
-                        Buffer.BlockCopy(item.Data, 0, buffer, 2, item.Data.Length);
-                        Send(buffer);
-                        break;
-                    case "bytes":
-                    case "string":
-                    case "strings":
-                        //buffer = new byte[4 + item.Data.Length];
-                        //Buffer.BlockCopy(BinarySerializer.ToArray(item.Data.Length), 0, buffer, 0, 4);
-                        //Buffer.BlockCopy(item.Data, 0, buffer, 4, item.Data.Length);
-                        //Send(buffer);
+                var req = new Request(this);
+                req.SetSessionId(SessionId);
 
-                        Send(BinarySerializer.ToArray(item.Data.Length));
-                        Send(item.Data);
-                        break;
-                    default:
-                        break;
+                Request request = operation.Request(req);
+                byte[] buffer;
+
+                foreach (RequestDataItem item in request.DataItems)
+                {
+                    switch (item.Type)
+                    {
+                        case "byte":
+                        case "short":
+                        case "int":
+                        case "long":
+                            Send(item.Data);
+                            break;
+                        case "record":
+                            buffer = new byte[2 + item.Data.Length];
+                            Buffer.BlockCopy(BinarySerializer.ToArray(item.Data.Length), 0, buffer, 0, 2);
+                            Buffer.BlockCopy(item.Data, 0, buffer, 2, item.Data.Length);
+                            Send(buffer);
+                            break;
+                        case "bytes":
+                        case "string":
+                        case "strings":
+                            Send(BinarySerializer.ToArray(item.Data.Length));
+                            Send(item.Data);
+                            break;
+                        default:
+                            break;
+                    }
                 }
+
+                _networkStream.Flush();
+
+                if (request.OperationMode != OperationMode.Synchronous)
+                    return null;
+
+                Response response = new Response(this);
+                response.Receive();
+                return ((IOperation)operation).Response(response);
             }
-
-            _networkStream.Flush();
-
-            if (request.OperationMode == OperationMode.Synchronous)
+            catch (IOException)
             {
-                try
-                {
-                    Response response = new Response(this);
-
-                    response.Receive();
-
-                    return ((IOperation)operation).Response(response);
-                }
-                catch (Exception )
-                {
-                    //reset connection as the socket may contains unread data and is considered unstable
-                    Reconnect();
-                    throw;
-                }
-            }
-            else
-            {
-                return null;
+                Destroy();
+                throw;
             }
         }
 
@@ -159,12 +153,9 @@ namespace Orient.Client.Protocol
             return _networkStream;
         }
 
-        internal void Close()
+        internal void Destroy()
         {
             SessionId = -1;
-
-            DbClose operation = new DbClose();
-            ExecuteOperation(operation);
 
             if ((_networkStream != null) && (_socket != null))
             {
@@ -176,6 +167,13 @@ namespace Orient.Client.Protocol
             _socket = null;
         }
 
+        internal void Close()
+        {
+            DbClose operation = new DbClose(this.Database);
+            ExecuteOperation(operation);
+            Destroy();
+        }
+
         public void Dispose()
         {
             Close();
@@ -183,7 +181,7 @@ namespace Orient.Client.Protocol
 
         public void Reload()
         {
-            DbReload operation = new DbReload();
+            DbReload operation = new DbReload(Database);
             var document = ExecuteOperation(operation);
             Document.SetField("Clusters", document.GetField<List<OCluster>>("Clusters"));
             Document.SetField("ClusterCount", document.GetField<short>("ClusterCount"));
@@ -211,7 +209,7 @@ namespace Orient.Client.Protocol
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
 
             // execute db_open operation
-            DbOpen operation = new DbOpen();
+            DbOpen operation = new DbOpen(null);
             operation.DatabaseName = databaseName;
             operation.DatabaseType = databaseType;
             operation.UserName = userName;
@@ -239,9 +237,11 @@ namespace Orient.Client.Protocol
             _networkStream.Read(_readBuffer, 0, 2);
 
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
+            if (ProtocolVersion <= 0)
+                throw new OException(OExceptionType.Connection, "Incorect Protocol Version " + ProtocolVersion);
 
             // execute connect operation
-            Connect operation = new Connect();
+            Connect operation = new Connect(null);
             operation.UserName = userName;
             operation.UserPassword = userPassword;
 
@@ -251,8 +251,6 @@ namespace Orient.Client.Protocol
 
         private void Send(byte[] rawData)
         {
-            //            Console.WriteLine(string.Join(", ", rawData.Select(x => x.ToString("X2"))));
-
             if ((_networkStream != null) && _networkStream.CanWrite)
             {
                 try

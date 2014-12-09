@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using Orient.Client.API.Query;
+using Orient.Client.API.Query.Interfaces;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 // shorthand for INSERT INTO for documents
 
 namespace Orient.Client
 {
-    public class OSqlCreateDocument
+    public class OSqlCreateDocument : IOCreateDocument
     {
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;
@@ -22,14 +24,14 @@ namespace Orient.Client
 
         #region Document
 
-        public OSqlCreateDocument Document(string className)
+        public IOCreateDocument Document(string className)
         {
             _sqlQuery.Class(className);
 
             return this;
         }
 
-        public OSqlCreateDocument Document<T>(T obj)
+        public IOCreateDocument Document<T>(T obj)
         {
             // check for OClassName shouldn't have be here since INTO clause might specify it
 
@@ -38,7 +40,7 @@ namespace Orient.Client
             return this;
         }
 
-        public OSqlCreateDocument Document<T>()
+        public IOCreateDocument Document<T>()
         {
             return Document(typeof(T).Name);
         }
@@ -47,14 +49,14 @@ namespace Orient.Client
 
         #region Cluster
 
-        public OSqlCreateDocument Cluster(string clusterName)
+        public IOCreateDocument Cluster(string clusterName)
         {
             _sqlQuery.Cluster(clusterName);
 
             return this;
         }
 
-        public OSqlCreateDocument Cluster<T>()
+        public IOCreateDocument Cluster<T>()
         {
             return Cluster(typeof(T).Name);
         }
@@ -63,14 +65,14 @@ namespace Orient.Client
 
         #region Set
 
-        public OSqlCreateDocument Set<T>(string fieldName, T fieldValue)
+        public IOCreateDocument Set<T>(string fieldName, T fieldValue)
         {
             _sqlQuery.Set<T>(fieldName, fieldValue);
 
             return this;
         }
 
-        public OSqlCreateDocument Set<T>(T obj)
+        public IOCreateDocument Set<T>(T obj)
         {
             _sqlQuery.Set(obj);
 
@@ -86,7 +88,7 @@ namespace Orient.Client
             CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = ToString();
 
-            Command operation = new Command();
+            Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Synchronous;
             operation.CommandPayload = payload;
 

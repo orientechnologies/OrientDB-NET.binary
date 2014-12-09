@@ -5,24 +5,32 @@ using System.Globalization;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Orient.Client.Protocol.Operations;
+using Orient.Client.API.Types;
 
 namespace Orient.Client.Protocol.Serializers
 {
-    internal static class RecordSerializer
+    internal class RecordCSVSerializer : IRecordSerializer
     {
-        internal static string Serialize(ODocument document)
+        private Connection _connection;
+        public RecordCSVSerializer(Connection connection)
+        {
+            _connection = connection;
+        }
+
+        public byte[] Serialize(ODocument document)
         {
             if (!document.HasField("@OClassName"))
             {
                 throw new OException(OExceptionType.Serialization, "Document doesn't contain @OClassName field which is required for serialization.");
             }
 
-            return document.GetField<string>("@OClassName") + "@" + SerializeDocument(document);
+            return Encoding.UTF8.GetBytes(document.GetField<string>("@OClassName") + "@" + SerializeDocument(document));
         }
 
         #region Deserialize
 
-        internal static ODocument Deserialize(ORID orid, int version, ORecordType type, short classId, byte[] rawRecord)
+        internal ODocument Deserialize(ORID orid, int version, ORecordType type, short classId, byte[] rawRecord)
         {
             ODocument document = new ODocument();
             document.ORID = orid;
@@ -35,7 +43,7 @@ namespace Orient.Client.Protocol.Serializers
             return Deserialize(recordString, document);
         }
 
-        public static ODocument Deserialize(string recordString, ODocument document)
+        internal ODocument Deserialize(string recordString, ODocument document)
         {
             int atIndex = recordString.IndexOf('@');
             int colonIndex = recordString.IndexOf(':');
@@ -57,17 +65,23 @@ namespace Orient.Client.Protocol.Serializers
             return document;
         }
 
-        internal static ODocument Deserialize(string recordString)
+        internal ODocument Deserialize(string recordString)
         {
             return Deserialize(recordString, new ODocument());
 
+        }
+
+        public ODocument Deserialize(byte[] rawRecord, ODocument document)
+        {
+            string recordString = BinarySerializer.ToString(rawRecord).Trim();
+            return Deserialize(recordString, document);
         }
 
         #endregion
 
         #region Serialization private methods
 
-        private static string SerializeDocument(ODocument document)
+        private string SerializeDocument(ODocument document)
         {
             StringBuilder bld = new StringBuilder();
 
@@ -92,7 +106,7 @@ namespace Orient.Client.Protocol.Serializers
             return bld.ToString();
         }
 
-        private static string SerializeValue(object value)
+        private string SerializeValue(object value)
         {
             if (value == null)
                 return string.Empty;
@@ -149,27 +163,48 @@ namespace Orient.Client.Protocol.Serializers
             throw new NotImplementedException();
         }
 
-        private static string SerializeObjectValue(object value, Type valueType)
+        private string SerializeObjectValue(object value, Type valueType)
         {
             StringBuilder bld = new StringBuilder();
 
             if ((valueType.IsArray) || (valueType.IsGenericType))
             {
-                bld.Append(valueType.Name == "HashSet`1" ? "<" : "[");
-
-                IEnumerable collection = (IEnumerable)value;
-
-                bool first = true;
-                foreach (object val in collection)
+                if (valueType.Name == "Dictionary`2")
                 {
-                    if (!first)
-                        bld.Append(",");
+                    bld.Append("{");
 
-                    first = false;
-                    bld.Append(SerializeValue(val));
+                    IDictionary<string, object> collection = (IDictionary<string, object>)value;
+
+                    bool first = true;
+                    foreach (var keyVal in collection)
+                    {
+                        if (!first)
+                            bld.Append(",");
+
+                        first = false;
+                        bld.Append("\"" + keyVal.Key + "\":" + SerializeValue(keyVal.Value));
+                    }
+
+                    bld.Append("}");
                 }
+                else
+                {
+                    bld.Append(valueType.Name == "HashSet`1" ? "<" : "[");
 
-                bld.Append(valueType.Name == "HashSet`1" ? ">" : "]");
+                    IEnumerable collection = (IEnumerable)value;
+
+                    bool first = true;
+                    foreach (object val in collection)
+                    {
+                        if (!first)
+                            bld.Append(",");
+
+                        first = false;
+                        bld.Append(SerializeValue(val));
+                    }
+
+                    bld.Append(valueType.Name == "HashSet`1" ? ">" : "]");
+                }
             }
             // if property is ORID type it needs to be serialized as ORID
             else if (valueType.IsClass && (valueType.Name == "ORID"))
@@ -180,6 +215,25 @@ namespace Orient.Client.Protocol.Serializers
             {
                 bld.AppendFormat("({0})", SerializeDocument((ODocument)value));
             }
+            else if (valueType.IsClass && (valueType.Name == "OEmbeddedRidBag"))
+            {
+                //bld.AppendFormat("({0})", SerializeDocument((ODocument)value));
+                OEmbeddedRidBag ridbag = (OEmbeddedRidBag)value;
+                if (ridbag.Count > 0)
+                {
+                    BinaryBuffer buffer = new BinaryBuffer();
+                    bld.Append("%");
+                    buffer.Write((byte)1); // config
+                    buffer.Write(ridbag.Count); //size
+                    foreach (var item in ridbag)
+                    {
+                        buffer.Write(item);
+                    }
+                    bld.Append(Convert.ToBase64String(buffer.ToArray()));
+                    bld.Append(";");
+                }
+            }
+
             return bld.ToString();
         }
 
@@ -187,7 +241,7 @@ namespace Orient.Client.Protocol.Serializers
 
         #region Deserialization private methods
 
-        private static int ParseFieldName(int i, string recordString, ODocument document)
+        private int ParseFieldName(int i, string recordString, ODocument document)
         {
             int startIndex = i;
 
@@ -262,7 +316,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseString(int i, string recordString, ODocument document, string fieldName)
+        private int ParseString(int i, string recordString, ODocument document, string fieldName)
         {
             // move to the inside of string
             i++;
@@ -313,7 +367,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseRecordID(int i, string recordString, ODocument document, string fieldName)
+        private int ParseRecordID(int i, string recordString, ODocument document, string fieldName)
         {
             int startIndex = i;
 
@@ -356,7 +410,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseMap(int i, string recordString, ODocument document, string fieldName)
+        private int ParseMap(int i, string recordString, ODocument document, string fieldName)
         {
             int startIndex = i;
             int nestingLevel = 1;
@@ -422,7 +476,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseValue(int i, string recordString, ODocument document, string fieldName)
+        private int ParseValue(int i, string recordString, ODocument document, string fieldName)
         {
             int startIndex = i;
 
@@ -527,7 +581,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        //public static int IntParseFast(string value)
+        //public  int IntParseFast(string value)
         //{
         //    int result = 0;
         //    for (int i = 0; i < value.Length; i++)
@@ -546,7 +600,7 @@ namespace Orient.Client.Protocol.Serializers
         /// <param name="document"></param>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        private static int ParseRidBags(int i, string recordString, ODocument document, string fieldName)
+        private int ParseRidBags(int i, string recordString, ODocument document, string fieldName)
         {
             //move to first base64 char
             i++;
@@ -586,7 +640,72 @@ namespace Orient.Client.Protocol.Serializers
                 }
                 else
                 {
-                    throw new NotImplementedException("tree based ridbag");
+                    // Maybe not parse this type of Field and only then Requested retrieve ?
+                    // Lazy loading
+
+                    if (_connection == null || !_connection.IsActive)
+                        throw new OException(OExceptionType.Connection, "Connection is not opened or is null");
+
+                    List<ORID> ridbag = new List<ORID>();
+
+                    // Tree based RidBag - (collectionPointer)(size:int)(changes)
+
+                    // Collection Pointer - (fileId:long)(pageIndex:long)(pageOffset:int)
+                    var fileId = reader.ReadInt64EndianAware();
+                    var pageIndex = reader.ReadInt64EndianAware();
+                    var pageOffset = reader.ReadInt32EndianAware();
+
+                    // size
+                    var size = reader.ReadInt32EndianAware();
+
+                    // Changes - (changesSize:int)[(link:rid)(changeType:byte)(value:int)]*
+                    var changesSize = reader.ReadInt32EndianAware();
+                    for (int j = 0; j < changesSize; j++)
+                    {
+                        throw new NotImplementedException("RidBag Changes not yet implemented");
+                    }
+
+                    var operation = new SBTreeBonsaiFirstKey(null);
+                    operation.FileId = fileId;
+                    operation.PageIndex = pageIndex;
+                    operation.PageOffset = pageOffset;
+
+
+                    // Not realy quiete about this
+                    var connection = OClient.ReleaseConnection(_connection.Alias);
+
+                    var entries = new Dictionary<ORID, int>();
+                    try
+                    {
+                        var orid = connection.ExecuteOperation(operation);
+                        var ft = true;
+                        var key = orid.GetField<ORID>("rid");
+                        do
+                        {
+                            var op = new SBTreeBonsaiGetEntriesMajor(null);
+                            op.FileId = fileId;
+                            op.PageIndex = pageIndex;
+                            op.PageOffset = pageOffset;
+                            op.FirstKey = key;
+                            op.Inclusive = ft;
+
+                            var res = connection.ExecuteOperation(op);
+                            entries = res.GetField<Dictionary<ORID, int>>("entries");
+
+                            rids.AddRange(entries.Keys);
+
+                            if (entries.Count == 0)
+                                break;
+
+                            key = entries.Last().Key;
+                            ft = false;
+
+                        } while (true);
+                    }
+                    finally
+                    {
+                        OClient.ReturnConnection(connection);
+                    }
                 }
             }
 
@@ -597,7 +716,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseEmbeddedDocument(int i, string recordString, ODocument document, string fieldName)
+        private int ParseEmbeddedDocument(int i, string recordString, ODocument document, string fieldName)
         {
             // move to the inside of embedded document (go past starting bracket character)
             i++;
@@ -641,7 +760,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseLinkCollection(int i, string recordString, OLinkCollection linkCollection)
+        private int ParseLinkCollection(int i, string recordString, OLinkCollection linkCollection)
         {
             // move to the start of pageSize value
             i += 15;
@@ -668,7 +787,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseList(int i, string recordString, ODocument document, string fieldName)
+        private int ParseList(int i, string recordString, ODocument document, string fieldName)
         {
             // move to the first element of this list
             i++;
@@ -710,7 +829,7 @@ namespace Orient.Client.Protocol.Serializers
             return i;
         }
 
-        private static int ParseSet(int i, string recordString, ODocument document, string fieldName)
+        private int ParseSet(int i, string recordString, ODocument document, string fieldName)
         {
             // move to the first element of this set
             i++;
@@ -753,5 +872,6 @@ namespace Orient.Client.Protocol.Serializers
         }
 
         #endregion
+
     }
 }

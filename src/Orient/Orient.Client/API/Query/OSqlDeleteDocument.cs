@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Orient.Client.Protocol;
+﻿using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
+using Orient.Client.Protocol.Operations.Command;
 
 // syntax:
 // DELETE FROM <Class>|cluster:<cluster>|index:<index> 
@@ -186,7 +186,7 @@ namespace Orient.Client
             CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = ToString();
 
-            Command operation = new Command();
+            Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Synchronous;
             operation.CommandPayload = payload;
 

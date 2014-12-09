@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Orient.Client;
+using Orient.Client.API.Types;
+using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Tests.Server
 {
