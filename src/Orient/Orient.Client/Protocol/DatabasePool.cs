@@ -16,12 +16,12 @@ namespace Orient.Client.Protocol
         internal string UserPassword { get; set; }
         internal int PoolSize { get; private set; }
         internal string Alias { get; set; }
-        internal int CurrentSize 
-        { 
-            get 
+        internal int CurrentSize
+        {
+            get
             {
-                return _connections.Where(con => con.IsActive == true).Count(); 
-            } 
+                return _connections.Where(con => con.IsActive == true).Count();
+            }
         }
 
         internal DatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias)
@@ -54,20 +54,33 @@ namespace Orient.Client.Protocol
 
         internal void DropConnections()
         {
-            foreach (Connection connection in _connections)
+            // Need to clean up the pool
+            while (_connections.Count > 0)
             {
-                connection.Dispose();
+                var connection = _connections.Dequeue();
+
+                if (connection.IsActive)
+                    connection.Dispose();
+                else
+                    connection.Destroy();
             }
         }
 
         internal Connection DequeueConnection()
         {
-            return _connections.Dequeue();
+            while (_connections.Count > 0)
+            {
+                var connection = _connections.Dequeue();
+                if (connection.IsActive)
+                    return connection;
+            }
+            return new Connection(Hostname, Port, DatabaseName, DatabaseType, UserName, UserPassword, Alias, true);
         }
 
         internal void EnqueueConnection(Connection connection)
         {
-            _connections.Enqueue(connection);
+            if (connection.IsActive)
+                _connections.Enqueue(connection);
         }
     }
 }
