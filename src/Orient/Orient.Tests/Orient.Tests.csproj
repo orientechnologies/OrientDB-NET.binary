@@ -66,6 +66,7 @@
     <Compile Include="Issues\GitHub_issue2.cs" />
     <Compile Include="Issues\StackOverflow_q_26661636.cs" />
     <Compile Include="Issues\StackOverflow_q_26790891.cs" />
+    <Compile Include="Issues\GitHub_issue5.cs" />
     <Compile Include="Query\LoadRecordTests.cs" />
     <Compile Include="Query\SqlDeleteClusterTest.cs" />
     <Compile Include="Query\SqlGenerateDeleteDocumentQueryTests.cs" />

@@ -302,7 +302,7 @@ namespace Orient.Client.Protocol
             }
             else
             {
-                field += fieldValue.ToString();
+                field += fieldValue.ToInvarianCultureString();
             }
 
             _compiler.Append(Q.Set, field);
@@ -490,7 +490,7 @@ namespace Orient.Client.Protocol
             }
             else
             {
-                sql = string.Join(" ", value.ToString());
+                sql = string.Join(" ", value.ToInvarianCultureString());
             }
 
             return sql;
