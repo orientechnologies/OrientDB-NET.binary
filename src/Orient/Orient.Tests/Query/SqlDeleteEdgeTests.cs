@@ -182,7 +182,7 @@ namespace Orient.Tests.Query
                         .To(vertex2)
                         .Run();
 
-                    Assert.AreEqual(documentsDeleted, 2);
+                    Assert.AreEqual(2, documentsDeleted);
                 }
             }
         }
