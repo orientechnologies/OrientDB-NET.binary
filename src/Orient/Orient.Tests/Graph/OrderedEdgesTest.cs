@@ -53,21 +53,21 @@ namespace Orient.Tests.Graph
 
                 var loaded1 = database.Load.ORID(v1.ORID).Run<UnorderedWidget>();
                 Assert.AreEqual(2, loaded1.out_VersionOf.Count);
-                Assert.IsTrue(loaded1.out_VersionOf.Contains(v2.ORID));
-                Assert.IsTrue(loaded1.out_VersionOf.Contains(v3.ORID));
+                Assert.IsTrue(loaded1.out_VersionOf.Contains(e1.ORID));
+                Assert.IsTrue(loaded1.out_VersionOf.Contains(e1.ORID));
                 Assert.AreEqual(12, loaded1.Value);
 
                 var loaded2 = database.Load.ORID(v2.ORID).Run<WidgetVersion>();
                 Assert.IsNotNull(loaded2.in_VersionOf);
                 Assert.AreEqual(1, loaded2.in_VersionOf.Count);
                 Assert.AreEqual(23, loaded2.Value);
-                Assert.IsTrue(loaded2.in_VersionOf.Contains(v1.ORID));
+                Assert.IsTrue(loaded2.in_VersionOf.Contains(e1.ORID));
 
                 var loaded3 = database.Load.ORID(v3.ORID).Run<WidgetVersion>();
                 Assert.IsNotNull(loaded3.in_VersionOf);
                 Assert.AreEqual(1, loaded3.in_VersionOf.Count);
                 Assert.AreEqual(34, loaded3.Value);
-                Assert.IsTrue(loaded3.in_VersionOf.Contains(v1.ORID));
+                Assert.IsTrue(loaded3.in_VersionOf.Contains(e2.ORID));
 
             }
         }
@@ -91,26 +91,26 @@ namespace Orient.Tests.Graph
                 var v2 = database.Create.Vertex(wv1).Run();
                 var v3 = database.Create.Vertex(wv2).Run();
 
-                database.Create.Edge("VersionOf").From(v1).To(v2).Run();
-                database.Create.Edge("VersionOf").From(v1).To(v3).Run();
+                var e1 = database.Create.Edge("VersionOf").From(v1).To(v2).Run();
+                var e2 = database.Create.Edge("VersionOf").From(v1).To(v3).Run();
 
                 var loaded1 = database.Load.ORID(v1.ORID).Run<Widget>();
                 Assert.AreEqual(2, loaded1.out_VersionOf.Count);
-                Assert.IsTrue(loaded1.out_VersionOf.Contains(v2.ORID));
-                Assert.IsTrue(loaded1.out_VersionOf.Contains(v3.ORID));
+                Assert.IsTrue(loaded1.out_VersionOf.Contains(e1.ORID));
+                Assert.IsTrue(loaded1.out_VersionOf.Contains(e2.ORID));
                 Assert.AreEqual(12, loaded1.Value);
 
                 var loaded2 = database.Load.ORID(v2.ORID).Run<WidgetVersion>();
                 Assert.IsNotNull(loaded2.in_VersionOf);
                 Assert.AreEqual(1, loaded2.in_VersionOf.Count);
                 Assert.AreEqual(23, loaded2.Value);
-                Assert.IsTrue(loaded2.in_VersionOf.Contains(v1.ORID));
+                Assert.IsTrue(loaded2.in_VersionOf.Contains(e1.ORID));
 
                 var loaded3 = database.Load.ORID(v3.ORID).Run<WidgetVersion>();
                 Assert.IsNotNull(loaded3.in_VersionOf);
                 Assert.AreEqual(1, loaded3.in_VersionOf.Count);
                 Assert.AreEqual(34, loaded3.Value);
-                Assert.IsTrue(loaded3.in_VersionOf.Contains(v1.ORID));
+                Assert.IsTrue(loaded3.in_VersionOf.Contains(e2.ORID));
 
             }
         }

@@ -32,9 +32,15 @@ namespace Orient.Client.Protocol.Operations
                 request.AddDataItem(OClient.ProtocolVersion);
                 request.AddDataItem(OClient.ClientID);
             }
+
             if (OClient.ProtocolVersion > 21)
             {
                 request.AddDataItem(OClient.SerializationImpl);
+            }
+
+            if (OClient.ProtocolVersion > 26)
+            {
+                request.AddDataItem((byte)0); // Use Token Session 0 - false, 1 - true
             }
 
             request.AddDataItem(DatabaseName);
@@ -62,7 +68,13 @@ namespace Orient.Client.Protocol.Operations
             // operation specific fields
             document.SetField("SessionId", reader.ReadInt32EndianAware());
             int clusterCount = -1;
+            
+            if (OClient.ProtocolVersion > 26)
+            {
+                var size = reader.ReadInt32EndianAware();
 
+            }
+            
             if (OClient.ProtocolVersion >= 7)
                 clusterCount = (int)reader.ReadInt16EndianAware();
             else

@@ -31,6 +31,10 @@ namespace Orient.Client.Protocol.Operations
             {
                 request.AddDataItem(OClient.SerializationImpl);
             }
+            if (OClient.ProtocolVersion > 26)
+            {
+                request.AddDataItem((byte)0); // Use Token Session 0 - false, 1 - true
+            }
             request.AddDataItem(UserName);
             request.AddDataItem(UserPassword);
 
@@ -50,7 +54,10 @@ namespace Orient.Client.Protocol.Operations
 
             // operation specific fields
             document.SetField("SessionId", reader.ReadInt32EndianAware());
-
+            if (OClient.ProtocolVersion > 26)
+            {
+                var size = reader.ReadInt32EndianAware();
+            }
             return document;
         }
 

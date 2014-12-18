@@ -23,6 +23,8 @@ namespace Orient.Tests.Query
                     database
                         .Create.Cluster("TestCluster", OClusterType.Physical)
                         .Run();
+                    
+                    var res = database.Command("alter class TestEdgeClass addcluster testcluster");
 
                     OVertex vertex1 = database
                         .Create.Vertex<OVertex>()
