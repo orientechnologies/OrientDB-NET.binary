@@ -14,33 +14,33 @@ namespace Orient.Tests
 
         public static void StartOrientDb(string dbDir, string javaDir)
         {
-            _process = new Process();
-            var path = Path.Combine(dbDir, @"bin\server.bat");
+            //_process = new Process();
+            //var path = Path.Combine(dbDir, @"bin\server.bat");
 
-            _process.StartInfo.FileName = path;
-            _process.StartInfo.UseShellExecute = false;
-            _process.StartInfo.EnvironmentVariables.Add("ORIENTDB_HOME", dbDir);
-            _process.StartInfo.EnvironmentVariables.Add("JAVA_HOME", javaDir);
-            _process.StartInfo.WorkingDirectory = dbDir;
-            //_process.StartInfo.RedirectStandardError = true;
-            //_process.StartInfo.RedirectStandardOutput = true;
-            _process.Start();
+            //_process.StartInfo.FileName = path;
+            //_process.StartInfo.UseShellExecute = false;
+            //_process.StartInfo.EnvironmentVariables.Add("ORIENTDB_HOME", dbDir);
+            //_process.StartInfo.EnvironmentVariables.Add("JAVA_HOME", javaDir);
+            //_process.StartInfo.WorkingDirectory = dbDir;
+            ////_process.StartInfo.RedirectStandardError = true;
+            ////_process.StartInfo.RedirectStandardOutput = true;
+            //_process.Start();
 
 
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
 
-            //var output = _process.StandardOutput.ReadToEnd();
-            //var error = _process.StandardError.ReadToEnd();
+            ////var output = _process.StandardOutput.ReadToEnd();
+            ////var error = _process.StandardError.ReadToEnd();
 
-            if (_process.HasExited)
-                throw new Exception("OrientDB did not start correctly");
+            //if (_process.HasExited)
+            //    throw new Exception("OrientDB did not start correctly");
 
         }
 
 
         public static void StopOrientDb()
         {
-            ProcessUtilities.KillProcessTree(_process);
+            //ProcessUtilities.KillProcessTree(_process);
         }
     }
 

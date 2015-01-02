@@ -9,8 +9,8 @@ namespace Orient.Tests
         private static string _username = "admin";
         private static string _password = "admin";
 
-        private static string _rootUserName = "root";
-        private static string _rootUserParssword = "root";
+        private static string _rootUserName = "admin";
+        private static string _rootUserParssword = "admin";
         private static OServer _server;
 
         public static int GlobalTestDatabasePoolSize { get { return 3; } }

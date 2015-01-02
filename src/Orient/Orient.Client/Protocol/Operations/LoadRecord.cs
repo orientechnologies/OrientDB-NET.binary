@@ -17,7 +17,6 @@ namespace Orient.Client.Protocol.Operations
         }
         private readonly ORID _orid;
         private readonly string _fetchPlan;
-        //private readonly ODatabase _database;
 
         public LoadRecord(ORID orid, string fetchPlan, ODatabase database)
             :base(database)
@@ -109,11 +108,25 @@ namespace Orient.Client.Protocol.Operations
         private void ReadPrimaryResult(ODocument responseDocument, BinaryReader reader)
         {
             responseDocument.SetField("PayloadStatus", PayloadStatus.SingleRecord);
+            int contentLength;
+            byte[] readBytes;
+            int version;
+            ORecordType recordType;
 
-            var contentLength = reader.ReadInt32EndianAware();
-            byte[] readBytes = reader.ReadBytes(contentLength);
-            var version = reader.ReadInt32EndianAware();
-            var recordType = (ORecordType)reader.ReadByte();
+            if (OClient.ProtocolVersion < 28)
+            {
+                contentLength = reader.ReadInt32EndianAware();
+                readBytes = reader.ReadBytes(contentLength);
+                version = reader.ReadInt32EndianAware();
+                recordType = (ORecordType)reader.ReadByte();
+            }
+            else 
+            {
+                recordType = (ORecordType)reader.ReadByte();
+                version = reader.ReadInt32EndianAware();
+                contentLength = reader.ReadInt32EndianAware();
+                readBytes = reader.ReadBytes(contentLength);
+            }
 
             var document = new ODocument();
 
