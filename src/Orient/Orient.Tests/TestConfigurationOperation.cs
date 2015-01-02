@@ -12,8 +12,9 @@ namespace Orient.Tests
         public void TestConfigGet()
         {
             OServer server = TestConnection.GetServer();
-            string value = server.ConfigGet("db.document.serializer");
-            Assert.AreEqual("ORecordSerializerBinary", value);
+            bool IsCreated = server.ConfigSet("network.retry", "6");
+            string value = server.ConfigGet("network.retry");
+            Assert.AreEqual("6", value);
         }
         [TestMethod]
         public void TestConfigList()

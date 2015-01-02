@@ -36,7 +36,8 @@ namespace Orient.Client.Protocol.Operations
             }
 
             var reader = response.Reader;
-            var removeLocaly = reader.ReadByte() == 1 ? true : false;
+            var b = reader.ReadByte();
+            var removeLocaly = b == 1 ? true : false;
             document.SetField<bool>("remove_localy", removeLocaly);
             return document;
         }

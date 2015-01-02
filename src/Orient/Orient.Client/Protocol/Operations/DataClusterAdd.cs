@@ -37,11 +37,22 @@ namespace Orient.Client.Protocol.Operations
             request.AddDataItem((byte)OperationType.DATACLUSTER_ADD);
             request.AddDataItem(request.SessionId);
 
+
             if (OClient.ProtocolVersion < 24)
                 request.AddDataItem(ClusterType.ToString().ToUpper());
-
+            
             request.AddDataItem(ClusterName);
 
+            if (OClient.ProtocolVersion < 24)
+            {
+                if (OClient.ProtocolVersion >= 10 || ClusterType == OClusterType.Physical)
+                    request.AddDataItem("");
+
+                if (OClient.ProtocolVersion >= 10)
+                    request.AddDataItem("default");
+                else
+                    request.AddDataItem((short)-1);
+            }
             if (OClient.ProtocolVersion >= 18)
             {
                 request.AddDataItem((short)-1); //clusterid
