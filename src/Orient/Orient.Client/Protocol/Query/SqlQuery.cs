@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -232,6 +232,11 @@ namespace Orient.Client.Protocol
             _compiler.Unique(Q.From, ParseClassName(target));
         }
 
+        internal void From(OSqlSelect nestedSelect)
+        {
+            _compiler.Unique(Q.From, "(",nestedSelect.ToString(),")");
+        }
+
         internal void From(ODocument document)
         {
             if (!string.IsNullOrEmpty(document.OClassName))
@@ -401,6 +406,10 @@ namespace Orient.Client.Protocol
             _compiler.Append(Q.Where, "", Q.Contains, "(" + field, Q.Equals, SqlQuery.ToString(value) + ")");
         }
 
+        internal void Between( int num1, int num2)
+        {
+            _compiler.Append(Q.Where, "", Q.Between,ToString(num1), Q.And, ToString(num2));
+        }
         #endregion
 
         #region Add
