@@ -200,12 +200,14 @@ namespace Orient.Client
 
             return this;
         }
+        
         public OSqlSelect In<T>(IList<T> list)
         {
             _sqlQuery.In(list);
             
             return this;
         }
+        
         public OSqlSelect Between( int num1, int num2)
         {
             _sqlQuery.Between(num1,num2);
