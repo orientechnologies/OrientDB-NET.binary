@@ -13,6 +13,7 @@ namespace Orient.Client.Protocol
         private TcpClient _socket;
         private BufferedStream _networkStream;
         private byte[] _readBuffer;
+        private int RECIVE_TIMEOUT = 30*1000; // Recive timeout in milliseconds
 
         internal string Hostname { get; set; }
         internal int Port { get; set; }
@@ -197,6 +198,7 @@ namespace Orient.Client.Protocol
             try
             {
                 _socket = new TcpClient(Hostname, Port);
+                _socket.ReceiveTimeout = RECIVE_TIMEOUT;
             }
             catch (SocketException ex)
             {
@@ -227,6 +229,7 @@ namespace Orient.Client.Protocol
             try
             {
                 _socket = new TcpClient(Hostname, Port);
+                _socket.ReceiveTimeout = RECIVE_TIMEOUT;
             }
             catch (SocketException ex)
             {
