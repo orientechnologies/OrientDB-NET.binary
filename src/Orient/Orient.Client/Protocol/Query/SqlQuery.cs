@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Orient.Client.Protocol
 {
@@ -404,6 +405,22 @@ namespace Orient.Client.Protocol
         internal void Contains<T>(string field, T value)
         {
             _compiler.Append(Q.Where, "", Q.Contains, "(" + field, Q.Equals, SqlQuery.ToString(value) + ")");
+        }
+
+        internal void In<T>(IList<T> list)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append("[");
+            for (var i = 0; i < list.Count; i++)
+            {
+                builder.Append(ToString(list[i]));
+                if (i != list.Count - 1)
+                {
+                    builder.Append(",");
+                }
+            }
+            builder.Append("]");
+            _compiler.Append(Q.Where, "", Q.In, ToString(builder));
         }
 
         internal void Between( int num1, int num2)
