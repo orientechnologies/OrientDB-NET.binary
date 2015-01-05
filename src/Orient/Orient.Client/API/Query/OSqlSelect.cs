@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 using Orient.Client.Protocol.Operations.Command;
@@ -80,6 +80,12 @@ namespace Orient.Client
         {
             _sqlQuery.From(orid);
 
+            return this;
+        }
+
+        public OSqlSelect From(OSqlSelect nestedSelect)
+        {
+            _sqlQuery.From(nestedSelect);
             return this;
         }
 
@@ -194,7 +200,19 @@ namespace Orient.Client
 
             return this;
         }
-
+        
+        public OSqlSelect In<T>(IList<T> list)
+        {
+            _sqlQuery.In(list);
+            
+            return this;
+        }
+        
+        public OSqlSelect Between( int num1, int num2)
+        {
+            _sqlQuery.Between(num1,num2);
+            return this;
+        }
         #endregion
 
         public OSqlSelect OrderBy(params string[] fields)

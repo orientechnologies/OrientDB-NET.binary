@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Orient.Client;
 
@@ -42,6 +42,8 @@ namespace Orient.Tests.Query
                 .And("foo").IsNull()
                 .And("foo").Contains("johny")
                 .And("foo").Contains("name", "johny")
+                .And("foo").Between(1,2)
+                .And("foo").In(new[]{1,2})
                 .Limit(5)
                 .ToString();
 
@@ -58,6 +60,8 @@ namespace Orient.Tests.Query
                 "AND foo IS NULL " +
                 "AND foo CONTAINS 'johny' " +
                 "AND foo CONTAINS (name = 'johny') " +
+                "AND foo BETWEEN 1 AND 2 "+
+                "AND foo IN [1,2] "+
                 "LIMIT 5";
 
             Assert.AreEqual(generatedQuery, query);
