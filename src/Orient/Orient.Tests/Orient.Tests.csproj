@@ -90,6 +90,7 @@
     <Compile Include="Serialization\RecordBinaryDeserializationTest.cs" />
     <Compile Include="Serialization\RecordBinarySerializationTest.cs" />
     <Compile Include="Query\JavascriptTest.cs" />
+    <Compile Include="Serialization\RecordCSVSerializerTest.cs" />
     <Compile Include="TestProfileClass.cs" />
     <Compile Include="Pool\ConnectionPoolTests.cs" />
     <Compile Include="Query\SqlSelectTests.cs" />
