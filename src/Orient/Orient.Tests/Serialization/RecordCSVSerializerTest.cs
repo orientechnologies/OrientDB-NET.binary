@@ -45,5 +45,23 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(1, nestedDocuments.Length);
             Assert.AreEqual(innerInteger, nestedDocuments[0].GetField<int>("InnerInteger"));
         }
+
+        [TestMethod]
+        public void CanDeserializeARecordIdInEmbeddedDocument()
+        {
+            // Arrange
+            var recordCsvSerializer = new RecordCSVSerializer(null);
+            const int integerField = 1;
+            var orid = new ORID(1,2);
+
+            string recordString = "TestClassName@EmbeddedDocument:{\"RecordIdField\":"+orid+"},TestField:"+integerField;
+
+            // Act
+            var actualDocument = recordCsvSerializer.Deserialize(recordString);
+
+            // Assert
+            Assert.AreEqual(orid, actualDocument.GetField<ORID>("EmbeddedDocument.RecordIdField"));
+            Assert.AreEqual(integerField, actualDocument.GetField<int>("TestField"));
+        }
     }
 }

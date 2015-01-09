@@ -377,6 +377,7 @@ namespace Orient.Client.Protocol.Serializers
                 (recordString[i] != ',') &&
                 (recordString[i] != ')') &&
                 (recordString[i] != ']') &&
+                (recordString[i] != '}') &&
                 (recordString[i] != '>'))
             {
                 i++;
