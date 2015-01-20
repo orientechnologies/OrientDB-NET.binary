@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E9B69064-04DA-4554-A69F-A209106B525C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Orient.NUnit</RootNamespace>
+    <AssemblyName>Orient.NUnit</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Orient.Tests.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblySetup.cs" />
+    <Compile Include="ClusterEqutableTest.cs" />
+    <Compile Include="DbRunner.cs" />
+    <Compile Include="TestConfigurationOperation.cs" />
+    <Compile Include="TestConnection.cs" />
+    <Compile Include="TestDatabaseContext.cs" />
+    <Compile Include="TestEdgeClass.cs" />
+    <Compile Include="TestProfileClass.cs" />
+    <Compile Include="TestVertexClass.cs" />
+    <Compile Include="Database\DataClusterTest.cs" />
+    <Compile Include="Database\TestDatabaseOperations.cs" />
+    <Compile Include="Graph\GraphClassesTests.cs" />
+    <Compile Include="Graph\OrderedEdgesTest.cs" />
+    <Compile Include="Issues\GitHub_issue2.cs" />
+    <Compile Include="Issues\GitHub_issue4.cs" />
+    <Compile Include="Issues\GitHub_issue5.cs" />
+    <Compile Include="Issues\StackOverflow_q_26661636.cs" />
+    <Compile Include="Issues\StackOverflow_q_26790891.cs" />
+    <Compile Include="Pool\ConnectionPoolTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Query\GremlinTests.cs" />
+    <Compile Include="Query\JavascriptTest.cs" />
+    <Compile Include="Query\LoadRecordTests.cs" />
+    <Compile Include="Query\SqlCreateClassTests.cs" />
+    <Compile Include="Query\SqlCreateClusterTests.cs" />
+    <Compile Include="Query\SqlCreateDocumentTests.cs" />
+    <Compile Include="Query\SqlCreateEdgeTests.cs" />
+    <Compile Include="Query\SqlCreatePropertyTest.cs" />
+    <Compile Include="Query\SqlCreateVertexTests.cs" />
+    <Compile Include="Query\SqlDeleteClusterTest.cs" />
+    <Compile Include="Query\SqlDeleteDocumentTests.cs" />
+    <Compile Include="Query\SqlDeleteEdgeTests.cs" />
+    <Compile Include="Query\SqlDeleteVertexTests.cs" />
+    <Compile Include="Query\SqlGenerateCreateClassQueryTests.cs" />
+    <Compile Include="Query\SqlGenerateCreateClusterQueryTests.cs" />
+    <Compile Include="Query\SqlGenerateCreateDocumentQueryTests.cs" />
+    <Compile Include="Query\SqlGenerateCreateEdgeQueryTests.cs" />
+    <Compile Include="Query\SqlGenerateCreateVertexQueryTests.cs" />
+    <Compile Include="Query\SqlGenerateDeleteDocumentQueryTests.cs" />
+    <Compile Include="Query\SqlGenerateDeleteEdgeQueryTests.cs" />
+    <Compile Include="Query\SqlGenerateDeleteVertexQueryTests.cs" />
+    <Compile Include="Query\SqlGenerateInsertQueryTests.cs" />
+    <Compile Include="Query\SqlGenerateSelectQueryTests.cs" />
+    <Compile Include="Query\SqlGenerateUpdateQueryTests.cs" />
+    <Compile Include="Query\SqlInsertTests.cs" />
+    <Compile Include="Query\SqlSelectTests.cs" />
+    <Compile Include="Query\SqlUpdateTests.cs" />
+    <Compile Include="Query\TestCreateVertex.cs" />
+    <Compile Include="Query\TestRecordMetadata.cs" />
+    <Compile Include="Query\TestTransactions.cs" />
+    <Compile Include="Query\UpdateRecordTest.cs" />
+    <Compile Include="Serialization\RecordBinaryDeserializationTest.cs" />
+    <Compile Include="Serialization\RecordBinarySerializationTest.cs" />
+    <Compile Include="Serialization\RecordDeserializationTests.cs" />
+    <Compile Include="Serialization\RecordDocumentSerializationTests.cs" />
+    <Compile Include="Serialization\RecordSerializationTests.cs" />
+    <Compile Include="Server\ServerOperationsTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Orient.Client\Orient.Client.csproj">
+      <Project>{224DB9BA-3BA5-4955-B147-E540E1F270DA}</Project>
+      <Name>Orient.Client</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-csharp" />
+          <CSharpFormattingPolicy IndentSwitchBody="True" IndentBlocksInsideExpressions="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" WhileNewLinePlacement="DoNotCare" ArrayInitializerWrapping="DoNotChange" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" NewLineBeforeConstructorInitializerColon="NewLine" NewLineAfterConstructorInitializerColon="SameLine" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" SpacesBeforeBrackets="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>
