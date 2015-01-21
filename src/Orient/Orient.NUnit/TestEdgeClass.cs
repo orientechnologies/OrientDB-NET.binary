@@ -2,15 +2,11 @@
 
 namespace Orient.Tests
 {
-    public class TestEdgeClass
+    public class TestEdgeClass : OEdge
     {
-        [OProperty(Alias = "in", Serializable = false)]
-        public ORID In { get; set; }
-
-        [OProperty(Alias = "out", Serializable = false)]
-        public ORID Out { get; set; }
-
-        public string Foo { get; set; }
-        public int Bar { get; set; }
+        public TestEdgeClass()
+        {
+            OClassName = "TestEdgeClass";
+        }
     }
 }
