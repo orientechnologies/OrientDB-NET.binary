@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orient.Client", "Orient.Cli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orient.Console", "Orient.Console\Orient.Console.csproj", "{D290BB2C-98DC-4F83-8B3C-E9B2C9C41A50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orient.Tests", "Orient.Tests\Orient.Tests.csproj", "{487B3635-ED01-4AD1-B90A-DA1E4358B580}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orient.NUnit", "Orient.NUnit\Orient.NUnit.csproj", "{E9B69064-04DA-4554-A69F-A209106B525C}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{224DB9BA-3BA5-4955-B147-E540E1F270DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{224DB9BA-3BA5-4955-B147-E540E1F270DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{224DB9BA-3BA5-4955-B147-E540E1F270DA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{487B3635-ED01-4AD1-B90A-DA1E4358B580}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{487B3635-ED01-4AD1-B90A-DA1E4358B580}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{487B3635-ED01-4AD1-B90A-DA1E4358B580}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{487B3635-ED01-4AD1-B90A-DA1E4358B580}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D290BB2C-98DC-4F83-8B3C-E9B2C9C41A50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D290BB2C-98DC-4F83-8B3C-E9B2C9C41A50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D290BB2C-98DC-4F83-8B3C-E9B2C9C41A50}.Release|Any CPU.ActiveCfg = Release|Any CPU
