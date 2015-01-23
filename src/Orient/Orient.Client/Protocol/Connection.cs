@@ -13,7 +13,7 @@ namespace Orient.Client.Protocol
         private TcpClient _socket;
         private BufferedStream _networkStream;
         private byte[] _readBuffer;
-        private int RECIVE_TIMEOUT = 30*1000; // Recive timeout in milliseconds
+        private int RECIVE_TIMEOUT = 30 * 1000; // Recive timeout in milliseconds
 
         internal string Hostname { get; set; }
         internal int Port { get; set; }
@@ -84,6 +84,8 @@ namespace Orient.Client.Protocol
 
         internal ODocument ExecuteOperation(IOperation operation)
         {
+            if (_networkStream == null)
+                Reconnect();
 
             try
             {
@@ -157,22 +159,36 @@ namespace Orient.Client.Protocol
         internal void Destroy()
         {
             SessionId = -1;
-
-            if ((_networkStream != null) && (_socket != null))
+            try
             {
-                _networkStream.Close();
-                _socket.Close();
+                if ((_networkStream != null) && (_socket != null))
+                {
+                    _networkStream.Close();
+                    _socket.Close();
+                }
             }
-
-            _networkStream = null;
-            _socket = null;
+            catch { }
+            finally
+            {
+                _networkStream = null;
+                _socket = null;
+            }
         }
 
         internal void Close()
         {
-            DbClose operation = new DbClose(this.Database);
-            ExecuteOperation(operation);
-            Destroy();
+            if (!IsActive)
+                return;
+            try
+            {
+                DbClose operation = new DbClose(this.Database);
+                ExecuteOperation(operation);
+            }
+            catch { }
+            finally
+            {
+                Destroy();
+            }
         }
 
         public void Dispose()

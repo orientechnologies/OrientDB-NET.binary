@@ -39,10 +39,24 @@ namespace Orient.Tests
 
         public void DropTestDatabase()
         {
-            if (_server.DatabaseExist(GlobalTestDatabaseName, OStorageType.Memory))
+            var retry = 2;
+            do
             {
-                _server.DropDatabase(GlobalTestDatabaseName, OStorageType.Memory);
+                try
+                {
+                    if (_server.DatabaseExist(GlobalTestDatabaseName, OStorageType.Memory))
+                    {
+                        _server.DropDatabase(GlobalTestDatabaseName, OStorageType.Memory);
+                    }
+                    break;
+                }
+                catch
+                {
+                    _server.Dispose();
+                    _server = new OServer(_hostname, port, _rootUserName, _rootUserParssword);
+                }
             }
+            while (--retry > 0);
         }
 
         public void CreateTestPool()
