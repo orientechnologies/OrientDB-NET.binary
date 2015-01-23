@@ -188,7 +188,6 @@ namespace Orient.Client
             return new OCommandQuery(_connection, payload);
 
         }
-
         public OCommandResult Command(string sql)
         {
             CommandPayloadCommand payload = new CommandPayloadCommand();
@@ -202,8 +201,7 @@ namespace Orient.Client
 
             return new OCommandResult(document);
         }
-
-
+        
         public long Size
         {
             get

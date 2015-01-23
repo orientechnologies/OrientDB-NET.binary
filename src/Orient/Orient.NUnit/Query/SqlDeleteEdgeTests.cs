@@ -49,7 +49,7 @@ namespace Orient.Tests.Query
                         .Delete.Edge(edge1)
                         .Run();
 
-                    Assert.AreEqual(documentsDeleted, 1);
+                    Assert.AreEqual(1, documentsDeleted);
                 }
             }
         }
@@ -90,7 +90,7 @@ namespace Orient.Tests.Query
                         .Delete.Edge(edge1)
                         .Run();
 
-                    Assert.AreEqual(documentsDeleted, 1);
+                    Assert.AreEqual(1, documentsDeleted);
                 }
             }
         }
@@ -129,7 +129,7 @@ namespace Orient.Tests.Query
                         .Where("bar").Equals(54321)
                         .Run();
 
-                    Assert.AreEqual(documentsDeleted, 1);
+                    Assert.AreEqual(1, documentsDeleted);
                 }
             }
         }
@@ -182,8 +182,7 @@ namespace Orient.Tests.Query
                         .To(vertex2)
                         .Run();
 
-                    //Assert.AreEqual(2, documentsDeleted);
-                    Assert.AreEqual(0, documentsDeleted);
+                    Assert.AreEqual(2, documentsDeleted);
                 }
             }
         }

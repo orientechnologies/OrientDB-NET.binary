@@ -89,7 +89,7 @@ namespace Orient.Client.Protocol.Operations
             }
             responseDocument.SetField("UpdatedRecordVersions", updateRecordVersions);
 
-            if (_database.ProtocolVersion > 21)
+            if (_database.ProtocolVersion >= 20)
             {
                 int collectionChanges = reader.ReadInt32EndianAware();
                 if (collectionChanges > 0)

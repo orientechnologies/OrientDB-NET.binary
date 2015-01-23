@@ -15,7 +15,7 @@ namespace Orient.Client.Protocol.Operations
         internal OperationMode OperationMode { get; set; }
 
         public RecordCreate(ODocument document, ODatabase database)
-            :base(database)
+            : base(database)
         {
             _document = document;
             _database = database;
@@ -81,7 +81,8 @@ namespace Orient.Client.Protocol.Operations
                 _document.OVersion = reader.ReadInt32EndianAware();
             }
 
-            if (_database.ProtocolVersion > 21)
+            if (_database.ProtocolVersion >= 20)
+            //if (_database.ProtocolVersion > 21)
             {
                 int collectionChangesCount = reader.ReadInt32EndianAware();
                 for (var i = 0; i < collectionChangesCount; i++)

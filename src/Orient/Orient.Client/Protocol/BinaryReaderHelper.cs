@@ -49,7 +49,7 @@ namespace Orient.Client.Protocol
         }
 
         public static byte[] ReadBytesRequired(this BinaryReader binRdr, int byteCount)
-        {
+        {           
             var result = binRdr.ReadBytes(byteCount);
 
             if (result.Length != byteCount)

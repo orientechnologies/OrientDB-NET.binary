@@ -750,7 +750,7 @@ namespace Orient.Client.Protocol
             // DELETE EDGE <rid>|FROM <rid>|TO <rid>|<[<class>] 
             if (_compiler.HasKey(Q.From) && _compiler.HasKey(Q.To))
             {
-                query += string.Join(" ", Q.Delete, Q.Edge, _compiler.Value(Q.Class), Q.From, _compiler.Value(Q.From), Q.To, _compiler.Value(Q.To));
+                query += string.Join(" ", Q.Delete, Q.Edge, Q.From, _compiler.Value(Q.From), Q.To, _compiler.Value(Q.To));
             }
             else
             {

@@ -35,6 +35,8 @@ namespace Orient.Tests.Graph
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
             {
+                database.Command("alter database custom useLightweightEdges=false");
+
                 database.Create.Class<UnorderedWidget>().Extends("V").CreateProperties().Run();
                 database.Create.Class<WidgetVersion>().Extends("V").CreateProperties().Run();
 
@@ -78,6 +80,8 @@ namespace Orient.Tests.Graph
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
             {
+                database.Command("alter database custom useLightweightEdges=false");
+
                 database.Create.Class<Widget>().Extends("V").CreateProperties().Run();
                 database.Create.Class<WidgetVersion>().Extends("V").CreateProperties().Run();
 

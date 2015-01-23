@@ -17,7 +17,7 @@ namespace Orient.Tests
         public static string GlobalTestDatabaseName { get; private set; }
         public static ODatabaseType GlobalTestDatabaseType { get; private set; }
         public static string GlobalTestDatabaseAlias { get; private set; }
-
+        public static OStorageType GlobalTestDatabaseStorageType { get; private set; }
         static TestConnection()
         {
             _server = new OServer(_hostname, _port, _rootUserName, _rootUserParssword);
@@ -25,13 +25,14 @@ namespace Orient.Tests
             GlobalTestDatabaseName = "globalTestDatabaseForNetDriver001";
             GlobalTestDatabaseType = ODatabaseType.Graph;
             GlobalTestDatabaseAlias = "globalTestDatabaseForNetDriver001Alias";
+            GlobalTestDatabaseStorageType = OStorageType.Memory;
         }
 
         public static void CreateTestDatabase()
         {
             DropTestDatabase();
 
-            _server.CreateDatabase(GlobalTestDatabaseName, GlobalTestDatabaseType, OStorageType.Memory);
+            _server.CreateDatabase(GlobalTestDatabaseName, GlobalTestDatabaseType, GlobalTestDatabaseStorageType);
         }
 
         public static void DropTestDatabase()

@@ -123,7 +123,7 @@ namespace Orient.Tests.Query
                 .ToString();
 
             string query =
-                "DELETE EDGE TestProfileClass FROM #8:0 TO #8:1";
+                "DELETE EDGE FROM #8:0 TO #8:1";
 
             Assert.AreEqual(generatedQuery, query);
         }
@@ -146,7 +146,7 @@ namespace Orient.Tests.Query
                 .ToString();
 
             string query =
-                "DELETE EDGE TestProfileClass FROM #8:0 TO #8:1";
+                "DELETE EDGE FROM #8:0 TO #8:1";
 
             Assert.AreEqual(generatedQuery, query);
         }

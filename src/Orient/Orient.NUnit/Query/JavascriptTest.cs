@@ -65,7 +65,7 @@ namespace Orient.Tests.Query
             using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
             {
                 database
-                    .Command("create function sum 'return a+b' parameters [a , b] language javascript");
+                    .Command("create function sum 'return parseInt(a)+parseInt(b);' parameters [a , b] language javascript");
                 var result = database
                     .JavaScript("sum(a,b);")
                     .Set("a",3)
