@@ -51,7 +51,7 @@ namespace Orient.Tests.Server
             using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
             {
                 OServer server = TestConnection.GetServer();
-                Dictionary<string, string> databases = server.Databases();
+                Dictionary<string, ODatabaseInfo> databases = server.Databases();
                 Assert.IsTrue(databases.Count > 0);
             }
         }

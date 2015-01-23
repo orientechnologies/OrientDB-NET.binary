@@ -25,7 +25,7 @@ namespace Orient.Tests
             GlobalTestDatabaseName = "globalTestDatabaseForNetDriver001";
             GlobalTestDatabaseType = ODatabaseType.Graph;
             GlobalTestDatabaseAlias = "globalTestDatabaseForNetDriver001Alias";
-            GlobalTestDatabaseStorageType = OStorageType.Memory;
+            GlobalTestDatabaseStorageType = OStorageType.PLocal;
         }
 
         public static void CreateTestDatabase()
@@ -42,9 +42,9 @@ namespace Orient.Tests
             {
                 try
                 {
-                    if (_server.DatabaseExist(GlobalTestDatabaseName, OStorageType.Memory))
+                    if (_server.DatabaseExist(GlobalTestDatabaseName, GlobalTestDatabaseStorageType))
                     {
-                        _server.DropDatabase(GlobalTestDatabaseName, OStorageType.Memory);
+                        _server.DropDatabase(GlobalTestDatabaseName, GlobalTestDatabaseStorageType);
                     }
                     break;
                 }

@@ -81,8 +81,8 @@ namespace Orient.Client.Protocol.Operations
                 _document.OVersion = reader.ReadInt32EndianAware();
             }
 
-            if (_database.ProtocolVersion >= 20)
-            //if (_database.ProtocolVersion > 21)
+            // Work around differents in storage type < version 2.0
+            if (_database.ProtocolVersion >= 20 && !EndOfStream(reader))
             {
                 int collectionChangesCount = reader.ReadInt32EndianAware();
                 for (var i = 0; i < collectionChangesCount; i++)
@@ -96,8 +96,6 @@ namespace Orient.Client.Protocol.Operations
                 }
             }
             return responseDocument;
-
-
         }
 
     }

@@ -76,9 +76,9 @@ namespace Orient.Client
 
         #endregion
 
-        public Dictionary<string, string> Databases()
+        public Dictionary<string, ODatabaseInfo> Databases()
         {
-            Dictionary<string, string> returnValue = new Dictionary<string, string>();
+            Dictionary<string, ODatabaseInfo> returnValue = new Dictionary<string, ODatabaseInfo>();
             DBList operation = new DBList(null);
             ODocument document = _connection.ExecuteOperation(operation);
             if (OClient.Serializer == ORecordFormat.ORecordDocument2csv)
@@ -87,7 +87,15 @@ namespace Orient.Client
                 foreach (var item in databases)
                 {
                     string[] keyValue = item.Split(new char[] { ':' }, 2);
-                    returnValue.Add(keyValue[0].Replace("\"", ""), keyValue[1].Replace("\"", ""));
+                    var info = new ODatabaseInfo();
+                    OStorageType storageType;
+
+                    Enum.TryParse<OStorageType>(keyValue[1].Replace("\"", "").Split(':')[0], true, out storageType);
+                    info.DataBaseName = keyValue[0].Replace("\"", "");
+                    info.StorageType = storageType;
+                    info.Path = keyValue[1].Replace("\"", "").Split(':')[1];
+                    returnValue.Add(info.DataBaseName, info);
+                    //returnValue.Add(keyValue[0].Replace("\"", ""), keyValue[1].Replace("\"", ""));
                 }
             }
             else
@@ -95,7 +103,10 @@ namespace Orient.Client
                 var databases = document.GetField<Dictionary<string, object>>("databases");
                 foreach (var item in databases)
                 {
-                    returnValue.Add(item.Key, item.Value.ToString());
+                    var info = new ODatabaseInfo();
+                    info.DataBaseName = item.Key;
+                    info.Path = item.Value.ToString();
+                    returnValue.Add(info.DataBaseName, info);
                 }
             }
             return returnValue;

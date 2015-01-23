@@ -15,10 +15,10 @@ namespace Orient.Client.Protocol.Operations
         private List<TransactionRecord> _records;
 
         public CommitTransaction(List<TransactionRecord> records, ODatabase database)
-            :base(database)
+            : base(database)
         {
             _records = records;
-           // _database = database;
+            // _database = database;
         }
 
         public override Request Request(Request request)
@@ -88,8 +88,9 @@ namespace Orient.Client.Protocol.Operations
                 updateRecordVersions.Add(orid, newVersion);
             }
             responseDocument.SetField("UpdatedRecordVersions", updateRecordVersions);
-
-            if (_database.ProtocolVersion >= 20)
+            
+            // Work around differents in storage type < version 2.0
+            if (_database.ProtocolVersion >= 20 && !EndOfStream(reader))
             {
                 int collectionChanges = reader.ReadInt32EndianAware();
                 if (collectionChanges > 0)
