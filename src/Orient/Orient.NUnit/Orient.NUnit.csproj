@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E9B69064-04DA-4554-A69F-A209106B525C}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Orient.NUnit</RootNamespace>
+    <RootNamespace>Orient.Tests</RootNamespace>
     <AssemblyName>Orient.NUnit</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -97,6 +97,10 @@
     <Compile Include="Serialization\RecordDocumentSerializationTests.cs" />
     <Compile Include="Serialization\RecordSerializationTests.cs" />
     <Compile Include="Server\ServerOperationsTests.cs" />
+    <Compile Include="TestConnectionProxy.cs" />
+    <Compile Include="Pool\ConnectionPoolReconnectionTests.cs" />
+    <Compile Include="TestDatabaseContextProxy.cs" />
+    <Compile Include="TcpProxy.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orient.Client\Orient.Client.csproj">
