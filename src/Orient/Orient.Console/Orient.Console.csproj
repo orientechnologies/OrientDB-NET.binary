@@ -52,7 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orient.Client\Orient.Client.csproj">
-      <Project>{224db9ba-3ba5-4955-b147-e540e1f270da}</Project>
+      <Project>{224DB9BA-3BA5-4955-B147-E540E1F270DA}</Project>
       <Name>Orient.Client</Name>
     </ProjectReference>
   </ItemGroup>
