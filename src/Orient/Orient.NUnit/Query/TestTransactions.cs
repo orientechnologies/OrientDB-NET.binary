@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using Orient.Client;
+using System.Collections.Generic;
 
 namespace Orient.Tests.Query
 {
@@ -202,6 +203,59 @@ namespace Orient.Tests.Query
                     Assert.AreEqual(createdVertices[1].ORID, createdVertices[0].OutE.First());
                     Assert.AreEqual(createdVertices[0].ORID, createdVertices[1].InE.First());
 
+                }
+            }
+        }
+
+        [Test]
+        public void TestCreateVerticesAndHeavyweightEdge()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class<TestVertexClass>()
+                        .Extends<OVertex>()
+                        .Run();
+                    database
+                        .Create.Class<TestEdgeClass>()
+                        .Extends<OEdge>()
+                        .Run();
+
+                    var testVertex1 = CreateTestVertex(1);
+                    var testVertex2 = CreateTestVertex(2);
+                    var testEdge = new TestEdgeClass();
+                    testEdge.SetField("item", 1);
+
+                    database.Transaction.Add(testVertex1);
+                    database.Transaction.Add(testVertex2);
+                    database.Transaction.AddEdge(testEdge, testVertex1, testVertex2);
+
+                    Assert.AreEqual(testVertex1.ORID, testEdge.OutV);
+                    Assert.AreEqual(testVertex2.ORID, testEdge.InV);
+
+                    database.Transaction.Commit();
+
+                    var createdVertex1 = database.Select().From("V").Where("bar").Equals(1).ToList<OVertex>().First();
+                    var createdVertex2 = database.Select().From("V").Where("bar").Equals(2).ToList<OVertex>().First();
+
+                    var createdEdge = database.Select().From("E").Where("item").Equals(1).ToList<OEdge>().First();
+                    Assert.That(createdEdge.OutV, Is.EqualTo(createdVertex1.ORID));
+                    Assert.That(createdEdge.InV, Is.EqualTo(createdVertex2.ORID));
+
+                    var testEdge2 = new TestEdgeClass();
+                    testEdge2.SetField("item", 2);
+                    database.Transaction.AddEdge(testEdge2, createdVertex2, createdVertex1);
+                    database.Transaction.Commit();
+
+                    createdVertex1 = database.Select().From("V").Where("bar").Equals(1).ToList<OVertex>().First();
+                    createdVertex2 = database.Select().From("V").Where("bar").Equals(2).ToList<OVertex>().First();
+                    var createdEdge2 = database.Select().From("E").Where("item").Equals(2).ToList<OEdge>().First();
+
+                    Assert.That(createdEdge2.OutV, Is.EqualTo(createdVertex2.ORID));
+                    Assert.That(createdEdge2.InV, Is.EqualTo(createdVertex1.ORID));
                 }
             }
         }
