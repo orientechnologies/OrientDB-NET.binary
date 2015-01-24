@@ -77,7 +77,31 @@ namespace Orient.Client.API
             var record = new TypedTransactionRecord<T>(RecordType.Create, typedObject);
             Insert(record);
         }
-      
+
+        public void AddEdge(OEdge edge, OVertex from, OVertex to)
+        {
+            this.Add(edge);
+            edge.SetField("out", from.ORID);
+            edge.SetField("in", to.ORID);
+
+            appendOridToField(from, "out_" + edge.OClassName, edge.ORID);
+            appendOridToField(to, "in_" + edge.OClassName, edge.ORID);
+        }
+
+        private void appendOridToField(ODocument document, string field, ORID orid)
+        {
+            if (document.HasField(field))
+            {
+                document.GetField<HashSet<ORID>>(field).Add(orid);
+            }
+            else
+            {
+                var orids = new HashSet<ORID>();
+                orids.Add(orid);
+                document.SetField(field, orids);
+            }
+        }
+
         public void Update<T>(T typedObject) where T : IBaseRecord
         {
             var record = new TypedTransactionRecord<T>(RecordType.Update, typedObject);
@@ -129,7 +153,7 @@ namespace Orient.Client.API
             TransactionRecord record;
             if (_records.TryGetValue(orid, out record))
             {
-                return (T) record.Object;
+                return (T)record.Object;
             }
             return default(T);
         }
