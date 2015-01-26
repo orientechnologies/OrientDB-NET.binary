@@ -10,57 +10,57 @@ namespace Orient.Tests.Serialization
     public class RecordCSVSerializerTest
     {
         [TestMethod]
-        public void CanDeserializeARecordStringContainingNestedEmbeddedDocuments()
+        public void CanDeserializeARecordStringContainingNestedEmbeddedMaps()
         {
             // Arrange
             var recordCsvSerializer = new RecordCSVSerializer(null);
             const int innerInteger = 1;
 
-            string recordString = "TestClassName@EmbeddedDocument:{\"NestedEmbeddedDocument\":{\"InnerInteger\":"+innerInteger+"}}";
+            string recordString = "TestClassName@EmbeddedMap:{\"NestedEmbeddedMap\":{\"InnerInteger\":"+innerInteger+"}}";
 
             // Act
             var actualDocument = recordCsvSerializer.Deserialize(recordString);
 
             // Assert
-            Assert.AreEqual(innerInteger, actualDocument.GetField<int>("EmbeddedDocument.NestedEmbeddedDocument.InnerInteger"));
+            Assert.AreEqual(innerInteger, actualDocument.GetField<int>("EmbeddedMap.NestedEmbeddedMap.InnerInteger"));
         }
 
         [TestMethod]
-        public void CanDeserializeARecordStringContainingNestedArraysOfEmbeddedDocuments()
+        public void CanDeserializeARecordStringContainingNestedArraysOfEmbeddedMaps()
         {
             // Arrange
             var recordCsvSerializer = new RecordCSVSerializer(null);
             const int innerInteger = 1;
 
-            string recordString = "TestClassName@EmbeddedDocument:[{\"NestedEmbeddedDocument\":[{\"InnerInteger\":" + innerInteger + "}]}]";
+            string recordString = "TestClassName@EmbeddedMap:[{\"NestedEmbeddedMap\":[{\"InnerInteger\":" + innerInteger + "}]}]";
 
             // Act
             var actualDocument = recordCsvSerializer.Deserialize(recordString);
 
             // Assert
-            var firstLevelEmbeddedDocuments = actualDocument.GetField<List<object>>("EmbeddedDocument").Cast<ODocument>().ToArray();
-            var nestedDocuments = firstLevelEmbeddedDocuments[0].GetField<List<object>>("NestedEmbeddedDocument").Cast<ODocument>().ToArray();
+            var firstLevelEmbeddedMaps = actualDocument.GetField<List<object>>("EmbeddedMap").Cast<ODocument>().ToArray();
+            var nestedMaps = firstLevelEmbeddedMaps[0].GetField<List<object>>("NestedEmbeddedMap").Cast<ODocument>().ToArray();
 
-            Assert.AreEqual(1, firstLevelEmbeddedDocuments.Length);
-            Assert.AreEqual(1, nestedDocuments.Length);
-            Assert.AreEqual(innerInteger, nestedDocuments[0].GetField<int>("InnerInteger"));
+            Assert.AreEqual(1, firstLevelEmbeddedMaps.Length);
+            Assert.AreEqual(1, nestedMaps.Length);
+            Assert.AreEqual(innerInteger, nestedMaps[0].GetField<int>("InnerInteger"));
         }
 
         [TestMethod]
-        public void CanDeserializeARecordIdInEmbeddedDocument()
+        public void CanDeserializeARecordIdInEmbeddedMap()
         {
             // Arrange
             var recordCsvSerializer = new RecordCSVSerializer(null);
             const int integerField = 1;
             var orid = new ORID(1,2);
 
-            string recordString = "TestClassName@EmbeddedDocument:{\"RecordIdField\":"+orid+"},TestField:"+integerField;
+            string recordString = "TestClassName@EmbeddedMap:{\"RecordIdField\":"+orid+"},TestField:"+integerField;
 
             // Act
             var actualDocument = recordCsvSerializer.Deserialize(recordString);
 
             // Assert
-            Assert.AreEqual(orid, actualDocument.GetField<ORID>("EmbeddedDocument.RecordIdField"));
+            Assert.AreEqual(orid, actualDocument.GetField<ORID>("EmbeddedMap.RecordIdField"));
             Assert.AreEqual(integerField, actualDocument.GetField<int>("TestField"));
         }
     }
