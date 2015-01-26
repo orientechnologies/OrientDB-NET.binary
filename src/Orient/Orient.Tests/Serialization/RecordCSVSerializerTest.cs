@@ -63,5 +63,21 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(orid, actualDocument.GetField<ORID>("EmbeddedMap.RecordIdField"));
             Assert.AreEqual(integerField, actualDocument.GetField<int>("TestField"));
         }
+
+        [TestMethod]
+        public void CanDeserializeAnEmbeddedDocument()
+        {
+            // Arrange
+            var recordCsvSerializer = new RecordCSVSerializer(null);
+
+            const string fieldValue = "field";
+            const string recordString = "TestClassName@Map:{\"EmbeddedDocumentField\":(Name:\""+fieldValue+"\")}";
+
+            // Act
+            var actualDocument = recordCsvSerializer.Deserialize(recordString);
+
+            // Assert
+            Assert.AreEqual(fieldValue, actualDocument.GetField<string>("Map.EmbeddedDocumentField.Name"));
+        }
     }
 }

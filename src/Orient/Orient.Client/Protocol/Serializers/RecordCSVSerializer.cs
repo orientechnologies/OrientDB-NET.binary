@@ -750,7 +750,8 @@ namespace Orient.Client.Protocol.Serializers
                 }
 
                 // start parsing field names until the closing bracket of embedded document is reached
-                while (recordString[i] != '}')
+
+                while (recordString[i] != ')' && recordString[i] != '}')
                 {
                     i = ParseFieldName(i, recordString, embeddedDocument);
                 }
