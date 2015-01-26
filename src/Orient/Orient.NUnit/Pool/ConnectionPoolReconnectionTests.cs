@@ -26,8 +26,8 @@ namespace Orient.Tests.Pool
             using (var context = new TestDatabaseContextProxy(tcpProxy.Forwarding))
             using (var database = new ODatabase(TestConnectionProxy.GlobalTestDatabaseAlias))
             {
-                SimpleTest(database);
                 tcpProxy.End();
+                tcpProxy.Start();
 
                 try
                 {
@@ -36,8 +36,6 @@ namespace Orient.Tests.Pool
                 }
                 catch
                 {
-                    tcpProxy.Start();
-                    System.Threading.Thread.Sleep(500);
                     SimpleTest(database);
                 }
             }

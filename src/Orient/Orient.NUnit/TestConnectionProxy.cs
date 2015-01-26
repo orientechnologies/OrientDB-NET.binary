@@ -29,7 +29,7 @@ namespace Orient.Tests
             GlobalTestDatabaseName = "globalTestDatabaseForNetDriver001";
             GlobalTestDatabaseType = ODatabaseType.Graph;
             GlobalTestDatabaseAlias = "globalTestDatabaseForNetDriver001AliasProxy";
-            GlobalTestDatabaseStorageType = OStorageType.PLocal;
+            GlobalTestDatabaseStorageType = TestConnection.GlobalTestDatabaseStorageType;
         }
 
         public void CreateTestDatabase()
