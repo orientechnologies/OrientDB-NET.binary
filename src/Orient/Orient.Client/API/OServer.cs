@@ -81,30 +81,34 @@ namespace Orient.Client
             Dictionary<string, ODatabaseInfo> returnValue = new Dictionary<string, ODatabaseInfo>();
             DBList operation = new DBList(null);
             ODocument document = _connection.ExecuteOperation(operation);
+            ODocument databases = document.GetField<ODocument>("databases");
             if (OClient.Serializer == ORecordFormat.ORecordDocument2csv)
             {
-                string[] databases = document.GetField<string>("databases").Split(',');
                 foreach (var item in databases)
                 {
-                    string[] keyValue = item.Split(new char[] { ':' }, 2);
+                    string databaseName = item.Key;
+                    string[] pathValue = item.Value.ToString().Split(':');
                     var info = new ODatabaseInfo();
                     OStorageType storageType;
 
-                    Enum.TryParse<OStorageType>(keyValue[1].Replace("\"", "").Split(':')[0], true, out storageType);
-                    info.DataBaseName = keyValue[0].Replace("\"", "");
+                    Enum.TryParse<OStorageType>(pathValue[0], true, out storageType);
+                    info.DataBaseName = databaseName.Replace("\"", "");
                     info.StorageType = storageType;
-                    info.Path = keyValue[1].Replace("\"", "").Split(':')[1];
+                    info.Path = pathValue[1].Replace("\"", "");;
                     returnValue.Add(info.DataBaseName, info);
-                    //returnValue.Add(keyValue[0].Replace("\"", ""), keyValue[1].Replace("\"", ""));
                 }
             }
             else
             {
-                var databases = document.GetField<Dictionary<string, object>>("databases");
                 foreach (var item in databases)
                 {
                     var info = new ODatabaseInfo();
+                    string[] pathValue = item.Value.ToString().Split(':');
+                    OStorageType storageType;
+
+                    Enum.TryParse<OStorageType>(pathValue[0], true, out storageType);
                     info.DataBaseName = item.Key;
+                    info.StorageType = storageType;
                     info.Path = item.Value.ToString();
                     returnValue.Add(info.DataBaseName, info);
                 }

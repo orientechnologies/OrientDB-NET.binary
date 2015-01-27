@@ -1,22 +1,22 @@
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Orient.Client;
 using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Tests.Serialization
 {
-    [TestFixture]
+    [TestClass]
     public class RecordCSVSerializerTest
     {
-        [Test]
+        [TestMethod]
         public void CanDeserializeARecordStringContainingNestedEmbeddedMaps()
         {
             // Arrange
             var recordCsvSerializer = new RecordCSVSerializer(null);
             const int innerInteger = 1;
 
-            string recordString = "TestClassName@EmbeddedMap:{\"NestedEmbeddedMap\":{\"InnerInteger\":" + innerInteger + "}}";
+            string recordString = "TestClassName@EmbeddedMap:{\"NestedEmbeddedMap\":{\"InnerInteger\":"+innerInteger+"}}";
 
             // Act
             var actualDocument = recordCsvSerializer.Deserialize(recordString);
@@ -25,7 +25,7 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(innerInteger, actualDocument.GetField<int>("EmbeddedMap.NestedEmbeddedMap.InnerInteger"));
         }
 
-        [Test]
+        [TestMethod]
         public void CanDeserializeARecordStringContainingNestedArraysOfEmbeddedMaps()
         {
             // Arrange
@@ -46,15 +46,15 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(innerInteger, nestedMaps[0].GetField<int>("InnerInteger"));
         }
 
-        [Test]
+        [TestMethod]
         public void CanDeserializeARecordIdInEmbeddedMap()
         {
             // Arrange
             var recordCsvSerializer = new RecordCSVSerializer(null);
             const int integerField = 1;
-            var orid = new ORID(1, 2);
+            var orid = new ORID(1,2);
 
-            string recordString = "TestClassName@EmbeddedMap:{\"RecordIdField\":" + orid + "},TestField:" + integerField;
+            string recordString = "TestClassName@EmbeddedMap:{\"RecordIdField\":"+orid+"},TestField:"+integerField;
 
             // Act
             var actualDocument = recordCsvSerializer.Deserialize(recordString);
@@ -64,14 +64,14 @@ namespace Orient.Tests.Serialization
             Assert.AreEqual(integerField, actualDocument.GetField<int>("TestField"));
         }
 
-        [Test]
+        [TestMethod]
         public void CanDeserializeAnEmbeddedDocument()
         {
             // Arrange
             var recordCsvSerializer = new RecordCSVSerializer(null);
 
             const string fieldValue = "field";
-            const string recordString = "TestClassName@Map:{\"EmbeddedDocumentField\":(Name:\"" + fieldValue + "\")}";
+            const string recordString = "TestClassName@Map:{\"EmbeddedDocumentField\":(Name:\""+fieldValue+"\")}";
 
             // Act
             var actualDocument = recordCsvSerializer.Deserialize(recordString);
