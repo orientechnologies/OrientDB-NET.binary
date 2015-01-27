@@ -291,7 +291,7 @@ namespace Orient.Client.Protocol.Serializers
                     i = ParseSet(i, recordString, document, fieldName);
                     break;
                 case '{':
-                    i = ParseMap(i, recordString, document, fieldName);
+                    i = ParseEmbeddedDocument(i, recordString, document, fieldName);
                     break;
                 case '%':
                     i = ParseRidBags(i, recordString, document, fieldName);
@@ -377,6 +377,7 @@ namespace Orient.Client.Protocol.Serializers
                 (recordString[i] != ',') &&
                 (recordString[i] != ')') &&
                 (recordString[i] != ']') &&
+                (recordString[i] != '}') &&
                 (recordString[i] != '>'))
             {
                 i++;
@@ -486,6 +487,7 @@ namespace Orient.Client.Protocol.Serializers
                 (recordString[i] != ',') &&
                 (recordString[i] != ')') &&
                 (recordString[i] != ']') &&
+                (recordString[i] != '}') &&
                 (recordString[i] != '>'))
             {
                 i++;
@@ -748,7 +750,8 @@ namespace Orient.Client.Protocol.Serializers
                 }
 
                 // start parsing field names until the closing bracket of embedded document is reached
-                while (recordString[i] != ')')
+
+                while (recordString[i] != ')' && recordString[i] != '}')
                 {
                     i = ParseFieldName(i, recordString, embeddedDocument);
                 }
@@ -812,7 +815,7 @@ namespace Orient.Client.Protocol.Serializers
                         i = ParseEmbeddedDocument(i, recordString, document, fieldName);
                         break;
                     case '{':
-                        i = ParseMap(i, recordString, document, fieldName);
+                        i = ParseEmbeddedDocument(i, recordString, document, fieldName);
                         break;
                     case ',':
                         i++;
