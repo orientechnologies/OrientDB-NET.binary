@@ -37,7 +37,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Orient.Tests.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblySetup.cs" />

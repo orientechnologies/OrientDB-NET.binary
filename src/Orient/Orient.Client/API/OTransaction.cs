@@ -8,7 +8,7 @@ using Orient.Client.Transactions;
 
 namespace Orient.Client.API
 {
-  
+
 
     public class OTransaction
     {
@@ -71,7 +71,7 @@ namespace Orient.Client.API
             _records.Clear();
         }
 
-      
+
         public void Add<T>(T typedObject) where T : IBaseRecord
         {
             var record = new TypedTransactionRecord<T>(RecordType.Create, typedObject);
@@ -86,6 +86,12 @@ namespace Orient.Client.API
 
             appendOridToField(from, "out_" + edge.OClassName, edge.ORID);
             appendOridToField(to, "in_" + edge.OClassName, edge.ORID);
+
+            if (!_records.ContainsKey(from.ORID))
+                Update(from);
+
+            if (!_records.ContainsKey(to.ORID))
+                Update(to);
         }
 
         private void appendOridToField(ODocument document, string field, ORID orid)
