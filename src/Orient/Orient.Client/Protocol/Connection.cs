@@ -14,6 +14,7 @@ namespace Orient.Client.Protocol
         private BufferedStream _networkStream;
         private byte[] _readBuffer;
         private int RECIVE_TIMEOUT = 30 * 1000; // Recive timeout in milliseconds
+        private const int RetryCount = 3;
 
         internal string Hostname { get; set; }
         internal int Port { get; set; }
@@ -84,11 +85,34 @@ namespace Orient.Client.Protocol
 
         internal ODocument ExecuteOperation(IOperation operation)
         {
-            if (_networkStream == null)
-                Reconnect();
+            Exception _lastException = null;
 
+            var i = RetryCount;
+            while (i-- > 0)
+            {
+                try
+                {
+                    return ExecuteOperationInternal(operation);
+                }
+                catch (IOException ex)
+                {
+                    if (_lastException == null)
+                        _lastException = ex;
+                    else
+                        _lastException = new Exception("Retry patern exception", ex);
+                }
+            }
+
+            throw _lastException;
+        }
+
+        private ODocument ExecuteOperationInternal(IOperation operation)
+        {
             try
             {
+                if (_networkStream == null)
+                    Reconnect();
+
                 var req = new Request(this);
                 req.SetSessionId(SessionId);
 
