@@ -57,7 +57,7 @@ namespace Orient.Client.Protocol.Operations
             _document.OVersion = reader.ReadInt32EndianAware();
 
             // Work around differents in storage type < version 2.0
-            if (_database.ProtocolVersion >= 20 && _database.ProtocolVersion <= 27 && !EndOfStream(reader))
+            if (_database.ProtocolVersion >= 28 || (_database.ProtocolVersion >= 20 && _database.ProtocolVersion <= 27 && !EndOfStream(reader)))
             {
                 int collectionChangesCount = reader.ReadInt32EndianAware();
                 for (var i = 0; i < collectionChangesCount; i++)
