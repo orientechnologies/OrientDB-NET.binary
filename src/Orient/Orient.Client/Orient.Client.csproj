@@ -98,8 +98,13 @@
     <Compile Include="Mapping\ClassFieldMapping.cs" />
     <Compile Include="Mapping\CollectionFieldMapping.cs" />
     <Compile Include="Mapping\CollectionNamedFieldMapping.cs" />
+    <Compile Include="Mapping\DateTimeFieldMapping.cs" />
+    <Compile Include="Mapping\DecimalFieldMapping.cs" />
+    <Compile Include="Mapping\DictionaryFieldMapping.cs" />
+    <Compile Include="Mapping\EnumFieldMapping.cs" />
     <Compile Include="Mapping\FastPropertyAccessor.cs" />
     <Compile Include="Mapping\FieldMapping.cs" />
+    <Compile Include="Mapping\GuidFieldMapping.cs" />
     <Compile Include="Mapping\HashSetNamedFieldMapping.cs" />
     <Compile Include="Mapping\ORIDFieldMapping.cs" />
     <Compile Include="Mapping\TypeMapper.cs" />

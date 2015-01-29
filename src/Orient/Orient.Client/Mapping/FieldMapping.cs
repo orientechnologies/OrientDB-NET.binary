@@ -34,7 +34,7 @@ namespace Orient.Client.Mapping
 
         protected void SetPropertyValue(TTarget target, object value)
         {
-            _setter(target, value);
+                _setter(target, value);
         }
 
 
@@ -43,18 +43,19 @@ namespace Orient.Client.Mapping
 
         public void MapToObject(ODocument document, object typedObject)
         {
-            MapToObject(document, (TTarget) typedObject);
+            MapToObject(document, (TTarget)typedObject);
         }
 
         public void MapToDocument(object typedObject, ODocument document)
         {
-            MapToDocument((TTarget) typedObject, document);
+            MapToDocument((TTarget)typedObject, document);
         }
     }
-
+    
     internal abstract class NamedFieldMapping<TTarget> : FieldMapping<TTarget>
     {
-        protected NamedFieldMapping(PropertyInfo propertyInfo, string fieldPath) : base(propertyInfo, fieldPath)
+        protected NamedFieldMapping(PropertyInfo propertyInfo, string fieldPath)
+            : base(propertyInfo, fieldPath)
         {
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -235,7 +236,7 @@ namespace Orient.Client.Protocol
 
         internal void From(OSqlSelect nestedSelect)
         {
-            _compiler.Unique(Q.From, "(",nestedSelect.ToString(),")");
+            _compiler.Unique(Q.From, "(", nestedSelect.ToString(), ")");
         }
 
         internal void From(ODocument document)
@@ -262,6 +263,13 @@ namespace Orient.Client.Protocol
 
         internal void Set<T>(string fieldName, T fieldValue)
         {
+            string field = BuildFieldValue<T>(fieldName, fieldValue);
+
+            _compiler.Append(Q.Set, field);
+        }
+
+        private string BuildFieldValue<T>(string fieldName, T fieldValue)
+        {
             string field = "";
 
             if (_compiler.HasKey(Q.Set))
@@ -275,10 +283,6 @@ namespace Orient.Client.Protocol
             {
                 field += "null";
             }
-            else if (fieldValue is string)
-            {
-                field += "'" + fieldValue + "'";
-            }
             else if (fieldValue is IList)
             {
                 field += "[";
@@ -287,7 +291,7 @@ namespace Orient.Client.Protocol
 
                 foreach (object item in collection)
                 {
-                    field += SqlQuery.ToString(item);
+                    field += ToString(item);
 
                     iteration++;
 
@@ -299,19 +303,28 @@ namespace Orient.Client.Protocol
 
                 field += "]";
             }
-            else if (fieldValue is DateTime)
+            else if (fieldValue is IDictionary)
             {
-                //DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                DateTime value = (DateTime)((object)fieldValue);
-                //field += ((long)(value - unixEpoch).TotalMilliseconds);
-                field += "'" + value.ToString("s").Replace('T', ' ') + "'";
+                field += "{";
+                int iteration = 0;
+                IDictionary dict = (IDictionary)fieldValue;
+                var enumerator = dict.GetEnumerator();
+
+                while (enumerator.MoveNext())
+                {
+                    field += String.Format("'{0}':{1}", enumerator.Key, ToString(enumerator.Value));
+                    iteration++;
+
+                    if (iteration < dict.Count)
+                        field += ", ";
+                }
+                field += "}";
             }
             else
             {
-                field += fieldValue.ToInvarianCultureString();
+                field += ToString(fieldValue);//.ToInvarianCultureString();
             }
-
-            _compiler.Append(Q.Set, field);
+            return field;
         }
 
         internal void Set<T>(T obj)
@@ -359,37 +372,37 @@ namespace Orient.Client.Protocol
 
         internal void Equals<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.Equals, SqlQuery.ToString(item));
+            _compiler.Append(Q.Where, "", Q.Equals, ToString(item));
         }
 
         internal void NotEquals<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.NotEquals, SqlQuery.ToString(item));
+            _compiler.Append(Q.Where, "", Q.NotEquals, ToString(item));
         }
 
         internal void Lesser<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.Lesser, SqlQuery.ToString(item));
+            _compiler.Append(Q.Where, "", Q.Lesser, ToString(item));
         }
 
         internal void LesserEqual<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.LesserEqual, SqlQuery.ToString(item));
+            _compiler.Append(Q.Where, "", Q.LesserEqual, ToString(item));
         }
 
         internal void Greater<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.Greater, SqlQuery.ToString(item));
+            _compiler.Append(Q.Where, "", Q.Greater, ToString(item));
         }
 
         internal void GreaterEqual<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.GreaterEqual, SqlQuery.ToString(item));
+            _compiler.Append(Q.Where, "", Q.GreaterEqual, ToString(item));
         }
 
         internal void Like<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.Like, SqlQuery.ToString(item));
+            _compiler.Append(Q.Where, "", Q.Like, ToString(item));
         }
 
         internal void IsNull()
@@ -399,12 +412,12 @@ namespace Orient.Client.Protocol
 
         internal void Contains<T>(T item)
         {
-            _compiler.Append(Q.Where, "", Q.Contains, SqlQuery.ToString(item));
+            _compiler.Append(Q.Where, "", Q.Contains, ToString(item));
         }
 
         internal void Contains<T>(string field, T value)
         {
-            _compiler.Append(Q.Where, "", Q.Contains, "(" + field, Q.Equals, SqlQuery.ToString(value) + ")");
+            _compiler.Append(Q.Where, "", Q.Contains, "(" + field, Q.Equals, ToString(value) + ")");
         }
 
         internal void In<T>(IList<T> list)
@@ -423,9 +436,9 @@ namespace Orient.Client.Protocol
             _compiler.Append(Q.Where, "", Q.In, ToString(builder));
         }
 
-        internal void Between( int num1, int num2)
+        internal void Between(int num1, int num2)
         {
-            _compiler.Append(Q.Where, "", Q.Between,ToString(num1), Q.And, ToString(num2));
+            _compiler.Append(Q.Where, "", Q.Between, ToString(num1), Q.And, ToString(num2));
         }
         #endregion
 
@@ -440,7 +453,7 @@ namespace Orient.Client.Protocol
                 field += ", ";
             }
 
-            field += string.Join(" ", fieldName, Q.Equals, SqlQuery.ToString(fieldValue));
+            field += string.Join(" ", fieldName, Q.Equals, ToString(fieldValue));
 
             _compiler.Append(Q.Add, field);
         }
@@ -466,7 +479,7 @@ namespace Orient.Client.Protocol
                 fieldName = ", " + fieldName;
             }
 
-            _compiler.Append(Q.Remove, fieldName, Q.Equals, SqlQuery.ToString(collectionValue));
+            _compiler.Append(Q.Remove, fieldName, Q.Equals, ToString(collectionValue));
         }
 
         #endregion
@@ -506,13 +519,68 @@ namespace Orient.Client.Protocol
 
         #region ToString
 
-        internal static string ToString(object value)
+        internal string ToString(object value)
         {
             string sql = "";
 
             if (value is string)
             {
                 sql = string.Join(" ", "'" + value + "'");
+            }
+            else if (value is DateTime)
+            {
+                //DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                DateTime fieldValue = (DateTime)((object)value);
+                //field += ((long)(value - unixEpoch).TotalMilliseconds);
+                sql = "'" + fieldValue.ToString("s").Replace('T', ' ') + "'";
+            }
+            else if (value is ODocument)
+            {
+                var document = ((ODocument)value);
+
+                var properties = document.Where(item => item.Key[0] != '@');
+                var propertiesLength = properties.Count();
+
+                sql += "{";
+
+                int iteration = 0;
+                foreach (KeyValuePair<string, object> field in properties)
+                {
+                    if (field.Key.Length > 0)
+                    {
+                        var strValue = BuildFieldValue("'" + field.Key + "'", field.Value).Replace('=', ':');
+                        if (strValue[0] == ',')
+                            sql += strValue.Substring(1);
+                        else
+                            sql += strValue;
+
+                        iteration++;
+
+                        if (iteration < properties.Count())
+                            sql += ",";
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(document.OClassName))
+                    sql += ",'@class':'" + document.OClassName + "',";
+
+                sql += "'@type':'d','@version':" + document.OVersion + "}";
+            }
+            else if (value is Guid || value is Enum)
+            {
+                sql = string.Join(" ", "'" + value.ToInvarianCultureString() + "'");
+            }
+            else if (value is Decimal)
+            {
+                sql = string.Join(" ", value.ToInvarianCultureString() + "d"); // Bug in orientdb #3483 after that use suffix + "c");
+            }
+            else if (value is float)
+            {
+                sql = string.Join(" ", value.ToInvarianCultureString() + "f");
+            }
+            else if (value is double)
+            {
+                sql = string.Join(" ", value.ToInvarianCultureString() + "d");
             }
             else
             {

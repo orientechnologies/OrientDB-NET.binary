@@ -63,9 +63,17 @@ namespace Orient.Client.Mapping
                 object oMapped = t;
                 if (_needsMapping)
                 {
-                    object element = _elementFactory();
-                    _mapper.ToObject((ODocument)t, element);
-                    oMapped = element;
+                    try
+                    {
+                        object element = _elementFactory();
+
+                        _mapper.ToObject((ODocument)t, element);
+                        oMapped = element;
+                    }
+                    catch
+                    {
+                        // FIX: somtimes collection of embeded documents returned as ORID Collection;
+                    }
                 }
 
                 AddItemToCollection(collectionInstance, i, oMapped);

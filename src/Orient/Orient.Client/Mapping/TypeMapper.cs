@@ -16,7 +16,7 @@ namespace Orient.Client.Mapping
         {
             var mappingType = typeof(TypeMapper<>).MakeGenericType(t);
             PropertyInfo propertyInfo = mappingType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public);
-            return (TypeMapperBase) propertyInfo.GetValue(null, null);
+            return (TypeMapperBase)propertyInfo.GetValue(null, null);
         }
 
 
@@ -36,7 +36,7 @@ namespace Orient.Client.Mapping
 
         private TypeMapper()
         {
-            Type genericObjectType = typeof (T);
+            Type genericObjectType = typeof(T);
 
             if (typeof(ODocument).IsAssignableFrom(genericObjectType))
             {
@@ -86,7 +86,7 @@ namespace Orient.Client.Mapping
 
                 if (propertyInfo.PropertyType.IsArray)
                 {
-                    if (propertyInfo.PropertyType == typeof (byte[]))
+                    if (propertyInfo.PropertyType == typeof(byte[]))
                     {
                         _fields.Add(new BasicNamedFieldMapping<T>(propertyInfo, fieldPath));
                     }
@@ -97,10 +97,13 @@ namespace Orient.Client.Mapping
                 }
                 else if (propertyInfo.PropertyType.IsGenericType)
                 {
-                    if (propertyInfo.PropertyType.Name.StartsWith("List"))
+                    if (propertyInfo.PropertyType.Name.StartsWith("List")
+                        || propertyInfo.PropertyType.Name.StartsWith("IList"))
                         _fields.Add(new ListNamedFieldMapping<T>(propertyInfo, fieldPath));
                     else if (propertyInfo.PropertyType.Name.StartsWith("HashSet"))
                         _fields.Add(new HashSetNamedFieldMapping<T>(propertyInfo, fieldPath));
+                    else if (propertyInfo.PropertyType.Name.StartsWith("Dictionary"))
+                        _fields.Add(new DictionaryFieldMapping<T>(propertyInfo, fieldPath));
                     else
                         throw new NotImplementedException("No mapping implemented for type " + propertyInfo.PropertyType.Name);
                 }
@@ -110,6 +113,22 @@ namespace Orient.Client.Mapping
                          (propertyInfo.PropertyType.Name != "ORID"))
                 {
                     AddClassProperty(propertyInfo, fieldPath);
+                }
+                else if (propertyInfo.PropertyType == typeof(Guid))
+                {
+                    _fields.Add(new GuidFieldMapping<T>(propertyInfo, fieldPath));
+                }
+                else if (propertyInfo.PropertyType == typeof(DateTime))
+                {
+                    _fields.Add(new DateTimeFieldMapping<T>(propertyInfo, fieldPath));
+                }
+                else if (propertyInfo.PropertyType == typeof(Decimal))
+                {
+                    _fields.Add(new DecimalFieldMapping<T>(propertyInfo, fieldPath));
+                }
+                else if (propertyInfo.PropertyType.BaseType == typeof(Enum))
+                {
+                    _fields.Add(new EnumFieldMapping<T>(propertyInfo, fieldPath));
                 }
                 // property is basic type
                 else
@@ -127,8 +146,8 @@ namespace Orient.Client.Mapping
 
         private void AddClassProperty(PropertyInfo propertyInfo, string fieldPath)
         {
-            var mappingType = typeof (ClassFieldMapping<,>).MakeGenericType(propertyInfo.PropertyType, typeof(T));
-            _fields.Add((IFieldMapping) Activator.CreateInstance(mappingType, propertyInfo, fieldPath));
+            var mappingType = typeof(ClassFieldMapping<,>).MakeGenericType(propertyInfo.PropertyType, typeof(T));
+            _fields.Add((IFieldMapping)Activator.CreateInstance(mappingType, propertyInfo, fieldPath));
         }
 
 

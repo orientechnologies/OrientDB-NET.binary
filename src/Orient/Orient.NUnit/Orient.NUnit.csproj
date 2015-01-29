@@ -42,6 +42,7 @@
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="ClusterEqutableTest.cs" />
     <Compile Include="DbRunner.cs" />
+    <Compile Include="Issues\GitHub_issue23.cs" />
     <Compile Include="Serialization\RecordCSVSerializerTest.cs" />
     <Compile Include="TestConfigurationOperation.cs" />
     <Compile Include="TestConnection.cs" />

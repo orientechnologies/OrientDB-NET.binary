@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Orient.Client.Mapping
@@ -8,9 +9,17 @@ namespace Orient.Client.Mapping
     {
         private readonly Func<object> _listFactory;
 
-        public ListNamedFieldMapping(PropertyInfo propertyInfo, string fieldPath) : base(propertyInfo, fieldPath)
+        public ListNamedFieldMapping(PropertyInfo propertyInfo, string fieldPath)
+            : base(propertyInfo, fieldPath)
         {
-            _listFactory = FastConstructor.BuildConstructor(_propertyInfo.PropertyType);
+            Type listType = propertyInfo.PropertyType;
+            if (propertyInfo.PropertyType.IsInterface)
+            {
+                Type paramType = propertyInfo.PropertyType.GetGenericArguments()[0];
+                listType = typeof(List<>).MakeGenericType(paramType);
+            }
+
+            _listFactory = FastConstructor.BuildConstructor(listType);
         }
 
         protected override object CreateCollectionInstance(int collectionSize)
@@ -20,7 +29,9 @@ namespace Orient.Client.Mapping
 
         protected override void AddItemToCollection(object collection, int index, object item)
         {
-            ((IList) collection).Add(item);
+            Type itemType = _propertyInfo.PropertyType.GetGenericArguments()[0];
+            if (item is IConvertible || itemType.IsAssignableFrom(item.GetType()))
+                ((IList)collection).Add(Convert.ChangeType(item, itemType));
         }
     }
 
@@ -37,12 +48,14 @@ namespace Orient.Client.Mapping
 
         protected override object CreateCollectionInstance(int collectionSize)
         {
-            return  _arrayFactory(collectionSize);
+            return _arrayFactory(collectionSize);
         }
 
         protected override void AddItemToCollection(object collection, int index, object item)
         {
-            ((IList)collection)[index] = item;
+            Type itemType = _propertyInfo.PropertyType.GetElementType();
+            if (item is IConvertible || itemType.IsAssignableFrom(item.GetType()))
+                ((IList)collection)[index] = Convert.ChangeType(item, itemType);
         }
     }
 }
