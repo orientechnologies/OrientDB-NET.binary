@@ -101,7 +101,14 @@ namespace Orient.Client
                         }
                         else
                         {
-                            ((IList)value).Add(enumerator.Current);
+                            try
+                            {
+                                ((IList)value).Add(enumerator.Current);
+                            }
+                            catch
+                            {
+                                ((IList)value).Add(Convert.ChangeType(enumerator.Current, elementType));
+                            }
                         }
                     }
 
@@ -142,6 +149,21 @@ namespace Orient.Client
                     {
                         return (T)(object)parsedValue;
                     }
+                }
+                else if (type == typeof(Guid))
+                {
+                    Guid parsedValue;
+                    if (Guid.TryParse((string)fieldValue, out parsedValue))
+                    {
+                        return (T)(object)parsedValue;
+                    }
+                }
+                else if (type == typeof(Decimal))
+                {
+                    if (fieldValue != null)
+                        return (T)(object)Convert.ChangeType(fieldValue, typeof(T));
+                    else
+                        return (T)(object)null;
                 }
 
                 return (T)fieldValue;

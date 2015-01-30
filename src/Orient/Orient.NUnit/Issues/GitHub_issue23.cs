@@ -62,11 +62,13 @@ namespace Orient.Tests.Issues
             kid.Commission = (double)23434.1234567891;
             kid.Allowance = (float)3434.1234567891;
             kid.IsMarried = true;
+
             kid.SomeIntegerList = new List<int>();
             kid.SomeIntegerList.Add(1);
             kid.SomeIntegerList.Add(2);
             kid.SomeIntegerList.Add(3);
             kid.SomeIntegerArrayList = new int[3] { 4, 2, 3 };
+
             kid.SomeDecimalList = new List<decimal>();
             kid.SomeDecimalList.Add((decimal)23434.1234567891);
             kid.SomeDecomeArray = new decimal[3] { (decimal)23434.1234567890, (decimal)23434.1234567890, (decimal)23434.1234567890 };
@@ -81,6 +83,29 @@ namespace Orient.Tests.Issues
             employee.MyFavoriteColor = Color.Yellow;
 
             var document = _database.Insert<DemoEmployee>(employee).Run();
+            Assert.NotNull(document);
+            Assert.NotNull(document.ORID);
+            Assert.AreEqual(employee.SomeOtherId, document.GetField<Guid>("SomeOtherId"));
+            Assert.AreEqual(employee.Name, document.GetField<string>("Name"));
+            Assert.AreEqual(employee.Age, document.GetField<int>("Age"));
+            Assert.AreEqual(employee.SomeVeryLongNumber, document.GetField<long>("SomeVeryLongNumber"));
+            Assert.AreEqual(employee.BirthDate, document.GetField<DateTime>("BirthDate"));
+            Assert.AreEqual(employee.Salary, document.GetField<Decimal>("Salary"));
+            Assert.AreEqual(employee.Commission, document.GetField<Double>("Commission"));
+            
+            // FIX: Some trouble with rounding of floating point
+            Assert.AreEqual(employee.Allowance, document.GetField<float>("Allowance"));
+            
+            Assert.AreEqual(employee.IsMarried, document.GetField<bool>("IsMarried"));
+
+            Assert.IsNotNull(employee.SomeIntegerList);
+            Assert.That(document.GetField<List<int>>("SomeIntegerList"), Is.EquivalentTo(employee.SomeIntegerList));
+
+            Assert.IsNotNull(employee.SomeDecimalList);
+            Assert.That(document.GetField<List<decimal>>("SomeDecimalList"), Is.EquivalentTo(employee.SomeDecimalList));
+            
+            Assert.IsNotNull(employee.SomeDecomeArray);
+            Assert.That(document.GetField<List<decimal>>("SomeDecomeArray"), Is.EquivalentTo(employee.SomeDecomeArray));
 
         }
 
