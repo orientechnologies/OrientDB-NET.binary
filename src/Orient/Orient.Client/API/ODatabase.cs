@@ -143,6 +143,15 @@ namespace Orient.Client
             return Query(sql, "*:0");
         }
 
+        public List<T> Query<T>(string sql, string fetchPlan = "*:0") where T : class, new()
+        {
+            var docs = Query(sql, fetchPlan);
+            List<T> convertedList = new List<T>();
+            foreach (var d in docs)
+                convertedList.Add(d.To<T>());
+            return convertedList;
+        }
+
         public List<ODocument> Query(string sql, string fetchPlan)
         {
             CommandPayloadQuery payload = new CommandPayloadQuery();

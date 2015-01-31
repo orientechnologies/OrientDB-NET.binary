@@ -103,6 +103,7 @@
     <Compile Include="Pool\ConnectionPoolReconnectionTests.cs" />
     <Compile Include="TestDatabaseContextProxy.cs" />
     <Compile Include="TcpProxy.cs" />
+    <Compile Include="Query\SqlQueryDeserializeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orient.Client\Orient.Client.csproj">
