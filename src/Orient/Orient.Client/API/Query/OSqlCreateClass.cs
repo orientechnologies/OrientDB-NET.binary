@@ -96,8 +96,10 @@ namespace Orient.Client
 
         public short Run()
         {
-            var cluster = _connection.Database.GetClusters().FirstOrDefault(c => c.Name == _className);
-            if (cluster == null)
+            OCluster cluster;
+            var defaultClusterId = _connection.Database.GetClusterIdFor(_className);
+
+            if (defaultClusterId == -1)
             {
                 CommandPayloadCommand payload = new CommandPayloadCommand();
                 payload.Text = ToString();
@@ -111,6 +113,10 @@ namespace Orient.Client
                 var clusterId = short.Parse(result.ToDocument().GetField<string>("Content"));
 
                 cluster = _connection.Database.AddCluster(new OCluster { Name = _className, Id = clusterId });
+            }
+            else
+            {
+                cluster = _connection.Database.GetClusters().FirstOrDefault(c => c.Name == _className);
             }
 
             if (_autoProperties)

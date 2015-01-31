@@ -50,7 +50,8 @@ namespace Orient.Client
 
         public ORID()
         {
-
+            ClusterId = -1;
+            ClusterPosition = -1;
         }
 
         public ORID(ORID other)

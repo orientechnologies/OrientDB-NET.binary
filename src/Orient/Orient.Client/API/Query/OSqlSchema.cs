@@ -30,6 +30,30 @@ namespace Orient.Client.API.Query
             return Properties(@class);
         }
 
+        public short GetDefaultClusterForClass(string @class)
+        {
+            var pDocument = _schema.FirstOrDefault(d => d.GetField<string>("name") == @class);
+            return pDocument != null ? (short)pDocument.GetField<int>("defaultClusterId") : (short)-1;
+        }
+
+        public short GetDefaultClusterForClass<T>()
+        {
+            var @class = typeof(T).Name;
+            return GetDefaultClusterForClass(@class);
+        }
+
+        public IEnumerable<int> GetClustersForClass(string @class)
+        {
+            var pDocument = _schema.FirstOrDefault(d => d.GetField<string>("name") == @class);
+            return pDocument != null ? pDocument.GetField<List<int>>("clusterIds") : null;
+        }
+
+        public IEnumerable<int> GetClustersForClass<T>()
+        {
+            var @class = typeof(T).Name;
+            return GetClustersForClass(@class);
+        }
+
         private IEnumerable<ODocument> Run()
         {
             CommandPayloadQuery payload = new CommandPayloadQuery();

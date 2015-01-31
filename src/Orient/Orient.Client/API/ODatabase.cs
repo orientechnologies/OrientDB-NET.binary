@@ -44,23 +44,20 @@ namespace Orient.Client
             get { return _connection.ProtocolVersion; }
         }
 
-        public List<OCluster> GetClusters()
+        public List<OCluster> GetClusters(bool reload = false)
         {
-            return _connection.Document.GetField<List<OCluster>>("Clusters");
+            if (!reload)
+                return _connection.Document.GetField<List<OCluster>>("Clusters");
+
+            _connection.Reload();
+            return GetClusters();
         }
 
         public short GetClusterIdFor(string className)
         {
-            var clusterName = CorrectClassName(className).ToLower();
-            OCluster oCluster = GetClusters().FirstOrDefault(x => x.Name == clusterName);
-            if (oCluster == null)
-            {
-                _connection.Reload();
-                oCluster = GetClusters().First(x => x.Name == clusterName);
-            }
-            return oCluster.Id;
+            return Schema.GetDefaultClusterForClass(className);
         }
-
+        
         public string GetClusterNameFor(short clusterId)
         {
             OCluster oCluster = GetClusters().FirstOrDefault(x => x.Id == clusterId);
@@ -201,7 +198,7 @@ namespace Orient.Client
 
             return new OCommandResult(document);
         }
-        
+
         public long Size
         {
             get
@@ -248,7 +245,7 @@ namespace Orient.Client
 
         public OClusterQuery Clusters(params string[] clusterNames)
         {
-            return Clusters(clusterNames.Select(n => new OCluster { Name = n, Id = GetClusterIdFor(n) }));
+            return Clusters(clusterNames.Select(n => new OCluster { Name = n, Id = Schema.GetDefaultClusterForClass(n) }));
         }
 
         private OClusterQuery Clusters(IEnumerable<OCluster> clusters)

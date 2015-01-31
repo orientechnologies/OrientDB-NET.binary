@@ -23,13 +23,16 @@ namespace Orient.Client.Protocol.Operations
 
         public override Request Request(Request request)
         {
-            if (_document.ORID != null)
-                throw new InvalidOperationException();
+            //if (_document.ORID != null)
+            //    throw new InvalidOperationException();
 
             CorrectClassName();
 
-            var clusterId = _database.GetClusterIdFor(_document.OClassName);
-            _document.ORID = new ORID(clusterId, -1);
+            if (_document.ORID == null)
+            {
+                var clusterId = _database.GetClusterIdFor(_document.OClassName);
+                _document.ORID = new ORID(clusterId, -1);
+            }
 
             // standard request fields
             request.AddDataItem((byte)OperationType.RECORD_CREATE);
@@ -42,7 +45,7 @@ namespace Orient.Client.Protocol.Operations
 
 
 
-            request.AddDataItem((short)clusterId);
+            request.AddDataItem((short)_document.ORID.ClusterId);
             request.AddDataItem(Serializer.Serialize(_document));
             request.AddDataItem((byte)ORecordType.Document);
             request.AddDataItem((byte)((OperationMode == OperationMode.Synchronous) ? 0 : 1));
