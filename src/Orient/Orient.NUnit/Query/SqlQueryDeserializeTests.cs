@@ -2,11 +2,12 @@
 using NUnit.Framework;
 using Orient.Client;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace Orient.Tests
+namespace Orient.Tests.Query
 {
     [TestFixture]
-    public class SqlQueryDeserializeTests
+    public class SqlQueryTests
     {
         [Test]
         public void ShouldConvertSQLQueryResultsToClass()
@@ -31,6 +32,34 @@ namespace Orient.Tests
             public string Name { get; set; }
 
             public int Age { get; set; }
+        }
+
+        [Test]
+        public void ShouldFetchLinkedDocument()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+            {
+                database.Create.Class("Owner").Extends("V").Run();
+                database.Create.Class("Place").Extends("V").Run();
+                database.Create.Property("Place.owner", OType.Link).LinkedClass("Owner");
+                var owner = new ODocument
+                {
+                    OClassName = "Owner"
+                };
+                owner = database.Create.Vertex(owner).Run();
+                var place = new ODocument
+                {
+                    OClassName = "Place"
+                };
+                place.SetField<ORID>("owner", owner.ORID);
+                database.Create.Vertex(place).Run();
+
+                place = database.Query("SELECT FROM Place", "*:-1").FirstOrDefault();
+                // FIXME: cannot cast because "owner" contains only the ORID
+                var document = place.GetField<ODocument>("owner");
+                Assert.That(document.GetField<string>("name"), Is.EqualTo("Shawn"));
+            }
         }
     }
 }
