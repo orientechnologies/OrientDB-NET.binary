@@ -47,17 +47,26 @@ namespace Orient.Tests.Query
                 {
                     OClassName = "Owner"
                 };
+
+                owner.SetField<String>("name", "Shawn");
+
                 owner = database.Create.Vertex(owner).Run();
+                
                 var place = new ODocument
                 {
                     OClassName = "Place"
                 };
+
+                place.SetField<string>("country", "France");
                 place.SetField<ORID>("owner", owner.ORID);
                 database.Create.Vertex(place).Run();
 
                 place = database.Query("SELECT FROM Place", "*:-1").FirstOrDefault();
+                
+                Assert.That(database.ClientCache.ContainsKey(place.GetField<ORID>("owner")));
+                
                 // FIXME: cannot cast because "owner" contains only the ORID
-                var document = place.GetField<ODocument>("owner");
+                var document = database.ClientCache[place.GetField<ORID>("owner")];
                 Assert.That(document.GetField<string>("name"), Is.EqualTo("Shawn"));
             }
         }
