@@ -83,13 +83,10 @@ namespace Orient.Tests.Query
 
                     database.Create.Edge("Owns").From(person).To(house).Run();
 
-                    house = database
-                        .Query("select from House fetchplan \"*:-1\"")
-                        .FirstOrDefault();
+                    house = database.Query("select from House", "*:-1").FirstOrDefault();
 
                     Assert.That(house != null);
 
-                    // FIXME: the client cache is empty, but it should be contain two records
                     Assert.That(database.ClientCache.Count(), Is.EqualTo(2), "client cache should contain two records");
                 }
             }
