@@ -93,7 +93,6 @@ namespace Orient.Tests.Issues
             Assert.AreEqual(employee.Salary, document.GetField<Decimal>("Salary"));
             Assert.AreEqual(employee.Commission, document.GetField<Double>("Commission"));
             
-            // FIX: Some trouble with rounding of floating point
             Assert.AreEqual(employee.Allowance, document.GetField<float>("Allowance"));
             
             Assert.AreEqual(employee.IsMarried, document.GetField<bool>("IsMarried"));

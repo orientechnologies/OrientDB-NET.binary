@@ -13,10 +13,16 @@ namespace Orient.Client
         {
             return property.GetCustomAttributes(typeof(OProperty), true).OfType<OProperty>().FirstOrDefault();
         }
+
         public static string ToInvarianCultureString(this object value)
         {
             var formattable = value as IFormattable;
-            return (formattable != null) ? formattable.ToString(null, CultureInfo.InvariantCulture) : value.ToString();
+            if (value is float)
+                return ((float)value).ToString("R", CultureInfo.InvariantCulture);
+            else if (value is double)
+                return ((double)value).ToString("R", CultureInfo.InvariantCulture);
+            else
+                return (formattable != null) ? formattable.ToString(null, CultureInfo.InvariantCulture) : value.ToString();
         }
     }
 }
