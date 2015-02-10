@@ -104,6 +104,7 @@
     <Compile Include="TestDatabaseContextProxy.cs" />
     <Compile Include="TcpProxy.cs" />
     <Compile Include="Query\SqlQueryTests.cs" />
+    <Compile Include="Issues\GitHub_issue31.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Orient.Client\Orient.Client.csproj">
