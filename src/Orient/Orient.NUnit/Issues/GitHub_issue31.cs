@@ -1,6 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 using Orient.Client;
+using System.Linq;
 
 namespace Orient.Tests.Issues
 {
@@ -8,7 +9,7 @@ namespace Orient.Tests.Issues
     public class GitHub_issue31
     {
         [Test]
-        public void ProblemInsertingObjectWithDateTimeFields_31()
+        public void ProblemDeseralizingObjectWithDateTimeFields_31()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
@@ -16,11 +17,18 @@ namespace Orient.Tests.Issues
                 var startRecords = database.CountRecords;
 
                 database.Create.Class<File>().Extends<OVertex>().CreateProperties().Run();
+                var date = DateTime.Now;
                 database.Insert(new File
                     {
                         Filename = "myfile",
-                        Created = DateTime.Now
+                        Created = date
                     }).Run();
+
+                var doc = database.Select().From<File>().ToList().First();
+                var file = doc.To<File>();
+
+                // FIXME: the time zone is off
+                Assert.That(file.Created, Is.EqualTo(date));
 
                 var endRecords = database.CountRecords;
                 Assert.AreEqual(startRecords + 1, endRecords);
@@ -28,7 +36,7 @@ namespace Orient.Tests.Issues
 
         }
 
-        class File
+        class File : OBaseRecord
         {
             public String Filename { get; set; }
 

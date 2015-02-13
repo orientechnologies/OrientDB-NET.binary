@@ -69,6 +69,9 @@ namespace Orient.Tests.Query
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
+                    // Need to set this 
+                    database.Command("alter database custom useLightweightEdges=true");
+
                     database.Create.Class("House").Extends("V").Run();
 
                     database.Create.Class("Person").Extends("V").Run();
