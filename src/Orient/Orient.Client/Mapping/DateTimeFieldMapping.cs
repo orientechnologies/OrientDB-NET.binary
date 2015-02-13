@@ -16,16 +16,9 @@ namespace Orient.Client.Mapping
 
         protected override void MapToNamedField(ODocument document, TTarget typedObject)
         {
-            DateTime dateTime;
-            if (DateTime.TryParse(document.GetField<string>(_fieldPath), out dateTime))
-            {
+            DateTime dateTime = document.GetField<DateTime>(_fieldPath);
 
-                SetPropertyValue(typedObject, dateTime);
-            }
-            else
-            {
-                throw new OException(OExceptionType.Deserialization, "Can't parse DateTime value " + typedObject);
-            }
+            SetPropertyValue(typedObject, dateTime);
         }
     }
 }
