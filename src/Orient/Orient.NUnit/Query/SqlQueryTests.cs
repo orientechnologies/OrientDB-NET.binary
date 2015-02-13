@@ -47,16 +47,16 @@ namespace Orient.Tests.Query
                 owner.SetField<String>("name", "Shawn");
 
                 owner = database.Create.Vertex(owner).Run();
-                
+
                 var computer = new ODocument { OClassName = "Computer" };
 
                 computer.SetField<ORID>("owner", owner.ORID);
                 database.Create.Vertex(computer).Run();
 
                 computer = database.Query("SELECT FROM Computer", "*:-1").FirstOrDefault();
-                
+
                 Assert.That(database.ClientCache.ContainsKey(computer.GetField<ORID>("owner")));
-                
+
                 var document = database.ClientCache[computer.GetField<ORID>("owner")];
                 Assert.That(document.GetField<string>("name"), Is.EqualTo("Shawn"));
             }
@@ -80,7 +80,7 @@ namespace Orient.Tests.Query
                     var person = new ODocument { OClassName = "Person" };
                     person.SetField("name", "Shawn");
                     database.Create.Vertex(person).Run();
-                    
+
                     var person1 = new ODocument { OClassName = "Person" };
                     person1.SetField("name", "Roman");
                     database.Create.Vertex(person1).Run();
