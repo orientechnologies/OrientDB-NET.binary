@@ -80,8 +80,13 @@ namespace Orient.Tests.Query
                     var person = new ODocument { OClassName = "Person" };
                     person.SetField("name", "Shawn");
                     database.Create.Vertex(person).Run();
+                    
+                    var person1 = new ODocument { OClassName = "Person" };
+                    person1.SetField("name", "Roman");
+                    database.Create.Vertex(person1).Run();
 
                     database.Create.Edge("Owns").From(person).To(house).Run();
+                    database.Create.Edge("Owns").From(person1).To(house).Run();
 
                     house = database.Query("select from House", "*:-1").FirstOrDefault();
 
