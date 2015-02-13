@@ -24,6 +24,18 @@ namespace Orient.Client.API.Query
             return pDocument != null ? pDocument.GetField<HashSet<ODocument>>("properties") : null;
         }
 
+        public bool IsClassExist(string @class)
+        {
+            var pDocument = _schema.FirstOrDefault(d => d.GetField<string>("name") == @class);
+            return (pDocument != null);
+        }
+
+        public bool IsClassExist<T>()
+        {
+            var @class = typeof(T).Name;
+            return IsClassExist(@class);
+        }
+
         public IEnumerable<ODocument> Properties<T>()
         {
             var @class = typeof(T).Name;
