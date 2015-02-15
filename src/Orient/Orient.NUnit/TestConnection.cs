@@ -21,7 +21,7 @@ namespace Orient.Tests
         static TestConnection()
         {
             _server = new OServer(_hostname, _port, _rootUserName, _rootUserParssword);
-            //testing
+
             GlobalTestDatabaseName = "globalTestDatabaseForNetDriver001";
             GlobalTestDatabaseType = ODatabaseType.Graph;
             GlobalTestDatabaseAlias = "globalTestDatabaseForNetDriver001Alias";
