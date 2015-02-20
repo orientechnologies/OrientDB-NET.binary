@@ -16,19 +16,26 @@ namespace Orient.Tests.Issues
             {
                 var startRecords = database.CountRecords;
 
+                // explicitly setting the timezone to UTC instead of the JVM default timezone
+                // FIXME: this is a work around for now
+                database.Command("ALTER DATABASE TIMEZONE UTC");
                 database.Create.Class<File>().Extends<OVertex>().CreateProperties().Run();
-                var date = DateTime.Now;
+
+                var dateTime = DateTime.UtcNow;
+                // OrientDB truncates milliseconds, so do so here for a proper comparison
+                dateTime = dateTime.AddTicks( - (dateTime.Ticks % TimeSpan.TicksPerSecond));
+
                 database.Insert(new File
                     {
                         Filename = "myfile",
-                        Created = date
+                        Created = dateTime
                     }).Run();
 
                 var doc = database.Select().From<File>().ToList().First();
                 var file = doc.To<File>();
 
                 // FIXME: the time zone is off
-                Assert.That(file.Created, Is.EqualTo(date));
+                Assert.That(file.Created, Is.EqualTo(dateTime));
 
                 var endRecords = database.CountRecords;
                 Assert.AreEqual(startRecords + 1, endRecords);
