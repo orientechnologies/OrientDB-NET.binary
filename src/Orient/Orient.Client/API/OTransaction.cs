@@ -22,12 +22,17 @@ namespace Orient.Client.API
         }
 
         private readonly Dictionary<ORID, TransactionRecord> _records = new Dictionary<ORID, TransactionRecord>();
+
+        internal bool UseTransactionLog { get; set; }
+
         private readonly short _tempClusterId;
+
         private long _tempObjectId;
 
         public void Commit()
         {
             CommitTransaction ct = new CommitTransaction(_records.Values.ToList(), _connection.Database);
+            ct.UseTransactionLog = UseTransactionLog;
             var result = _connection.ExecuteOperation(ct);
             Dictionary<ORID, ORID> mapping = result.GetField<Dictionary<ORID, ORID>>("CreatedRecordMapping");
 
@@ -70,7 +75,6 @@ namespace Orient.Client.API
         {
             _records.Clear();
         }
-
 
         public void Add<T>(T typedObject) where T : IBaseRecord
         {

@@ -11,7 +11,6 @@ namespace Orient.Client.Protocol.Operations
 
     class CommitTransaction : BaseOperation
     {
-        //private readonly ODatabase _database;
         private List<TransactionRecord> _records;
 
         public CommitTransaction(List<TransactionRecord> records, ODatabase database)
@@ -39,7 +38,7 @@ namespace Orient.Client.Protocol.Operations
             request.AddDataItem(request.SessionId);
 
             request.AddDataItem(transactionId);
-            request.AddDataItem((byte)0); // use log 0 = no, 1 = yes
+            request.AddDataItem((byte)(UseTransactionLog ? 1 : 0)); // use log 0 = no, 1 = yes
 
             foreach (var item in _records)
             {
@@ -51,17 +50,8 @@ namespace Orient.Client.Protocol.Operations
 
             request.AddDataItem((int)0);
 
-            //request.DataItems.Add(new RequestDataItem() { Type = "int", Data = BinarySerializer.ToArray(-1) });  // data segment id
-            //request.DataItems.Add(new RequestDataItem() { Type = "short", Data = BinarySerializer.ToArray((short)-1) });
-            //request.DataItems.Add(new RequestDataItem() {Type = "string", Data = BinarySerializer.ToArray(_document.Serialize())});
-            //request.DataItems.Add(new RequestDataItem() {Type = "byte", Data = BinarySerializer.ToArray((byte) 'd')});
-            //request.DataItems.Add(new RequestDataItem() {Type = "byte", Data = BinarySerializer.ToArray((byte) 0)});
-
-
             return request;
         }
-
-
 
         public override ODocument Response(Response response)
         {
@@ -118,5 +108,7 @@ namespace Orient.Client.Protocol.Operations
             return result;
         }
 
+
+        public bool UseTransactionLog { get; set; }
     }
 }
