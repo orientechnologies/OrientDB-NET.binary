@@ -6,19 +6,16 @@ namespace Orient.Client
 {
     public class OSqlCreateProperty
     {
-        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery _sqlQuery;
         private Connection _connection;
         private string _propertyName;
         private string _class;
         private OType _type;
 
-        public OSqlCreateProperty()
-        {
-        }
-
         internal OSqlCreateProperty(Connection connection)
         {
             _connection = connection;
+            _sqlQuery = new SqlQuery(_connection);
         }
         public OSqlCreateProperty Property(string propertyName, OType type)
         {

@@ -16,19 +16,19 @@ namespace Orient.Client
 {
     public class OSqlCreateClass
     {
-        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery _sqlQuery;
         private Connection _connection;
         private string _className;
         private Type _type;
         private bool _autoProperties;
-
         public OSqlCreateClass()
         {
+            _sqlQuery = new SqlQuery(null);
         }
-
         internal OSqlCreateClass(Connection connection)
         {
             _connection = connection;
+            _sqlQuery = new SqlQuery(connection);
         }
 
         #region Class

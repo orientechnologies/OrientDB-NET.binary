@@ -12,16 +12,17 @@ namespace Orient.Client
 {
     public class OSqlDeleteEdge
     {
-        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery _sqlQuery;
         private Connection _connection;
 
         public OSqlDeleteEdge()
         {
+            _sqlQuery = new SqlQuery(null);
         }
-
         internal OSqlDeleteEdge(Connection connection)
         {
             _connection = connection;
+            _sqlQuery = new SqlQuery(connection);
         }
 
         #region Delete

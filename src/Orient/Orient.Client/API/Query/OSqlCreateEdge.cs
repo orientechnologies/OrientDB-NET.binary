@@ -15,16 +15,17 @@ namespace Orient.Client
 {
     public class OSqlCreateEdge : IOCreateEdge
     {
-        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery _sqlQuery;
         private Connection _connection;
 
         public OSqlCreateEdge()
         {
+            _sqlQuery = new SqlQuery(null);
         }
-
         internal OSqlCreateEdge(Connection connection)
         {
             _connection = connection;
+            _sqlQuery = new SqlQuery(connection);
         }
 
         #region Edge

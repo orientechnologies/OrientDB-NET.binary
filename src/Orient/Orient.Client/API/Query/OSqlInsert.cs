@@ -12,16 +12,18 @@ namespace Orient.Client
 {
     public class OSqlInsert : IOInsert
     {
-        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery _sqlQuery;
         private Connection _connection;
 
         public OSqlInsert()
         {
+            _sqlQuery = new SqlQuery(null);
         }
 
         internal OSqlInsert(Connection connection)
         {
             _connection = connection;
+             _sqlQuery = new SqlQuery(connection);
         }
 
         #region Insert

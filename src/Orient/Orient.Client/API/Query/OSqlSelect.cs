@@ -16,16 +16,17 @@ namespace Orient.Client
 {
     public class OSqlSelect
     {
-        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery _sqlQuery;
         private Connection _connection;
 
         public OSqlSelect()
         {
+            _sqlQuery = new SqlQuery(null);
         }
-
         internal OSqlSelect(Connection connection)
         {
             _connection = connection;
+            _sqlQuery = new SqlQuery(connection);
         }
 
         #region Select

@@ -9,7 +9,11 @@ namespace Orient.Client.Protocol
     internal class SqlQuery
     {
         private QueryCompiler _compiler = new QueryCompiler();
-
+        private Connection _connection;
+        public SqlQuery(Connection connection)
+        {
+            _connection = connection;
+        }
         internal void Class(string className)
         {
             _compiler.Unique(Q.Class, ParseClassName(className));
@@ -529,10 +533,24 @@ namespace Orient.Client.Protocol
             }
             else if (value is DateTime)
             {
-                //DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                DateTime fieldValue = (DateTime)((object)value);
-                //field += ((long)(value - unixEpoch).TotalMilliseconds);
-                sql = "'" + fieldValue.ToString("s").Replace('T', ' ') + "'";
+                if (_connection == null)
+                {
+                    //DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                    DateTime fieldValue = (DateTime)((object)value);
+                    //field += ((long)(value - unixEpoch).TotalMilliseconds);
+                    sql = "'" + fieldValue.ToString("s").Replace('T', ' ') + "'";
+                }
+                else
+                {
+                    var propDocument = _connection.Database.DatabaseProperties;
+                    var dateTimeFormat = propDocument.GetField<string>("DateTimeFormat");
+                    var timeZone = propDocument.GetField<string>("Timezone");
+                    
+                    // How to map Windows TimeZone id to IANA timezone id
+                    
+                    DateTime fieldValue = (DateTime)((object)value);
+                    sql = "'" + fieldValue.ToString(dateTimeFormat) + "'";    
+                }
             }
             else if (value is ODocument)
             {

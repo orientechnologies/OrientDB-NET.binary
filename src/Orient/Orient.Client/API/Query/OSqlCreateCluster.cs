@@ -13,16 +13,17 @@ namespace Orient.Client
 {
     public class OSqlCreateCluster : IOCreateCluster
     {
-        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery _sqlQuery;
         private Connection _connection;
 
         public OSqlCreateCluster()
         {
+            _sqlQuery = new SqlQuery(null);
         }
-
         internal OSqlCreateCluster(Connection connection)
         {
             _connection = connection;
+            _sqlQuery = new SqlQuery(connection);
         }
 
         #region Cluster

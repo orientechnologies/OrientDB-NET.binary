@@ -11,16 +11,17 @@ namespace Orient.Client
 {
     public class OSqlDeleteVertex
     {
-        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery _sqlQuery;
         private Connection _connection;
 
         public OSqlDeleteVertex()
         {
+            _sqlQuery = new SqlQuery(null);
         }
-
         internal OSqlDeleteVertex(Connection connection)
         {
             _connection = connection;
+            _sqlQuery = new SqlQuery(connection);
         }
 
         #region Delete

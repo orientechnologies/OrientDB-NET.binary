@@ -12,16 +12,17 @@ namespace Orient.Client
 {
     public class OSqlDeleteDocument
     {
-        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery _sqlQuery;
         private Connection _connection;
 
         public OSqlDeleteDocument()
         {
+            _sqlQuery = new SqlQuery(null);
         }
-
         internal OSqlDeleteDocument(Connection connection)
         {
             _connection = connection;
+            _sqlQuery = new SqlQuery(connection);
         }
 
         public OSqlDeleteDocument Delete<T>(T obj)

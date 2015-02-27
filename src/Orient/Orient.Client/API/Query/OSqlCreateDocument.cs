@@ -10,16 +10,17 @@ namespace Orient.Client
 {
     public class OSqlCreateDocument : IOCreateDocument
     {
-        private SqlQuery _sqlQuery = new SqlQuery();
+        private SqlQuery _sqlQuery;
         private Connection _connection;
 
         public OSqlCreateDocument()
         {
+            _sqlQuery = new SqlQuery(null);
         }
-
         internal OSqlCreateDocument(Connection connection)
         {
             _connection = connection;
+            _sqlQuery = new SqlQuery(connection);
         }
 
         #region Document

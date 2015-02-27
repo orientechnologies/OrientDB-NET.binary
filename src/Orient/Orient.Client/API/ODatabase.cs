@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Orient.Client.API;
 using Orient.Client.API.Query;
 using Orient.Client.API.Query.Interfaces;
@@ -15,6 +17,8 @@ namespace Orient.Client
         private bool _containsConnection;
         private Connection _connection;
 
+        private ODocument _databaseProperties;
+
         public IDictionary<ORID, ODocument> ClientCache { get; private set; }
 
         public OCreate Create { get { return new OCreate(_connection); } }
@@ -22,6 +26,18 @@ namespace Orient.Client
         public OLoadRecord Load { get { return new OLoadRecord(_connection); } }
         public ORecordMetadata Metadata { get { return new ORecordMetadata(_connection); } }
         public OSqlSchema Schema { get { return new OSqlSchema(_connection); } }
+
+        public ODocument DatabaseProperties
+        {
+            get
+            {
+                if (_databaseProperties == null)
+                {
+                    _databaseProperties = retrieveDataBaseProperties().Result;
+                }
+                return _databaseProperties;
+            }
+        }
 
         public OTransaction Transaction { get; private set; }
 
@@ -44,6 +60,25 @@ namespace Orient.Client
             get { return _connection.ProtocolVersion; }
         }
 
+        private Task<ODocument> retrieveDataBaseProperties()
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                var document = Load.ORID(new ORID(0, 0)).Run();
+                var str = Encoding.UTF8.GetString(document.GetField<byte[]>("RawBytes"));
+                var values = str.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                var doc = new ODocument();
+                doc.SetField("Version", values[0]);
+                doc.SetField("LocaleLanguage", values[5]);
+                doc.SetField("LocaleCountry", values[6]);
+                doc.SetField("DateFormat", values[7]);
+                doc.SetField("DateTimeFormat", values[8]);
+                doc.SetField("Timezone", values[9]);
+                doc.SetField("Charset", values[10]);
+                return doc;
+            });
+        }
+
         public List<OCluster> GetClusters(bool reload = false)
         {
             if (!reload)
@@ -57,7 +92,7 @@ namespace Orient.Client
         {
             return Schema.GetDefaultClusterForClass(className);
         }
-        
+
         public string GetClusterNameFor(short clusterId)
         {
             OCluster oCluster = GetClusters().FirstOrDefault(x => x.Id == clusterId);
