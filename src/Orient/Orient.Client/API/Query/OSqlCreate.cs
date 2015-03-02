@@ -30,6 +30,11 @@ namespace Orient.Client
             return new OSqlCreateClass(_connection).Class<T>();
         }
 
+        public OSqlCreateClass Class<T>(string className)
+        {
+            return new OSqlCreateClass(_connection).Class<T>(className);
+        }
+
         #endregion
 
         #region Cluster
