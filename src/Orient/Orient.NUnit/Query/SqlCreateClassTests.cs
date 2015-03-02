@@ -121,5 +121,21 @@ namespace Orient.Tests.Query
                 }
             }
         }
+
+        [Test]
+        public void ShouldCreateClassWithCustomNameProperties()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    short classId1 = database.Create.Class<TestClass>("MyTestClass").CreateProperties().Run();
+
+                    Assert.IsTrue(classId1 > 0);
+
+                    
+                }
+            }
+        }
     }
 }

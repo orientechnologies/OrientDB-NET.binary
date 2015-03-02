@@ -48,6 +48,13 @@ namespace Orient.Client
             return Class(_className);
         }
 
+        public OSqlCreateClass Class<T>(string className)
+        {
+            _type = typeof(T);
+            _className = className;
+            return Class(_className);
+        }
+
         #endregion
 
         #region Extends
