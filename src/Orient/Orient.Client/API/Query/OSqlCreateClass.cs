@@ -152,7 +152,7 @@ namespace Orient.Client
         private void CreateProperty(PropertyInfo pi)
         {
             var propType = ConvertPropertyType(pi.PropertyType);
-            var @class = (_type != null) ? _type.Name : _className;
+            var @class =  _className;
 
             var propid = _connection.Database
                 .Create
