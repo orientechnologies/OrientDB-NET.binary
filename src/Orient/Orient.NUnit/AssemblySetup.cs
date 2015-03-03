@@ -4,11 +4,11 @@ using NUnit.Framework;
 
 namespace Orient.Tests
 {
-    [TestFixture]
+    [SetUpFixture]
     public class AssemblySetup
     {
-        [TestFixtureSetUp()]
-        public static void Setup(TestContext context)
+        [SetUp]
+        public static void Setup()
         {
             // orientDbDir needs to point to the path of an OrientDB installation (pointing to the folder that contains the bin, lib, config sub folders)
             var orientDBDir = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\..\..\orient.server"));
@@ -17,7 +17,7 @@ namespace Orient.Tests
             DbRunner.StartOrientDb(orientDBDir, jreDir);
         }
 
-        [TestFixtureTearDown()]
+        [TearDown]
         public static void TearDown()
         {
             DbRunner.StopOrientDb();
