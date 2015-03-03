@@ -529,7 +529,7 @@ namespace Orient.Client.Protocol
 
             if (value is string)
             {
-                sql = string.Join(" ", "'" + value + "'");
+                sql = string.Join(" ", "'" + ((string)value).Replace("'", "\\'") + "'");
             }
             else if (value is DateTime)
             {
@@ -545,11 +545,11 @@ namespace Orient.Client.Protocol
                     var propDocument = _connection.Database.DatabaseProperties;
                     var dateTimeFormat = propDocument.GetField<string>("DateTimeFormat");
                     var timeZone = propDocument.GetField<string>("Timezone");
-                    
+
                     // How to map Windows TimeZone id to IANA timezone id
-                    
+
                     DateTime fieldValue = (DateTime)((object)value);
-                    sql = "'" + fieldValue.ToString(dateTimeFormat) + "'";    
+                    sql = "'" + fieldValue.ToString(dateTimeFormat) + "'";
                 }
             }
             else if (value is ODocument)
