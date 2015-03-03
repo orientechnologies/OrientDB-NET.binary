@@ -1,4 +1,6 @@
-﻿using Orient.Client;
+﻿using System.Threading;
+using NUnit.Framework;
+using Orient.Client;
 
 namespace Orient.Tests
 {
@@ -53,8 +55,12 @@ namespace Orient.Tests
                     _server.Dispose();
                     _server = new OServer(_hostname, _port, _rootUserName, _rootUserParssword);
                 }
+                Thread.Sleep(100);
             }
             while (--retry > 0);
+
+            if (_server.DatabaseExist(GlobalTestDatabaseName, GlobalTestDatabaseStorageType))
+                Assert.Fail("Cannot drop test database.");
         }
 
         public static void CreateTestPool()
