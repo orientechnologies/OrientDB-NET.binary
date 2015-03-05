@@ -104,6 +104,8 @@ namespace Orient.Client.Mapping
                         _fields.Add(new HashSetNamedFieldMapping<T>(propertyInfo, fieldPath));
                     else if (propertyInfo.PropertyType.Name.StartsWith("Dictionary"))
                         _fields.Add(new DictionaryFieldMapping<T>(propertyInfo, fieldPath));
+                    else if (propertyInfo.PropertyType.Name.StartsWith("SortedList"))
+                        _fields.Add(new DictionaryFieldMapping<T>(propertyInfo, fieldPath));
                     else
                         throw new NotImplementedException("No mapping implemented for type " + propertyInfo.PropertyType.Name);
                 }
