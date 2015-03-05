@@ -95,7 +95,7 @@ namespace Orient.Client.Mapping
                         _fields.Add(new ArrayNamedFieldMapping<T>(propertyInfo, fieldPath));
                     }
                 }
-                else if (propertyInfo.PropertyType.IsGenericType)
+                else if (propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() != typeof(Nullable<>))
                 {
                     if (propertyInfo.PropertyType.Name.StartsWith("List")
                         || propertyInfo.PropertyType.Name.StartsWith("IList"))
