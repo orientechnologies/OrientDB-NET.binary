@@ -19,6 +19,17 @@ namespace Orient.Client.API
             _connection = connection;
             _tempClusterId = -1;
             _tempObjectId = -1;
+
+            /*
+             * using-tx-log tells if the server must use the Transaction Log to recover the transaction. 
+             * 1 = true, 0 = false. 
+             * Use always 1 (true) by default to assure consistency. 
+             * NOTE: Disabling the log could speed up execution of transaction, 
+             * but can't be rollbacked in case of error. 
+             * This could bring also at inconsistency in indexes as well, 
+             * because in case of duplicated keys the rollback is not called to restore the index status.
+             */
+            UseTransactionLog = true;
         }
 
         private readonly Dictionary<ORID, TransactionRecord> _records = new Dictionary<ORID, TransactionRecord>();
