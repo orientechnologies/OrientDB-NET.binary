@@ -132,10 +132,19 @@ namespace Orient.Client.Mapping
                 {
                     _fields.Add(new DecimalFieldMapping<T>(propertyInfo, fieldPath));
                 }
+                else if (propertyInfo.PropertyType == typeof(short))
+                {
+                    _fields.Add(new ShortFieldMapping<T>(propertyInfo, fieldPath));
+                }
+                else if (propertyInfo.PropertyType == typeof(long))
+                {
+                    _fields.Add(new LongFieldMapping<T>(propertyInfo, fieldPath));
+                }
                 else if (propertyInfo.PropertyType.BaseType == typeof(Enum))
                 {
                     _fields.Add(new EnumFieldMapping<T>(propertyInfo, fieldPath));
                 }
+
                 // property is basic type
                 else
                 {
