@@ -106,7 +106,9 @@
     <Compile Include="Mapping\FieldMapping.cs" />
     <Compile Include="Mapping\GuidFieldMapping.cs" />
     <Compile Include="Mapping\HashSetNamedFieldMapping.cs" />
+    <Compile Include="Mapping\LongFieldMapping.cs" />
     <Compile Include="Mapping\ORIDFieldMapping.cs" />
+    <Compile Include="Mapping\ShortFieldMapping.cs" />
     <Compile Include="Mapping\TypeMapper.cs" />
     <Compile Include="Protocol\BinaryReaderHelper.cs" />
     <Compile Include="Protocol\Operations\BaseOperation.cs" />
