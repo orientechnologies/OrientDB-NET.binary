@@ -124,6 +124,10 @@ namespace Orient.Client.Mapping
                 {
                     _fields.Add(new DateTimeFieldMapping<T>(propertyInfo, fieldPath));
                 }
+                else if (propertyInfo.PropertyType == typeof(long))
+                {
+                    _fields.Add(new LongFieldMapping<T>(propertyInfo, fieldPath));
+                }
                 else if (propertyInfo.PropertyType == typeof(Decimal))
                 {
                     _fields.Add(new DecimalFieldMapping<T>(propertyInfo, fieldPath));
@@ -176,7 +180,7 @@ namespace Orient.Client.Mapping
                 if (string.IsNullOrEmpty(document.OClassName))
                     document.OClassName = genericObject.GetType().Name;
             }
-            
+
             return document;
 
             //Type genericObjectType = genericObject.GetType();

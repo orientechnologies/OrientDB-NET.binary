@@ -80,7 +80,7 @@ namespace Orient.Tests.Issues
             employee.MyKeyValues.Add("1", "Name");
             employee.MyKeyValues.Add("2", 123445555555555);
 
-            employee.MyFavoriteColor = Color.Yellow;
+            employee.MyFavoriteColor = DemoEmployee.Color.Yellow;
 
             var document = _database.Insert<DemoEmployee>(employee).Run();
             Assert.NotNull(document);
@@ -92,9 +92,9 @@ namespace Orient.Tests.Issues
             Assert.AreEqual(employee.BirthDate, document.GetField<DateTime>("BirthDate"));
             Assert.AreEqual(employee.Salary, document.GetField<Decimal>("Salary"));
             Assert.AreEqual(employee.Commission, document.GetField<Double>("Commission"));
-            
+
             Assert.AreEqual(employee.Allowance, document.GetField<float>("Allowance"));
-            
+
             Assert.AreEqual(employee.IsMarried, document.GetField<bool>("IsMarried"));
 
             Assert.IsNotNull(employee.SomeIntegerList);
@@ -102,83 +102,83 @@ namespace Orient.Tests.Issues
 
             Assert.IsNotNull(employee.SomeDecimalList);
             Assert.That(document.GetField<List<decimal>>("SomeDecimalList"), Is.EquivalentTo(employee.SomeDecimalList));
-            
+
             Assert.IsNotNull(employee.SomeDecomeArray);
             Assert.That(document.GetField<List<decimal>>("SomeDecomeArray"), Is.EquivalentTo(employee.SomeDecomeArray));
 
+            var result = document.To<DemoEmployee>();
+
+        }
+
+        public class DemoEmployee
+        {
+            public Guid SomeOtherId { get; set; }
+
+            public string Name { get; set; }
+
+            public int Age { get; set; }
+
+            public long SomeVeryLongNumber { get; set; }
+
+            public DateTime BirthDate { get; set; }
+
+            public decimal Salary { get; set; }
+
+            public double Commission { get; set; }
+
+            public float Allowance { get; set; }
+
+
+            public bool IsMarried { get; set; }
+
+            public List<int> SomeIntegerList { get; set; }
+
+            public int[] SomeIntegerArrayList { get; set; }
+
+            public List<decimal> SomeDecimalList { get; set; }
+
+            public decimal[] SomeDecomeArray { get; set; }
+
+            public List<DemoChild> Kids { get; set; }
+
+            public IList<int> SomeIListInteger { get; set; }
+
+            public Dictionary<string, object> MyKeyValues { get; set; }  // Map in orientdb
+
+            public Color MyFavoriteColor { get; set; }
+
+            public enum Color
+            {
+                Blue, Red, Green, Yellow
+            }
+        }
+
+        public class DemoChild
+        {
+            public string Name { get; set; }
+
+            public int Age { get; set; }
+
+            public long SomeVeryLongNumber { get; set; }
+
+            public decimal Salary { get; set; }
+
+            public double Commission { get; set; }
+
+            public float Allowance { get; set; }
+
+            public DateTime BirthDate { get; set; }
+
+            public bool IsMarried { get; set; }
+
+            public List<int> SomeIntegerList { get; set; }
+
+            public int[] SomeIntegerArrayList { get; set; }
+
+            public List<decimal> SomeDecimalList { get; set; }
+
+            public decimal[] SomeDecomeArray { get; set; }
         }
 
     }
-
-    public class DemoChild
-    {
-        public string Name { get; set; }
-
-        public int Age { get; set; }
-
-        public long SomeVeryLongNumber { get; set; }
-
-        public decimal Salary { get; set; }
-
-        public double Commission { get; set; }
-
-        public float Allowance { get; set; }
-
-        public DateTime BirthDate { get; set; }
-
-        public bool IsMarried { get; set; }
-
-        public List<int> SomeIntegerList { get; set; }
-
-        public int[] SomeIntegerArrayList { get; set; }
-
-        public List<decimal> SomeDecimalList { get; set; }
-
-        public decimal[] SomeDecomeArray { get; set; }
-    }
-
-    public class DemoEmployee
-    {
-        public Guid SomeOtherId { get; set; }
-
-        public string Name { get; set; }
-
-        public int Age { get; set; }
-
-        public long SomeVeryLongNumber { get; set; }
-
-        public DateTime BirthDate { get; set; }
-
-        public decimal Salary { get; set; }
-
-        public double Commission { get; set; }
-
-        public float Allowance { get; set; }
-
-
-        public bool IsMarried { get; set; }
-
-        public List<int> SomeIntegerList { get; set; }
-
-        public int[] SomeIntegerArrayList { get; set; }
-
-        public List<decimal> SomeDecimalList { get; set; }
-
-        public decimal[] SomeDecomeArray { get; set; }
-
-        public List<DemoChild> Kids { get; set; }
-
-        public IList<int> SomeIListInteger { get; set; }
-
-        public Dictionary<string, object> MyKeyValues { get; set; }  // Map in orientdb
-
-        public Color MyFavoriteColor { get; set; }
-
-    }
-
-    public enum Color
-    {
-        Blue, Red, Green, Yellow
-    }
-
 }

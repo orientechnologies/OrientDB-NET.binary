@@ -47,6 +47,7 @@
     <Compile Include="DbRunner.cs" />
     <Compile Include="Issues\GitHub_issue23.cs" />
     <Compile Include="Issues\GitHub_issue38.cs" />
+    <Compile Include="Issues\GitHub_issue46.cs" />
     <Compile Include="Issues\GitHub_issue8.cs" />
     <Compile Include="Serialization\RecordCSVSerializerTest.cs" />
     <Compile Include="TestConfigurationOperation.cs" />

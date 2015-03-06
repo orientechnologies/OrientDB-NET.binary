@@ -99,7 +99,8 @@ namespace Orient.Client.Mapping
                    (elementType == typeof(string)) ||
                    (elementType == typeof(DateTime)) ||
                    (elementType == typeof(decimal)) ||
-                   (elementType == typeof(ORID));
+                   (elementType == typeof(ORID)) ||
+                   (elementType.IsValueType);
         }
 
         public override void MapToDocument(TTarget typedObject, ODocument document)
