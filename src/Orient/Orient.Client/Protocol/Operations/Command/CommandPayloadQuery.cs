@@ -22,7 +22,7 @@ namespace Orient.Client.Protocol.Operations.Command
                 return base.PayLoadLength
                     + sizeof(int) // NonTextLimit
                     + sizeof(int) + BinarySerializer.Length(FetchPlan)
-                    + sizeof(int) + (SerializedParams != null ? sizeof(int) + SerializedParams.Length : 0);
+                    + sizeof(int) + (SerializedParams != null ? SerializedParams.Length : 0);
             }
         }
     }

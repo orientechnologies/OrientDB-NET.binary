@@ -204,6 +204,12 @@ namespace Orient.Client
             return document.GetField<List<ODocument>>("Content");
         }
 
+        public PreparedQuery Query(PreparedQuery query)
+        {
+            query.SetConnection(_connection);
+            return query;
+        }
+
         #endregion
 
         public OCommandResult Gremlin(string query)
@@ -242,7 +248,7 @@ namespace Orient.Client
 
             return new OCommandResult(document);
         }
-
+        
         public long Size
         {
             get

@@ -37,9 +37,14 @@ namespace Orient.Client.Protocol.Operations.Command
                 request.AddDataItem(queryPayload.NonTextLimit);
                 request.AddDataItem(queryPayload.FetchPlan);
 
-                // TODO: Implement Serialized Params for Idempotent query
-                // HACK: 0:int means disable
-                request.AddDataItem((int)0);
+                if (queryPayload.SerializedParams == null || queryPayload.SerializedParams.Length == 0)
+                {
+                    request.AddDataItem((int)0);
+                }
+                else
+                {
+                    request.AddDataItem(queryPayload.SerializedParams);
+                }
                 return request;
             }
             // non-idempotent command (e.g. insert)

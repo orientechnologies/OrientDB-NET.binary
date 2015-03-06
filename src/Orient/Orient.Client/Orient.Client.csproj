@@ -60,6 +60,7 @@
     <Compile Include="API\Query\OSqlCreateProperty.cs" />
     <Compile Include="API\Query\OSqlDeleteCluster.cs" />
     <Compile Include="API\Query\OSqlSchema.cs" />
+    <Compile Include="API\Query\PreparedQuery.cs" />
     <Compile Include="API\Types\DatabaseInfo.cs" />
     <Compile Include="API\Types\IBaseRecord.cs" />
     <Compile Include="API\Types\OBaseRecord.cs" />
