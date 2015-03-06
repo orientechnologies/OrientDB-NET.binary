@@ -312,11 +312,15 @@ namespace Orient.Client.Protocol
 
                 while (enumerator.MoveNext())
                 {
-                    field += String.Format("'{0}':{1}", enumerator.Key, ToString(enumerator.Value));
                     iteration++;
+                    if (enumerator.Value != null)
+                    {
+                        field += String.Format("'{0}':{1}", enumerator.Key, ToString(enumerator.Value));
 
-                    if (iteration < dict.Count)
-                        field += ", ";
+                        if (iteration < dict.Count)
+                            field += ", ";
+                    }
+
                 }
                 field += "}";
             }
