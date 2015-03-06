@@ -168,12 +168,15 @@ namespace Orient.Client.Mapping
         {
             ODocument document = new ODocument();
 
-            foreach (var fm in _fields)
-                fm.MapToDocument(genericObject, document);
+            if(genericObject != null)
+            {
+                foreach (var fm in _fields)
+                    fm.MapToDocument(genericObject, document);
 
-            if (string.IsNullOrEmpty(document.OClassName))
-                document.OClassName = genericObject.GetType().Name;
-
+                if (string.IsNullOrEmpty(document.OClassName))
+                    document.OClassName = genericObject.GetType().Name;
+            }
+            
             return document;
 
             //Type genericObjectType = genericObject.GetType();
