@@ -17,7 +17,7 @@ namespace Orient.Client.Protocol.Operations
             : base(database)
         {
             _records = records;
-            // _database = database;
+            _operationType = OperationType.TX_COMMIT;
         }
 
         public override Request Request(Request request)
@@ -31,11 +31,8 @@ namespace Orient.Client.Protocol.Operations
             //var clusterId = _database.GetClusters().First(x => x.Name == className).Id;
             //_document.ORID = new ORID(clusterId, -1);
 
-            // standard request fields
+            base.Request(request);
             int transactionId = 1;
-
-            request.AddDataItem((byte)OperationType.TX_COMMIT);
-            request.AddDataItem(request.SessionId);
 
             request.AddDataItem(transactionId);
             request.AddDataItem((byte)(UseTransactionLog ? 1 : 0)); // use log 0 = no, 1 = yes
@@ -58,6 +55,8 @@ namespace Orient.Client.Protocol.Operations
             ODocument responseDocument = new ODocument();
 
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
 
             var createdRecordMapping = new Dictionary<ORID, ORID>();
             int recordCount = reader.ReadInt32EndianAware();

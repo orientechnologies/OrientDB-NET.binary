@@ -26,6 +26,7 @@ namespace Orient.Client
 
         public static int BufferLenght { get; set; }
         public static ORecordFormat Serializer { get; set; }
+        public static bool UseTokenBasedSession { get; set; }
 
         public static string SerializationImpl { get { return Serializer.ToString(); } }
 
@@ -35,6 +36,22 @@ namespace Orient.Client
             _databasePools = new List<DatabasePool>();
             BufferLenght = 1024;
             Serializer = ORecordFormat.ORecordDocument2csv;
+            /* 
+              If you enable token based session make shure enable it in server config
+              <!-- USE SESSION TOKEN, TO TURN ON SET THE 'ENABLED' PARAMETER TO 'true' -->
+              <handler class="com.orientechnologies.orient.server.token.OrientTokenHandler">
+                  <parameters>
+                      <parameter name="enabled" value="true"/>
+                      <!-- PRIVATE KEY -->
+                      <parameter name="oAuth2Key" value="GVsbG8gd29ybGQgdGhpcyBpcyBteSBzZWNyZXQgc2VjcmV0"/>
+                      <!-- SESSION LENGTH IN MINUTES, DEFAULT=1 HOUR -->
+                      <parameter name="sessionLength" value="60"/>
+                      <!-- ENCRYPTION ALGORITHM, DEFAULT=HmacSHA256 -->
+                      <parameter name="encryptionAlgorithm" value="HmacSHA256"/>
+                  </parameters>            
+               </handler>
+             */
+            UseTokenBasedSession = false;
         }
 
         public static string CreateDatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias)
@@ -125,7 +142,6 @@ namespace Orient.Client
                 }
             }
         }
-
 
     }
 }

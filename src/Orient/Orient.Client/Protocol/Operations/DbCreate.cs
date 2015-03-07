@@ -6,9 +6,9 @@ namespace Orient.Client.Protocol.Operations
     internal class DbCreate : BaseOperation
     {
         public DbCreate(ODatabase database)
-            :base(database)
+            : base(database)
         {
-
+            _operationType = OperationType.DB_CREATE;
         }
         internal string DatabaseName { get; set; }
         internal ODatabaseType DatabaseType { get; set; }
@@ -16,9 +16,8 @@ namespace Orient.Client.Protocol.Operations
 
         public override Request Request(Request request)
         {
-            // standard request fields
-            request.AddDataItem((byte)OperationType.DB_CREATE);
-            request.AddDataItem(request.SessionId);
+            base.Request(request);
+
             // operation specific fields
             request.AddDataItem(DatabaseName);
             request.AddDataItem(DatabaseType.ToString().ToLower());
@@ -35,6 +34,10 @@ namespace Orient.Client.Protocol.Operations
             {
                 return document;
             }
+
+            var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
 
             if (response.Status == ResponseStatus.OK)
             {

@@ -10,9 +10,9 @@ namespace Orient.Client.Protocol.Operations
         public DbOpen(ODatabase database)
             : base(database)
         {
-
+            _operationType = OperationType.DB_OPEN;
         }
-        
+
         internal string DatabaseName { get; set; }
         internal ODatabaseType DatabaseType { get; set; }
         internal string UserName { get; set; }
@@ -22,7 +22,7 @@ namespace Orient.Client.Protocol.Operations
         public override Request Request(Request request)
         {
             // standard request fields
-            request.AddDataItem((byte)OperationType.DB_OPEN);
+            request.AddDataItem((byte)_operationType);
             request.AddDataItem(request.SessionId);
             // operation specific fields
             if (OClient.ProtocolVersion >= 7)
@@ -40,7 +40,7 @@ namespace Orient.Client.Protocol.Operations
 
             if (OClient.ProtocolVersion > 26)
             {
-                request.AddDataItem((byte)0); // Use Token Session 0 - false, 1 - true
+                request.AddDataItem((byte)(request.Connection.UseTokenBasedSession ? 1 : 0)); // Use Token Session 0 - false, 1 - true
             }
 
             request.AddDataItem(DatabaseName);
@@ -65,16 +65,18 @@ namespace Orient.Client.Protocol.Operations
 
             var reader = response.Reader;
 
-            // operation specific fields
-            document.SetField("SessionId", reader.ReadInt32EndianAware());
-            int clusterCount = -1;
-            
-            if (OClient.ProtocolVersion > 26)
+            var sessionId = reader.ReadInt32EndianAware();
+            document.SetField("SessionId", sessionId);
+
+            if (response.Connection.ProtocolVersion > 26)
             {
                 var size = reader.ReadInt32EndianAware();
-
+                var token = reader.ReadBytesRequired(size);
+                document.SetField("Token", token);
             }
-            
+
+            int clusterCount = -1;
+
             if (OClient.ProtocolVersion >= 7)
                 clusterCount = (int)reader.ReadInt16EndianAware();
             else

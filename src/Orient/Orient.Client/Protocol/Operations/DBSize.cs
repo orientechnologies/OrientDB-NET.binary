@@ -11,14 +11,11 @@ namespace Orient.Client.Protocol.Operations
         public DBSize(ODatabase database)
             : base(database)
         {
-
+            _operationType = OperationType.DB_SIZE;
         }
         public override Request Request(Request request)
         {
-            // standard request fields
-            request.AddDataItem((byte)OperationType.DB_SIZE);
-            request.AddDataItem(request.SessionId);
-
+            base.Request(request);
             return request;
         }
 
@@ -31,6 +28,9 @@ namespace Orient.Client.Protocol.Operations
             }
 
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader); 
+            
             var size = reader.ReadInt64EndianAware();
             document.SetField<long>("size", size);
 

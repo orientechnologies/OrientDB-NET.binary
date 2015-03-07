@@ -11,12 +11,12 @@ namespace Orient.Client.Protocol.Operations
         public DBList(ODatabase database)
             : base(database)
         {
-
+            _operationType = OperationType.DB_LIST;
         }
         public override Request Request(Request request)
         {
-            request.AddDataItem((byte)OperationType.DB_LIST);
-            request.AddDataItem(request.SessionId);
+            base.Request(request);
+
             return request;
         }
 
@@ -27,7 +27,11 @@ namespace Orient.Client.Protocol.Operations
             {
                 return document;
             }
+
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
+
             int recordLength = reader.ReadInt32EndianAware();
             byte[] rawRecord = reader.ReadBytes(recordLength);
             document = Serializer.Deserialize(rawRecord, document);

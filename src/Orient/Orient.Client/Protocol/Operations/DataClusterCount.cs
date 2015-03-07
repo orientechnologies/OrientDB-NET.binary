@@ -11,15 +11,13 @@ namespace Orient.Client.Protocol.Operations
         public Boolean CountTombStones = false;
 
         public DataClusterCount(ODatabase database)
-            :base(database)
+            : base(database)
         {
-
+            _operationType = OperationType.DATACLUSTER_COUNT;
         }
         public override Request Request(Request request)
         {
-            // standard request fields
-            request.AddDataItem((byte)OperationType.DATACLUSTER_COUNT);
-            request.AddDataItem(request.SessionId);
+            base.Request(request);
 
             request.AddDataItem((short)Clusters.Count);
             foreach (var item in Clusters)
@@ -32,7 +30,7 @@ namespace Orient.Client.Protocol.Operations
              * It is applicable for autosharded storage only, otherwise it is ignored.
              */
             if (OClient.ProtocolVersion >= 13)
-                request.AddDataItem((CountTombStones) ? (byte)1 : (byte)0);
+                request.AddDataItem((byte)(CountTombStones ? 1 : 0));
 
             return request;
         }
@@ -46,6 +44,9 @@ namespace Orient.Client.Protocol.Operations
             }
 
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
+
             var size = reader.ReadInt64EndianAware();
             document.SetField<long>("count", size);
 

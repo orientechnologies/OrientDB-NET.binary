@@ -19,12 +19,12 @@ namespace Orient.Client.Protocol.Operations
         {
             _document = document;
             _database = database;
+            _operationType = OperationType.RECORD_CREATE;
         }
 
         public override Request Request(Request request)
         {
-            //if (_document.ORID != null)
-            //    throw new InvalidOperationException();
+            base.Request(request);
 
             CorrectClassName();
 
@@ -34,16 +34,10 @@ namespace Orient.Client.Protocol.Operations
                 _document.ORID = new ORID(clusterId, -1);
             }
 
-            // standard request fields
-            request.AddDataItem((byte)OperationType.RECORD_CREATE);
-            request.AddDataItem(request.SessionId);
-
             if (OClient.ProtocolVersion < 24)
             {
                 request.AddDataItem((int)-1);  // data segment id
             }
-
-
 
             request.AddDataItem((short)_document.ORID.ClusterId);
             request.AddDataItem(Serializer.Serialize(_document));
@@ -73,6 +67,8 @@ namespace Orient.Client.Protocol.Operations
             }
 
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
 
             if (OClient.ProtocolVersion > 25)
                 _document.ORID.ClusterId = reader.ReadInt16EndianAware();

@@ -12,16 +12,16 @@ namespace Orient.Client.Protocol.Operations.Command
         public Command(ODatabase database)
             : base(database)
         {
-
+            _operationType = OperationType.COMMAND;
         }
         internal OperationMode OperationMode { get; set; }
         internal CommandPayloadBase CommandPayload { get; set; }
 
         public override Request Request(Request request)
         {
-            // standard request fields
-            request.AddDataItem((byte)OperationType.COMMAND);
-            request.AddDataItem(request.SessionId);
+
+            base.Request(request);
+
             // operation specific fields
             request.AddDataItem((byte)OperationMode);
 
@@ -103,6 +103,8 @@ namespace Orient.Client.Protocol.Operations.Command
             }
 
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
 
             // operation specific fields
             PayloadStatus payloadStatus = (PayloadStatus)reader.ReadByte();
