@@ -14,33 +14,16 @@ namespace Orient.Client.Protocol.Operations
         public DataClusterAdd(ODatabase database)
             : base(database)
         {
-
-        }
-
-        public override ODocument Response(Response response)
-        {
-            ODocument document = new ODocument();
-            if (response == null)
-            {
-                return document;
-            }
-
-            var reader = response.Reader;
-            var clusterid = reader.ReadInt16EndianAware();
-            document.SetField<short>("clusterid", clusterid);
-
-            return document;
+            _operationType = OperationType.DATACLUSTER_ADD;
         }
 
         public override Request Request(Request request)
         {
-            request.AddDataItem((byte)OperationType.DATACLUSTER_ADD);
-            request.AddDataItem(request.SessionId);
-
+            base.Request(request);
 
             if (OClient.ProtocolVersion < 24)
                 request.AddDataItem(ClusterType.ToString().ToUpper());
-            
+
             request.AddDataItem(ClusterName);
 
             if (OClient.ProtocolVersion < 24)
@@ -58,6 +41,24 @@ namespace Orient.Client.Protocol.Operations
                 request.AddDataItem((short)-1); //clusterid
             }
             return request;
+        }
+        
+        public override ODocument Response(Response response)
+        {
+            ODocument document = new ODocument();
+            if (response == null)
+            {
+                return document;
+            }
+
+            var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
+
+            var clusterid = reader.ReadInt16EndianAware();
+            document.SetField<short>("clusterid", clusterid);
+
+            return document;
         }
     }
 }

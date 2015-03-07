@@ -9,6 +9,7 @@ namespace Orient.Client.Protocol
     {
         internal ResponseStatus Status { get; set; }
         internal int SessionId { get; set; }
+        internal byte[] Token { get; set; }
         internal Connection Connection { get; private set; }
         internal BinaryReader Reader { get; private set; }
 
@@ -23,6 +24,12 @@ namespace Orient.Client.Protocol
             var reader = Reader;
             Status = (ResponseStatus)reader.ReadByte();
             SessionId = reader.ReadInt32EndianAware();
+
+            //if (Connection.UseTokenBasedSession && Connection.ProtocolVersion > 26)
+            //{
+            //    var size = reader.ReadInt32EndianAware();
+            //    Token = reader.ReadBytesRequired(size);
+            //}
 
             if (Status == ResponseStatus.ERROR)
             {
@@ -45,7 +52,8 @@ namespace Orient.Client.Protocol
 
                     followByte = reader.ReadByte();
                 }
-                if (OClient.ProtocolVersion >= 19) {
+                if (OClient.ProtocolVersion >= 19)
+                {
                     int serializedVersionLength = reader.ReadInt32EndianAware();
                     var buffer = reader.ReadBytes(serializedVersionLength);
                 }

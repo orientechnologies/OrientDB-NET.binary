@@ -17,18 +17,15 @@ namespace Orient.Client.Protocol.Operations
         public SBTreeBonsaiGetEntriesMajor(ODatabase database)
             : base(database)
         {
-
+            _operationType = OperationType.SBTREE_BONSAI_GET_ENTRIES_MAJOR;
         }
 
         public override Request Request(Request request)
         {
             // (collectionPointer)(key:binary)(inclusive:boolean)(pageSize:int)
+            base.Request(request);
 
             request.OperationMode = OperationMode.Synchronous;
-
-            // standard request fields
-            request.AddDataItem((byte)OperationType.SBTREE_BONSAI_GET_ENTRIES_MAJOR);
-            request.AddDataItem(request.SessionId);
 
             // collection pointer
             request.AddDataItem(FileId);
@@ -64,6 +61,8 @@ namespace Orient.Client.Protocol.Operations
             }
 
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
 
             // (count:int)[(key:binary)(value:binary)]
             var bytesLength = reader.ReadInt32EndianAware();

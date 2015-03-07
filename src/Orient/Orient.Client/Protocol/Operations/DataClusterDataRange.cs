@@ -12,16 +12,14 @@ namespace Orient.Client.Protocol.Operations
         public DataClusterDataRange(ODatabase database)
             : base(database)
         {
-
+            _operationType = OperationType.DATACLUSTER_DATARANGE;
         }
 
         public override Request Request(Request request)
         {
-            request.OperationMode = OperationMode.Synchronous;
+            base.Request(request);
 
-            // standard request fields
-            request.AddDataItem((byte)OperationType.DATACLUSTER_DATARANGE);
-            request.AddDataItem(request.SessionId);
+            request.OperationMode = OperationMode.Synchronous;
             request.AddDataItem(ClusterId);
 
             return request;
@@ -34,8 +32,11 @@ namespace Orient.Client.Protocol.Operations
             {
                 return document;
             }
-
+            
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
+
             var begin = reader.ReadInt64EndianAware();
             var end = reader.ReadInt64EndianAware();
             var embededDoc = new ODocument();

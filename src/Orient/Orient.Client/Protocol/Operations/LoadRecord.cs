@@ -13,13 +13,13 @@ namespace Orient.Client.Protocol.Operations
         public LoadRecord(ODatabase database)
             : base(database)
         {
-
+            _operationType = OperationType.RECORD_LOAD;
         }
         private readonly ORID _orid;
         private readonly string _fetchPlan;
 
         public LoadRecord(ORID orid, string fetchPlan, ODatabase database)
-            :base(database)
+            : this(database)
         {
             _orid = orid;
             _fetchPlan = fetchPlan;
@@ -28,9 +28,8 @@ namespace Orient.Client.Protocol.Operations
 
         public override Request Request(Request request)
         {
-            // standard request fields
-            request.AddDataItem((byte)OperationType.RECORD_LOAD);
-            request.AddDataItem(request.SessionId);
+            base.Request(request);
+
             request.AddDataItem(_orid);
             request.AddDataItem(_fetchPlan);
 
@@ -51,6 +50,8 @@ namespace Orient.Client.Protocol.Operations
             }
 
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
 
             while (true)
             {
@@ -120,7 +121,7 @@ namespace Orient.Client.Protocol.Operations
                 version = reader.ReadInt32EndianAware();
                 recordType = (ORecordType)reader.ReadByte();
             }
-            else 
+            else
             {
                 recordType = (ORecordType)reader.ReadByte();
                 version = reader.ReadInt32EndianAware();

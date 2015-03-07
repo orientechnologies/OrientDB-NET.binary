@@ -8,17 +8,18 @@ namespace Orient.Client.Protocol.Operations
         public Connect(ODatabase database)
             : base(database)
         {
-
+            _operationType = OperationType.CONNECT;
         }
+
         internal string UserName { get; set; }
         internal string UserPassword { get; set; }
 
         public override Request Request(Request request)
         {
-
             // standard request fields
-            request.AddDataItem((byte)OperationType.CONNECT);
+            request.AddDataItem((byte)_operationType);
             request.AddDataItem(request.SessionId);
+
             // operation specific fields
             if (OClient.ProtocolVersion > 7)
             {
@@ -31,9 +32,10 @@ namespace Orient.Client.Protocol.Operations
             {
                 request.AddDataItem(OClient.SerializationImpl);
             }
+
             if (OClient.ProtocolVersion > 26)
             {
-                request.AddDataItem((byte)0); // Use Token Session 0 - false, 1 - true
+                request.AddDataItem((byte)(request.Connection.UseTokenBasedSession ? 1 : 0)); // Use Token Session 0 - false, 1 - true
             }
             request.AddDataItem(UserName);
             request.AddDataItem(UserPassword);
@@ -49,15 +51,18 @@ namespace Orient.Client.Protocol.Operations
             {
                 return document;
             }
-
             var reader = response.Reader;
 
-            // operation specific fields
-            document.SetField("SessionId", reader.ReadInt32EndianAware());
-            if (OClient.ProtocolVersion > 26)
+            var sessionId = reader.ReadInt32EndianAware();
+            document.SetField("SessionId", sessionId);
+
+            if (response.Connection.ProtocolVersion > 26)
             {
                 var size = reader.ReadInt32EndianAware();
+                var token = reader.ReadBytesRequired(size);
+                document.SetField("Token", token);
             }
+
             return document;
         }
 

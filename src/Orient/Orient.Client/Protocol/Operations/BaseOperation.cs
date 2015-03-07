@@ -11,6 +11,7 @@ namespace Orient.Client.Protocol.Operations
     abstract class BaseOperation : IOperation
     {
         protected ODatabase _database;
+        protected OperationType _operationType;
 
         public BaseOperation(ODatabase database)
         {
@@ -22,10 +23,32 @@ namespace Orient.Client.Protocol.Operations
             get { return RecordSerializerFactory.GetSerializer(_database); }
         }
 
+        public virtual Request Request(Request request)
+        {
+            request.AddDataItem((byte)_operationType);
+            request.AddDataItem(request.SessionId);
+
+            if (OClient.ProtocolVersion > 26 && request.Connection.UseTokenBasedSession)
+            {
+                request.AddDataItem(request.Connection.Token);
+            }
+
+            return request;
+        }
+
         public abstract ODocument Response(Response response);
 
-        public abstract Request Request(Request request);
+        internal byte[] ReadToken(BinaryReader reader)
+        {
+            var size = reader.ReadInt32EndianAware();
+            var token = reader.ReadBytesRequired(size);
+            
+            // if token renewed
+            if (token.Length > 0)
+                _database.GetConnection().Token = token;
 
+            return token;
+        }
         protected bool EndOfStream(BinaryReader reader)
         {
             BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;

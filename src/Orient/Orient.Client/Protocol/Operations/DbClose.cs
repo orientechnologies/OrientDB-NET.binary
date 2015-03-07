@@ -8,15 +8,13 @@ namespace Orient.Client.Protocol.Operations
         public DbClose(ODatabase database)
             : base(database)
         {
-
+            _operationType = OperationType.DB_CLOSE;
         }
         public override Request Request(Request request)
         {
+            base.Request(request);
+            
             request.OperationMode = OperationMode.Asynchronous;
-
-            // standard request fields
-            request.AddDataItem((byte)OperationType.DB_CLOSE);
-            request.AddDataItem(request.SessionId);
 
             return request;
         }
@@ -24,6 +22,9 @@ namespace Orient.Client.Protocol.Operations
         public override ODocument Response(Response response)
         {
             // there are no specific response fields which have to be processed for this operation
+            var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
 
             return null;
         }

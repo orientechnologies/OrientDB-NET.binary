@@ -29,7 +29,27 @@ namespace Orient.Client.Protocol
         internal string Alias { get; set; }
         internal bool IsReusable { get; set; }
         internal short ProtocolVersion { get; set; }
+
         internal int SessionId { get; private set; }
+
+        private byte[] _serverToken;
+        private byte[] _databaseToken;
+
+        internal byte[] Token
+        {
+            get
+            {
+                return (Type == ConnectionType.Database) ? _databaseToken : _serverToken;
+            }
+            set
+            {
+                if (Type == ConnectionType.Database)
+                    _databaseToken = value;
+                else
+                    _serverToken = value;
+            }
+        }
+
         internal bool IsActive
         {
             get
@@ -51,6 +71,8 @@ namespace Orient.Client.Protocol
         }
         internal ODocument Document { get; set; }
 
+        internal bool UseTokenBasedSession { get; set; }
+
         internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, string alias, bool isReusable)
         {
             Hostname = hostname;
@@ -60,12 +82,12 @@ namespace Orient.Client.Protocol
             IsReusable = isReusable;
             ProtocolVersion = 0;
             SessionId = -1;
+            UseTokenBasedSession = OClient.UseTokenBasedSession;
 
             DatabaseName = databaseName;
             DatabaseType = databaseType;
             UserName = userName;
             UserPassword = userPassword;
-
             InitializeDatabaseConnection(databaseName, databaseType, userName, userPassword);
         }
 
@@ -77,6 +99,8 @@ namespace Orient.Client.Protocol
             IsReusable = false;
             ProtocolVersion = 0;
             SessionId = -1;
+            UseTokenBasedSession = OClient.UseTokenBasedSession;
+
             UserName = userName;
             UserPassword = userPassword;
 
@@ -183,6 +207,9 @@ namespace Orient.Client.Protocol
         internal void Destroy()
         {
             SessionId = -1;
+            _databaseToken = null;
+            _serverToken = null;
+
             try
             {
                 if ((_networkStream != null) && (_socket != null))
@@ -249,6 +276,8 @@ namespace Orient.Client.Protocol
             _networkStream.Read(_readBuffer, 0, 2);
 
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
+            if (ProtocolVersion < 27)
+                UseTokenBasedSession = false;
 
             // execute db_open operation
             DbOpen operation = new DbOpen(null);
@@ -259,6 +288,7 @@ namespace Orient.Client.Protocol
 
             Document = ExecuteOperation(operation);
             SessionId = Document.GetField<int>("SessionId");
+            _databaseToken = Document.GetField<byte[]>("Token");
         }
 
         private void InitializeServerConnection(string userName, string userPassword)
@@ -280,6 +310,9 @@ namespace Orient.Client.Protocol
             _networkStream.Read(_readBuffer, 0, 2);
 
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
+            if (ProtocolVersion < 27)
+                UseTokenBasedSession = false;
+
             if (ProtocolVersion <= 0)
                 throw new OException(OExceptionType.Connection, "Incorect Protocol Version " + ProtocolVersion);
 
@@ -290,6 +323,7 @@ namespace Orient.Client.Protocol
 
             Document = ExecuteOperation(operation);
             SessionId = Document.GetField<int>("SessionId");
+            _serverToken = Document.GetField<byte[]>("Token");
         }
 
         private void Send(byte[] rawData)

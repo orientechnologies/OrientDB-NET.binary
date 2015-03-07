@@ -25,7 +25,7 @@ namespace Orient.Client.API.Query
 
         public ODocument Run()
         {
-            var operation = new RecordMetadata(_orid);
+            var operation = new RecordMetadata(_orid, _connection.Database);
             return _connection.ExecuteOperation(operation);
         }
     }

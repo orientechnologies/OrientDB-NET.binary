@@ -10,15 +10,13 @@ namespace Orient.Client.Protocol.Operations
     internal class ConfigList : BaseOperation
     {
         public ConfigList(ODatabase database)
-            :base(database)
+            : base(database)
         {
-
+            _operationType = OperationType.CONFIG_LIST;
         }
         public override Request Request(Request request)
         {
-            // standard request fields
-            request.AddDataItem((byte)OperationType.CONFIG_LIST);
-            request.AddDataItem(request.SessionId);
+            base.Request(request);
             return request;
         }
 
@@ -31,7 +29,11 @@ namespace Orient.Client.Protocol.Operations
                 return document;
             }
 
-            BinaryReader reader = response.Reader;
+            var reader = response.Reader;
+
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
+
             short len = reader.ReadInt16EndianAware();
             Dictionary<string, string> configList = new Dictionary<string, string>();
             for (int i = 0; i < len; i++)

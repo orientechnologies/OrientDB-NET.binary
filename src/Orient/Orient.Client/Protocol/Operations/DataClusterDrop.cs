@@ -12,13 +12,11 @@ namespace Orient.Client.Protocol.Operations
         public DataClusterDrop(ODatabase database)
             : base(database)
         {
-                
+            _operationType = OperationType.DATACLUSTER_DROP;
         }
         public override Request Request(Request request)
         {
-            // standard request fields
-            request.AddDataItem((byte)OperationType.DATACLUSTER_DROP);
-            request.AddDataItem(request.SessionId);
+            base.Request(request);
 
             if (OClient.ProtocolVersion >= 18)
             {
@@ -36,6 +34,9 @@ namespace Orient.Client.Protocol.Operations
             }
 
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
+
             var b = reader.ReadByte();
             var removeLocaly = b == 1 ? true : false;
             document.SetField<bool>("remove_localy", removeLocaly);

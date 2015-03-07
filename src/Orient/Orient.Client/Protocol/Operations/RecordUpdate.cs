@@ -14,19 +14,17 @@ namespace Orient.Client.Protocol.Operations
             : base(database)
         {
             _document = document;
-            _database = database;
+            _operationType = OperationType.RECORD_UPDATE;
         }
 
         public override Request Request(Request request)
         {
+            base.Request(request);
+
             if (_document.ORID != null)
                 throw new InvalidOperationException();
 
             CorrectClassName();
-
-            // standard request fields
-            request.AddDataItem((byte)OperationType.RECORD_UPDATE);
-            request.AddDataItem(request.SessionId);
 
             request.AddDataItem(_document.ORID);
             if (OClient.ProtocolVersion >= 23)
@@ -53,6 +51,8 @@ namespace Orient.Client.Protocol.Operations
             }
 
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
 
             _document.OVersion = reader.ReadInt32EndianAware();
 

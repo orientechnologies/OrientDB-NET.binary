@@ -9,23 +9,17 @@ namespace Orient.Client.Protocol.Operations
 {
     internal class RecordMetadata : BaseOperation
     {
-        public RecordMetadata(ODatabase database)
-            : base(database)
-        {
-
-        }
         public ORID _orid { get; set; }
 
-        public RecordMetadata(ORID rid)
-            :base(null)
+        public RecordMetadata(ORID rid, ODatabase database)
+            : base(database)
         {
             _orid = rid;
+            _operationType = OperationType.RECORD_METADATA;
         }
         public override Request Request(Request request)
         {
-
-            request.AddDataItem((byte)OperationType.RECORD_METADATA);
-            request.AddDataItem(request.SessionId);
+            base.Request(request);
 
             request.AddDataItem((short)_orid.ClusterId);
             request.AddDataItem((long)_orid.ClusterPosition);
@@ -41,8 +35,10 @@ namespace Orient.Client.Protocol.Operations
             {
                 return document;
             }
-
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
+
             document.ORID = ReadORID(reader);
             document.OVersion = reader.ReadInt32EndianAware();
 

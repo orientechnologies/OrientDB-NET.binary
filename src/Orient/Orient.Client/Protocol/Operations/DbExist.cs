@@ -8,7 +8,7 @@ namespace Orient.Client.Protocol.Operations
         public DbExist(ODatabase database)
             : base(database)
         {
-
+            _operationType = OperationType.DB_EXIST;
         }
 
         internal string DatabaseName { get; set; }
@@ -16,9 +16,7 @@ namespace Orient.Client.Protocol.Operations
 
         public override Request Request(Request request)
         {
-            // standard request fields
-            request.AddDataItem((byte)OperationType.DB_EXIST);
-            request.AddDataItem(request.SessionId);
+            base.Request(request);
 
             // operation specific fields
             request.AddDataItem(DatabaseName);
@@ -38,6 +36,8 @@ namespace Orient.Client.Protocol.Operations
             }
 
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
 
             // operation specific fields
             byte existByte = reader.ReadByte();

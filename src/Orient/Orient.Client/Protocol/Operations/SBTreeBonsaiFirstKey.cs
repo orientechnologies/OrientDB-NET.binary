@@ -14,15 +14,13 @@ namespace Orient.Client.Protocol.Operations
         public SBTreeBonsaiFirstKey(ODatabase database)
             : base(database)
         {
-
+            _operationType = OperationType.SBTREE_BONSAI_FIRST_KEY;
         }
         public override Request Request(Request request)
         {
-            request.OperationMode = OperationMode.Synchronous;
+            base.Request(request);
 
-            // standard request fields
-            request.AddDataItem((byte)OperationType.SBTREE_BONSAI_FIRST_KEY);
-            request.AddDataItem(request.SessionId);
+            request.OperationMode = OperationMode.Synchronous;
 
             // collection pointer
             request.AddDataItem(FileId);
@@ -41,6 +39,8 @@ namespace Orient.Client.Protocol.Operations
             }
 
             var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader); 
 
             // (keySerializerId:byte)(key:binary)
             var bytesLength = reader.ReadInt32EndianAware();

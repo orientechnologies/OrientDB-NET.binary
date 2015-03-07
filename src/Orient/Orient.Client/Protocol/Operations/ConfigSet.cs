@@ -11,16 +11,14 @@ namespace Orient.Client.Protocol.Operations
         public ConfigSet(ODatabase database)
             : base(database)
         {
-
+            _operationType = OperationType.CONFIG_SET;
         }
         public string Key { get; set; }
         public string Value { get; set; }
 
         public override Request Request(Request request)
         {
-            // standard request fields
-            request.AddDataItem((byte)OperationType.CONFIG_SET);
-            request.AddDataItem(request.SessionId);
+            base.Request(request);
 
             request.AddDataItem(Key);
             request.AddDataItem(Value);
@@ -36,6 +34,10 @@ namespace Orient.Client.Protocol.Operations
             {
                 return document;
             }
+            
+            var reader = response.Reader;
+            if (response.Connection.ProtocolVersion > 26 && response.Connection.UseTokenBasedSession)
+                ReadToken(reader);
 
             if (response.Status == ResponseStatus.OK)
             {
