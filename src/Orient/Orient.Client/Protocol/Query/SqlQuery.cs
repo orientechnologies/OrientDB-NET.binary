@@ -527,7 +527,7 @@ namespace Orient.Client.Protocol
 
         #region ToString
 
-        internal string ToString(object value)
+        private string ToString(object value)
         {
             string sql = "";
 
@@ -584,9 +584,10 @@ namespace Orient.Client.Protocol
                 }
 
                 if (!string.IsNullOrEmpty(document.OClassName))
-                    sql += ",'@class':'" + document.OClassName + "',";
+                    sql += ",'@class':'" + document.OClassName + "'";//,";
 
-                sql += "'@type':'d','@version':" + document.OVersion + "}";
+                //sql += "'@type':'d','@version':" + document.OVersion;
+                sql += "}";
             }
             else if (value is Guid || value is Enum)
             {
