@@ -19,6 +19,5 @@ namespace Orient.Client.Mapping
             if (item is IConvertible)
                 SetPropertyValue(typedObject, Convert.ChangeType(item, typeof(long)));
         }
-
     }
 }
