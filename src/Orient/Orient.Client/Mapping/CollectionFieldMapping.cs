@@ -34,6 +34,10 @@ namespace Orient.Client.Mapping
             {
                 ((IList)collection).Add(Enum.Parse(itemType, item.ToString()));
             }
+            else if (itemType == typeof(Guid))
+            {
+                ((IList)collection).Add(Guid.Parse(item.ToString()));
+            }
             else if (item is IConvertible || itemType.IsAssignableFrom(item.GetType()))
             {
                 ((IList)collection).Add(Convert.ChangeType(item, itemType));
