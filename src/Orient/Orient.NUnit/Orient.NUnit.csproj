@@ -52,6 +52,7 @@
     <Compile Include="Issues\GitHub_issue52.cs" />
     <Compile Include="Issues\GitHub_issue53.cs" />
     <Compile Include="Issues\GitHub_issue54.cs" />
+    <Compile Include="Issues\GitHub_issue57.cs" />
     <Compile Include="Issues\GitHub_issue8.cs" />
     <Compile Include="Query\PreparedQueryTest.cs" />
     <Compile Include="Serialization\RecordCSVSerializerTest.cs" />
