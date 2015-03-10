@@ -59,22 +59,35 @@ namespace Orient.Client.Mapping
                 object key = enumerator.Key;
                 object value = enumerator.Value;
 
-                if (_keyType == typeof(Int32))
+                if (_keyType == typeof(Int16) ||
+                    _keyType == typeof(Int32) ||
+                    _keyType == typeof(Int64))
                 {
                     key = Convert.ChangeType(enumerator.Key, _keyType);
+                }
+                else if (_keyType == typeof(Guid))
+                {
+                    key = Guid.Parse(enumerator.Key.ToString());
                 }
                 else if (_keyType.IsEnum)
                 {
                     key = Enum.Parse(_keyType, enumerator.Key.ToString());
                 }
-                if (_valueType == typeof(Int32))
+                if (_valueType == typeof(Int16) ||
+                    _valueType == typeof(Int32) ||
+                    _valueType == typeof(Int64))
                 {
                     value = Convert.ChangeType(enumerator.Value, _valueType);
+                }
+                else if (_valueType == typeof(Guid))
+                {
+                    value = Guid.Parse(enumerator.Value.ToString());
                 }
                 else if (_valueType.IsEnum)
                 {
                     value = Enum.Parse(_valueType, enumerator.Value.ToString());
                 }
+
                 if (_needsMapping)
                 {
                     var oMaped = _elementFactory();

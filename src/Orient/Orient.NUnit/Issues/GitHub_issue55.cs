@@ -26,9 +26,18 @@ namespace Orient.Tests.Issues
                 employee.Name = new SortedList<string, string>();
                 employee.Name.Add("Andrew", "Andrew");
                 employee.Name.Add("Jack", "Jack");
+                employee.Ids = new SortedList<Guid, Guid>();
+                employee.Ids.Add(Guid.NewGuid(), Guid.NewGuid());
+                employee.Ids.Add(Guid.NewGuid(), Guid.NewGuid());
                 employee.Age = new SortedList<int, int>();
                 employee.Age.Add(1, 2);
                 employee.Age.Add(2, 4);
+                employee.Height = new SortedList<short, short>();
+                employee.Height.Add(1, 2);
+                employee.Height.Add(2, 4);
+                employee.Tall = new SortedList<long, long>();
+                employee.Tall.Add(1234567890123456789, 987654321098765432);
+                employee.Tall.Add(987654321098765432, 1234567890123456789);
                 employee.Childs = new SortedList<int, EmployeeCommonType>();
                 employee.Childs.Add(1, new EmployeeCommonType() { Id = Guid.NewGuid() });
                 employee.Childs.Add(2, new EmployeeCommonType() { Id = Guid.NewGuid() });
@@ -47,10 +56,25 @@ namespace Orient.Tests.Issues
                 Assert.AreEqual(employee.Name["Jack"], result.Name["Jack"]);
                 Assert.AreEqual(employee.Name["Andrew"], result.Name["Andrew"]);
 
+                Assert.True(result.Ids.ContainsKey(employee.Ids.Keys.ToArray()[0]));
+                Assert.True(result.Ids.ContainsKey(employee.Ids.Keys.ToArray()[1]));
+                Assert.AreEqual(employee.Ids[employee.Ids.Keys.ToArray()[0]], result.Ids[employee.Ids.Keys.ToArray()[0]]);
+                Assert.AreEqual(employee.Ids[employee.Ids.Keys.ToArray()[1]], result.Ids[employee.Ids.Keys.ToArray()[1]]);
+
                 Assert.True(result.Age.ContainsKey(1));
                 Assert.True(result.Age.ContainsKey(2));
                 Assert.AreEqual(employee.Age[1], result.Age[1]);
                 Assert.AreEqual(employee.Age[2], result.Age[2]);
+
+                Assert.True(result.Height.ContainsKey(employee.Height.Keys.ToArray()[0]));
+                Assert.True(result.Height.ContainsKey(employee.Height.Keys.ToArray()[1]));
+                Assert.AreEqual(employee.Height[employee.Height.Keys.ToArray()[0]], result.Height[employee.Height.Keys.ToArray()[0]]);
+                Assert.AreEqual(employee.Height[employee.Height.Keys.ToArray()[1]], result.Height[employee.Height.Keys.ToArray()[1]]);
+
+                Assert.True(result.Tall.ContainsKey(employee.Tall.Keys.ToArray()[0]));
+                Assert.True(result.Tall.ContainsKey(employee.Tall.Keys.ToArray()[1]));
+                Assert.AreEqual(employee.Tall[employee.Tall.Keys.ToArray()[0]], result.Tall[employee.Tall.Keys.ToArray()[0]]);
+                Assert.AreEqual(employee.Tall[employee.Tall.Keys.ToArray()[1]], result.Tall[employee.Tall.Keys.ToArray()[1]]);
 
                 Assert.AreEqual(employee.Childs[1].Id, result.Childs[1].Id);
                 Assert.AreEqual(employee.Childs[2].Id, result.Childs[2].Id);
@@ -66,15 +90,15 @@ namespace Orient.Tests.Issues
         public class EmployeeSortedListType
         {
             public Guid Id { get; set; }
-
             public SortedList<string, string> Name { get; set; }
-
+            public SortedList<Guid, Guid> Ids { get; set; }
             public SortedList<int, int> Age { get; set; }
-
+            public SortedList<short, short> Height { get; set; }
+            public SortedList<long, long> Tall { get; set; }
             public SortedList<Color, Color> FavoriteColor { get; set; }
-
             public SortedList<int, EmployeeCommonType> Childs { get; set; }
         }
+
 
         public class EmployeeCommonType
         {
