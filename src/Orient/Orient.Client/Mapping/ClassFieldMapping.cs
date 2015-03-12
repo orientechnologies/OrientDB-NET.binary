@@ -11,6 +11,13 @@ namespace Orient.Client.Mapping
 
         public override void MapToObject(ODocument document, TTarget typedObject)
         {
+            var documentField = document.GetField<ODocument>(_fieldPath);
+
+            if (documentField == null)
+            {
+                return;
+            }
+
             TProperty result = new TProperty();
             TypeMapper<TProperty>.Instance.ToObject(document.GetField<ODocument>(_fieldPath), result);
             SetPropertyValue(typedObject, result);
@@ -18,7 +25,15 @@ namespace Orient.Client.Mapping
 
         public override void MapToDocument(TTarget typedObject, ODocument document)
         {
-            var subDoc = TypeMapper<TProperty>.Instance.ToDocument(GetPropertyValue(typedObject));
+            var sourceValue = GetPropertyValue(typedObject);
+
+            ODocument subDoc = null;
+
+            if (sourceValue != null)
+            {
+                subDoc = TypeMapper<TProperty>.Instance.ToDocument(sourceValue);
+            }
+
             document.SetField(_fieldPath, subDoc);
         }
     }

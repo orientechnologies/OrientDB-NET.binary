@@ -103,12 +103,13 @@ namespace Orient.Client.Mapping
 
             var dictionaryType = typeof(Dictionary<,>).MakeGenericType(_keyType, _needsMapping ? typeof(ODocument) : _valueType);
 
-            var targetDictionary = (IDictionary)Activator.CreateInstance(dictionaryType);
+            IDictionary targetDictionary = null;
 
             var sourceList = (IDictionary)GetPropertyValue(typedObject);
 
             if (sourceList != null)
             {
+                targetDictionary = (IDictionary)Activator.CreateInstance(dictionaryType);
                 var enumerator = sourceList.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
