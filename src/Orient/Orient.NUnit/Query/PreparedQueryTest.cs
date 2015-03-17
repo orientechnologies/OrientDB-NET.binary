@@ -64,6 +64,7 @@ namespace Orient.Tests.Query
 
 
         }
+
         [Test]
         public void ShouldExeccutePreparedQueryByName()
         {
@@ -89,6 +90,50 @@ namespace Orient.Tests.Query
             Assert.That(docLuca.GetField<string>("name"), Is.EqualTo("Luca"));
             Assert.That(docLuca.GetField<string>("surname"), Is.EqualTo("Garulli"));
 
+        }
+
+        [Test]
+        public void ShouldCreateDocumentsWithPreparedCommandByName()
+        {
+            var createQuery = new PreparedCommand("insert into Profile set name = :name , surname = :surname");
+            var values = new[]{ 
+                new { Name="Pura",Surname="Shields"},
+                new { Name="Deedra",Surname="Bonura"},
+                new { Name="Foster",Surname="Coppin"},
+                new { Name="Bradly",Surname="Sanzone"}
+            };
+            foreach (var item in values)
+            {
+                var createdDoc = _database.Command(createQuery)
+                    .Set("name", item.Name)
+                    .Set("surname", item.Surname)
+                    .Run().ToSingle();
+
+                Assert.That(createdDoc.ORID, Is.Not.Null);
+                Assert.That(createdDoc.GetField<string>("name"), Is.EqualTo(item.Name));
+                Assert.That(createdDoc.GetField<string>("surname"), Is.EqualTo(item.Surname));
+            }
+        }
+
+        [Test]
+        public void ShouldCreateDocumentsWithPreparedCommandByPossition()
+        {
+            var createQuery = new PreparedCommand("insert into Profile set name = ? , surname = ?");
+            var values = new[]{ 
+                new { Name="Pura",Surname="Shields"},
+                new { Name="Deedra",Surname="Bonura"},
+                new { Name="Foster",Surname="Coppin"},
+                new { Name="Bradly",Surname="Sanzone"}
+            };
+            foreach (var item in values)
+            {
+                var createdDoc = _database.Command(createQuery)
+                    .Run(item.Name, item.Surname).ToSingle();
+
+                Assert.That(createdDoc.ORID, Is.Not.Null);
+                Assert.That(createdDoc.GetField<string>("name"), Is.EqualTo(item.Name));
+                Assert.That(createdDoc.GetField<string>("surname"), Is.EqualTo(item.Surname));
+            }
         }
     }
 }

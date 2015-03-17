@@ -248,7 +248,13 @@ namespace Orient.Client
 
             return new OCommandResult(document);
         }
-        
+
+        public PreparedCommand Command(PreparedCommand command)
+        {
+            command.SetConnection(_connection);
+            return command;
+        }
+
         public long Size
         {
             get
@@ -313,5 +319,6 @@ namespace Orient.Client
             //return Clusters(clusterIds.Select(id => new OCluster { Name = GetClusterNameFor(id), Id = id }));
             return Clusters(clusterIds.Select(id => new OCluster { Id = id }));
         }
+
     }
 }
