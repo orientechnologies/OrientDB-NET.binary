@@ -11,6 +11,108 @@ namespace Orient.Console
     {
         static void Main(string[] args)
         {
+            CreateDatabaseTestManualy();
+            System.Console.WriteLine("Press any key to exit ...");
+            System.Console.ReadKey(true);
+        }
+
+        static void CreateDatabaseTestManualy()
+        {
+            using (var server = new OServer("127.0.0.1", 2424, "root", "root"))
+            {
+                var created = false;
+                try
+                {
+                    created = server.CreateDatabase("TestManualy", ODatabaseType.Document, OStorageType.PLocal);
+
+                    if (!created)
+                        throw new Exception("Database not created");
+
+                    var exists = server.DatabaseExist("TestManualy", OStorageType.PLocal);
+
+                    if (!exists)
+                        throw new Exception("Database not exists");
+
+                    System.Console.WriteLine("Database created - get server configuration");
+
+                    var config = server.ConfigList();
+                    foreach (var item in config)
+                    {
+                        System.Console.WriteLine("{0} : {1}",
+                            item.Key, item.Value);
+                    }
+
+                    System.Console.WriteLine("try connect to the database and query");
+
+                    OClient.CreateDatabasePool(
+                            "localhost",
+                            2424,
+                            "TestManualy",
+                            ODatabaseType.Graph,
+                            "root",
+                            "root",
+                            10,
+                            "AppConnection"
+                        );
+                    using (var database = new ODatabase("AppConnection"))
+                    {
+                        var documents = database.Query("select from OUser");
+                        foreach (var item in documents)
+                        {
+                            System.Console.WriteLine("Name: {0} Status: {1}",
+                                item.GetField<string>("name"), item.GetField<string>("status"));
+                        }
+                    }
+                    OClient.DropDatabasePool("AppConnection");
+                }
+                finally
+                {
+                    if (created)
+                        server.DropDatabase("TestManualy", OStorageType.PLocal);
+                }
+            }
+        }
+
+        static void CreateDatabaseTestUsingContext()
+        {
+            using (var context = new TestDatabaseContext())
+            using (var database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+            {
+                var documents = database.Query("select from OUser");
+                foreach (var item in documents)
+                {
+                    System.Console.WriteLine("Name: {0} Status: {1}",
+                        item.GetField<string>("name"), item.GetField<string>("status"));
+                }
+            }
+        }
+        static void CreateDatabasePoolTest()
+        {
+            OClient.CreateDatabasePool(
+                    "localhost",
+                    2424,
+                    "GratefulDeadConcerts",
+                    ODatabaseType.Graph,
+                    "root",
+                    "root",
+                    10,
+                    "AppConnection"
+                );
+
+            using (var database = new ODatabase("AppConnection"))
+            {
+                var documents = database.Query("select from v");
+                foreach (var item in documents)
+                {
+                    System.Console.WriteLine("Name: {0} Type: {1}",
+                        item.GetField<string>("name"), item.GetField<string>("type"));
+                }
+            }
+
+            OClient.DropDatabasePool("AppConnection");
+        }
+        static void ConnectionPoolTest()
+        {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
@@ -56,7 +158,7 @@ namespace Orient.Console
                     List<ODocument> docs = database.Query("select from Person");
                 }
 
-               bool exit = false;
+                bool exit = false;
 
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
@@ -81,8 +183,8 @@ namespace Orient.Console
                 while (!exit)
                 {
                     System.Console.WriteLine(
-                        "Current pool size: {0} @ {1} : {2}", 
-                        OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias), 
+                        "Current pool size: {0} @ {1} : {2}",
+                        OClient.DatabasePoolCurrentSize(TestConnection.GlobalTestDatabaseAlias),
                         DateTime.Now.ToString(),
                         Query().Count
                     );
@@ -94,11 +196,8 @@ namespace Orient.Console
                         exit = true;
                     }
                 }
-
-
             }
         }
-
         static List<ODocument> Query()
         {
             List<ODocument> documents;
