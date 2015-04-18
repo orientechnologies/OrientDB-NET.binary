@@ -68,6 +68,7 @@
     <Compile Include="API\Types\OEdge.cs" />
     <Compile Include="API\Types\OEmbeddedRidBag.cs" />
     <Compile Include="API\Types\ORecordFormat.cs" />
+    <Compile Include="API\Types\OToken.cs" />
     <Compile Include="API\Types\OVertex.cs" />
     <Compile Include="API\Query\OCommandResult.cs" />
     <Compile Include="API\OProperty.cs" />
