@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Orient.Client.API.Types;
 using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
@@ -72,6 +73,7 @@ namespace Orient.Client.Protocol.Operations
             {
                 var size = reader.ReadInt32EndianAware();
                 var token = reader.ReadBytesRequired(size);
+                var t = OToken.Parse(token);
                 document.SetField("Token", token);
             }
 

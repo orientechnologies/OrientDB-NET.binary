@@ -51,7 +51,7 @@ namespace Orient.Client
                   </parameters>            
                </handler>
              */
-            UseTokenBasedSession = false;
+            UseTokenBasedSession = true;
         }
 
         public static string CreateDatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias)
