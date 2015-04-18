@@ -18,6 +18,11 @@ namespace Orient.Client.API.Query
             _schema = Run();
         }
 
+        public IEnumerable<string> Classes()
+        {
+            return _schema.Select(d => d.GetField<string>("name"));
+        }
+
         public IEnumerable<ODocument> Properties(string @class)
         {
             var pDocument = _schema.FirstOrDefault(d => d.GetField<string>("name") == @class);

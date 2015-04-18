@@ -8,10 +8,10 @@ namespace Orient.Client.Mapping
 {
     internal abstract class CollectionNamedFieldMapping<TTarget> : NamedFieldMapping<TTarget>
     {
-        private readonly TypeMapperBase _mapper;
+        protected TypeMapperBase _mapper;
         private readonly Type _targetElementType;
-        private readonly bool _needsMapping;
-        private Func<object> _elementFactory;
+        protected bool _needsMapping;
+        protected Func<object> _elementFactory;
 
         public CollectionNamedFieldMapping(PropertyInfo propertyInfo, string fieldPath)
             : base(propertyInfo, fieldPath)
@@ -34,6 +34,7 @@ namespace Orient.Client.Mapping
             object sourcePropertyValue = document.GetField<object>(_fieldPath);
 
             var collection = sourcePropertyValue as IList;
+
             if (collection == null) // if we only have one item currently stored (but scope for more) we create a temporary list and put our single item in it.
             {
                 collection = new ArrayList();
@@ -93,7 +94,7 @@ namespace Orient.Client.Mapping
 
         }
 
-        private static bool NeedsNoConversion(Type elementType)
+        protected bool NeedsNoConversion(Type elementType)
         {
             return elementType.IsPrimitive ||
                    (elementType == typeof(string)) ||

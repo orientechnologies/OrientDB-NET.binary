@@ -76,8 +76,8 @@ namespace Orient.Tests.Issues
 
             employee.SomeIListInteger = new List<int>();
             employee.SomeIListInteger.Add(7);
-            employee.MyKeyValues = new Dictionary<string, object>();
-            employee.MyKeyValues.Add("1", "Name");
+            employee.MyKeyValues = new Dictionary<string, long>();
+            employee.MyKeyValues.Add("1", 578933315553);
             employee.MyKeyValues.Add("2", 123445555555555);
 
             employee.MyFavoriteColor = DemoEmployee.Color.Yellow;
@@ -143,7 +143,7 @@ namespace Orient.Tests.Issues
 
             public IList<int> SomeIListInteger { get; set; }
 
-            public Dictionary<string, object> MyKeyValues { get; set; }  // Map in orientdb
+            public Dictionary<string, long> MyKeyValues { get; set; }  // Map in orientdb
 
             public Color MyFavoriteColor { get; set; }
 
