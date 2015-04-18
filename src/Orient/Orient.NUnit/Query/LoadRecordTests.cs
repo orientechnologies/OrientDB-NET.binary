@@ -88,6 +88,7 @@ namespace Orient.Tests.Query
                 // prerequisites
                 database
                     .Create.Class("TestClass")
+                    .Extends("V")
                     .Run();
 
                 ODocument document = new ODocument()
