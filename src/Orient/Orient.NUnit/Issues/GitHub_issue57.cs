@@ -34,7 +34,8 @@ namespace Orient.Tests.Issues
         }
 
         [Test]
-        public void x()
+        [Ignore]
+        public void Example_For_Question57()
         {
             // create three classes extending V
             var personClusterId = _database.Create.Class("Persons").Extends("V").Run();
