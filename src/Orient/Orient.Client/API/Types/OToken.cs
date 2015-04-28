@@ -29,7 +29,7 @@ namespace Orient.Client.API.Types
             var token = new OToken();
             token.rawToken = buffer;
 
-            if (buffer.Length < 0)
+            if (buffer.Length <= 0)
                 return null;
 
             using (var stream = new MemoryStream(buffer))

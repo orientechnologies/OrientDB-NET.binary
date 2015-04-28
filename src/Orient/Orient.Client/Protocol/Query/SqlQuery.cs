@@ -595,7 +595,10 @@ namespace Orient.Client.Protocol
             }
             else if (value is Decimal)
             {
-                sql = string.Join(" ", value.ToInvarianCultureString() + "d"); // Bug in orientdb #3483 after that use suffix + "c");
+                sql = string.Join(" ", value.ToInvarianCultureString() + "d");
+                // Experimental function https://github.com/orientechnologies/orientdb/issues/3483
+                // sql = string.Join(" ", "decimal(", value.ToInvarianCultureString(), ")");
+                // Bug in orientdb #3483 after that use suffix + "c");
             }
             else if (value is float)
             {

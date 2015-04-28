@@ -45,11 +45,14 @@ namespace Orient.Tests.Issues
                 employee.WorkingDays.Add(DayOfWeek.Monday);
                 employee.WorkingDays.Add(DayOfWeek.Tuesday);
                 employee.WorkingDays.Add(DayOfWeek.Wednesday);
+                //employee.Salary = decimal.MaxValue;
 
                 var document = _database.Insert<DemoEmployee>(employee).Run();
+                //var document = _database.Create.Document<DemoEmployee>(employee).Run();
                 var result = document.To<DemoEmployee>();
 
                 Assert.That(result, Is.Not.Null);
+                //Assert.That(result.Salary, Is.EqualTo(decimal.MaxValue));
                 Assert.That(result.MyFavoriteColor, Is.EqualTo(DemoEmployee.Color.Red));
                 Assert.That(result.SomeOtherId, Is.EqualTo(guid));
                 Assert.That(result.Name, Is.EqualTo("Janet"));
@@ -58,6 +61,30 @@ namespace Orient.Tests.Issues
             }
         }
 
+
+        [Test]
+        public void CSVSerializerShouldSupportDecimalValues()
+        {
+            var document = new ODocument();
+            document.OClassName = "DemoEmployee";
+            document.SetField("Min", decimal.MinValue);
+            document.SetField("Max", decimal.MaxValue);
+
+            var createdDocument = _database.Create.Document("DemoEmployee")
+                .Set(document)
+                .Run();
+
+            var loadedDocument = _database.Load.ORID(createdDocument.ORID).Run();
+
+            Assert.That(createdDocument, Is.Not.Null);
+            Assert.That(createdDocument.GetField<decimal>("Min"), Is.EqualTo(decimal.MinValue));
+            Assert.That(createdDocument.GetField<decimal>("Max"), Is.EqualTo(decimal.MaxValue));
+
+            Assert.That(loadedDocument, Is.Not.Null);
+            Assert.That(loadedDocument.GetField<decimal>("Min"), Is.EqualTo(decimal.MinValue));
+            Assert.That(loadedDocument.GetField<decimal>("Max"), Is.EqualTo(decimal.MaxValue));
+
+        }
         public class DemoEmployee
         {
             public Guid SomeOtherId { get; set; }
