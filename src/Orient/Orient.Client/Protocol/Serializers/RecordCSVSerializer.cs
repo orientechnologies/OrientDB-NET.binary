@@ -182,7 +182,21 @@ namespace Orient.Client.Protocol.Serializers
                             bld.Append(",");
 
                         first = false;
-                        bld.Append("\"" + keyVal.Key + "\":" + SerializeValue(keyVal.Value));
+
+                        //force serialized value as string in specific cases
+                        string serialized = SerializeValue(keyVal.Value);
+
+                        if (serialized.Length > 0)
+                        {
+                            char c = serialized[0];
+                            if (c == '.' || c == '#' || c == '<' || c == '[' || c == '(' || c == '{' || c == '0')
+                            {
+                                serialized = "\"" + serialized + "\"";
+                            }
+                        }
+
+
+                        bld.Append("\"" + keyVal.Key + "\":" + serialized);
                     }
 
                     bld.Append("}");
