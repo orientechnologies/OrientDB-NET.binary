@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Orient.Client.Protocol;
 
@@ -11,6 +12,21 @@ namespace Orient.Client
         internal OCommandResult(ODocument document)
         {
             _document = document;
+        }
+
+        public int GetModifiedCount()
+        {
+            switch (_document.GetField<PayloadStatus>("PayloadStatus"))
+            {
+                case PayloadStatus.SingleRecord:
+                    return 1;
+                case PayloadStatus.RecordCollection:
+                    return _document.GetField<List<ODocument>>("Content").Count;
+                case PayloadStatus.SerializedResult:
+                    return Convert.ToInt32(_document.GetField<object>("Content"));
+            }
+
+            return 0;
         }
 
         public ODocument ToSingle()
