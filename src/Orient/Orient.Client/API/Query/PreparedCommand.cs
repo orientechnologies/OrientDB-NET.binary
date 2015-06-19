@@ -92,7 +92,7 @@ namespace Orient.Client.API.Query
             return _query;
         }
 
-        public PreparedCommand Set(string key, string value)
+        public PreparedCommand Set(string key, object value)
         {
             if (_parameters == null)
                 _parameters = new Dictionary<string, object>();

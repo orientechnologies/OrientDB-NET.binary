@@ -188,20 +188,12 @@ namespace Orient.Client
             return convertedList;
         }
 
-        public List<ODocument> Query(string sql, string fetchPlan, Dictionary<string, object> parameters = null)
+        public List<ODocument> Query(string sql, string fetchPlan)
         {
             CommandPayloadQuery payload = new CommandPayloadQuery();
             payload.Text = sql;
             payload.NonTextLimit = -1;
             payload.FetchPlan = fetchPlan;
-
-            if (parameters != null)
-            {
-                ODocument paramsDoc = new ODocument();
-                paramsDoc.OClassName = "";
-                paramsDoc["params"] = parameters;
-                payload.SerializedParams = RecordSerializerFactory.GetSerializer(this).Serialize(paramsDoc);
-            }
 
             Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Asynchronous;
@@ -220,27 +212,13 @@ namespace Orient.Client
 
         #endregion
 
-        public OCommandResult SqlBatch(string batch, Dictionary<string, object> parameters = null)
+        public OCommandQuery SqlBatch(string batch)
         {
             CommandPayloadScript payload = new CommandPayloadScript();
             payload.Language = "sql";
             payload.Text = batch;
 
-            if (parameters != null)
-            {
-                ODocument paramsDoc = new ODocument();
-                paramsDoc.OClassName = "";
-                paramsDoc["params"] = parameters;
-                payload.SimpleParams = RecordSerializerFactory.GetSerializer(this).Serialize(paramsDoc);
-            }
-
-            Command operation = new Command(this);
-            operation.OperationMode = OperationMode.Synchronous;
-            operation.CommandPayload = payload;
-
-            ODocument document = _connection.ExecuteOperation(operation);
-
-            return new OCommandResult(document);
+            return new OCommandQuery(_connection, payload);
         }
 
         public OCommandResult Gremlin(string query)
@@ -267,26 +245,13 @@ namespace Orient.Client
             return new OCommandQuery(_connection, payload);
         }
 
-        public OCommandResult Command(string sql, Dictionary<string, object> parameters = null)
+        public OCommandResult Command(string sql)
         {
             CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = sql;
 
-            if (parameters != null)
-            {
-                ODocument paramsDoc = new ODocument();
-                paramsDoc.OClassName = "";
-                paramsDoc["params"] = parameters;
-                payload.SimpleParams = RecordSerializerFactory.GetSerializer(this).Serialize(paramsDoc);
-            }
-
-            Command operation = new Command(_connection.Database);
-            operation.OperationMode = OperationMode.Synchronous;
-            operation.CommandPayload = payload;
-
-            ODocument document = _connection.ExecuteOperation(operation);
-
-            return new OCommandResult(document);
+            OCommandQuery query = new OCommandQuery(_connection, payload);
+            return query.Run();
         }
 
         public PreparedCommand Command(PreparedCommand command)
