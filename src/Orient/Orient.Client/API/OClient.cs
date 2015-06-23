@@ -36,7 +36,7 @@ namespace Orient.Client
             _databasePools = new List<DatabasePool>();
             BufferLenght = 1024;
             Serializer = ORecordFormat.ORecordDocument2csv;
-            ClientID = null;
+            ClientID = "null";
             /* 
               If you enable token based session make shure enable it in server config
               <!-- USE SESSION TOKEN, TO TURN ON SET THE 'ENABLED' PARAMETER TO 'true' -->
@@ -55,7 +55,7 @@ namespace Orient.Client
             UseTokenBasedSession = false;
         }
 
-        public static string CreateDatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias, string clientID = null)
+        public static string CreateDatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias, string clientID = "null")
         {
             OClient.ClientID = clientID;
 
