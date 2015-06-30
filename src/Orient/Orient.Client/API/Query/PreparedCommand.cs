@@ -45,7 +45,6 @@ namespace Orient.Client.API.Query
             }
 
             return RunInternal();
-
         }
 
         private OCommandResult RunInternal()
@@ -57,7 +56,7 @@ namespace Orient.Client.API.Query
 
                 var paramsDocument = new ODocument();
                 paramsDocument.OClassName = "";
-                paramsDocument.SetField("params", _parameters);
+                paramsDocument.SetField(OClient.ProtocolVersion < 22 ? "params" : "parameters", _parameters);
 
                 var serializer = RecordSerializerFactory.GetSerializer(_connection.Database);
 
@@ -78,8 +77,6 @@ namespace Orient.Client.API.Query
             {
                 _parameters = null;
             }
-
-
         }
 
         public OCommandResult Run()
@@ -92,7 +89,7 @@ namespace Orient.Client.API.Query
             return _query;
         }
 
-        public PreparedCommand Set(string key, string value)
+        public PreparedCommand Set(string key, object value)
         {
             if (_parameters == null)
                 _parameters = new Dictionary<string, object>();

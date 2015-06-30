@@ -9,7 +9,7 @@ namespace Orient.Client
     {
         private static object _syncRoot;
         private static List<DatabasePool> _databasePools;
-        internal static string ClientID { get { return "null"; } }
+        internal static string ClientID { get; set; }
         private static short _protocolVersion = 21;
         public static string DriverName { get { return "OrientDB-NET.binary"; } }
         public static string DriverVersion { get { return "0.2.1"; } }
@@ -36,6 +36,7 @@ namespace Orient.Client
             _databasePools = new List<DatabasePool>();
             BufferLenght = 1024;
             Serializer = ORecordFormat.ORecordDocument2csv;
+            ClientID = "null";
             /* 
               If you enable token based session make shure enable it in server config
               <!-- USE SESSION TOKEN, TO TURN ON SET THE 'ENABLED' PARAMETER TO 'true' -->
@@ -54,8 +55,10 @@ namespace Orient.Client
             UseTokenBasedSession = false;
         }
 
-        public static string CreateDatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias)
+        public static string CreateDatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias, string clientID = "null")
         {
+            OClient.ClientID = clientID;
+
             lock (_syncRoot)
             {
                 DatabasePool databasePool = new DatabasePool(hostname, port, databaseName, databaseType, userName, userPassword, poolSize, alias);

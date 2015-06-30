@@ -182,7 +182,9 @@ namespace Orient.Client.Protocol.Serializers
                             bld.Append(",");
 
                         first = false;
-                        bld.Append("\"" + keyVal.Key + "\":" + SerializeValue(keyVal.Value));
+
+                        string serialized = SerializeValue(keyVal.Value);
+                        bld.Append("\"" + keyVal.Key + "\":" + serialized);
                     }
 
                     bld.Append("}");
@@ -650,8 +652,6 @@ namespace Orient.Client.Protocol.Serializers
                     if (_connection == null || !_connection.IsActive)
                         throw new OException(OExceptionType.Connection, "Connection is not opened or is null");
 
-                    List<ORID> ridbag = new List<ORID>();
-
                     // Tree based RidBag - (collectionPointer)(size:int)(changes)
 
                     // Collection Pointer - (fileId:long)(pageIndex:long)(pageOffset:int)
@@ -662,53 +662,57 @@ namespace Orient.Client.Protocol.Serializers
                     // size
                     var size = reader.ReadInt32EndianAware();
 
-                    // Changes - (changesSize:int)[(link:rid)(changeType:byte)(value:int)]*
-                    var changesSize = reader.ReadInt32EndianAware();
-                    for (int j = 0; j < changesSize; j++)
+                    //only process ridbag if size > 0, otherwise the call to SBTreeBonsaiFirstKey operation makes the connection crash (the server probably isn't expecting this use case)
+                    if (size > 0)
                     {
-                        throw new NotImplementedException("RidBag Changes not yet implemented");
-                    }
-
-                    var operation = new SBTreeBonsaiFirstKey(null);
-                    operation.FileId = fileId;
-                    operation.PageIndex = pageIndex;
-                    operation.PageOffset = pageOffset;
-
-
-                    // Not realy quiete about this
-                    var connection = OClient.ReleaseConnection(_connection.Alias);
-
-                    var entries = new Dictionary<ORID, int>();
-                    try
-                    {
-                        var orid = connection.ExecuteOperation(operation);
-                        var ft = true;
-                        var key = orid.GetField<ORID>("rid");
-                        do
+                        // Changes - (changesSize:int)[(link:rid)(changeType:byte)(value:int)]*
+                        var changesSize = reader.ReadInt32EndianAware();
+                        for (int j = 0; j < changesSize; j++)
                         {
-                            var op = new SBTreeBonsaiGetEntriesMajor(null);
-                            op.FileId = fileId;
-                            op.PageIndex = pageIndex;
-                            op.PageOffset = pageOffset;
-                            op.FirstKey = key;
-                            op.Inclusive = ft;
+                            throw new NotImplementedException("RidBag Changes not yet implemented");
+                        }
 
-                            var res = connection.ExecuteOperation(op);
-                            entries = res.GetField<Dictionary<ORID, int>>("entries");
+                        var operation = new SBTreeBonsaiFirstKey(null);
+                        operation.FileId = fileId;
+                        operation.PageIndex = pageIndex;
+                        operation.PageOffset = pageOffset;
 
-                            rids.AddRange(entries.Keys);
 
-                            if (entries.Count == 0)
-                                break;
+                        // Not realy quiete about this
+                        var connection = OClient.ReleaseConnection(_connection.Alias);
 
-                            key = entries.Last().Key;
-                            ft = false;
+                        var entries = new Dictionary<ORID, int>();
+                        try
+                        {
+                            var orid = connection.ExecuteOperation(operation);
+                            var ft = true;
+                            var key = orid.GetField<ORID>("rid");
+                            do
+                            {
+                                var op = new SBTreeBonsaiGetEntriesMajor(null);
+                                op.FileId = fileId;
+                                op.PageIndex = pageIndex;
+                                op.PageOffset = pageOffset;
+                                op.FirstKey = key;
+                                op.Inclusive = ft;
 
-                        } while (true);
-                    }
-                    finally
-                    {
-                        OClient.ReturnConnection(connection);
+                                var res = connection.ExecuteOperation(op);
+                                entries = res.GetField<Dictionary<ORID, int>>("entries");
+
+                                rids.AddRange(entries.Keys);
+
+                                if (entries.Count == 0)
+                                    break;
+
+                                key = entries.Last().Key;
+                                ft = false;
+
+                            } while (true);
+                        }
+                        finally
+                        {
+                            OClient.ReturnConnection(connection);
+                        }
                     }
                 }
             }

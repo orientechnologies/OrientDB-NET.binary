@@ -9,6 +9,7 @@ using Orient.Client.API.Query.Interfaces;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 using Orient.Client.Protocol.Operations.Command;
+using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client
 {
@@ -193,7 +194,6 @@ namespace Orient.Client
             payload.Text = sql;
             payload.NonTextLimit = -1;
             payload.FetchPlan = fetchPlan;
-            //payload.SerializedParams = new byte[] { 0 };
 
             Command operation = new Command(_connection.Database);
             operation.OperationMode = OperationMode.Asynchronous;
@@ -212,6 +212,15 @@ namespace Orient.Client
 
         #endregion
 
+        public OCommandQuery SqlBatch(string batch)
+        {
+            CommandPayloadScript payload = new CommandPayloadScript();
+            payload.Language = "sql";
+            payload.Text = batch;
+
+            return new OCommandQuery(_connection, payload);
+        }
+
         public OCommandResult Gremlin(string query)
         {
             CommandPayloadScript payload = new CommandPayloadScript();
@@ -226,6 +235,7 @@ namespace Orient.Client
 
             return new OCommandResult(document);
         }
+
         public OCommandQuery JavaScript(string query)
         {
             CommandPayloadScript payload = new CommandPayloadScript();
@@ -233,20 +243,15 @@ namespace Orient.Client
             payload.Text = query;
 
             return new OCommandQuery(_connection, payload);
-
         }
+
         public OCommandResult Command(string sql)
         {
             CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = sql;
 
-            Command operation = new Command(_connection.Database);
-            operation.OperationMode = OperationMode.Synchronous;
-            operation.CommandPayload = payload;
-
-            ODocument document = _connection.ExecuteOperation(operation);
-
-            return new OCommandResult(document);
+            OCommandQuery query = new OCommandQuery(_connection, payload);
+            return query.Run();
         }
 
         public PreparedCommand Command(PreparedCommand command)

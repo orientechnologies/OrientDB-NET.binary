@@ -27,8 +27,7 @@ namespace Orient.Client.API.Query
             {
                 var paramsDocument = new ODocument();
                 paramsDocument.OClassName = "";
-                //paramsDocument.SetField<Dictionary<string, object>>("parameters", _simpleParams);
-                paramsDocument.SetField<Dictionary<string, object>>("params", _simpleParams);
+                paramsDocument.SetField(OClient.ProtocolVersion < 22 ? "params" : "parameters", _simpleParams);
                 ((CommandPayloadCommand)_payload).SimpleParams = RecordSerializerFactory.GetSerializer(_connection.Database).Serialize(paramsDocument);
             }
 

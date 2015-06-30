@@ -96,7 +96,7 @@ namespace Orient.Client.API.Query
             return _query;
         }
 
-        public PreparedQuery Set(string key, string value)
+        public PreparedQuery Set(string key, object value)
         {
             if (_parameters == null)
                 _parameters = new Dictionary<string, object>();
