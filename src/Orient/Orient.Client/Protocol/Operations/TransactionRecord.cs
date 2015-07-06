@@ -1,4 +1,5 @@
 ﻿using System;
+using Orient.Client.API.Types;
 using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
@@ -69,6 +70,17 @@ namespace Orient.Client.Protocol.Operations
             }
         }
 
+        public ORecordType ORecordType
+        {
+            get
+            {
+                if (Document != null)
+                    return Document.ORecordType;
+
+                return Object.ORecordType;
+            }
+        }
+
 
         public void AddToRequest(Request request)
         {
@@ -76,9 +88,21 @@ namespace Orient.Client.Protocol.Operations
             request.AddDataItem((byte)RecordType);
             request.AddDataItem(ORID.ClusterId);
             request.AddDataItem(ORID.ClusterPosition);
-            request.AddDataItem((byte)ORecordType.Document);
+            request.AddDataItem((byte)ORecordType);
 
-            var serializedDocument = RecordSerializerFactory.GetSerializer(request.Connection.Database).Serialize(GetDocument());
+            byte[] serializedDocument = null;
+
+            //if the provided IBaseRecord is actually an ORecordBytes, get its raw content, otherwise serialize document
+            //TODO it would be better to let the IBaseRecord provide its own byte[] depending on its implementation than doing this logic here
+            if (Object is ORecordBytes)
+            {
+                serializedDocument = ((ORecordBytes)Object).Content;
+            }
+            else
+            {
+                serializedDocument = RecordSerializerFactory.GetSerializer(request.Connection.Database).Serialize(GetDocument());
+            }
+
             switch (RecordType)
             {
                 case RecordType.Create:
@@ -100,10 +124,7 @@ namespace Orient.Client.Protocol.Operations
                 default:
                     throw new InvalidOperationException();
             }
-
         }
-
-
 
         private ODocument GetDocument()
         {

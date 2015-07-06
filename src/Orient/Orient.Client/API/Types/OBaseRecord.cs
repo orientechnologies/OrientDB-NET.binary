@@ -14,6 +14,8 @@ namespace Orient.Client
 
         public short OClassId { get; set; }
 
+        public ORecordType ORecordType { get; set; }
+
         public string OClassName {
             get
             {

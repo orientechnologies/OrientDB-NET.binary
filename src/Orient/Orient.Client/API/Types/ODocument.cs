@@ -4,7 +4,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Orient.Client.API.Types;
 using Orient.Client.Mapping;
 using Orient.Client.Protocol.Serializers;
 
@@ -61,7 +60,18 @@ namespace Orient.Client
             set { SetField("@OClassName", value); }
         }
 
+        public ORecordType ORecordType
+        {
+            get;
+            set;
+        }
+
         #endregion
+
+        public ODocument()
+        {
+            ORecordType = ORecordType.Document;
+        }
 
         public T GetField<T>(string fieldPath)
         {
@@ -161,7 +171,7 @@ namespace Orient.Client
                 else if (type == typeof(Decimal))
                 {
                     if (fieldValue != null)
-                        return (T)(object)Convert.ChangeType(fieldValue, typeof(T));
+                        return (T)(object)Convert.ChangeType(fieldValue, type);
                     else
                         return (T)(object)null;
                 }
