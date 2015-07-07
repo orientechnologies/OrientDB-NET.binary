@@ -21,7 +21,7 @@ namespace Orient.Client
 
         public string OClassName { get; set; }
 
-        public ORecordType ORecordType
+        public ORecordType OType
         {
             get { return ORecordType.RawBytes; }
             set { }

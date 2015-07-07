@@ -60,19 +60,8 @@ namespace Orient.Client
             set { SetField("@OClassName", value); }
         }
 
-        public ORecordType ORecordType
-        {
-            get;
-            set;
-        }
-
         #endregion
-
-        public ODocument()
-        {
-            ORecordType = ORecordType.Document;
-        }
-
+        
         public T GetField<T>(string fieldPath)
         {
             var type = typeof(T);

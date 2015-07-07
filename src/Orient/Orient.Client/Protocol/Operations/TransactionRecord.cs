@@ -70,14 +70,14 @@ namespace Orient.Client.Protocol.Operations
             }
         }
 
-        public ORecordType ORecordType
+        public ORecordType OType
         {
             get
             {
                 if (Document != null)
-                    return Document.ORecordType;
+                    return Document.OType;
 
-                return Object.ORecordType;
+                return Object.OType;
             }
         }
 
@@ -88,7 +88,7 @@ namespace Orient.Client.Protocol.Operations
             request.AddDataItem((byte)RecordType);
             request.AddDataItem(ORID.ClusterId);
             request.AddDataItem(ORID.ClusterPosition);
-            request.AddDataItem((byte)ORecordType);
+            request.AddDataItem((byte)OType);
 
             byte[] serializedDocument = null;
 

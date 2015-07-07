@@ -6,6 +6,6 @@
         int OVersion { get; set; }
         short OClassId { get; set; }
         string OClassName { get; set; }
-        ORecordType ORecordType { get; set; }
+        ORecordType OType { get; set; }
     }
 }
