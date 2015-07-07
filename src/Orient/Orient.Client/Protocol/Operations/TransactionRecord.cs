@@ -1,5 +1,4 @@
 ﻿using System;
-using Orient.Client.API.Types;
 using Orient.Client.Protocol.Serializers;
 
 namespace Orient.Client.Protocol.Operations
