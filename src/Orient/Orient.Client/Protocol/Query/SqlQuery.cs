@@ -276,12 +276,13 @@ namespace Orient.Client.Protocol
         {
             string field = "";
 
-            if (_compiler.HasKey(Q.Set))
+            if (_compiler.HasKey(Q.Set) && !string.IsNullOrWhiteSpace(fieldName))
             {
                 field += ", ";
             }
 
-            field += string.Join(" ", fieldName, Q.Equals, "");
+            if (!string.IsNullOrWhiteSpace(fieldName))
+                field += string.Join(" ", fieldName, Q.Equals, "");
 
             if (fieldValue == null)
             {
@@ -319,7 +320,18 @@ namespace Orient.Client.Protocol
                     iteration++;
                     if (enumerator.Value != null)
                     {
-                        field += String.Format("'{0}':{1}", enumerator.Key, ToString(enumerator.Value));
+                        if (enumerator.Value is IList)
+                        {
+                            field += String.Format("{0}:{1}", enumerator.Key, BuildFieldValue(null, enumerator.Value));
+                        }
+                        else if (enumerator.Value is IDictionary)
+                        {
+                            field += String.Format("{0}:{1}", enumerator.Key, BuildFieldValue(null, enumerator.Value));
+                        }
+                        else
+                        {
+                            field += String.Format("'{0}':{1}", enumerator.Key, ToString(enumerator.Value));
+                        }
 
                         if (iteration < dict.Count)
                             field += ", ";
