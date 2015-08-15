@@ -492,6 +492,15 @@ namespace Orient.Client.Protocol
 
         #endregion
 
+        #region Upsert
+
+        public void Upsert()
+        {
+            _compiler.Unique(Q.Upsert);
+        }
+
+        #endregion
+
         internal void OrderBy(params string[] fields)
         {
             for (int i = 0; i < fields.Length; i++)
@@ -798,6 +807,12 @@ namespace Orient.Client.Protocol
             else if (_compiler.HasKey(Q.Remove))
             {
                 query += string.Join(" ", "", Q.Remove, _compiler.Value(Q.Remove));
+            }
+
+            // (UPSERT)
+            if (_compiler.HasKey(Q.Upsert))
+            {
+                query += " " + Q.Upsert;
             }
 
             // [<conditions>](WHERE) 

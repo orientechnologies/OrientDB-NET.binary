@@ -247,6 +247,17 @@ namespace Orient.Client
             return this;
         }
 
+        #region Upsert
+
+        public OSqlUpdate Upsert()
+        {
+            _sqlQuery.Upsert();
+
+            return this;
+        }
+
+        #endregion
+
         public int Run()
         {
             CommandPayloadCommand payload = new CommandPayloadCommand();
