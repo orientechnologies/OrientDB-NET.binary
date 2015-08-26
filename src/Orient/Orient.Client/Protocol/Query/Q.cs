@@ -46,6 +46,7 @@ namespace Orient.Client.Protocol
         internal static string Skip = "SKIP";
         internal static string To = "TO";
         internal static string Update = "UPDATE";
+        internal static string Upsert = "UPSERT";
         internal static string Values = "VALUES";
         internal static string Vertex = "VERTEX";
         internal static string Where = "WHERE";
