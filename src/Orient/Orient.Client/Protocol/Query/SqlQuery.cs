@@ -289,44 +289,11 @@ namespace Orient.Client.Protocol
             }
             else if (fieldValue is IList)
             {
-                field += "[";
-                IList collection = (IList)fieldValue;
-                int iteration = 0;
-
-                foreach (object item in collection)
-                {
-                    field += ToString(item);
-
-                    iteration++;
-
-                    if (iteration < collection.Count)
-                    {
-                        field += ", ";
-                    }
-                }
-
-                field += "]";
+                field += SetIListField(fieldValue);
             }
             else if (fieldValue is IDictionary)
             {
-                field += "{";
-                int iteration = 0;
-                IDictionary dict = (IDictionary)fieldValue;
-                var enumerator = dict.GetEnumerator();
-
-                while (enumerator.MoveNext())
-                {
-                    iteration++;
-                    if (enumerator.Value != null)
-                    {
-                        field += String.Format("'{0}':{1}", enumerator.Key, ToString(enumerator.Value));
-
-                        if (iteration < dict.Count)
-                            field += ", ";
-                    }
-
-                }
-                field += "}";
+                field += SetIDictionaryFieldValue(fieldValue);
             }
             else
             {
@@ -334,6 +301,7 @@ namespace Orient.Client.Protocol
             }
             return field;
         }
+
 
         internal void Set<T>(T obj)
         {
@@ -992,5 +960,63 @@ namespace Orient.Client.Protocol
             return propertyName;
         }
 
+        private string SetIDictionaryFieldValue<T>(T fieldValue)
+        {
+            var field = "{";
+            int iteration = 0;
+            IDictionary dict = (IDictionary)fieldValue;
+            var enumerator = dict.GetEnumerator();
+
+            while (enumerator.MoveNext())
+            {
+                iteration++;
+                if (enumerator.Value != null)
+                {
+                    if (enumerator.Value is IList)
+                    {
+                        field += String.Format("'{0}':{1}", enumerator.Key,
+                            SetIListField(enumerator.Value));
+                    }
+                    else if (enumerator.Value is IDictionary)
+                    {
+                        field += String.Format("'{0}':{1}", enumerator.Key,
+                            SetIDictionaryFieldValue(enumerator.Value));
+                    }
+                    else
+                    {
+                        field += String.Format("'{0}':{1}", enumerator.Key, ToString(enumerator.Value));
+                    }
+
+                    if (iteration < dict.Count)
+                        field += ", ";
+                }
+
+            }
+            field += "}";
+
+            return field;
+        }
+
+        private string SetIListField<T>(T fieldValue)
+        {
+            var field = "[";
+            IList collection = (IList)fieldValue;
+            int iteration = 0;
+
+            foreach (object item in collection)
+            {
+                field += ToString(item);
+
+                iteration++;
+
+                if (iteration < collection.Count)
+                {
+                    field += ", ";
+                }
+            }
+
+            field += "]";
+            return field;
+        }
     }
 }

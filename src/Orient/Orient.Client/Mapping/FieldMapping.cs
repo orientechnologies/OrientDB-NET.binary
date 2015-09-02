@@ -62,7 +62,18 @@ namespace Orient.Client.Mapping
         public override void MapToObject(ODocument document, TTarget typedObject)
         {
             if (document.HasField(_fieldPath))
+            {
+                var sourcePropertyValue = document.GetField<object>(_fieldPath);
+
+                if (sourcePropertyValue == null ||
+                    (sourcePropertyValue is string &&
+                    sourcePropertyValue as string == "_NOT_PARSED_"))
+                {
+                    return;
+                }
+
                 MapToNamedField(document, typedObject);
+            }
         }
 
 

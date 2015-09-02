@@ -168,6 +168,11 @@ namespace Orient.Client.Mapping
 
         public void ToObject(ODocument document, T typedObject)
         {
+            if (document == null)
+            {
+                return;
+            }
+
             foreach (var fm in _fields)
                 fm.MapToObject(document, typedObject);
         }

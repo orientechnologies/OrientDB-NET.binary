@@ -108,11 +108,13 @@ namespace Orient.Client.Mapping
         {
             var targetElementType = _needsMapping ? typeof(ODocument) : _targetElementType;
             var listType = typeof(List<>).MakeGenericType(targetElementType);
-            var targetList = (IList)Activator.CreateInstance(listType);
+            IList targetList = null;
 
             var sourceList = (IEnumerable)GetPropertyValue(typedObject);
             if (sourceList != null)
             {
+                targetList = (IList)Activator.CreateInstance(listType);
+
                 foreach (var item in sourceList)
                     targetList.Add(_needsMapping ? _mapper.ToDocument(item) : item);
             }
