@@ -542,7 +542,7 @@ namespace Orient.Client.Protocol
 
             if (value is string)
             {
-                sql = string.Join(" ", "'" + ((string)value).Replace("\r", "\\r").Replace("\n", "\\n").Replace("'", "\\'") + "'");
+                sql = string.Join(" ", "'" + ((string)value).Replace("\\", "\\\\").Replace("\r", "\\r").Replace("\n", "\\n").Replace("'", "\\'") + "'");
             }
             else if (value is DateTime)
             {
