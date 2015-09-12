@@ -6,6 +6,5 @@ namespace Orient.Tests
     {
         public string Name { get; set; }
         public string Surname { get; set; }
-        public string[] StringArray { get; set; }
     }
 }

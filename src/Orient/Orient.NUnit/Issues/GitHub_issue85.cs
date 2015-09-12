@@ -33,10 +33,10 @@ namespace Orient.Tests.Issues
         {
             // prerequisites
             _database
-                .Create.Class<TestProfileClass>()
+                .Create.Class<TestProfileClassExtended>()
                 .Run();
 
-            TestProfileClass profile = new TestProfileClass();
+            TestProfileClassExtended profile = new TestProfileClassExtended();
             profile.Name = "Johny";
             profile.Surname = "Bravo";
             profile.StringArray = new string[] { "Test string", "Test string 2" };
@@ -44,11 +44,11 @@ namespace Orient.Tests.Issues
             var insert = _database
                 .Insert(profile);
 
-            TestProfileClass insertedDocument = insert
-                .Run<TestProfileClass>();
+            TestProfileClassExtended insertedDocument = insert
+                .Run<TestProfileClassExtended>();
 
             Assert.IsTrue(insertedDocument.ORID != null);
-            Assert.AreEqual(insertedDocument.OClassName, typeof(TestProfileClass).Name);
+            Assert.AreEqual(insertedDocument.OClassName, typeof(TestProfileClassExtended).Name);
             Assert.AreEqual(insertedDocument.Name, profile.Name);
             Assert.AreEqual(insertedDocument.Surname, profile.Surname);
             Assert.IsNotNull(insertedDocument.StringArray);
@@ -60,10 +60,10 @@ namespace Orient.Tests.Issues
         {
             // prerequisites
             _database
-                .Create.Class<TestProfileClass>()
+                .Create.Class<TestProfileClassExtended>()
                 .Run();
 
-            TestProfileClass profile = new TestProfileClass();
+            TestProfileClassExtended profile = new TestProfileClassExtended();
             profile.Name = "Johny";
             profile.Surname = "Bravo";
             profile.StringArray = new string[] { "Test string", null };
@@ -71,17 +71,22 @@ namespace Orient.Tests.Issues
             var insert = _database
                 .Insert(profile);
 
-            TestProfileClass insertedDocument = insert
-                .Run<TestProfileClass>();
+            TestProfileClassExtended insertedDocument = insert
+                .Run<TestProfileClassExtended>();
 
             Assert.IsTrue(insertedDocument.ORID != null);
-            Assert.AreEqual(insertedDocument.OClassName, typeof(TestProfileClass).Name);
+            Assert.AreEqual(insertedDocument.OClassName, typeof(TestProfileClassExtended).Name);
             Assert.AreEqual(insertedDocument.Name, profile.Name);
             Assert.AreEqual(insertedDocument.Surname, profile.Surname);
             Assert.IsNotNull(insertedDocument.StringArray);
             Assert.AreEqual(insertedDocument.StringArray.Length, 2);
             Assert.IsNotNull(insertedDocument.StringArray[0]);
             Assert.IsNull(insertedDocument.StringArray[1]);
+        }
+
+        public class TestProfileClassExtended : TestProfileClass
+        {
+            public string[] StringArray { get; set; }
         }
     }
 }
