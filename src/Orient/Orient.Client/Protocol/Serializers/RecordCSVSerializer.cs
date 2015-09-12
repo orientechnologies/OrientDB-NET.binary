@@ -533,6 +533,11 @@ namespace Orient.Client.Protocol.Serializers
                 {
                     value = (stringValue == "true") ? true : false;
                 }
+                // null
+                else if ((stringValue.Length > 2) && (stringValue == "null"))
+                {
+                    value = null;
+                }
                 // numbers
                 else
                 {

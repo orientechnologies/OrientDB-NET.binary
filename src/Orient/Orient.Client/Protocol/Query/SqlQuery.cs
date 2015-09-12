@@ -295,7 +295,10 @@ namespace Orient.Client.Protocol
 
                 foreach (object item in collection)
                 {
-                    field += ToString(item);
+                    if (item != null)
+                        field += ToString(item);
+                    else
+                        field += "null";
 
                     iteration++;
 

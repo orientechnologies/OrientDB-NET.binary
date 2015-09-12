@@ -80,6 +80,8 @@ namespace Orient.Tests.Issues
             Assert.AreEqual(insertedDocument.Surname, profile.Surname);
             Assert.IsNotNull(insertedDocument.StringArray);
             Assert.AreEqual(insertedDocument.StringArray.Length, 2);
+            Assert.IsNotNull(insertedDocument.StringArray[0]);
+            Assert.IsNull(insertedDocument.StringArray[1]);
         }
     }
 }
