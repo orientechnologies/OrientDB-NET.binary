@@ -72,6 +72,10 @@ namespace Orient.Client.Mapping
             {
                 ((IList)collection)[index] = Guid.Parse(item.ToString());
             }
+            else if (item == null)
+            {
+                ((IList)collection)[index] = null;
+            }
             else if (item is IConvertible || itemType.IsAssignableFrom(item.GetType()))
             {
                 ((IList)collection)[index] = Convert.ChangeType(item, itemType);

@@ -295,7 +295,10 @@ namespace Orient.Client.Protocol
 
                 foreach (object item in collection)
                 {
-                    field += ToString(item);
+                    if (item != null)
+                        field += ToString(item);
+                    else
+                        field += "null";
 
                     iteration++;
 
@@ -542,7 +545,7 @@ namespace Orient.Client.Protocol
 
             if (value is string)
             {
-                sql = string.Join(" ", "'" + ((string)value).Replace("'", "\\'") + "'");
+                sql = string.Join(" ", "'" + ((string)value).Replace("\\", "\\\\").Replace("\r", "\\r").Replace("\n", "\\n").Replace("'", "\\'") + "'");
             }
             else if (value is DateTime)
             {

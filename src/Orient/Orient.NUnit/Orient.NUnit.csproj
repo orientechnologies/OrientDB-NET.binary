@@ -54,6 +54,10 @@
     <Compile Include="Issues\GitHub_issue54.cs" />
     <Compile Include="Issues\GitHub_issue57.cs" />
     <Compile Include="Issues\GitHub_issue62.cs" />
+    <Compile Include="Issues\GitHub_issue86.cs" />
+    <Compile Include="Issues\GitHub_issue85.cs" />
+    <Compile Include="Issues\GitHub_issue84.cs" />
+    <Compile Include="Issues\GitHub_issue83.cs" />
     <Compile Include="Issues\GitHub_issue8.cs" />
     <Compile Include="Query\PreparedQueryTest.cs" />
     <Compile Include="Serialization\RecordCSVSerializerTest.cs" />
@@ -123,6 +127,9 @@
       <Project>{224DB9BA-3BA5-4955-B147-E540E1F270DA}</Project>
       <Name>Orient.Client</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

@@ -333,7 +333,7 @@ namespace Orient.Client.Protocol.Serializers
                 // \ -> \\
                 // therefore there needs to be a check for valid end of the string which
                 // is quote character that is not preceeded by backslash character \
-                if ((recordString[i] == '\\') && (recordString[i + 1] == '"'))
+                if ((recordString[i] == '\\') && (recordString[i + 1] == '\\' || recordString[i + 1] == '"'))
                 {
                     i = i + 2;
                 }
@@ -532,6 +532,11 @@ namespace Orient.Client.Protocol.Serializers
                 else if ((stringValue.Length > 2) && (stringValue == "true") || (stringValue == "false"))
                 {
                     value = (stringValue == "true") ? true : false;
+                }
+                // null
+                else if ((stringValue.Length > 2) && (stringValue == "null"))
+                {
+                    value = null;
                 }
                 // numbers
                 else
