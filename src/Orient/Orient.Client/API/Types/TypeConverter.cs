@@ -20,6 +20,15 @@ namespace Orient.Client.API.Types
             AddType<byte[]>(OType.Binary);
             AddType<byte>(OType.Byte);
             AddType<decimal>(OType.Decimal);
+            AddType<int?>(OType.Integer);
+            AddType<long?>(OType.Long);
+            AddType<short?>(OType.Short);
+            AddType<bool?>(OType.Boolean);
+            AddType<float?>(OType.Float);
+            AddType<double?>(OType.Double);
+            AddType<DateTime?>(OType.DateTime);
+            AddType<byte?>(OType.Byte);
+            AddType<decimal?>(OType.Decimal);
             AddType<HashSet<ORID>>(OType.LinkSet);
             AddType<List<ORID>>(OType.LinkList);
             AddType<ORID>(OType.Link);
@@ -37,6 +46,17 @@ namespace Orient.Client.API.Types
             OType result;
             if (_types.TryGetValue(t, out result))
                 return result;
+
+            else if (t.FullName.Contains("System.Collections.Generic.HashSet"))
+                return OType.EmbeddedSet;
+
+            else if (typeof(System.Collections.IDictionary).IsAssignableFrom(t))
+                return OType.EmbeddedMap;
+
+            else if (typeof(System.Collections.IEnumerable).IsAssignableFrom(t))
+                return OType.EmbeddedList;
+            else if (!t.IsPrimitive)
+                return OType.Embedded;
 
             throw new ArgumentException("propertyType " + t.Name + " is not yet supported.");
         }
