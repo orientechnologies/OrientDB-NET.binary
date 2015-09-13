@@ -45,6 +45,7 @@
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="ClusterEqutableTest.cs" />
     <Compile Include="DbRunner.cs" />
+    <Compile Include="Issues\GitHub_issue71.cs" />
     <Compile Include="Issues\GitHub_issue55.cs" />
     <Compile Include="Issues\GitHub_issue23.cs" />
     <Compile Include="Issues\GitHub_issue38.cs" />
