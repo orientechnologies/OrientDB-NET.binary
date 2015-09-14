@@ -276,12 +276,13 @@ namespace Orient.Client.Protocol
         {
             string field = "";
 
-            if (_compiler.HasKey(Q.Set))
+            if (_compiler.HasKey(Q.Set) && !string.IsNullOrWhiteSpace(fieldName))
             {
                 field += ", ";
             }
 
-            field += string.Join(" ", fieldName, Q.Equals, "");
+            if (!string.IsNullOrWhiteSpace(fieldName))
+                field += string.Join(" ", fieldName, Q.Equals, "");
 
             if (fieldValue == null)
             {
@@ -295,10 +296,7 @@ namespace Orient.Client.Protocol
 
                 foreach (object item in collection)
                 {
-                    if (item != null)
-                        field += ToString(item);
-                    else
-                        field += "null";
+                    field += BuildFieldValue(null, item);
 
                     iteration++;
 
@@ -322,7 +320,7 @@ namespace Orient.Client.Protocol
                     iteration++;
                     if (enumerator.Value != null)
                     {
-                        field += String.Format("'{0}':{1}", enumerator.Key, ToString(enumerator.Value));
+                        field += String.Format("'{0}':{1}", enumerator.Key, BuildFieldValue(null, enumerator.Value));
 
                         if (iteration < dict.Count)
                             field += ", ";
@@ -619,6 +617,10 @@ namespace Orient.Client.Protocol
             else if (value is double)
             {
                 sql = string.Join(" ", value.ToInvarianCultureString() + "d");
+            }
+            else if (value == null)
+            {
+                sql = string.Join(" ", "null");
             }
             else
             {
