@@ -29,6 +29,8 @@ namespace Orient.Client.API.Types
             AddType<DateTime?>(OType.DateTime);
             AddType<byte?>(OType.Byte);
             AddType<decimal?>(OType.Decimal);
+            AddType<TimeSpan>(OType.String);
+            AddType<TimeSpan?>(OType.String);
             AddType<HashSet<ORID>>(OType.LinkSet);
             AddType<List<ORID>>(OType.LinkList);
             AddType<ORID>(OType.Link);

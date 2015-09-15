@@ -62,6 +62,7 @@
     <Compile Include="Issues\GitHub_issue83.cs" />
     <Compile Include="Issues\GitHub_issue8.cs" />
     <Compile Include="Query\PreparedQueryTest.cs" />
+    <Compile Include="Query\SqlTimespanFieldTests.cs" />
     <Compile Include="Serialization\RecordCSVSerializerTest.cs" />
     <Compile Include="TestConfigurationOperation.cs" />
     <Compile Include="TestConnection.cs" />

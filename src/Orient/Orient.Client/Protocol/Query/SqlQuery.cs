@@ -566,6 +566,10 @@ namespace Orient.Client.Protocol
                     sql = "'" + fieldValue.ToString(dateTimeFormat) + "'";
                 }
             }
+            else if (value is TimeSpan)
+            {
+                sql = "'" + value.ToString() + "'";
+            }
             else if (value is ODocument)
             {
                 var document = ((ODocument)value);
