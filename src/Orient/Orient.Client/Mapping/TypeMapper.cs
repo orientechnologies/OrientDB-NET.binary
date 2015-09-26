@@ -124,6 +124,14 @@ namespace Orient.Client.Mapping
                 {
                     _fields.Add(new DateTimeFieldMapping<T>(propertyInfo, fieldPath));
                 }
+                else if (propertyInfo.PropertyType == typeof(TimeSpan))
+                {
+                    _fields.Add(new TimeSpanFieldMapping<T>(propertyInfo, fieldPath));
+                }
+                else if (propertyInfo.PropertyType == typeof(Nullable<TimeSpan>))
+                {
+                    _fields.Add(new NullableTimeSpanFieldMapping<T>(propertyInfo, fieldPath));
+                }
                 else if (propertyInfo.PropertyType == typeof(long))
                 {
                     _fields.Add(new LongFieldMapping<T>(propertyInfo, fieldPath));

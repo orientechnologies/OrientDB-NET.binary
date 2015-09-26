@@ -151,6 +151,16 @@ namespace Orient.Client
                         return (T)(object)parsedValue;
                     }
                 }
+                else if (type == typeof(TimeSpan) || type == typeof(Nullable<TimeSpan>))
+                {
+                    if (fieldValue != null && (fieldValue.GetType() == typeof(TimeSpan) || fieldValue.GetType() == typeof(Nullable<TimeSpan>)))
+                        return (T)fieldValue;
+                    TimeSpan parsedValue;
+                    if (TimeSpan.TryParse((string)fieldValue, out parsedValue))
+                    {
+                        return (T)(object)parsedValue;
+                    }
+                }
                 else if (type == typeof(Guid))
                 {
                     Guid parsedValue;
