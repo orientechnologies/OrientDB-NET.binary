@@ -414,6 +414,11 @@ namespace Orient.Client.Protocol
             _compiler.Append(Q.Where, "", Q.Like, ToString(item));
         }
 
+        internal void Lucene<T>(T item)
+        {
+            _compiler.Append(Q.Where, "", Q.Lucene, ToString(item));
+        }
+
         internal void IsNull()
         {
             _compiler.Append(Q.Where, "", Q.Is, Q.Null);

@@ -191,6 +191,14 @@ namespace Orient.Client
             return this;
         }
 
+        public OSqlSelect Lucene<T>(T item)
+        {
+            _sqlQuery.Lucene<T>(item);
+
+            return this;
+        }
+
+
         public OSqlSelect IsNull()
         {
             _sqlQuery.IsNull();
