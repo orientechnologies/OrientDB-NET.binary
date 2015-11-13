@@ -121,9 +121,16 @@ namespace Orient.Client
 
         #region Where with conditions
 
-        public OSqlSelect Where(string field)
+        public OSqlSelect Where(params string[] fields)
         {
-            _sqlQuery.Where(field);
+            _sqlQuery.Where(fields);
+
+            return this;
+        }
+
+        public OSqlSelect Where(IEnumerable<string> fields)
+        {
+            _sqlQuery.Where(fields);
 
             return this;
         }
