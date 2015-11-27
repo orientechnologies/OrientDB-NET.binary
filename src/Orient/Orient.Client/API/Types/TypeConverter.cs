@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Orient.Client.API.Types
@@ -52,12 +53,12 @@ namespace Orient.Client.API.Types
             else if (t.FullName.Contains("System.Collections.Generic.HashSet"))
                 return OType.EmbeddedSet;
 
-            else if (typeof(System.Collections.IDictionary).IsAssignableFrom(t))
+            else if (typeof(System.Collections.IDictionary).GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))
                 return OType.EmbeddedMap;
 
-            else if (typeof(System.Collections.IEnumerable).IsAssignableFrom(t))
+            else if (typeof(System.Collections.IEnumerable).GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))
                 return OType.EmbeddedList;
-            else if (!t.IsPrimitive)
+            else if (!t.GetTypeInfo().IsPrimitive)
                 return OType.Embedded;
 
             throw new ArgumentException("propertyType " + t.Name + " is not yet supported.");

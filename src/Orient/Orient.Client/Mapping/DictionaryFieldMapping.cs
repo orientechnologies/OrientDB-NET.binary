@@ -28,7 +28,7 @@ namespace Orient.Client.Mapping
                 _elementFactory = FastConstructor.BuildConstructor(_valueType);
             }
 
-            if (propertyInfo.PropertyType.IsInterface)
+            if (propertyInfo.PropertyType.GetTypeInfo().IsInterface)
             {
                 dictionaryType = typeof(List<>).MakeGenericType(_keyType);
             }
@@ -69,7 +69,7 @@ namespace Orient.Client.Mapping
                 {
                     key = Guid.Parse(enumerator.Key.ToString());
                 }
-                else if (_keyType.IsEnum)
+                else if (_keyType.GetTypeInfo().IsEnum)
                 {
                     key = Enum.Parse(_keyType, enumerator.Key.ToString());
                 }
@@ -83,7 +83,7 @@ namespace Orient.Client.Mapping
                 {
                     value = Guid.Parse(enumerator.Value.ToString());
                 }
-                else if (_valueType.IsEnum)
+                else if (_valueType.GetTypeInfo().IsEnum)
                 {
                     value = Enum.Parse(_valueType, enumerator.Value.ToString());
                 }
