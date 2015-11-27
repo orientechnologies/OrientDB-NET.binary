@@ -7,13 +7,7 @@ namespace Orient.Client
         public short Id { get; set; }
         public string Name { get; set; }
         public OClusterType Type { get; set; }
-
-        [Obsolete]
-        internal string Location { get; set; }
-        [Obsolete]
-        internal short DataSegmentID { get; set; }
-        [Obsolete]
-        internal string DataSegmentName { get; set; }
+        
 
         public override bool Equals(object obj)
         {

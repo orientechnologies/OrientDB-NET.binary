@@ -55,10 +55,6 @@ namespace Orient.Client.Protocol.Operations
 
                         string clusterType = System.Text.Encoding.UTF8.GetString(reader.ReadBytes(clusterTypeLength));
                         //cluster.Type = (OClusterType)Enum.Parse(typeof(OClusterType), clusterType, true);
-                        if (OClient.ProtocolVersion >= 12)
-                            cluster.DataSegmentID = reader.ReadInt16EndianAware();
-                        else
-                            cluster.DataSegmentID = 0;
                     }
 
                     clusters.Add(cluster);
