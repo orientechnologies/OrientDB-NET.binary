@@ -673,7 +673,8 @@ namespace Orient.Client.Protocol.Serializers
                     {
                         // Changes - (changesSize:int)[(link:rid)(changeType:byte)(value:int)]*
                         var changesSize = reader.ReadInt32EndianAware();
-                        for (int j = 0; j < changesSize; j++)
+                        if (changesSize > 0)
+                        //for (int j = 0; j < changesSize; j++)
                         {
                             throw new NotImplementedException("RidBag Changes not yet implemented");
                         }

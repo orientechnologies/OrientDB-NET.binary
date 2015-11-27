@@ -84,7 +84,8 @@ namespace Orient.Client.Protocol.Operations
             if (_database.ProtocolVersion >= 28 || (_database.ProtocolVersion >= 20 && _database.ProtocolVersion <= 27 && !EndOfStream(reader)))
             {
                 int collectionChangesCount = reader.ReadInt32EndianAware();
-                for (var i = 0; i < collectionChangesCount; i++)
+                if (collectionChangesCount > 0)
+                //for (var i = 0; i < collectionChangesCount; i++)
                 {
                     throw new NotImplementedException("Collection changes not yet handled - failing rather than ignoring potentially significant information");
                     //var mostSigBits = reader.ReadInt64EndianAware();

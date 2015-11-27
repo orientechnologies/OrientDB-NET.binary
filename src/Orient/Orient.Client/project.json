@@ -19,5 +19,9 @@
 
   "frameworks": {
     "dotnet": { }
+  },
+
+  "compilationOptions": {
+    "warningsAsErrors": true
   }
 }
