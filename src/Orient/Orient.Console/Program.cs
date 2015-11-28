@@ -9,7 +9,7 @@ namespace Orient.Console
 {
     class Program
     {
-        static void Main(string[] args)
+        public void Main(string[] args)
         {
             CreateDatabaseTestManualy();
             System.Console.WriteLine("Press any key to exit ...");

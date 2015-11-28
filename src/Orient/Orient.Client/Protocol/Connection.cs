@@ -215,7 +215,7 @@ namespace Orient.Client.Protocol
                 if ((_networkStream != null) && (_socket != null))
                 {
                     _networkStream.Dispose();
-                    _socket.Dispose();
+                    ((IDisposable)_socket).Dispose();
                 }
             }
             catch { }
