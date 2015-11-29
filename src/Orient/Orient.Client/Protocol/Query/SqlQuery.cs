@@ -369,6 +369,18 @@ namespace Orient.Client.Protocol
             _compiler.Append(Q.Where, field);
         }
 
+        internal void Where(IEnumerable<string> fields)
+        {
+            if (fields.Count() == 1)
+            {
+                Where(fields.First());
+            }
+            else
+            {
+                _compiler.Append(Q.Where, string.Concat("[", string.Join(",", fields), "]"));
+            }
+        }
+
         internal void And(string field)
         {
             _compiler.Append(Q.Where, "", Q.And, field);
@@ -412,6 +424,11 @@ namespace Orient.Client.Protocol
         internal void Like<T>(T item)
         {
             _compiler.Append(Q.Where, "", Q.Like, ToString(item));
+        }
+
+        internal void Lucene<T>(T item)
+        {
+            _compiler.Append(Q.Where, "", Q.Lucene, ToString(item));
         }
 
         internal void IsNull()
