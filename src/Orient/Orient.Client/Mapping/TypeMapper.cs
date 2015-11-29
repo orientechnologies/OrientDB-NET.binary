@@ -95,7 +95,7 @@ namespace Orient.Client.Mapping
                         _fields.Add(new ArrayNamedFieldMapping<T>(propertyInfo, fieldPath));
                     }
                 }
-                else if (propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() != typeof(Nullable<>))
+                else if (propertyInfo.PropertyType.GetTypeInfo().IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() != typeof(Nullable<>))
                 {
                     if (propertyInfo.PropertyType.Name.StartsWith("List")
                         || propertyInfo.PropertyType.Name.StartsWith("IList"))
@@ -110,7 +110,7 @@ namespace Orient.Client.Mapping
                         throw new NotImplementedException("No mapping implemented for type " + propertyInfo.PropertyType.Name);
                 }
                 // property is class except the string or ORID type since string and ORID values are parsed differently
-                else if (propertyInfo.PropertyType.IsClass &&
+                else if (propertyInfo.PropertyType.GetTypeInfo().IsClass &&
                          (propertyInfo.PropertyType.Name != "String") &&
                          (propertyInfo.PropertyType.Name != "ORID"))
                 {
@@ -148,7 +148,7 @@ namespace Orient.Client.Mapping
                 {
                     _fields.Add(new LongFieldMapping<T>(propertyInfo, fieldPath));
                 }
-                else if (propertyInfo.PropertyType.BaseType == typeof(Enum))
+                else if (propertyInfo.PropertyType.GetTypeInfo().BaseType == typeof(Enum))
                 {
                     _fields.Add(new EnumFieldMapping<T>(propertyInfo, fieldPath));
                 }

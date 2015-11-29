@@ -110,3 +110,6 @@ UpgradeLog*.XML
 #Xamarin Studio
 *.userprefs
 *.usertasks
+
+.vs
+project.lock.json

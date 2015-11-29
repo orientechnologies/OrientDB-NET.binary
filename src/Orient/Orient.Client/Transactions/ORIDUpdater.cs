@@ -40,11 +40,11 @@ namespace Orient.Client.Transactions
                 string propertyName = propertyInfo.Name;
                 var propertyType = propertyInfo.PropertyType;
 
-                object[] oProperties = propertyInfo.GetCustomAttributes(typeof(OProperty), true);
+                IEnumerable<OProperty> oProperties = propertyInfo.GetCustomAttributes<OProperty>(true);
 
                 if (oProperties.Any())
                 {
-                    OProperty oProperty = oProperties.First() as OProperty;
+                    OProperty oProperty = oProperties.First();
                     if (oProperty != null)
                     {
                         if (!oProperty.Deserializable)
@@ -59,7 +59,7 @@ namespace Orient.Client.Transactions
                 if (propertyType.IsArray && propertyType.GetElementType() == ORIDType)
                     _fields.Add(new ORIDArrayPropertyUpdater<T>(propertyInfo));
 
-                if (propertyType.IsGenericType && propertyType.GetGenericArguments().First() == ORIDType)
+                if (propertyType.GetTypeInfo().IsGenericType && propertyType.GetGenericArguments().First() == ORIDType)
                 {
                     switch (propertyType.Name)
                     {

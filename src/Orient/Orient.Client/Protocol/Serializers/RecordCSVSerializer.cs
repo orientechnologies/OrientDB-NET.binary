@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using Orient.Client.Protocol.Operations;
 using Orient.Client.API.Types;
+using System.Reflection;
 
 namespace Orient.Client.Protocol.Serializers
 {
@@ -120,7 +121,7 @@ namespace Orient.Client.Protocol.Serializers
             Type valueType = value.GetType();
 
 
-            switch (Type.GetTypeCode(valueType))
+            switch (valueType.GetTypeCode())
             {
                 case TypeCode.Empty:
                     // null case is empty
@@ -167,7 +168,7 @@ namespace Orient.Client.Protocol.Serializers
         {
             StringBuilder bld = new StringBuilder();
 
-            if ((valueType.IsArray) || (valueType.IsGenericType))
+            if ((valueType.IsArray) || (valueType.GetTypeInfo().IsGenericType))
             {
                 if (valueType.Name == "Dictionary`2")
                 {
@@ -209,15 +210,15 @@ namespace Orient.Client.Protocol.Serializers
                 }
             }
             // if property is ORID type it needs to be serialized as ORID
-            else if (valueType.IsClass && (valueType.Name == "ORID"))
+            else if (valueType.GetTypeInfo().IsClass && (valueType.Name == "ORID"))
             {
                 bld.Append(((ORID)value).RID);
             }
-            else if (valueType.IsClass && (valueType.Name == "ODocument"))
+            else if (valueType.GetTypeInfo().IsClass && (valueType.Name == "ODocument"))
             {
                 bld.AppendFormat("({0})", SerializeDocument((ODocument)value));
             }
-            else if (valueType.IsClass && (valueType.Name == "OEmbeddedRidBag"))
+            else if (valueType.GetTypeInfo().IsClass && (valueType.Name == "OEmbeddedRidBag"))
             {
                 //bld.AppendFormat("({0})", SerializeDocument((ODocument)value));
                 OEmbeddedRidBag ridbag = (OEmbeddedRidBag)value;
@@ -672,7 +673,8 @@ namespace Orient.Client.Protocol.Serializers
                     {
                         // Changes - (changesSize:int)[(link:rid)(changeType:byte)(value:int)]*
                         var changesSize = reader.ReadInt32EndianAware();
-                        for (int j = 0; j < changesSize; j++)
+                        if (changesSize > 0)
+                        //for (int j = 0; j < changesSize; j++)
                         {
                             throw new NotImplementedException("RidBag Changes not yet implemented");
                         }

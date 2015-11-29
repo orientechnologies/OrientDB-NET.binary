@@ -11,7 +11,7 @@ namespace Orient.Client.Protocol
     internal class Connection : IDisposable
     {
         private TcpClient _socket;
-        private BufferedStream _networkStream;
+        private NetworkStream _networkStream;
         private byte[] _readBuffer;
         private int RECIVE_TIMEOUT = 30 * 1000; // Recive timeout in milliseconds
         private const int RetryCount = 3;
@@ -214,8 +214,8 @@ namespace Orient.Client.Protocol
             {
                 if ((_networkStream != null) && (_socket != null))
                 {
-                    _networkStream.Close();
-                    _socket.Close();
+                    _networkStream.Dispose();
+                    ((IDisposable)_socket).Dispose();
                 }
             }
             catch { }
@@ -272,7 +272,7 @@ namespace Orient.Client.Protocol
                 throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
 
-            _networkStream = new BufferedStream(_socket.GetStream());
+            _networkStream = _socket.GetStream();
             _networkStream.Read(_readBuffer, 0, 2);
 
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
@@ -306,7 +306,7 @@ namespace Orient.Client.Protocol
                 throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
 
-            _networkStream = new BufferedStream(_socket.GetStream());
+            _networkStream = _socket.GetStream();
             _networkStream.Read(_readBuffer, 0, 2);
 
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());

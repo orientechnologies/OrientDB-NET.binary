@@ -37,7 +37,7 @@ namespace Orient.Client.Mapping
 
             if (collection == null) // if we only have one item currently stored (but scope for more) we create a temporary list and put our single item in it.
             {
-                collection = new ArrayList();
+                collection = new List<object>();
                 if (sourcePropertyValue != null)
                 {
                     // TODO: Implement in derived class due Different collection mapings
@@ -87,7 +87,7 @@ namespace Orient.Client.Mapping
         {
             if (_propertyInfo.PropertyType.IsArray)
                 return _propertyInfo.PropertyType.GetElementType();
-            if (_propertyInfo.PropertyType.IsGenericType)
+            if (_propertyInfo.PropertyType.GetTypeInfo().IsGenericType)
                 return _propertyInfo.PropertyType.GetGenericArguments().First();
 
             throw new NotImplementedException();
@@ -96,12 +96,12 @@ namespace Orient.Client.Mapping
 
         protected bool NeedsNoConversion(Type elementType)
         {
-            return elementType.IsPrimitive ||
+            return elementType.GetTypeInfo().IsPrimitive ||
                    (elementType == typeof(string)) ||
                    (elementType == typeof(DateTime)) ||
                    (elementType == typeof(decimal)) ||
                    (elementType == typeof(ORID)) ||
-                   (elementType.IsValueType);
+                   (elementType.GetTypeInfo().IsValueType);
         }
 
         public override void MapToDocument(TTarget typedObject, ODocument document)
