@@ -30,6 +30,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -68,6 +75,7 @@
     <Compile Include="API\Types\OBaseRecord.cs" />
     <Compile Include="API\Types\OEdge.cs" />
     <Compile Include="API\Types\OEmbeddedRidBag.cs" />
+    <Compile Include="API\Types\ORecordBytes.cs" />
     <Compile Include="API\Types\ORecordFormat.cs" />
     <Compile Include="API\Types\OToken.cs" />
     <Compile Include="API\Types\OVertex.cs" />
@@ -182,7 +190,6 @@
     <Compile Include="Transactions\ORIDSimplePropertyUpdater.cs" />
     <Compile Include="Transactions\ORIDUpdater.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
