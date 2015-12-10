@@ -6,6 +6,8 @@ using System.Text;
 
 namespace Orient.Client.Protocol
 {
+    using System.Text.RegularExpressions;
+
     internal class SqlQuery
     {
         private QueryCompiler _compiler = new QueryCompiler();
@@ -559,6 +561,8 @@ namespace Orient.Client.Protocol
                     var propDocument = _connection.Database.DatabaseProperties;
                     var dateTimeFormat = propDocument.GetField<string>("DateTimeFormat");
                     var timeZone = propDocument.GetField<string>("Timezone");
+                    dateTimeFormat = Regex.Replace(dateTimeFormat, @"\.SSS", ".fff");
+                    dateTimeFormat = Regex.Replace(dateTimeFormat, @"\.SS", ".ff");
 
                     // How to map Windows TimeZone id to IANA timezone id
 
