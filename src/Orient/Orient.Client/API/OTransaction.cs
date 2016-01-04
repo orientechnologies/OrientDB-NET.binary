@@ -113,7 +113,9 @@ namespace Orient.Client.API
         {
             if (document.HasField(field))
             {
-                document.GetField<HashSet<ORID>>(field).Add(orid);
+                var orids = document.GetField<HashSet<ORID>>(field);
+                orids.Add(orid);
+                document.SetField(field, orids);
             }
             else
             {
