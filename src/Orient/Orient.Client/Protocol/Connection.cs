@@ -13,7 +13,7 @@ namespace Orient.Client.Protocol
         private TcpClient _socket;
         private BufferedStream _networkStream;
         private byte[] _readBuffer;
-        private int RECIVE_TIMEOUT = 30 * 1000; // Recive timeout in milliseconds
+        private readonly int ReceiveTimeout; // Recive timeout in milliseconds
         private const int RetryCount = 3;
 
         internal string Hostname { get; set; }
@@ -73,22 +73,24 @@ namespace Orient.Client.Protocol
 
         internal bool UseTokenBasedSession { get; set; }
 
-        internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, string alias, bool isReusable)
+        internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, string alias, bool isReusable, int receiveTimeout)
         {
-            Hostname = hostname;
-            Port = port;
-            Type = ConnectionType.Database;
-            Alias = alias;
-            IsReusable = isReusable;
-            ProtocolVersion = 0;
-            SessionId = -1;
-            UseTokenBasedSession = OClient.UseTokenBasedSession;
+            this.Hostname = hostname;
+            this.Port = port;
+            this.Type = ConnectionType.Database;
+            this.Alias = alias;
+            this.IsReusable = isReusable;
+            this.ProtocolVersion = 0;
+            this.SessionId = -1;
+            this.UseTokenBasedSession = OClient.UseTokenBasedSession;
 
-            DatabaseName = databaseName;
-            DatabaseType = databaseType;
-            UserName = userName;
-            UserPassword = userPassword;
-            InitializeDatabaseConnection(databaseName, databaseType, userName, userPassword);
+            this.DatabaseName = databaseName;
+            this.DatabaseType = databaseType;
+            this.UserName = userName;
+            this.UserPassword = userPassword;
+            this.ReceiveTimeout = receiveTimeout;
+
+            this.InitializeDatabaseConnection(databaseName, databaseType, userName, userPassword);
         }
 
         internal Connection(string hostname, int port, string userName, string userPassword)
@@ -103,6 +105,8 @@ namespace Orient.Client.Protocol
 
             UserName = userName;
             UserPassword = userPassword;
+
+            this.ReceiveTimeout = 30 * 1000;
 
             InitializeServerConnection(userName, userPassword);
         }
@@ -265,7 +269,7 @@ namespace Orient.Client.Protocol
             try
             {
                 _socket = new TcpClient(Hostname, Port);
-                _socket.ReceiveTimeout = RECIVE_TIMEOUT;
+                _socket.ReceiveTimeout = ReceiveTimeout;
             }
             catch (SocketException ex)
             {
@@ -299,7 +303,7 @@ namespace Orient.Client.Protocol
             try
             {
                 _socket = new TcpClient(Hostname, Port);
-                _socket.ReceiveTimeout = RECIVE_TIMEOUT;
+                _socket.ReceiveTimeout = ReceiveTimeout;
             }
             catch (SocketException ex)
             {
