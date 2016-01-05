@@ -55,13 +55,13 @@ namespace Orient.Client
             UseTokenBasedSession = false;
         }
 
-        public static string CreateDatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias, int receiveTimeout = 30000, string clientID = "null")
+        public static string CreateDatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias, string clientID = "null")
         {
             OClient.ClientID = clientID;
 
             lock (_syncRoot)
             {
-                DatabasePool databasePool = new DatabasePool(hostname, port, databaseName, databaseType, userName, userPassword, poolSize, alias, receiveTimeout);
+                DatabasePool databasePool = new DatabasePool(hostname, port, databaseName, databaseType, userName, userPassword, poolSize, alias);
 
                 _databasePools.Add(databasePool);
                 return databasePool.Release;
@@ -115,7 +115,7 @@ namespace Orient.Client
                         // if the pool is empty - create new dedicated database connection
                         else if (pool.CurrentSize == 0)
                         {
-                            connection = new Connection(pool.Hostname, pool.Port, pool.DatabaseName, pool.DatabaseType, pool.UserName, pool.UserPassword, alias, true, pool.ReceiveTimeout);
+                            connection = new Connection(pool.Hostname, pool.Port, pool.DatabaseName, pool.DatabaseType, pool.UserName, pool.UserPassword, alias, true);
                         }
                     }
                 }

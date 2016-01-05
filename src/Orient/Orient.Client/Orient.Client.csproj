@@ -96,6 +96,7 @@
     <Compile Include="API\Query\OSqlUpdate.cs" />
     <Compile Include="API\Types\ORidBag.cs" />
     <Compile Include="API\Types\TypeConverter.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Mapping\AllFieldMapping.cs" />
     <Compile Include="Mapping\BasicFieldMapping.cs" />

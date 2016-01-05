@@ -13,8 +13,6 @@ namespace Orient.Client.Protocol
         private TcpClient _socket;
         private BufferedStream _networkStream;
         private byte[] _readBuffer;
-        private readonly int _receiveTimeout; // Recive timeout in milliseconds
-        private const int RetryCount = 3;
 
         internal string Hostname { get; set; }
         internal int Port { get; set; }
@@ -73,7 +71,7 @@ namespace Orient.Client.Protocol
 
         internal bool UseTokenBasedSession { get; set; }
 
-        internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, string alias, bool isReusable, int receiveTimeout)
+        internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, string alias, bool isReusable)
         {
             this.Hostname = hostname;
             this.Port = port;
@@ -88,7 +86,6 @@ namespace Orient.Client.Protocol
             this.DatabaseType = databaseType;
             this.UserName = userName;
             this.UserPassword = userPassword;
-            this._receiveTimeout = receiveTimeout;
 
             this.InitializeDatabaseConnection(databaseName, databaseType, userName, userPassword);
         }
@@ -106,8 +103,6 @@ namespace Orient.Client.Protocol
             UserName = userName;
             UserPassword = userPassword;
 
-            this._receiveTimeout = 30 * 1000;
-
             InitializeServerConnection(userName, userPassword);
         }
 
@@ -115,9 +110,11 @@ namespace Orient.Client.Protocol
         {
             Exception _lastException = null;
 
-            var i = RetryCount;
-            while (i-- > 0)
+            var i = Configuration.RetryCount;
+            while (i >= 0)
             {
+                i--;
+
                 try
                 {
                     return ExecuteOperationInternal(operation);
@@ -269,7 +266,7 @@ namespace Orient.Client.Protocol
             try
             {
                 _socket = new TcpClient(Hostname, Port);
-                _socket.ReceiveTimeout = _receiveTimeout;
+                _socket.ReceiveTimeout = Configuration.Timeout;
             }
             catch (SocketException ex)
             {
@@ -303,7 +300,7 @@ namespace Orient.Client.Protocol
             try
             {
                 _socket = new TcpClient(Hostname, Port);
-                _socket.ReceiveTimeout = _receiveTimeout;
+                _socket.ReceiveTimeout = Configuration.Timeout;
             }
             catch (SocketException ex)
             {

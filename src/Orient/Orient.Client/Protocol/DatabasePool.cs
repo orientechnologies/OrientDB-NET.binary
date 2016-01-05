@@ -16,7 +16,6 @@ namespace Orient.Client.Protocol
         internal string UserPassword { get; set; }
         internal int PoolSize { get; private set; }
         internal string Alias { get; set; }
-        internal int ReceiveTimeout { get; set; }
         internal int CurrentSize
         {
             get
@@ -25,7 +24,7 @@ namespace Orient.Client.Protocol
             }
         }
 
-        internal DatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias, int receiveTimeout)
+        internal DatabasePool(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, int poolSize, string alias)
         {
             Hostname = hostname;
             Port = port;
@@ -35,13 +34,12 @@ namespace Orient.Client.Protocol
             UserPassword = userPassword;
             PoolSize = poolSize;
             Alias = alias;
-            ReceiveTimeout = receiveTimeout;
 
             _connections = new Queue<Connection>();
 
             for (int i = 0; i < poolSize; i++)
             {
-                Connection connection = new Connection(Hostname, Port, databaseName, databaseType, userName, userPassword, alias, true, ReceiveTimeout);
+                Connection connection = new Connection(Hostname, Port, databaseName, databaseType, userName, userPassword, alias, true);
 
                 _connections.Enqueue(connection);
             }
@@ -76,7 +74,7 @@ namespace Orient.Client.Protocol
                 if (connection.IsActive)
                     return connection;
             }
-            return new Connection(Hostname, Port, DatabaseName, DatabaseType, UserName, UserPassword, Alias, true, ReceiveTimeout);
+            return new Connection(Hostname, Port, DatabaseName, DatabaseType, UserName, UserPassword, Alias, true);
         }
 
         internal void EnqueueConnection(Connection connection)
