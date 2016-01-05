@@ -13,7 +13,7 @@ namespace Orient.Client.Protocol
         private TcpClient _socket;
         private BufferedStream _networkStream;
         private byte[] _readBuffer;
-        private readonly int ReceiveTimeout; // Recive timeout in milliseconds
+        private readonly int _receiveTimeout; // Recive timeout in milliseconds
         private const int RetryCount = 3;
 
         internal string Hostname { get; set; }
@@ -88,7 +88,7 @@ namespace Orient.Client.Protocol
             this.DatabaseType = databaseType;
             this.UserName = userName;
             this.UserPassword = userPassword;
-            this.ReceiveTimeout = receiveTimeout;
+            this._receiveTimeout = receiveTimeout;
 
             this.InitializeDatabaseConnection(databaseName, databaseType, userName, userPassword);
         }
@@ -106,7 +106,7 @@ namespace Orient.Client.Protocol
             UserName = userName;
             UserPassword = userPassword;
 
-            this.ReceiveTimeout = 30 * 1000;
+            this._receiveTimeout = 30 * 1000;
 
             InitializeServerConnection(userName, userPassword);
         }
@@ -269,7 +269,7 @@ namespace Orient.Client.Protocol
             try
             {
                 _socket = new TcpClient(Hostname, Port);
-                _socket.ReceiveTimeout = ReceiveTimeout;
+                _socket.ReceiveTimeout = _receiveTimeout;
             }
             catch (SocketException ex)
             {
@@ -303,7 +303,7 @@ namespace Orient.Client.Protocol
             try
             {
                 _socket = new TcpClient(Hostname, Port);
-                _socket.ReceiveTimeout = ReceiveTimeout;
+                _socket.ReceiveTimeout = _receiveTimeout;
             }
             catch (SocketException ex)
             {
