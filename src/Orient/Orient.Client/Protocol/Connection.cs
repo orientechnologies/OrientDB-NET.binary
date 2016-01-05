@@ -73,21 +73,21 @@ namespace Orient.Client.Protocol
 
         internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, string alias, bool isReusable)
         {
-            this.Hostname = hostname;
-            this.Port = port;
-            this.Type = ConnectionType.Database;
-            this.Alias = alias;
-            this.IsReusable = isReusable;
-            this.ProtocolVersion = 0;
-            this.SessionId = -1;
-            this.UseTokenBasedSession = OClient.UseTokenBasedSession;
+            Hostname = hostname;
+            Port = port;
+            Type = ConnectionType.Database;
+            Alias = alias;
+            IsReusable = isReusable;
+            ProtocolVersion = 0;
+            SessionId = -1;
+            UseTokenBasedSession = OClient.UseTokenBasedSession;
 
-            this.DatabaseName = databaseName;
-            this.DatabaseType = databaseType;
-            this.UserName = userName;
-            this.UserPassword = userPassword;
+            DatabaseName = databaseName;
+            DatabaseType = databaseType;
+            UserName = userName;
+            UserPassword = userPassword;
 
-            this.InitializeDatabaseConnection(databaseName, databaseType, userName, userPassword);
+            InitializeDatabaseConnection(databaseName, databaseType, userName, userPassword);
         }
 
         internal Connection(string hostname, int port, string userName, string userPassword)
