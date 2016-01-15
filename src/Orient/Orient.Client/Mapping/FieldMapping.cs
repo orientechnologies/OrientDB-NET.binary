@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Orient.Client.Mapping
 {
-    interface IFieldMapping
+    public interface IFieldMapping
     {
         void MapToObject(ODocument document, object typedObject);
         void MapToDocument(object typedObject, ODocument document);

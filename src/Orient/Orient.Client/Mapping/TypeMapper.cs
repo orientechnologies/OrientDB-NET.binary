@@ -9,6 +9,11 @@ namespace Orient.Client.Mapping
 {
     public abstract class TypeMapperBase
     {
+        /// <summary>
+        /// The custom field map dictionary
+        /// </summary>
+        protected static readonly IDictionary<Type, Func<PropertyInfo, string, IFieldMapping>> customFieldMap = new Dictionary<Type, Func<PropertyInfo, string, IFieldMapping>>();
+
         public abstract void ToObject(ODocument document, object typedObject);
         public abstract ODocument ToDocument(object typedObject);
 
@@ -19,7 +24,15 @@ namespace Orient.Client.Mapping
             return (TypeMapperBase)propertyInfo.GetValue(null, null);
         }
 
-
+        /// <summary>
+        /// Adds a custom field mapping.
+        /// </summary>
+        /// <typeparam name="TProperty">The type of the property.</typeparam>
+        /// <param name="mappingFactory">The mapping factory.</param>
+        public static void AddCustomFieldMapping<TProperty>(Func<PropertyInfo, string, IFieldMapping> mappingFactory)
+        {
+            customFieldMap[typeof(TProperty)] = mappingFactory;
+        }
     }
 
     public class TypeMapper<T> : TypeMapperBase
@@ -30,9 +43,6 @@ namespace Orient.Client.Mapping
         public static TypeMapper<T> Instance { get { return _instance; } }
 
         readonly List<IFieldMapping> _fields = new List<IFieldMapping>();
-
-
-
 
         private TypeMapper()
         {
@@ -152,10 +162,13 @@ namespace Orient.Client.Mapping
                 {
                     _fields.Add(new EnumFieldMapping<T>(propertyInfo, fieldPath));
                 }
-
-                // property is basic type
+                else if (customFieldMap.ContainsKey(propertyInfo.PropertyType))
+                {
+                    _fields.Add(customFieldMap[propertyInfo.PropertyType](propertyInfo, fieldPath));
+                }
                 else
                 {
+                    // property is basic type
                     AddBasicProperty(propertyInfo, fieldPath);
                 }
             }
@@ -189,7 +202,7 @@ namespace Orient.Client.Mapping
         {
             ODocument document = new ODocument();
 
-            if(genericObject != null)
+            if (genericObject != null)
             {
                 foreach (var fm in _fields)
                     fm.MapToDocument(genericObject, document);
