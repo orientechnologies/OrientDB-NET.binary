@@ -321,6 +321,67 @@ namespace Orient.Tests.Query
             }
         }
 
+        [Test]
+        public void TestThatCallingDeleteOnAnEdgeUpdatesTheInAndOutReferencesToo()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                // Arrange
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    database
+                        .Create.Class<TestVertexClass>()
+                        .Extends<OVertex>()
+                        .Run();
+                    database
+                        .Create.Class<TestEdgeClass>()
+                        .Extends<OEdge>()
+                        .Run();
+
+                    var vOut = CreateTestVertex(1);
+                    var vIn = CreateTestVertex(2);
+                    var edge = new TestEdgeClass();
+                    edge.SetField("item", 1);
+
+                    database.Transaction.Add(vOut);
+                    database.Transaction.Add(vIn);
+                    database.Transaction.AddEdge(edge, vOut, vIn);
+
+                    database.Transaction.Commit();
+
+                    // Validate arrange
+                    var createdVertex1 = database.Select().From("V").Where("bar").Equals(1).ToList<OVertex>().First();
+                    var createdVertex2 = database.Select().From("V").Where("bar").Equals(2).ToList<OVertex>().First();
+                    var createdEdge = database.Select().From("E").Where("item").Equals(1).ToList<OEdge>().First();
+                    Assert.That(createdEdge.OutV, Is.EqualTo(createdVertex1.ORID));
+                    Assert.That(createdEdge.InV, Is.EqualTo(createdVertex2.ORID));
+                }
+
+                // Act
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+                    var createdEdge = database.Select().From("E").Where("item").Equals(1).ToList<OEdge>().First();
+
+                    database.Transaction.Delete(createdEdge);
+                    database.Transaction.Commit();
+                }
+
+                // Assert
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
+
+                    var vOut = database.Select().From("V").Where("bar").Equals(1).ToList<OVertex>().First();
+                    var vIn = database.Select().From("V").Where("bar").Equals(2).ToList<OVertex>().First();
+
+                    var deletedEdge = database.Select().From("E").Where("item").Equals(1).ToList<OEdge>().FirstOrDefault();
+
+                    Assert.IsNull(deletedEdge);
+                    Assert.That(vOut.GetField<HashSet<object>>("out_TestEdgeClass").Count, Is.EqualTo(0));
+                    Assert.That(vIn.GetField<HashSet<object>>("in_TestEdgeClass").Count, Is.EqualTo(0));
+                }
+            }
+        }
+
         class Widget : OBaseRecord
         {
             public string Foo { get; set; }

@@ -141,7 +141,7 @@ namespace Orient.Client.API
                 Update(outV);
             }
 
-            this.Delete<OEdge>(edge);
+            Insert(new TypedTransactionRecord<OEdge>(RecordType.Delete, edge));
         }
 
         private ODocument getDocumentByOrid(ORID orid)
@@ -167,8 +167,16 @@ namespace Orient.Client.API
 
         public void Delete<T>(T typedObject) where T : IBaseRecord
         {
-            var record = new TypedTransactionRecord<T>(RecordType.Delete, typedObject);
-            Insert(record);
+            var edge = typedObject as OEdge;
+
+            if (edge != null)
+            {
+                this.DeleteEdge(edge);
+            }
+            else
+            {
+                Insert(new TypedTransactionRecord<T>(RecordType.Delete, typedObject));
+            }
         }
 
         private void Insert(TransactionRecord record)
