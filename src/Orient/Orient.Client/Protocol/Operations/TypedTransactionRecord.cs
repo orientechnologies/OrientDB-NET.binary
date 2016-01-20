@@ -5,7 +5,13 @@
         public TypedTransactionRecord(RecordType recordType, T typedObject)
             : base(recordType)
         {
-            Object = typedObject;
+            this.Object = typedObject;
+
+            var doc = typedObject as ODocument;
+            if (doc != null)
+            {
+                this.Document = doc;
+            }
         }
     }
 }
