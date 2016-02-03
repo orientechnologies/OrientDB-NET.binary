@@ -155,7 +155,15 @@ namespace Orient.Client.API
         {
             if(document.HasField(field))
             {
-                document.GetField<HashSet<object>>(field).Remove(orid);
+                var oridCollection = document[field] as ICollection<ORID>;
+                if (oridCollection != null)
+                {
+                    oridCollection.Remove(orid);
+                }
+                else
+                {
+                    ((ICollection<object>)document[field]).Remove(orid);
+                }
             }
         }
 
