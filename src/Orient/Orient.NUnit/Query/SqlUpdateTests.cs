@@ -169,7 +169,6 @@ namespace Orient.Tests.Query
                 }
             }
         }
-
         
         [Test]
         public void ShouldUpdateCluster()
