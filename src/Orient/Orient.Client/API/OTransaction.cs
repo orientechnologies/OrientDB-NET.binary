@@ -113,7 +113,15 @@ namespace Orient.Client.API
         {
             if (document.HasField(field))
             {
-                document.GetField<HashSet<object>>(field).Add(orid);
+                var oridCollection = document[field] as ICollection<ORID>;
+                if (oridCollection != null)
+                {
+                    oridCollection.Add(orid);
+                }
+                else
+                {
+                    ((ICollection<object>)document[field]).Add(orid);
+                }
             }
             else
             {
@@ -146,14 +154,14 @@ namespace Orient.Client.API
 
         private ODocument getDocumentByOrid(ORID orid)
         {
-            return _records.ContainsKey(orid) 
+            return _records.ContainsKey(orid)
                 ? this._records.Single(x => x.Key == orid).Value.Document
                 : this._connection.Database.Select().From(orid).ToList<ODocument>().First();
         }
 
         private void removeFromOridField(ODocument document, string field, ORID orid)
         {
-            if(document.HasField(field))
+            if (document.HasField(field))
             {
                 var oridCollection = document[field] as ICollection<ORID>;
                 if (oridCollection != null)
