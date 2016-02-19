@@ -215,7 +215,9 @@ namespace Orient.Client.Protocol.Serializers
             }
             else if (valueType.IsClass && (valueType.Name == "ODocument"))
             {
-                bld.AppendFormat("({0})", SerializeDocument((ODocument)value));
+                var document = (ODocument)value;
+                var className = string.IsNullOrEmpty(document.OClassName) ? string.Empty : document.OClassName + "@";
+                bld.AppendFormat("({0}{1})", className, SerializeDocument(document));
             }
             else if (valueType.IsClass && (valueType.Name == "OEmbeddedRidBag"))
             {
@@ -263,7 +265,7 @@ namespace Orient.Client.Protocol.Serializers
 
             fieldName = fieldName.Replace("\"", "");
 
-            document.Add(fieldName, null);
+            document[fieldName] = null;
 
             // move to position after colon (:)
             i++;
@@ -743,8 +745,17 @@ namespace Orient.Client.Protocol.Serializers
             }
             else
             {
-                // create new dictionary which would hold K/V pairs of embedded document
-                ODocument embeddedDocument = new ODocument();
+                var embeddedDocument = new ODocument();
+
+                // We should not try to read the classname after the embedded document (represented by ')', or '}'), or the first property value (':')
+                var maximumAtIndex = recordString.IndexOfAny(new[] { ')', '}', ':' }, i);
+                var atIndex = recordString.IndexOf('@', i, maximumAtIndex - i);
+                if (atIndex > 0)
+                {
+                    // If there is an '@' we set the class name.
+                    var documentClassName = recordString.Substring(i, atIndex - i);
+                    embeddedDocument.OClassName = documentClassName;
+                }
 
                 // assign embedded object
                 if (document[fieldName] == null)
