@@ -65,7 +65,7 @@ namespace Orient.Client
             if (other == null)
                 return false;
 
-            return Id == other.Id && String.Equals(Name, other.Name, StringComparison.InvariantCultureIgnoreCase) && Type == other.Type;
+            return Id == other.Id && String.Equals(Name, other.Name, StringComparison.OrdinalIgnoreCase) && Type == other.Type;
         }
     }
 }

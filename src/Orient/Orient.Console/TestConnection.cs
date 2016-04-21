@@ -6,11 +6,11 @@ namespace Orient.Console
     {
         private static string _hostname = "127.0.0.1";
         private static int _port = 2424;
-        private static string _username = "admin";
-        private static string _password = "admin";
+        private static string _username = "root";
+        private static string _password = "password";
 
         private static string _rootUserName = "root";
-        private static string _rootUserParssword = "root";
+        private static string _rootUserParssword = "password";
         private static OServer _server;
 
         public static int GlobalTestDatabasePoolSize { get { return 3; } }

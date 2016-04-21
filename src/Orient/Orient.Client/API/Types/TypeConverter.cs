@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Orient.Client.API.Types
@@ -57,7 +58,7 @@ namespace Orient.Client.API.Types
 
             else if (typeof(System.Collections.IEnumerable).IsAssignableFrom(t))
                 return OType.EmbeddedList;
-            else if (!t.IsPrimitive)
+            else if (!t.GetTypeInfo().IsPrimitive)
                 return OType.Embedded;
 
             throw new ArgumentException("propertyType " + t.Name + " is not yet supported.");

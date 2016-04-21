@@ -83,7 +83,7 @@ namespace Orient.Client
                 }
 
                 // if value is list or set type, get element type and enumerate over its elements
-                if (!type.IsPrimitive && ImplementsIList(type) && !type.IsArray)
+                if (!type.GetTypeInfo().IsPrimitive && ImplementsIList(type) && !type.IsArray)
                 {
                     var value = (T)Activator.CreateInstance(type);
                     Type elementType = type.GetGenericArguments()[0];
@@ -190,7 +190,7 @@ namespace Orient.Client
                 return target.GetField<T>(fields.Last());
             }
 
-            var result = type.IsPrimitive || type == typeof(string) || type.IsArray ? default(T) : (T)Activator.CreateInstance(type);
+            var result = type.GetTypeInfo().IsPrimitive || type == typeof(string) || type.IsArray ? default(T) : (T)Activator.CreateInstance(type);
             SetField(fieldPath, result);
             return result;
         }

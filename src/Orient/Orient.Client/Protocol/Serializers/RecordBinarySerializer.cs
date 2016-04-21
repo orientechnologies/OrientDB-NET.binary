@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using Orient.Client.API.Types;
 
@@ -36,7 +35,8 @@ namespace Orient.Client.Protocol.Serializers
         {
             var serializerVersion = reader.ReadByte();
             var classNameLength = readAsInteger(reader);
-            var className = Encoding.UTF8.GetString(reader.ReadBytesRequired(classNameLength));
+            byte[] rawBinary = reader.ReadBytesRequired(classNameLength);
+            var className = Encoding.UTF8.GetString(rawBinary,0,rawBinary.Length);
             document.OClassName = className;
 
             return parseDocument(reader, document);
@@ -55,7 +55,8 @@ namespace Orient.Client.Protocol.Serializers
 
                 if (len > 0)
                 {
-                    prop = Encoding.UTF8.GetString(reader.ReadBytesRequired(len));
+                    byte[] rawBinary = reader.ReadBytesRequired(len);
+                    prop = Encoding.UTF8.GetString(rawBinary,0,rawBinary.Length);
                     int valuePos = reader.ReadInt32EndianAware();
                     OType valuetype = (OType)reader.ReadByte();
                     fd.Add(new FieldDefinition { FieldName = prop, Pointer = valuePos, DataType = valuetype });
@@ -466,7 +467,8 @@ namespace Orient.Client.Protocol.Serializers
         private string readString(BinaryReader reader)
         {
             int len = readAsInteger(reader);
-            return Encoding.UTF8.GetString(reader.ReadBytesRequired(len));
+            byte[] rawBinary = reader.ReadBytesRequired(len);
+            return Encoding.UTF8.GetString(rawBinary,0,rawBinary.Length);
         }
 
         private int readInteger(BinaryReader reader)

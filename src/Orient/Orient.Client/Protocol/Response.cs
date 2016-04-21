@@ -40,14 +40,16 @@ namespace Orient.Client.Protocol
                 while (followByte == 1)
                 {
                     int exceptionClassLength = reader.ReadInt32EndianAware();
-                    exceptionString += System.Text.Encoding.Default.GetString(reader.ReadBytes(exceptionClassLength)) + ": ";
+                    byte[] exceptionSringByte = reader.ReadBytes(exceptionClassLength);
+                    exceptionString += System.Text.Encoding.UTF8.GetString(exceptionSringByte,0, exceptionSringByte.Length) + ": ";
 
                     int exceptionMessageLength = reader.ReadInt32EndianAware();
 
                     // don't read exception message string if it's null
                     if (exceptionMessageLength != -1)
                     {
-                        exceptionString += System.Text.Encoding.Default.GetString(reader.ReadBytes(exceptionMessageLength)) + "\n";
+                        byte[] exceptionByte = reader.ReadBytes(exceptionMessageLength);
+                        exceptionString += System.Text.Encoding.UTF8.GetString(exceptionByte,0, exceptionByte.Length) + "\n";
                     }
 
                     followByte = reader.ReadByte();

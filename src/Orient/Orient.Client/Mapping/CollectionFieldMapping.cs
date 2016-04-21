@@ -13,7 +13,7 @@ namespace Orient.Client.Mapping
             : base(propertyInfo, fieldPath)
         {
             Type listType = propertyInfo.PropertyType;
-            if (propertyInfo.PropertyType.IsInterface)
+            if (propertyInfo.PropertyType.GetTypeInfo().IsInterface)
             {
                 Type paramType = propertyInfo.PropertyType.GetGenericArguments()[0];
                 listType = typeof(List<>).MakeGenericType(paramType);
@@ -30,7 +30,7 @@ namespace Orient.Client.Mapping
         protected override void AddItemToCollection(object collection, int index, object item)
         {
             Type itemType = _propertyInfo.PropertyType.GetGenericArguments()[0];
-            if (itemType.IsEnum)
+            if (itemType.GetTypeInfo().IsEnum)
             {
                 ((IList)collection).Add(Enum.Parse(itemType, item.ToString()));
             }
@@ -64,7 +64,7 @@ namespace Orient.Client.Mapping
         protected override void AddItemToCollection(object collection, int index, object item)
         {
             Type itemType = _propertyInfo.PropertyType.GetElementType();
-            if (itemType.IsEnum)
+            if (itemType.GetTypeInfo().IsEnum)
             {
                 ((IList)collection)[index] = Enum.Parse(itemType, item.ToString());
             }

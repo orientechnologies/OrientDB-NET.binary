@@ -66,7 +66,9 @@ namespace Orient.Client
             return Task.Factory.StartNew(() =>
             {
                 var document = Load.ORID(new ORID(0, 0)).Run();
-                var str = Encoding.UTF8.GetString(document.GetField<byte[]>("RawBytes"));
+
+                byte[] rawByte = document.GetField<byte[]>("RawBytes");
+                var str = Encoding.UTF8.GetString(rawByte,0,rawByte.Length);
                 var values = str.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
                 var doc = new ODocument();
                 doc.SetField("Version", values[0]);

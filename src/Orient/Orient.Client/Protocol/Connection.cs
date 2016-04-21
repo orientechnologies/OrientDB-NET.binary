@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using Orient.Client.Protocol.Operations;
 using Orient.Client.Protocol.Serializers;
+using System.IO;
 
 namespace Orient.Client.Protocol
 {
     internal class Connection : IDisposable
     {
         private TcpClient _socket;
-        private BufferedStream _networkStream;
+        private NetworkStream _networkStream;
         private byte[] _readBuffer;
         private int RECIVE_TIMEOUT = 30 * 1000; // Recive timeout in milliseconds
         private const int RetryCount = 3;
@@ -61,7 +61,7 @@ namespace Orient.Client.Protocol
                 // more info: http://stackoverflow.com/questions/2661764/how-to-check-if-a-socket-is-connected-disconnected-in-c
                 // why not to use socket.Poll solution: it fails when the socket is being initialized
                 // and introduces additional delay for connection check
-                if ((_socket != null) && _socket.Connected)
+                if ((Socket != null) && Socket.Connected)
                 {
                     return true;
                 }
@@ -72,6 +72,19 @@ namespace Orient.Client.Protocol
         internal ODocument Document { get; set; }
 
         internal bool UseTokenBasedSession { get; set; }
+
+        public TcpClient Socket
+        {
+            get
+            {
+                return _socket;
+            }
+
+            set
+            {
+                _socket = value;
+            }
+        }
 
         internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, string alias, bool isReusable)
         {
@@ -212,17 +225,25 @@ namespace Orient.Client.Protocol
 
             try
             {
-                if ((_networkStream != null) && (_socket != null))
+                if ((_networkStream != null) && (Socket != null))
                 {
-                    _networkStream.Close();
-                    _socket.Close();
+                    _networkStream.Dispose();
+                    
+                    #if NET451
+                            Socket.Close();
+                    #endif                        
+                    
+                    #if DOTNET5_5
+                            // whatever 
+                            Socket.Dispose();
+                    #endif
                 }
             }
             catch { }
             finally
             {
                 _networkStream = null;
-                _socket = null;
+                Socket = null;
             }
         }
 
@@ -264,15 +285,18 @@ namespace Orient.Client.Protocol
             // initiate socket connection
             try
             {
-                _socket = new TcpClient(Hostname, Port);
-                _socket.ReceiveTimeout = RECIVE_TIMEOUT;
+                var client = new TcpClient();
+
+                Socket = new TcpClient();
+                Socket.ReceiveTimeout = RECIVE_TIMEOUT;
+                Socket.ConnectAsync(Hostname, Port).GetAwaiter().GetResult();
             }
             catch (SocketException ex)
             {
                 throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
 
-            _networkStream = new BufferedStream(_socket.GetStream());
+            _networkStream = Socket.GetStream();
             _networkStream.Read(_readBuffer, 0, 2);
 
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
@@ -298,15 +322,16 @@ namespace Orient.Client.Protocol
             // initiate socket connection
             try
             {
-                _socket = new TcpClient(Hostname, Port);
-                _socket.ReceiveTimeout = RECIVE_TIMEOUT;
+                Socket = new TcpClient();
+                Socket.ReceiveTimeout = RECIVE_TIMEOUT;
+                Socket.ConnectAsync(Hostname, Port).GetAwaiter().GetResult();
             }
             catch (SocketException ex)
             {
                 throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
 
-            _networkStream = new BufferedStream(_socket.GetStream());
+            _networkStream = Socket.GetStream();
             _networkStream.Read(_readBuffer, 0, 2);
 
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());

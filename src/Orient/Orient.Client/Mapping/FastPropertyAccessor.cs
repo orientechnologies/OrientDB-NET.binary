@@ -28,14 +28,16 @@ namespace Orient.Client.Mapping
 
     class FastPropertyAccessor
     {
+
+
         public static Func<T, TReturn> BuildTypedGetter<T, TReturn>(PropertyInfo propertyInfo)
         {
-            return (Func<T, TReturn>) Delegate.CreateDelegate(typeof(Func<T, TReturn>), propertyInfo.GetGetMethod());
+            return (Func<T, TReturn>)propertyInfo.GetGetMethod().CreateDelegate(typeof(Func<T, TReturn>));
         }
 
         public static Action<T, TProperty> BuildTypedSetter<T, TProperty>(PropertyInfo propertyInfo)
         {
-            return (Action<T, TProperty>)Delegate.CreateDelegate(typeof(Action<T, TProperty>), propertyInfo.GetSetMethod());
+            return (Action<T, TProperty>)propertyInfo.GetSetMethod().CreateDelegate(typeof(Action<T, TProperty>));
         }
 
         public static Action<T, object> BuildUntypedSetter<T>(PropertyInfo propertyInfo)

@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Orient.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Orient.Client;
 
 namespace Orient.Console
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
+            ConnectionPoolTest();
             CreateDatabaseTestManualy();
             System.Console.WriteLine("Press any key to exit ...");
             System.Console.ReadKey(true);
@@ -18,7 +18,7 @@ namespace Orient.Console
 
         static void CreateDatabaseTestManualy()
         {
-            using (var server = new OServer("127.0.0.1", 2424, "root", "root"))
+            using (var server = new OServer("127.0.0.1", 2424, "root", "password"))
             {
                 var created = false;
                 try
@@ -50,7 +50,7 @@ namespace Orient.Console
                             "TestManualy",
                             ODatabaseType.Graph,
                             "root",
-                            "root",
+                            "password",
                             10,
                             "AppConnection"
                         );
@@ -94,7 +94,7 @@ namespace Orient.Console
                     "GratefulDeadConcerts",
                     ODatabaseType.Graph,
                     "root",
-                    "root",
+                    "password",
                     10,
                     "AppConnection"
                 );
@@ -227,95 +227,6 @@ namespace Orient.Console
 
             return documents;
         }
-
-        /*static void TestConnection()
-        {
-            ODatabase database = new ODatabase(_alias);
-
-            System.Console.WriteLine(database.GetClusters().Count);
-        }
-
-        static void TestQuery()
-        {
-            ODatabase database = new ODatabase(_alias);
-
-            //List<ORecord> records = database.Query("select from OVertex where title = \"server 1\"", "*:2");
-            //List<ORecord> records = database.Query("select in.in.@rid as inVs, in.out.@rid as outVs, title from OVertex where @rid = #8:0");
-            List<ORecord> records = database.Query(
-                "select " +
-                " out.in as neighborRIDs," +
-                //" out.in.type as neighborTypes," +
-                //" out.in.state as neighborStates," +
-                " title," +
-                " @rid" +
-                " from #8:0"
-            );
-
-            foreach (ORecord record in records)
-            {
-                //Ve v = record.To<Ve>();
-                List<ORID> orids = record.GetField<List<ORID>>("neighborRIDs");
-                List<string> types = record.GetField<List<string>>("neighborTypes");
-                List<int> states = record.GetField<List<int>>("neighborStates");
-
-                System.Console.WriteLine("{0} - {1} {2} {3}", record.GetField<string>("title"), orids.Count, types.Count, states.Count);
-                //System.Console.WriteLine(v.Title);
-            }
-
-            //foreach (ORecord record in database.Query("select from OEdge limit 20", "*:2"))
-            //{
-            //    Ed e = record.To<Ed>();
-            //    System.Console.WriteLine(e.Label);
-            //}
-
-            //ORecord rec = database.Command("create vertex OVertex set title = \"whoa\"").ToSingle();
-            //object foo = database.Command("delete vertex " + rec.ORID.ToString());
-        }
-
-        static void TestLoad()
-        {
-            int runs = 20;
-            long total = 0;
-
-            for (int i = 0; i < runs; i++)
-            {
-                long tps = Do();
-                total += tps;
-
-                System.Console.WriteLine("TPS: " + tps);
-            }
-
-            System.Console.WriteLine("Average: " + total / runs);
-        }
-
-        static long Do()
-        {
-            DateTime start = DateTime.Now;
-            bool running = true;
-            long tps = 0;
-
-            do
-            {
-                ODatabase database = new ODatabase(_alias);
-
-                //List<ORecord> result = database.Query("select name from OVertex where in[0].label = 'followed_by' and in[0].out.name = 'JAM'");
-                //List<ORecord> result = database.Query("select from OVertex limit 20");
-                List<ORecord> result = database.Query("select from OEdge limit 20");
-
-                database.Close();
-                tps++;
-
-                TimeSpan dif = DateTime.Now - start;
-
-                if (dif.TotalMilliseconds > 1000)
-                {
-                    running = false;
-                }
-            }
-            while (running);
-
-            return tps;
-        }*/
     }
 
     class Vertex

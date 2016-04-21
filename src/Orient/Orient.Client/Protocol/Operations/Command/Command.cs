@@ -152,7 +152,8 @@ namespace Orient.Client.Protocol.Operations.Command
                         break;
                     case PayloadStatus.SerializedResult: // 'a'
                         contentLength = reader.ReadInt32EndianAware();
-                        string serialized = System.Text.Encoding.Default.GetString(reader.ReadBytes(contentLength));
+                        byte[] serializedBytes = reader.ReadBytes(contentLength);
+                        string serialized = System.Text.Encoding.UTF8.GetString(serializedBytes,0,serializedBytes.Length);
                         responseDocument.SetField("Content", serialized);
                         break;
                     case PayloadStatus.RecordCollection: // 'l'

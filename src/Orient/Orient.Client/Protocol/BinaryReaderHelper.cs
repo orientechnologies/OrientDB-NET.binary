@@ -65,7 +65,8 @@ namespace Orient.Client.Protocol
             if (length < 0)
                 return null;
 
-            return System.Text.Encoding.Default.GetString(binRdr.ReadBytes(length));
+            byte[] int32Byte = binRdr.ReadBytes(length);
+            return System.Text.Encoding.UTF8.GetString(int32Byte, 0, int32Byte.Length);
         }
 
         public static ORID ReadRid(this BinaryReader binRdr)

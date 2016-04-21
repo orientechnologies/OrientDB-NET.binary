@@ -83,7 +83,8 @@ namespace Orient.Client.API.Types
             var length = reader.ReadInt16EndianAware();
             if (length > 0)
             {
-                return Encoding.UTF8.GetString(reader.ReadBytes(length));
+                byte[] rawBytes = reader.ReadBytes(length);
+                return Encoding.UTF8.GetString(rawBytes,0,rawBytes.Length);
             }
 
             return "";

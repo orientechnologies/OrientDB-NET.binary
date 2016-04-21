@@ -45,7 +45,8 @@ namespace Orient.Client.Protocol.Operations
 
                     int clusterNameLength = reader.ReadInt32EndianAware();
 
-                    cluster.Name = System.Text.Encoding.Default.GetString(reader.ReadBytes(clusterNameLength));
+                    byte[] rawBytes = reader.ReadBytes(clusterNameLength);
+                    cluster.Name = System.Text.Encoding.UTF8.GetString(rawBytes,0,rawBytes.Length);
 
                     cluster.Id = reader.ReadInt16EndianAware();
 
@@ -53,7 +54,8 @@ namespace Orient.Client.Protocol.Operations
                     {
                         int clusterTypeLength = reader.ReadInt32EndianAware();
 
-                        string clusterType = System.Text.Encoding.Default.GetString(reader.ReadBytes(clusterTypeLength));
+                        byte[] clusterBytes = reader.ReadBytes(clusterTypeLength);
+                        string clusterType = System.Text.Encoding.UTF8.GetString(clusterBytes,0,clusterBytes.Length);
                         //cluster.Type = (OClusterType)Enum.Parse(typeof(OClusterType), clusterType, true);
                         if (OClient.ProtocolVersion >= 12)
                             cluster.DataSegmentID = reader.ReadInt16EndianAware();

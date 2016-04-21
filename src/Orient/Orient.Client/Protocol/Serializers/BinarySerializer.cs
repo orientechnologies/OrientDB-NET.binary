@@ -54,7 +54,7 @@ namespace Orient.Client.Protocol.Serializers
 
         internal static string ToString(byte[] data)
         {
-            return Encoding.UTF8.GetString(data);
+            return Encoding.UTF8.GetString(data,0,data.Length);
         }
 
         internal static byte[] ToArray(byte data)

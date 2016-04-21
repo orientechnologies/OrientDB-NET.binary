@@ -4,6 +4,7 @@ using Orient.Client.Protocol.Operations;
 using Orient.Client.Protocol.Operations.Command;
 using Orient.Client.API.Attributes;
 using System;
+using System.Reflection;
 
 // syntax:
 // SELECT [FROM <Target> 
@@ -106,15 +107,28 @@ namespace Orient.Client
 
         public OSqlSelect From<T>()
         {
-            var tAttribute = (OAliasAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(OAliasAttribute), true);
-            if (tAttribute == null)
+            //GRD: I think this would be the same thing?
+            MemberInfo[] membersInfo = typeof(T).GetProperties();
+            foreach (MemberInfo memberInfo in membersInfo)
             {
-                return From(typeof(T).Name);
+                foreach (object attribute in memberInfo.GetCustomAttributes(typeof(OAliasAttribute), true))
+                {
+                    return From(((OAliasAttribute)attribute).Name);
+                }
             }
-            else
-            {
-                return From(tAttribute.Name);
-            }
+
+            return From(typeof(T).Name);
+            
+
+            //var tAttribute = (OAliasAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(OAliasAttribute), true);
+            //if (tAttribute == null)
+            //{
+            //    return From(typeof(T).Name);
+            //}
+            //else
+            //{
+            //    return From(tAttribute.Name);
+            //}
         }
 
         #endregion

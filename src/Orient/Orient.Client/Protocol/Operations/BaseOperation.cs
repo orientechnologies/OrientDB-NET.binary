@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Orient.Client.Protocol.Serializers;
+using System.Net.Sockets;
 
 namespace Orient.Client.Protocol.Operations
 {
@@ -52,8 +53,8 @@ namespace Orient.Client.Protocol.Operations
         protected bool EndOfStream(BinaryReader reader)
         {
             BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            var length = (Int32)typeof(BufferedStream).GetField("_readLen", flags).GetValue(reader.BaseStream);
-            var pos = (Int32)typeof(BufferedStream).GetField("_readPos", flags).GetValue(reader.BaseStream);
+            var length = (Int32)typeof(NetworkStream).GetField("_readLen", flags).GetValue(reader.BaseStream);
+            var pos = (Int32)typeof(NetworkStream).GetField("_readPos", flags).GetValue(reader.BaseStream);
             return length == pos;
         }
     }
