@@ -1,10 +1,11 @@
 ﻿{
-  "version": "1.0.0-*",
-  "description": "Orient.Client Class Library",
-  "authors": [ "delagr" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
+  "id": "OrientDB-Net.binary.Innov8tive",
+  "version": "0.1.0-*",
+  "description": "C#/.NET binary driver for OrientDB",
+  "authors": [ "Gray Delacluyse" ],
+  "tags": [ "orientdb", "database", "orient", ".net", "c#", "document", "graph" ],
+  "projectUrl": "https://github.com/Innov8tiveSoftware/OrientDB-NET.binary",
+  "licenseUrl": "http://opensource.org/licenses/MIT",
 
   "frameworks": {
     "net451": {
