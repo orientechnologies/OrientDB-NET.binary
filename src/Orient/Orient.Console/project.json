@@ -11,13 +11,13 @@
   },
 
   "dependencies": {
-    "Orient.Client": "1.0.0-*"
+    "OrientDB-Net.binary.Innov8tive": "0.1.0-*"
   },
 
   "commands": {
     "Orient.Console": "Orient.Console"
   },
-
+  
   "frameworks": {
     "dnx451": { },
     "dnxcore50": {

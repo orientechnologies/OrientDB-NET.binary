@@ -3,7 +3,7 @@
   "version": 2,
   "targets": {
     "DNX,Version=v4.5.1": {
-      "Orient.Client/0.1.0": {
+      "OrientDB-Net.binary.Innov8tive/0.1.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.5.1"
       }
@@ -49,7 +49,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Orient.Client/0.1.0": {
+      "OrientDB-Net.binary.Innov8tive/0.1.0": {
         "type": "project",
         "framework": ".NETPlatform,Version=v5.5",
         "dependencies": {
@@ -533,13 +533,13 @@
       }
     },
     "DNX,Version=v4.5.1/win7-x86": {
-      "Orient.Client/0.1.0": {
+      "OrientDB-Net.binary.Innov8tive/0.1.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.5.1"
       }
     },
     "DNX,Version=v4.5.1/win7-x64": {
-      "Orient.Client/0.1.0": {
+      "OrientDB-Net.binary.Innov8tive/0.1.0": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.5.1"
       }
@@ -585,7 +585,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Orient.Client/0.1.0": {
+      "OrientDB-Net.binary.Innov8tive/0.1.0": {
         "type": "project",
         "framework": ".NETPlatform,Version=v5.5",
         "dependencies": {
@@ -1192,7 +1192,7 @@
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Orient.Client/0.1.0": {
+      "OrientDB-Net.binary.Innov8tive/0.1.0": {
         "type": "project",
         "framework": ".NETPlatform,Version=v5.5",
         "dependencies": {
@@ -1760,9 +1760,9 @@
     }
   },
   "libraries": {
-    "Orient.Client/0.1.0": {
+    "OrientDB-Net.binary.Innov8tive/0.1.0": {
       "type": "project",
-      "path": "../Orient.Client/project.json"
+      "path": "../OrientDB-Net.binary.Innov8tive/project.json"
     },
     "Microsoft.CSharp/4.0.1-beta-23516": {
       "type": "package",
@@ -3253,7 +3253,7 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "Orient.Client >= 1.0.0-*"
+      "OrientDB-Net.binary.Innov8tive >= 0.1.0-*"
     ],
     "DNX,Version=v4.5.1": [],
     "DNXCore,Version=v5.0": [
