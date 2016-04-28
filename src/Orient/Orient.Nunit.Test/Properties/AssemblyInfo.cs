@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Orient.Console")]
+[assembly: AssemblyTitle("Orient.Nunit.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft Corporation")]
-[assembly: AssemblyProduct("Orient.Console")]
-[assembly: AssemblyCopyright("Copyright © Microsoft Corporation 2016")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Orient.Nunit.Test")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,4 +20,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("1852d6fa-a493-4004-a959-17f23d0a5a79")]
+[assembly: Guid("280d0549-8ddf-495c-9cd2-20aa06bfdd0a")]
