@@ -1,7 +1,7 @@
 ﻿{
   "version": "1.0.0-*",
-  "description": "Orient.Console Console Application",
-  "authors": [ "delagr" ],
+  "description": "Orient.Nunit.Test Console Application",
+  "authors": [ "Caleb" ],
   "tags": [ "" ],
   "projectUrl": "",
   "licenseUrl": "",
@@ -11,19 +11,16 @@
   },
 
   "dependencies": {
+    "NUnitLite": "3.0.0-rc",
     "OrientDB-Net.binary.Innov8tive": "0.1.0-*"
   },
 
   "commands": {
-    "Orient.Console": "Orient.Console"
+    "test": "Orient.Nunit.Test"
   },
-  
+
   "frameworks": {
-    "dnx451": {
-      "dependencies": {
-        "System.Runtime": "4.0.21-beta-23516"
-      }
-    },
+    "dnx451": { },
     "dnxcore50": {
       "dependencies": {
         "Microsoft.CSharp": "4.0.1-beta-23516",
