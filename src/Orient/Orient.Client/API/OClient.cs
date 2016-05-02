@@ -95,6 +95,17 @@ namespace Orient.Client
             return -1;
         }
 
+        internal static void ReEstablishAllDatabasePool()
+        {
+            lock (_syncRoot)
+            {
+                foreach (var pool in _databasePools)
+                {
+                    pool.ReEstablishConnections();
+                }
+            }
+        }
+
         internal static Connection ReleaseConnection(string alias)
         {
             lock (_syncRoot)

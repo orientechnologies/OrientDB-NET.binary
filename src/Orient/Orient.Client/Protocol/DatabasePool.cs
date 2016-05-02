@@ -37,9 +37,14 @@ namespace Orient.Client.Protocol
 
             _connections = new Queue<Connection>();
 
-            for (int i = 0; i < poolSize; i++)
+            EstablishConnections(poolSize);
+        }
+
+        internal void EstablishConnections(int size)
+        {
+            for (int i = 0; i < size; i++)
             {
-                Connection connection = new Connection(Hostname, Port, databaseName, databaseType, userName, userPassword, alias, true);
+                Connection connection = new Connection(Hostname, Port, DatabaseName, DatabaseType, UserName, UserPassword, Alias, true);
 
                 _connections.Enqueue(connection);
             }
@@ -50,6 +55,13 @@ namespace Orient.Client.Protocol
             {
                 Release = lastConnection.Document.GetField<string>("OrientdbRelease");
             }
+        }
+
+        internal void ReEstablishConnections()
+        {
+            var size = _connections.Count;
+            DropConnections();
+            EstablishConnections(size);
         }
 
         internal void DropConnections()
