@@ -9,7 +9,13 @@ namespace Orient.Tests
     /// <summary>
     /// Test class to run some parallel queries and measure the execution duration.
     /// </summary>
+    /// <remarks>
+    /// Test class is ignored to save time.
+    /// The operations are covered by other test cases.
+    /// </remarks>
     [TestFixture]
+    [Ignore]
+    [Category("performance")]
     public class QueryPerformanceTests
     {
         private const int TestDocumentCount = 20000;        
