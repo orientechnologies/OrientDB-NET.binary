@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using Orient.Client.API.Types;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Serializers;
@@ -7,7 +8,7 @@ namespace Orient.Client
 {
     public static class OClient
     {
-        private static Dictionary<string, DatabasePool> _databasePools;
+        private static ConcurrentDictionary<string, DatabasePool> _databasePools;
         internal static string ClientID { get; set; }
         private static short _protocolVersion = 21;
         public static string DriverName { get { return "OrientDB-NET.binary"; } }
@@ -31,7 +32,7 @@ namespace Orient.Client
 
         static OClient()
         {
-            _databasePools = new Dictionary<string, DatabasePool>();
+            _databasePools = new ConcurrentDictionary<string, DatabasePool>();
             BufferLenght = 1024;
             Serializer = ORecordFormat.ORecordDocument2csv;
             ClientID = "null";
@@ -57,16 +58,15 @@ namespace Orient.Client
         {
             OClient.ClientID = clientID;
             var databasePool = new DatabasePool(hostname, port, databaseName, databaseType, userName, userPassword, poolSize, alias);
-            _databasePools.Add(alias, databasePool);
+            _databasePools[alias] = databasePool;
             return databasePool.Release;
         }
 
         public static void DropDatabasePool(string alias)
         {
-            DatabasePool poolToDrop = null;
-            if (_databasePools.TryGetValue(alias, out poolToDrop))
-            {
-                _databasePools.Remove(alias);
+            DatabasePool poolToDrop = null;            
+            if (_databasePools.TryRemove(alias, out poolToDrop))
+            {                
                 poolToDrop.DropConnections();
             }
         }
