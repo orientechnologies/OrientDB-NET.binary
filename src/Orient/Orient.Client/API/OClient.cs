@@ -95,13 +95,13 @@ namespace Orient.Client
             return -1;
         }
 
-        internal static void ReEstablishAllDatabasePool()
+        internal static void DropAndEstablishConnectionsInAllPools()
         {
             lock (_syncRoot)
             {
                 foreach (var pool in _databasePools)
                 {
-                    pool.ReEstablishConnections();
+                    pool.DropAndEstablishAllConnections();
                 }
             }
         }

@@ -20,7 +20,7 @@
         /// </summary>
         static Configuration()
         {
-            Timeout = 60 * 1000;
+            timeout = 60 * 1000;
             RetryCount = 0;
         }
 
@@ -40,7 +40,7 @@
             set
             {
                 timeout = value;
-                OClient.ReEstablishAllDatabasePool();
+                OClient.DropAndEstablishConnectionsInAllPools();
             }
         }
 

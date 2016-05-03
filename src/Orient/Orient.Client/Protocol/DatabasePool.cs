@@ -57,7 +57,7 @@ namespace Orient.Client.Protocol
             }
         }
 
-        internal void ReEstablishConnections()
+        internal void DropAndEstablishAllConnections()
         {
             var size = _connections.Count;
             DropConnections();
