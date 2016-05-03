@@ -11,11 +11,16 @@
     public static class Configuration
     {
         /// <summary>
+        /// The recieve timeout
+        /// </summary>
+        private static int timeout;
+
+        /// <summary>
         /// Initializes the <see cref="Configuration"/> class.
         /// </summary>
         static Configuration()
         {
-            Timeout = 60 * 1000;
+            timeout = 60 * 1000;
             RetryCount = 0;
         }
 
@@ -25,7 +30,19 @@
         /// <value>
         /// The timeout in msec.
         /// </value>
-        public static int Timeout { get; set; }
+        public static int Timeout
+        {
+            get
+            {
+                return timeout;
+            }
+
+            set
+            {
+                timeout = value;
+                OClient.DropAndEstablishConnectionsInAllPools();
+            }
+        }
 
         /// <summary>
         /// Gets or sets the retry count. If an operation fails with IOException it will be retried this many times.
