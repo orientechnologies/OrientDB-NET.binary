@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Orient.Client.Protocol
 {
     internal class DatabasePool
     {
-        private Queue<Connection> _connections;
+        private int _currentSize;
+        private ConcurrentBag<Connection> _connections;
 
         internal string Release { get; private set; }
         internal string Hostname { get; set; }
@@ -20,7 +23,7 @@ namespace Orient.Client.Protocol
         {
             get
             {
-                return _connections.Where(con => con.IsActive == true).Count();
+                return _currentSize;
             }
         }
 
@@ -35,18 +38,19 @@ namespace Orient.Client.Protocol
             PoolSize = poolSize;
             Alias = alias;
 
-            _connections = new Queue<Connection>();
+            _connections = new ConcurrentBag<Connection>();
 
-            EstablishConnections(poolSize);
+            EstablishConnections();
         }
 
-        internal void EstablishConnections(int size)
+        internal void EstablishConnections()
         {
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < this.PoolSize; i++)
             {
-                Connection connection = new Connection(Hostname, Port, DatabaseName, DatabaseType, UserName, UserPassword, Alias, true);
+                var connection = new Connection(Hostname, Port, DatabaseName, DatabaseType, UserName, UserPassword, Alias, true);
 
-                _connections.Enqueue(connection);
+                _connections.Add(connection);
+                Interlocked.Increment(ref _currentSize);
             }
 
             //get release from last connection
@@ -59,40 +63,56 @@ namespace Orient.Client.Protocol
 
         internal void DropAndEstablishAllConnections()
         {
-            var size = _connections.Count;
             DropConnections();
-            EstablishConnections(size);
+            EstablishConnections();
         }
 
         internal void DropConnections()
-        {
-            // Need to clean up the pool
-            while (_connections.Count > 0)
+        {            
+            Connection connectionToDrop = null;
+            while (_connections.TryTake(out connectionToDrop))
             {
-                var connection = _connections.Dequeue();
-
-                if (connection.IsActive)
-                    connection.Dispose();
+                Interlocked.Decrement(ref _currentSize);
+                if (connectionToDrop.IsActive)
+                {
+                    connectionToDrop.Dispose();
+                }
                 else
-                    connection.Destroy();
+                {
+                    connectionToDrop.Destroy();
+                }
             }
         }
 
         internal Connection DequeueConnection()
         {
-            while (_connections.Count > 0)
+            Connection connection = null;
+            while (_connections.TryTake(out connection))
             {
-                var connection = _connections.Dequeue();
+                Interlocked.Decrement(ref _currentSize);
                 if (connection.IsActive)
+                {
                     return connection;
+                }
+                else
+                {                    
+                    connection.Destroy();
+                }
             }
+
             return new Connection(Hostname, Port, DatabaseName, DatabaseType, UserName, UserPassword, Alias, true);
         }
 
-        internal void EnqueueConnection(Connection connection)
+        internal bool TryEnqueueConnection(Connection connection)
         {
-            if (connection.IsActive)
-                _connections.Enqueue(connection);
+            if (connection.IsActive && this.CurrentSize < this.PoolSize)
+            {
+                _connections.Add(connection);
+                Interlocked.Increment(ref _currentSize);
+                return true;
+            }
+
+            return false;
         }
     }
 }
