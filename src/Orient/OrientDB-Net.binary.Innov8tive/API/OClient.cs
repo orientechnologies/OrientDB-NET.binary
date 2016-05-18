@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Orient.Client.API.Types;
 using Orient.Client.Protocol;
 using Orient.Client.Protocol.Serializers;
@@ -61,9 +62,14 @@ namespace Orient.Client
 
             lock (_syncRoot)
             {
-                DatabasePool databasePool = new DatabasePool(hostname, port, databaseName, databaseType, userName, userPassword, poolSize, alias);
+                DatabasePool databasePool = _databasePools.FirstOrDefault(db => db.Alias == alias);
+                if (databasePool == null)
+                {
+                    databasePool = new DatabasePool(hostname, port, databaseName, databaseType, userName, userPassword, poolSize, alias);
 
-                _databasePools.Add(databasePool);
+                    _databasePools.Add(databasePool); 
+                }
+
                 return databasePool.Release;
             }
         }
@@ -94,6 +100,13 @@ namespace Orient.Client
 
             return -1;
         }
+
+        /// <summary>
+        /// Checks to see if a database pool has already been created with the given alias.
+        /// </summary>
+        /// <param name="alias">The name assigned to the database pool.</param>
+        /// <returns>True if a pool exists.</returns>
+        public static bool PoolExists(string alias) => _databasePools.Exists(db => db.Alias == alias);
 
         internal static Connection ReleaseConnection(string alias)
         {
