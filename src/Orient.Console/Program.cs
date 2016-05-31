@@ -3,23 +3,37 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace Orient.Console
 {
   
         public class Program
         {
-            public static void Main()
+        public static IConfiguration Configuration { get; set; }
+
+
+        public static void Main()
             {
-                //ConnectionPoolTest();
-                CreateDatabaseTestManualy();
+
+            Configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            
+
+            //ConnectionPoolTest();
+            CreateDatabaseTestManualy();
                 System.Console.WriteLine("Press any key to exit ...");
                 System.Console.ReadKey(true);
             }
 
             static void CreateDatabaseTestManualy()
             {
-                using (var server = new OServer("127.0.0.1", 2424, "root", "root"))
+            var serverConnInfo = Configuration.GetSection("ConnectionStrings:DefaultConnection").GetChildren().ToDictionary(x=>x.Key);
+            using (var server = new OServer(serverConnInfo["Server"].Value, int.Parse(serverConnInfo["Port"].Value), serverConnInfo["Username"].Value, serverConnInfo["Password"].Value))
                 {
                     var created = false;
                     try
@@ -49,12 +63,12 @@ namespace Orient.Console
                         System.Console.WriteLine("try connect to the database and query");
 
                         OClient.CreateDatabasePool(
-                                "localhost",
-                                2424,
+                                serverConnInfo["Server"].Value,
+                                int.Parse(serverConnInfo["Port"].Value),
                                 "TestManualy",
                                 ODatabaseType.Graph,
-                                "root",
-                                "root",
+                                serverConnInfo["Username"].Value,
+                                serverConnInfo["Password"].Value,
                                 10,
                                 "AppConnection"
                             );
@@ -92,13 +106,15 @@ namespace Orient.Console
             }
             static void CreateDatabasePoolTest()
             {
-                OClient.CreateDatabasePool(
-                        "localhost",
-                        2424,
-                        "GratefulDeadConcerts",
+            var serverConnInfo = Configuration.GetSection("ConnectionStrings:DefaultConnection").GetChildren().ToDictionary(x => x.Key);
+
+            OClient.CreateDatabasePool(
+                        serverConnInfo["Server"].Value,
+                        int.Parse(serverConnInfo["Port"].Value),
+                        serverConnInfo["DefaultDB"].Value,
                         ODatabaseType.Graph,
-                        "root",
-                        "root",
+                       serverConnInfo["Username"].Value,
+                        serverConnInfo["Password"].Value,
                         10,
                         "AppConnection"
                     );
