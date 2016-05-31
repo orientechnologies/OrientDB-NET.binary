@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5FEE40E5-7EFE-4B47-8CCA-53AEFF11E20B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1052104C-8E6A-4250-A14E-06E895A1FA1C}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OrientDB-Net.binary.Innov8tive", "src\OrientDB-Net.binary.Innov8tive\OrientDB-Net.binary.Innov8tive.xproj", "{CE139A8E-9BDE-4D5A-9D13-EF895FF75868}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orient.Nunit.Test", "src\Orient.Nunit.Test\Orient.Nunit.Test.xproj", "{78D53E55-64E9-4487-BC15-D9E9CF05624D}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orient.Console", "src\Orient.Console\Orient.Console.xproj", "{28FD0956-8DE4-4BBE-A875-53A416ACD5AC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE139A8E-9BDE-4D5A-9D13-EF895FF75868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE139A8E-9BDE-4D5A-9D13-EF895FF75868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE139A8E-9BDE-4D5A-9D13-EF895FF75868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE139A8E-9BDE-4D5A-9D13-EF895FF75868}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78D53E55-64E9-4487-BC15-D9E9CF05624D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78D53E55-64E9-4487-BC15-D9E9CF05624D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78D53E55-64E9-4487-BC15-D9E9CF05624D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78D53E55-64E9-4487-BC15-D9E9CF05624D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28FD0956-8DE4-4BBE-A875-53A416ACD5AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28FD0956-8DE4-4BBE-A875-53A416ACD5AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28FD0956-8DE4-4BBE-A875-53A416ACD5AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28FD0956-8DE4-4BBE-A875-53A416ACD5AC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CE139A8E-9BDE-4D5A-9D13-EF895FF75868} = {5FEE40E5-7EFE-4B47-8CCA-53AEFF11E20B}
+		{78D53E55-64E9-4487-BC15-D9E9CF05624D} = {5FEE40E5-7EFE-4B47-8CCA-53AEFF11E20B}
+		{28FD0956-8DE4-4BBE-A875-53A416ACD5AC} = {5FEE40E5-7EFE-4B47-8CCA-53AEFF11E20B}
+	EndGlobalSection
+EndGlobal
