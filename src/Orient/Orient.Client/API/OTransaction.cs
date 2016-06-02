@@ -85,6 +85,8 @@ namespace Orient.Client.API
         public void Reset()
         {
             _records.Clear();
+            _tempObjectId = -1;
+            UseTransactionLog = true;
         }
 
         public void Add<T>(T typedObject) where T : IBaseRecord
