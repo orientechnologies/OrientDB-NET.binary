@@ -42,8 +42,9 @@ namespace Orient.Tests.Query
                 saved.SetField("EmbeddedClass.StringProperty", "embeddedPear");
 
                 // Act
-                db.Transaction.Update(saved);
-                db.Transaction.Commit();
+                var transaction = db.CreateTransaction();
+                transaction.Update(saved);
+                transaction.Commit();
 
                 // Assert
                 var updated = db.Select().From(saved.ORID).ToList().Single();

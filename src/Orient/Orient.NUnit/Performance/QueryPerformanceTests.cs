@@ -33,6 +33,7 @@ namespace Orient.Tests
                     database
                         .Create.Class("TestClass")
                         .Run();
+                    var transaction = database.CreateTransaction();
 
                     for (var i = 0; i < TestDocumentCount; i++)
                     {
@@ -40,10 +41,10 @@ namespace Orient.Tests
                         document
                             .SetField("foo", "foo string value")
                             .SetField("bar", Random.Next(TestDocumentCount));
-                        database.Transaction.Add(document);
+                        transaction.Add(document);
                     }
 
-                    database.Transaction.Commit();                    
+                    transaction.Commit();                    
                 }
 
                 Action<int> queryToRun = i =>
@@ -79,6 +80,7 @@ namespace Orient.Tests
 
                     database.Create.Property("bar", OType.Integer).Class("TestClass").Run();
                     database.Command("CREATE INDEX TestClass.bar UNIQUE_HASH_INDEX");
+                    var transaction = database.CreateTransaction();
 
                     for (var i = 0; i < TestDocumentCount; i++)
                     {
@@ -86,10 +88,10 @@ namespace Orient.Tests
                         document
                             .SetField("foo", "foo string value")
                             .SetField("bar", i);
-                        database.Transaction.Add(document);
+                        transaction.Add(document);
                     }
 
-                    database.Transaction.Commit();
+                    transaction.Commit();
                 }
 
                 Action<int> queryToRun = i =>

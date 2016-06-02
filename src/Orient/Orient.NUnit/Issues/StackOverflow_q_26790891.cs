@@ -59,7 +59,7 @@ namespace Orient.Tests.Issues
                 AddressLine2 = "PO 1234"
             };
 
-            database.Insert<Person>(luca, database.Transaction);
+            database.Insert<Person>(luca, database.CreateTransaction());
         }
     }
 
