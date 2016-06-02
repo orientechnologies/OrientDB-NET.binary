@@ -46,10 +46,12 @@ namespace Orient.Tests.Issues
             var e1 = new ODocument { OClassName = "TestEdge" };
             e1.SetField("Weight", 1.3f);
 
+            var transaction = this._database.CreateTransaction();
+
             // Add records to the transaction
-            _database.Transaction.Add(v1);
-            _database.Transaction.Add(v2);
-            _database.Transaction.Add(e1);
+            transaction.Add(v1);
+            transaction.Add(v2);
+            transaction.Add(e1);
 
             // link records
             v1.SetField("in_TestEdge", e1.ORID);
@@ -57,7 +59,7 @@ namespace Orient.Tests.Issues
             e1.SetField("in", v1.ORID);
             e1.SetField("out", v2.ORID);
 
-            _database.Transaction.Commit();
+            transaction.Commit();
 
             Assert.IsNotNull(v1.ORID);
             Assert.IsNotNull(v2.ORID);

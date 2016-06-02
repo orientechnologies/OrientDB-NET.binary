@@ -21,6 +21,7 @@ namespace Orient.Tests.Query
                         .Create.Class("TestVertexClass")
                         .Extends<OVertex>()
                         .Run();
+                    var transaction = database.CreateTransaction();
 
                     OVertex testVertex = new OVertex();
                     testVertex.OClassName = "TestVertexClass";
@@ -29,13 +30,13 @@ namespace Orient.Tests.Query
 
                     Assert.AreEqual(null, testVertex.ORID);
 
-                    database.Transaction.Add(testVertex);
+                    transaction.Add(testVertex);
 
                     Assert.IsNotNull(testVertex.ORID);
                     Assert.IsTrue(testVertex.ORID.ClusterPosition < 0);
                     Assert.AreEqual(-2, testVertex.ORID.ClusterPosition);
 
-                    database.Transaction.Commit();
+                    transaction.Commit();
                     orid = testVertex.ORID;
                 }
 
@@ -44,9 +45,11 @@ namespace Orient.Tests.Query
 
                     OVertex v = database.Load.ORID(orid).Run().To<OVertex>();
                     v.SetField("foobar", "blah");
-                    database.Transaction.Update(v);
+                    var transaction = database.CreateTransaction();
 
-                    database.Transaction.Commit();
+                    transaction.Update(v);
+
+                    transaction.Commit();
                 }
 
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
@@ -71,6 +74,7 @@ namespace Orient.Tests.Query
                         .Create.Class("TestVertexClass")
                         .Extends<OVertex>()
                         .Run();
+                    var transaction = database.CreateTransaction();
 
                     OVertex testVertex = new OVertex();
                     testVertex.OClassName = "TestVertexClass";
@@ -79,13 +83,13 @@ namespace Orient.Tests.Query
 
                     Assert.AreEqual(null, testVertex.ORID);
 
-                    database.Transaction.Add(testVertex);
+                    transaction.Add(testVertex);
 
                     Assert.IsNotNull(testVertex.ORID);
                     Assert.IsTrue(testVertex.ORID.ClusterPosition < 0);
                     Assert.AreEqual(-2, testVertex.ORID.ClusterPosition);
 
-                    database.Transaction.Commit();
+                    transaction.Commit();
 
                     Assert.IsNotNull(testVertex.ORID);
                     Assert.AreEqual(database.GetClusterIdFor("TestVertexClass"), testVertex.ORID.ClusterId);
@@ -109,13 +113,15 @@ namespace Orient.Tests.Query
 
                     Assert.AreEqual(null, testVertex.ORID);
 
-                    database.Transaction.Add(testVertex);
+                    var transaction = database.CreateTransaction();
+
+                    transaction.Add(testVertex);
 
                     Assert.IsNotNull(testVertex.ORID);
                     Assert.IsTrue(testVertex.ORID.ClusterPosition < 0);
                     Assert.AreEqual(-2, testVertex.ORID.ClusterPosition);
 
-                    database.Transaction.Commit();
+                    transaction.Commit();
 
                     Assert.IsNotNull(testVertex.ORID);
                     Assert.AreEqual(database.GetClusterIdFor("TestVertexClass"), testVertex.ORID.ClusterId);
@@ -144,6 +150,7 @@ namespace Orient.Tests.Query
                         .Create.Class("TestVertexClass")
                         .Extends<OVertex>()
                         .Run();
+                    var transaction = database.CreateTransaction();
 
                     for (int i = 0; i < 1000; i++)
                     {
@@ -151,10 +158,10 @@ namespace Orient.Tests.Query
                         testVertex.OClassName = "TestVertexClass";
                         testVertex.SetField("foo", "foo string value");
                         testVertex.SetField("bar", i);
-                        database.Transaction.Add(testVertex);
+                        transaction.Add(testVertex);
                     }
 
-                    database.Transaction.Commit();
+                    transaction.Commit();
 
 
                     var createdVertices = database.Select().From("V").ToList();
@@ -182,17 +189,18 @@ namespace Orient.Tests.Query
                         .Create.Class("TestVertexClass")
                         .Extends<OVertex>()
                         .Run();
+                    var transaction = database.CreateTransaction();
 
 
                     var testVertex1 = CreateTestVertex(1);
                     var testVertex2 = CreateTestVertex(2);
-                    database.Transaction.Add(testVertex1);
-                    database.Transaction.Add(testVertex2);
+                    transaction.Add(testVertex1);
+                    transaction.Add(testVertex2);
                     testVertex1.OutE.Add(testVertex2.ORID);
                     testVertex2.InE.Add(testVertex1.ORID);
 
 
-                    database.Transaction.Commit();
+                    transaction.Commit();
 
                     Assert.AreEqual(testVertex2.ORID, testVertex1.OutE.First());
                     Assert.AreEqual(testVertex1.ORID, testVertex2.InE.First());
@@ -223,20 +231,21 @@ namespace Orient.Tests.Query
                         .Create.Class<TestEdgeClass>()
                         .Extends<OEdge>()
                         .Run();
+                    var transaction = database.CreateTransaction();
 
                     var testVertex1 = CreateTestVertex(1);
                     var testVertex2 = CreateTestVertex(2);
                     var testEdge = new TestEdgeClass();
                     testEdge.SetField("item", 1);
 
-                    database.Transaction.Add(testVertex1);
-                    database.Transaction.Add(testVertex2);
-                    database.Transaction.AddEdge(testEdge, testVertex1, testVertex2);
+                    transaction.Add(testVertex1);
+                    transaction.Add(testVertex2);
+                    transaction.AddEdge(testEdge, testVertex1, testVertex2);
 
                     Assert.AreEqual(testVertex1.ORID, testEdge.OutV);
                     Assert.AreEqual(testVertex2.ORID, testEdge.InV);
 
-                    database.Transaction.Commit();
+                    transaction.Commit();
 
                     var createdVertex1 = database.Select().From("V").Where("bar").Equals(1).ToList<OVertex>().First();
                     var createdVertex2 = database.Select().From("V").Where("bar").Equals(2).ToList<OVertex>().First();
@@ -247,8 +256,8 @@ namespace Orient.Tests.Query
 
                     var testEdge2 = new TestEdgeClass();
                     testEdge2.SetField("item", 2);
-                    database.Transaction.AddEdge(testEdge2, createdVertex2, createdVertex1);
-                    database.Transaction.Commit();
+                    transaction.AddEdge(testEdge2, createdVertex2, createdVertex1);
+                    transaction.Commit();
 
                     createdVertex1 = database.Select().From("V").Where("bar").Equals(1).ToList<OVertex>().First();
                     createdVertex2 = database.Select().From("V").Where("bar").Equals(2).ToList<OVertex>().First();
@@ -279,17 +288,18 @@ namespace Orient.Tests.Query
                         .Create.Class<TestEdgeClass>()
                         .Extends<OEdge>()
                         .Run();
+                    var transaction = database.CreateTransaction();
 
                     var vOut = CreateTestVertex(1);
                     var vIn = CreateTestVertex(2);
                     var edge = new TestEdgeClass();
                     edge.SetField("item", 1);
 
-                    database.Transaction.Add(vOut);
-                    database.Transaction.Add(vIn);
-                    database.Transaction.AddEdge(edge, vOut, vIn);
+                    transaction.Add(vOut);
+                    transaction.Add(vIn);
+                    transaction.AddEdge(edge, vOut, vIn);
 
-                    database.Transaction.Commit();
+                    transaction.Commit();
 
                     // Validate arrange
                     var createdVertex1 = database.Select().From("V").Where("bar").Equals(1).ToList<OVertex>().First();
@@ -304,8 +314,9 @@ namespace Orient.Tests.Query
                 {
                     var createdEdge = database.Select().From("E").Where("item").Equals(1).ToList<OEdge>().First();
 
-                    database.Transaction.DeleteEdge(createdEdge);
-                    database.Transaction.Commit();
+                    var transaction = database.CreateTransaction();
+                    transaction.DeleteEdge(createdEdge);
+                    transaction.Commit();
                 }
 
                 // Assert
@@ -343,17 +354,18 @@ namespace Orient.Tests.Query
                         .Create.Class<TestEdgeClass>()
                         .Extends<OEdge>()
                         .Run();
+                    var transaction = database.CreateTransaction();
 
                     var vOut = CreateTestVertex(1);
                     var vIn = CreateTestVertex(2);
                     var edge = new TestEdgeClass();
                     edge.SetField("item", 1);
 
-                    database.Transaction.Add(vOut);
-                    database.Transaction.Add(vIn);
-                    database.Transaction.AddEdge(edge, vOut, vIn);
+                    transaction.Add(vOut);
+                    transaction.Add(vIn);
+                    transaction.AddEdge(edge, vOut, vIn);
 
-                    database.Transaction.Commit();
+                    transaction.Commit();
 
                     // Validate arrange
                     var createdVertex1 = database.Select().From("V").Where("bar").Equals(1).ToList<OVertex>().First();
@@ -368,8 +380,9 @@ namespace Orient.Tests.Query
                 {
                     var createdEdge = database.Select().From("E").Where("item").Equals(1).ToList<OEdge>().First();
 
-                    database.Transaction.Delete(createdEdge);
-                    database.Transaction.Commit();
+                    var transaction = database.CreateTransaction();
+                    transaction.Delete(createdEdge);
+                    transaction.Commit();
                 }
 
                 // Assert
@@ -408,20 +421,21 @@ namespace Orient.Tests.Query
                         .Create.Class<TestEdgeClass>()
                         .Extends<OEdge>()
                         .Run();
+                    var transaction = database.CreateTransaction();
 
                     var fromV = CreateTestVertex(1);
                     var toV = CreateTestVertex(2);
                     var firstEdge = new TestEdgeClass();
                     firstEdge.SetField("item", 1);
 
-                    database.Transaction.Add(fromV);
-                    database.Transaction.Add(toV);
-                    database.Transaction.AddEdge(firstEdge, fromV, toV);
+                    transaction.Add(fromV);
+                    transaction.Add(toV);
+                    transaction.AddEdge(firstEdge, fromV, toV);
 
                     Assert.AreEqual(fromV.ORID, firstEdge.OutV);
                     Assert.AreEqual(toV.ORID, firstEdge.InV);
 
-                    database.Transaction.Commit();
+                    transaction.Commit();
                 }
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
@@ -430,8 +444,9 @@ namespace Orient.Tests.Query
 
                     var secondEdge = new TestEdgeClass();
                     secondEdge.SetField("item", 2);
-                    database.Transaction.AddEdge(secondEdge, fromV, toV);
-                    database.Transaction.Commit();
+                    var transaction = database.CreateTransaction();
+                    transaction.AddEdge(secondEdge, fromV, toV);
+                    transaction.Commit();
 
                 }
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
@@ -464,16 +479,17 @@ namespace Orient.Tests.Query
                 {
                     // prerequisites
                     database.Create.Class<Widget>().Extends<OVertex>().Run();
+                    var transaction = database.CreateTransaction();
 
 
                     var w1 = new Widget() { Foo = "foo", Bar = 1 };
                     var w2 = new Widget() { Foo = "woo", Bar = 2 };
 
-                    database.Transaction.Add(w1);
-                    database.Transaction.Add(w2);
+                    transaction.Add(w1);
+                    transaction.Add(w2);
                     w1.OtherWidget = w2.ORID;
 
-                    database.Transaction.Commit();
+                    transaction.Commit();
 
                     Assert.AreEqual(w2.ORID, w1.OtherWidget);
 
