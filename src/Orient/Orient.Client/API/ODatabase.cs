@@ -39,9 +39,7 @@ namespace Orient.Client
                 return _databaseProperties;
             }
         }
-
-        public OTransaction Transaction { get; private set; }
-
+        
         internal Connection GetConnection()
         {
             return _connection;
@@ -53,7 +51,6 @@ namespace Orient.Client
             _connection.Database = this;
             _containsConnection = true;
             ClientCache = new Dictionary<ORID, ODocument>();
-            Transaction = new OTransaction(_connection);
         }
 
         public int ProtocolVersion
@@ -103,6 +100,11 @@ namespace Orient.Client
                 oCluster = GetClusters().FirstOrDefault(x => x.Id == clusterId);
             }
             return oCluster.Name;
+        }
+
+        public OTransaction CreateTransaction()
+        {
+            return new OTransaction(_connection);
         }
 
         private string CorrectClassName(string className)
