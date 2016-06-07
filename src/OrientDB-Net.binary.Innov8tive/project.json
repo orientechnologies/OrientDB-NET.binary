@@ -1,0 +1,31 @@
+﻿{
+  "id": "OrientDB-Net.binary.Innov8tive",
+  "version": "0.1.4-*",
+  "description": "C#/.NET binary driver for OrientDB",
+  "authors": [ "Gray Delacluyse" ],
+  "packOptions": {
+    "tags": [ "orientdb", "database", "orient", ".net", "c#", "document", "graph" ],
+    "projectUrl": "https://github.com/Innov8tiveSoftware/OrientDB-NET.binary",
+    "licenseUrl": "http://opensource.org/licenses/MIT"
+    },
+    "frameworks": {
+      "net451": {
+        "System.Runtime": ""
+      },
+      "netstandard1.5": {
+        "imports": "dnxcore50",
+        "dependencies": {
+          "NETStandard.Library": "1.5.0-rc2-24027",
+          "Microsoft.CSharp": "4.0.1-rc2-24027",
+          "System.Collections": "4.0.11-rc2-24027",
+          "System.Collections.Concurrent": "4.0.12-rc2-24027",
+          "System.Linq": "4.1.0-rc2-24027",
+          "System.Threading": "4.0.11-rc2-24027",
+          "System.Net.Sockets": "4.1.0-rc2-24027",
+          "System.Reflection.Extensions": "4.0.1-rc2-24027",
+          "System.Numerics.Vectors": "4.1.1-rc2-24027",
+          "System.IO": "4.1.0-rc2-24027"
+        }
+      }
+    }
+  }
