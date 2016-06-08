@@ -8,6 +8,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1052104C-8E6A-4250-A14E-06E895A1FA1C}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
+		LICENSE.md = LICENSE.md
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OrientDB-Net.binary.Innov8tive", "src\OrientDB-Net.binary.Innov8tive\OrientDB-Net.binary.Innov8tive.xproj", "{CE139A8E-9BDE-4D5A-9D13-EF895FF75868}"
