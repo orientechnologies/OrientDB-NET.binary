@@ -40,7 +40,15 @@ namespace Orient.Client.Protocol.Operations
             {
                 request.AddDataItem((byte)(request.Connection.UseTokenBasedSession ? 1 : 0)); // Use Token Session 0 - false, 1 - true
             }
-            request.AddDataItem(UserName);
+            if (OClient.ProtocolVersion >= 34)
+            {
+                request.AddDataItem((byte)0);// Support Push
+                request.AddDataItem((byte)1);//Support collect-stats
+            }
+
+
+
+                request.AddDataItem(UserName);
             request.AddDataItem(UserPassword);
 
             return request;
