@@ -101,7 +101,7 @@ namespace Orient.Client
             return this;
         }
 
-        public short Run()
+        public string Run()
         {
             OCluster cluster;
             var defaultClusterId = _connection.Database.GetClusterIdFor(_className);
@@ -114,11 +114,11 @@ namespace Orient.Client
                 Command operation = new Command(_connection.Database);
                 operation.OperationMode = OperationMode.Synchronous;
                 operation.CommandPayload = payload;
+                var doc = _connection.ExecuteOperation(operation);
+                OCommandResult result = new OCommandResult(doc);
+//                var clusterId = short.Parse(result.ToDocument().GetField<string>("Content"));
 
-                OCommandResult result = new OCommandResult(_connection.ExecuteOperation(operation));
-                var clusterId = short.Parse(result.ToDocument().GetField<string>("Content"));
-
-                cluster = _connection.Database.AddCluster(new OCluster { Name = _className, Id = clusterId });
+                cluster = _connection.Database.AddCluster(new OCluster { Name = _className });
             }
             else
             {
@@ -130,7 +130,7 @@ namespace Orient.Client
                 CreateAutoProperties();
             }
 
-            return cluster.Id;
+            return cluster.Name;
         }
 
         private void CreateAutoProperties()

@@ -13,17 +13,12 @@ namespace Orient.Nunit.Test.Query
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
-                    short classId1 = database
+                    string classId1 = database
                         .Create.Class("TestClass1")
                         .Run();
 
-                    Assert.IsTrue(classId1 > 0);
-
-                    short classId2 = database
-                        .Create.Class("TestClass2")
-                        .Run();
-
-                    Assert.AreEqual(classId2, classId1 + 1);
+                    Assert.IsTrue(classId1 == "TestClass1");
+                    
                 }
             }
         }
@@ -35,19 +30,13 @@ namespace Orient.Nunit.Test.Query
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
-                    short classId1 = database
+                    string classId1 = database
                         .Create.Class("TestClass1")
                         .Extends("OVertex")
                         .Run();
 
-                    Assert.IsTrue(classId1 > 0);
+                    Assert.IsTrue(classId1 =="TestClass1");
 
-                    short classId2 = database
-                        .Create.Class("TestClass2")
-                        .Extends<OVertex>()
-                        .Run();
-
-                    Assert.AreEqual(classId2, classId1 + 1);
                 }
             }
         }
@@ -61,19 +50,14 @@ namespace Orient.Nunit.Test.Query
             {
                 using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
                 {
-                    short classId1 = database
+                    string classId1 = database
                         .Create.Class("TestClass1")
                         .Cluster(6)
                         .Run();
 
-                    Assert.IsTrue(classId1 > 0);
+                    Assert.IsTrue(classId1== "TestClass1");
 
-                    short classId2 = database
-                        .Create.Class("TestClass2")
-                        .Cluster(6)
-                        .Run();
-
-                    Assert.AreEqual(classId2, classId1 + 1);
+                    
                 }
             }
         }
