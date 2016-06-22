@@ -11,9 +11,9 @@ namespace Orient.Client
         private static object _syncRoot;
         private static List<DatabasePool> _databasePools;
         internal static string ClientID { get; set; }
-        private static short _protocolVersion = 21;
+        private static short _protocolVersion = 32;
         public static string DriverName { get { return "OrientDB-NET.binary"; } }
-        public static string DriverVersion { get { return "0.2.1"; } }
+        public static string DriverVersion { get { return "0.2.2"; } }
 
         public static short ProtocolVersion
         {
