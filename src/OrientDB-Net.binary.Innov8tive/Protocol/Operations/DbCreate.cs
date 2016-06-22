@@ -22,7 +22,7 @@ namespace Orient.Client.Protocol.Operations
             request.AddDataItem(DatabaseName);
             request.AddDataItem(DatabaseType.ToString().ToLower());
             request.AddDataItem(StorageType.ToString().ToLower());
-            //request.AddDataItem(string.Empty);
+            request.AddDataItem(-1);
 
 
 

@@ -116,7 +116,6 @@ namespace Orient.Client
                 operation.CommandPayload = payload;
 
                 OCommandResult result = new OCommandResult(_connection.ExecuteOperation(operation));
-
                 var clusterId = short.Parse(result.ToDocument().GetField<string>("Content"));
 
                 cluster = _connection.Database.AddCluster(new OCluster { Name = _className, Id = clusterId });
