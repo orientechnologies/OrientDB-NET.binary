@@ -192,7 +192,6 @@ namespace Orient.Client
             operation.CommandPayload = payload;
 
             OCommandResult result = new OCommandResult(_connection.ExecuteOperation(operation));
-
             return int.Parse(result.ToDocument().GetField<string>("Content"));
         }
 

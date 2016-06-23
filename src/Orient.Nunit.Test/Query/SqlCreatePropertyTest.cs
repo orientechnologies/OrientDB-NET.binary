@@ -21,8 +21,10 @@ namespace Orient.Nunit.Test.Query
                         .Create.Class("TestClass")
                         .Extends<OVertex>()
                         .Run();
+                }
 
-
+                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                {
                     // Basic Test
                     foreach (var item in Enum.GetNames(typeof(OType)))
                     {

@@ -9,6 +9,7 @@ namespace Orient.Client.Protocol
         NullResult = 110, // 'n'
         SingleRecord = 114, // 'r'
         SerializedResult = 97, // 'a'
-        RecordCollection = 108 // 'l'
+        RecordCollection = 108, // 'l'
+        SimpleResult = 119 // 'w'
     }
 }

@@ -183,16 +183,17 @@ namespace Orient.Client.Protocol
                     }
                 }
 
-                _networkStream.Flush();
+                //_networkStream.Flush();
 
                 if (request.OperationMode != OperationMode.Synchronous)
                     return null;
+
 
                 Response response = new Response(this);
                 response.Receive();
                 return ((IOperation)operation).Response(response);
             }
-            catch (IOException)
+            catch (IOException e)
             {
                 Destroy();
                 throw;

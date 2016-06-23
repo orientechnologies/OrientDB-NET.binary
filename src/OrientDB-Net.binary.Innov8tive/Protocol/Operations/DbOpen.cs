@@ -44,8 +44,14 @@ namespace Orient.Client.Protocol.Operations
                 request.AddDataItem((byte)(request.Connection.UseTokenBasedSession ? 1 : 0)); // Use Token Session 0 - false, 1 - true
             }
 
+            if(OClient.ProtocolVersion >= 34)
+            {
+                request.AddDataItem((byte)0);// Support Push
+                request.AddDataItem((byte)1);//Support collect-stats
+            }
+
             request.AddDataItem(DatabaseName);
-            if (OClient.ProtocolVersion >= 8)
+            if (OClient.ProtocolVersion >= 8 && OClient.ProtocolVersion < 34)
             {
                 request.AddDataItem(DatabaseType.ToString().ToLower());
             }
