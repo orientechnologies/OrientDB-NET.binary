@@ -168,6 +168,10 @@ namespace Orient.Client.Protocol.Operations.Command
 
                         responseDocument.SetField("Content", documents);
                         break;
+                    case PayloadStatus.SimpleResult: //'w'
+                        ODocument sDocument = ParseDocument(reader);
+                        responseDocument.SetField("Content", sDocument["result"].ToString());
+                        break;
                     default:
                         break;
                 }

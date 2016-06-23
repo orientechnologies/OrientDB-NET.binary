@@ -51,7 +51,7 @@ namespace Orient.Client.Protocol.Operations
             }
 
             request.AddDataItem(DatabaseName);
-            if (OClient.ProtocolVersion >= 8 && OClient.ProtocolVersion < 30)
+            if (OClient.ProtocolVersion >= 8 && OClient.ProtocolVersion < 34)
             {
                 request.AddDataItem(DatabaseType.ToString().ToLower());
             }

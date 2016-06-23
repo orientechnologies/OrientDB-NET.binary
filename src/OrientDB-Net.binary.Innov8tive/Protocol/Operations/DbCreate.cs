@@ -22,7 +22,7 @@ namespace Orient.Client.Protocol.Operations
             request.AddDataItem(DatabaseName);
             request.AddDataItem(DatabaseType.ToString().ToLower());
             request.AddDataItem(StorageType.ToString().ToLower());
-            request.AddDataItem(-1);
+            if(OClient.ProtocolVersion >= 36) request.AddDataItem(-1); //Send null string for non-incrmental backup option
 
 
 

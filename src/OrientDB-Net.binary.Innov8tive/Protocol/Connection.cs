@@ -183,10 +183,11 @@ namespace Orient.Client.Protocol
                     }
                 }
 
-                _networkStream.Flush();
+                //_networkStream.Flush();
 
                 if (request.OperationMode != OperationMode.Synchronous)
                     return null;
+
 
                 Response response = new Response(this);
                 response.Receive();

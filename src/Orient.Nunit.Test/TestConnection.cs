@@ -6,7 +6,7 @@ namespace Orient.Nunit.Test
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
     public static class TestConnection
     {
-        private static string _hostname = "127.0.0.1";
+        private static string _hostname = "localhost";
         private static int _port = 2424;
         private static string _username = "root";
         private static string _password = "root";
