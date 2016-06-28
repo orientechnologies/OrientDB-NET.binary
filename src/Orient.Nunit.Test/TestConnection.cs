@@ -9,10 +9,10 @@ namespace Orient.Nunit.Test
         private static string _hostname = "localhost";
         private static int _port = 2424;
         private static string _username = "root";
-        private static string _password = "root";
+        private static string _password = "123";
 
         private static string _rootUserName = "root";
-        private static string _rootUserParssword = "root";
+        private static string _rootUserParssword = "123";
         private static OServer _server;
 
         public static int GlobalTestDatabasePoolSize { get { return 3; } }
