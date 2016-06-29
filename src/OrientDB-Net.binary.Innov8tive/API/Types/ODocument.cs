@@ -71,7 +71,10 @@ namespace Orient.Client
 
             if (TryGetValue(fieldPath, out fieldValue))
             {
-                if (fieldValue == null || fieldValue.GetType() == typeof(T))
+                if (fieldValue == null)
+                    return default(T);
+
+                if (fieldValue.GetType() == typeof(T))
                     return (T)fieldValue;
 
                 if (fieldValue is ICollection && (fieldValue as ICollection).Count == 1)
