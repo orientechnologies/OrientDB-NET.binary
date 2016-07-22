@@ -153,7 +153,7 @@ namespace Orient.Client.Protocol.Operations.Command
                     case PayloadStatus.SerializedResult: // 'a'
                         contentLength = reader.ReadInt32EndianAware();
                         byte[] serializedBytes = reader.ReadBytes(contentLength);
-                        string serialized = System.Text.Encoding.UTF8.GetString(serializedBytes,0,serializedBytes.Length);
+                        string serialized = System.Text.Encoding.UTF8.GetString(serializedBytes, 0, serializedBytes.Length);
                         responseDocument.SetField("Content", serialized);
                         break;
                     case PayloadStatus.RecordCollection: // 'l'
@@ -170,7 +170,9 @@ namespace Orient.Client.Protocol.Operations.Command
                         break;
                     case PayloadStatus.SimpleResult: //'w'
                         ODocument sDocument = ParseDocument(reader);
-                        responseDocument.SetField("Content", sDocument["result"].ToString());
+                        var isNestedCollection = sDocument["result"] is List<List<object>>;
+                        responseDocument.SetField("Content",
+                            isNestedCollection ? sDocument["result"] : sDocument["result"].ToString());
                         break;
                     default:
                         break;

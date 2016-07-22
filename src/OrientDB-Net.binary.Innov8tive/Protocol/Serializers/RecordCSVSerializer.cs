@@ -812,6 +812,14 @@ namespace Orient.Client.Protocol.Serializers
                 document[fieldName] = new List<object>();
             }
 
+            if (recordString.StartsWith("result:[[") && recordString.EndsWith("]]"))
+            {
+                document[fieldName] = new List<List<object>>();
+                i = ParseEmbeddedList(i, recordString, document, fieldName);
+                i++;
+                return i;
+            }
+
             while (recordString[i] != ']')
             {
                 // check what follows after parsed field name and start parsing underlying type
@@ -840,6 +848,45 @@ namespace Orient.Client.Protocol.Serializers
 
             // move past closing bracket of this list
             i++;
+
+            return i;
+        }
+
+        private int ParseEmbeddedList(int i, string recordString, ODocument document, string fieldName)
+        {
+            /**
+             * At this point we already know it is an embedded list, all we care about are
+             * the values, and adding them to the already existing document "value" kvp.
+             * e.g. result:[[(value:[#44:782])],[(value:[#41:782])],[(value:[#42:783])]]
+             */
+            var valueCollection = recordString
+                .Remove(recordString.Length - 2, 2)
+                .Remove(0, 9)
+                .Split(new[] { "],[" }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var value in valueCollection)
+            {
+                //Get the actual value of the inner collection
+                if (!value.StartsWith("(value:") || !value.EndsWith(")")) continue;
+
+                var collection = new List<object>();
+
+                //Get the stringl value of the inner collection
+                var collectionAsString = value
+                    .Remove(value.Length - 1, 1)
+                    .Remove(0, 7);
+
+                //Strip off the outter brackets of the collection and split the values on ', '
+                var collectionValues = collectionAsString
+                    .Remove(collectionAsString.Length - 1, 1)
+                    .Remove(0, 1)
+                    .Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+
+                collection.Add(collectionValues);
+                ((List<List<object>>)document[fieldName]).Add(collection);
+            }
+
+            i = recordString.LastIndexOf("]", StringComparison.Ordinal);
 
             return i;
         }
