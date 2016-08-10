@@ -14,7 +14,7 @@ namespace Orient.Nunit.Test.Query
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     // prerequisites
                     database
@@ -23,7 +23,7 @@ namespace Orient.Nunit.Test.Query
                         .Run();
                 }
 
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     // Basic Test
                     foreach (var item in Enum.GetNames(typeof(OType)))

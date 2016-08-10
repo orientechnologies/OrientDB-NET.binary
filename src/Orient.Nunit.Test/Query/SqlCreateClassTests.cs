@@ -11,7 +11,7 @@ namespace Orient.Nunit.Test.Query
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     string classId1 = database
                         .Create.Class("TestClass1")
@@ -28,7 +28,7 @@ namespace Orient.Nunit.Test.Query
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     string classId1 = database
                         .Create.Class("TestClass1")
@@ -48,7 +48,7 @@ namespace Orient.Nunit.Test.Query
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     string classId1 = database
                         .Create.Class("TestClass1")

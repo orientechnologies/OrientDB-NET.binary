@@ -12,7 +12,7 @@ namespace Orient.Nunit.Test.Query
         {
             using (var testContext = new TestDatabaseContext())
             {
-                using (var database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (var database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     // prerequisites
                     database
@@ -41,7 +41,7 @@ namespace Orient.Nunit.Test.Query
 
             using (var testContext = new TestDatabaseContext())
             {
-                using (var database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (var database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     var config = database.Load.ORID(new ORID(0, 0)).Run();
                     
@@ -54,7 +54,7 @@ namespace Orient.Nunit.Test.Query
         {
             using (var testContext = new TestDatabaseContext())
             {
-                using (var database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (var database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     // prerequisites
                     database
@@ -83,7 +83,7 @@ namespace Orient.Nunit.Test.Query
         {
             using (var testContext = new TestDatabaseContext())
             {
-                using (var database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (var database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     // prerequisites
                     database

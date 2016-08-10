@@ -5,12 +5,14 @@ using System.Net.Sockets;
 using Orient.Client.Protocol.Operations;
 using Orient.Client.Protocol.Serializers;
 using System.IO;
+using Orient.Client.API;
 
 namespace Orient.Client.Protocol
 {
     internal class Connection : IDisposable
     {
         private TcpClient _socket;
+
         private NetworkStream _networkStream;
         private byte[] _readBuffer;
         private int RECIVE_TIMEOUT = 30 * 1000; // Recive timeout in milliseconds
@@ -26,29 +28,12 @@ namespace Orient.Client.Protocol
         internal string UserName { get; private set; }
         internal string UserPassword { get; private set; }
 
-        internal string Alias { get; set; }
-        internal bool IsReusable { get; set; }
         internal short ProtocolVersion { get; set; }
 
         internal int SessionId { get; private set; }
 
         private byte[] _serverToken;
         private byte[] _databaseToken;
-
-        internal byte[] Token
-        {
-            get
-            {
-                return (Type == ConnectionType.Database) ? _databaseToken : _serverToken;
-            }
-            set
-            {
-                if (Type == ConnectionType.Database)
-                    _databaseToken = value;
-                else
-                    _serverToken = value;
-            }
-        }
 
         internal bool IsActive
         {
@@ -86,13 +71,15 @@ namespace Orient.Client.Protocol
             }
         }
 
-        internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, string alias, bool isReusable)
+        public byte[] Token { get; internal set; }
+
+        public OTransaction ConnectionTransaction { get; private set; }
+
+        internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword)
         {
             Hostname = hostname;
             Port = port;
             Type = ConnectionType.Database;
-            Alias = alias;
-            IsReusable = isReusable;
             ProtocolVersion = 0;
             SessionId = -1;
             UseTokenBasedSession = OClient.UseTokenBasedSession;
@@ -101,6 +88,7 @@ namespace Orient.Client.Protocol
             DatabaseType = databaseType;
             UserName = userName;
             UserPassword = userPassword;
+            ConnectionTransaction = new OTransaction(this);
             InitializeDatabaseConnection(databaseName, databaseType, userName, userPassword);
         }
 
@@ -109,10 +97,10 @@ namespace Orient.Client.Protocol
             Hostname = hostname;
             Port = port;
             Type = ConnectionType.Server;
-            IsReusable = false;
             ProtocolVersion = 0;
             SessionId = -1;
             UseTokenBasedSession = OClient.UseTokenBasedSession;
+            ConnectionTransaction = new OTransaction(this);
 
             UserName = userName;
             UserPassword = userPassword;
@@ -156,38 +144,41 @@ namespace Orient.Client.Protocol
                 Request request = operation.Request(req);
                 byte[] buffer;
 
-                foreach (RequestDataItem item in request.DataItems)
+                using (MemoryStream stream = new MemoryStream())
                 {
-                    switch (item.Type)
+                    foreach (RequestDataItem item in request.DataItems)
                     {
-                        case "byte":
-                        case "short":
-                        case "int":
-                        case "long":
-                            Send(item.Data);
-                            break;
-                        case "record":
-                            buffer = new byte[2 + item.Data.Length];
-                            Buffer.BlockCopy(BinarySerializer.ToArray(item.Data.Length), 0, buffer, 0, 2);
-                            Buffer.BlockCopy(item.Data, 0, buffer, 2, item.Data.Length);
-                            Send(buffer);
-                            break;
-                        case "bytes":
-                        case "string":
-                        case "strings":
-                            Send(BinarySerializer.ToArray(item.Data.Length));
-                            Send(item.Data);
-                            break;
-                        default:
-                            break;
+                        switch (item.Type)
+                        {
+                            case "byte":
+                            case "short":
+                            case "int":
+                            case "long":
+                                stream.Write(item.Data, 0, item.Data.Length);
+                                break;
+                            case "record":
+                                buffer = new byte[2 + item.Data.Length];
+                                Buffer.BlockCopy(BinarySerializer.ToArray(item.Data.Length), 0, buffer, 0, 2);
+                                Buffer.BlockCopy(item.Data, 0, buffer, 2, item.Data.Length);
+                                stream.Write(buffer, 0, buffer.Length);
+                                break;
+                            case "bytes":
+                            case "string":
+                            case "strings":
+                                byte[] a = BinarySerializer.ToArray(item.Data.Length);
+                                stream.Write(a, 0, a.Length);
+                                stream.Write(item.Data, 0, item.Data.Length);
+                                break;
+                            default:
+                                break;
+                        }
                     }
+                    
+                    Send(stream.ToArray());
                 }
-
-                //_networkStream.Flush();
-
+                
                 if (request.OperationMode != OperationMode.Synchronous)
                     return null;
-
 
                 Response response = new Response(this);
                 response.Receive();
@@ -198,6 +189,97 @@ namespace Orient.Client.Protocol
                 Destroy();
                 throw;
             }
+        }
+
+        public NetworkStream Connect()
+        {
+            if (Type == ConnectionType.Database)
+            {
+                return CreateDatabaseConnection(DatabaseName, DatabaseType, UserName, UserPassword);
+            }
+            else
+            {
+                return CreateServerConnection(UserName, UserPassword);
+            }
+        }
+
+        private NetworkStream CreateServerConnection(string userName, string userPassword)
+        {
+            _readBuffer = new byte[OClient.BufferLength];
+
+            // initiate socket connection
+            TcpClient socket;
+            try
+            {
+                socket = new TcpClient();
+                socket.ReceiveTimeout = RECIVE_TIMEOUT;
+                socket.ConnectAsync(Hostname, Port).GetAwaiter().GetResult();
+            }
+            catch (SocketException ex)
+            {
+                throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+            }
+
+            NetworkStream stream = socket.GetStream();
+            stream.Read(_readBuffer, 0, 2);
+
+            OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
+            if (ProtocolVersion < 27)
+                UseTokenBasedSession = false;
+
+            if (ProtocolVersion <= 0)
+                throw new OException(OExceptionType.Connection, "Incorect Protocol Version " + ProtocolVersion);
+
+            // execute connect operation
+            Connect operation = new Connect(null);
+            operation.UserName = userName;
+            operation.UserPassword = userPassword;
+
+            Document = ExecuteOperation(operation);
+            SessionId = Document.GetField<int>("SessionId");
+            _serverToken = Document.GetField<byte[]>("Token");
+
+            return stream;
+        }
+
+        private NetworkStream CreateDatabaseConnection(string databaseName, ODatabaseType databaseType, string userName, string userPassword)
+        {
+            _readBuffer = new byte[OClient.BufferLength];
+
+            // initiate socket connection
+            TcpClient socket;
+            try
+            {
+                socket = new TcpClient();
+                socket.ReceiveTimeout = RECIVE_TIMEOUT;
+                socket.ConnectAsync(Hostname, Port).GetAwaiter().GetResult();
+            }
+            catch (SocketException ex)
+            {
+                throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+            }
+
+            NetworkStream stream;
+
+            stream = socket.GetStream();
+            stream.Read(_readBuffer, 0, 2);
+
+            OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
+            if (ProtocolVersion < 27)
+                UseTokenBasedSession = false;
+
+            // execute db_open operation
+            DbOpen operation = new DbOpen(null);
+            operation.DatabaseName = databaseName;
+            operation.DatabaseType = databaseType;
+            operation.UserName = userName;
+            operation.UserPassword = userPassword;
+
+            Document = ExecuteOperation(operation);
+            SessionId = Document.GetField<int>("SessionId");
+            _databaseToken = Document.GetField<byte[]>("Token");
+
+            return stream;
         }
 
         private void Reconnect()
@@ -229,15 +311,15 @@ namespace Orient.Client.Protocol
                 if ((_networkStream != null) && (Socket != null))
                 {
                     _networkStream.Dispose();
-                    
-                    #if NET451
-                            Socket.Close();
-                    #endif                        
-                    
-                    #if DOTNET5_5
+
+#if NET451
+                    Socket.Close();
+#endif
+
+#if DOTNET5_5
                             // whatever 
                             Socket.Dispose();
-                    #endif
+#endif
                 }
             }
             catch { }
@@ -281,7 +363,7 @@ namespace Orient.Client.Protocol
 
         private void InitializeDatabaseConnection(string databaseName, ODatabaseType databaseType, string userName, string userPassword)
         {
-            _readBuffer = new byte[OClient.BufferLenght];
+            _readBuffer = new byte[OClient.BufferLength];
 
             // initiate socket connection
             try
@@ -318,7 +400,7 @@ namespace Orient.Client.Protocol
 
         private void InitializeServerConnection(string userName, string userPassword)
         {
-            _readBuffer = new byte[OClient.BufferLenght];
+            _readBuffer = new byte[OClient.BufferLength];
 
             // initiate socket connection
             try
@@ -352,6 +434,22 @@ namespace Orient.Client.Protocol
             _serverToken = Document.GetField<byte[]>("Token");
         }
 
+        private void Send(NetworkStream stream, byte[] rawData)
+        {
+            if ((stream != null) && stream.CanWrite)
+            {
+                try
+                {
+                    stream.Write(rawData, 0, rawData.Length);
+                }
+                catch (Exception ex)
+                {
+                    throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                }
+            }
+
+        }
+
         private void Send(byte[] rawData)
         {
             if ((_networkStream != null) && _networkStream.CanWrite)
@@ -365,6 +463,7 @@ namespace Orient.Client.Protocol
                     throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
                 }
             }
+
         }
 
         #endregion

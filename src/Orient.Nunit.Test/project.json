@@ -1,22 +1,16 @@
-﻿{
+{
   "version": "1.0.0-*",
-  "buildOptions": {
-    "emitEntryPoint": true
-  },
-  "compilationOptions": {
-    "emitEntryPoint": true
-  },
   "dependencies": {
     "Microsoft.NETCore.App": {
       "type": "platform",
       "version": "1.0.0"
     },
-    "NUnitLite": "3.4.0",
+    "NUnit": "3.4.0",
+    "dotnet-test-nunit": "3.4.0-beta-1",
     "OrientDB-Net.binary.Innov8tive": "0.1.6-*"
   },
-  "commands": {
-    "test": "Orient.Nunit.Test"
-  },
+
+  "testRunner": "nunit",
 
   "frameworks": {
     "netcoreapp1.0": {
@@ -26,7 +20,7 @@
         "System.Collections": "4.0.11",
         "System.Console": "4.0.0",
         "System.Linq": "4.1.0",
-        "System.Threading": "4.0.11",
+        "System.Threading": "4.0.11"
       }
     }
   }

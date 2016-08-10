@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Orient.Client;
 
 namespace Orient.Nunit.Test.Query

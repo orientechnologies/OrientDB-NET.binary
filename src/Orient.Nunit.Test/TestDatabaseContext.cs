@@ -7,12 +7,10 @@ namespace Orient.Nunit.Test
         public TestDatabaseContext()
         {
             TestConnection.CreateTestDatabase();
-            TestConnection.CreateTestPool();
         }
 
         public void Dispose()
         {
-            TestConnection.DropTestPool();
             TestConnection.DropTestDatabase();
         }
     }

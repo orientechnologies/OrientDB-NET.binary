@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Orient.Client;
-using Orient.Nunit.Test;
+using System.Linq;
 
 namespace Orient.Nunit.Test.Graph
 {
@@ -14,7 +12,7 @@ namespace Orient.Nunit.Test.Graph
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     //This commadn contains a character that will take up more than one byte
                     OVertex vertex1 = database
@@ -32,7 +30,7 @@ namespace Orient.Nunit.Test.Graph
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     OVertex vertex1 = database
                         .Create.Vertex<OVertex>()
