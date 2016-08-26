@@ -157,7 +157,7 @@ namespace Orient.Nunit.Test.Query
                     database.Transaction.Commit();
 
 
-                    var createdVertices = database.Select().From("V").ToList();
+                    var createdVertices = database.Select().From("V").OrderBy("bar").ToList();
                     Assert.AreEqual(1000, createdVertices.Count);
 
                     for (int i = 0; i < 1000; i++)
@@ -197,7 +197,7 @@ namespace Orient.Nunit.Test.Query
                     Assert.AreEqual( testVertex2.ORID, testVertex1.OutE.First());
                     Assert.AreEqual(testVertex1.ORID, testVertex2.InE.First());
 
-                    var createdVertices = database.Select().From("V").ToList<OVertex>();
+                    var createdVertices = database.Select().From("TestVertexClass").ToList<OVertex>();
                     Assert.AreEqual(2, createdVertices.Count);
 
                     Assert.AreEqual(createdVertices[1].ORID, createdVertices[0].OutE.First());

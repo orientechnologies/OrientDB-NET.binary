@@ -13,7 +13,7 @@
   "testRunner": "nunit",
 
   "frameworks": {
-    "netcoreapp1.0": {
+    "netcoreapp1.5": {
       "imports": "dnxcore50",
       "dependencies": {
         "Microsoft.CSharp": "4.0.1",

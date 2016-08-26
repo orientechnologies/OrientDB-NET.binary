@@ -17,7 +17,7 @@
         "System.Runtime": "4.0.10"
       }
     },
-    "netcoreapp1.0": {
+    "netcoreapp1.5": {
       "imports": "dnxcore50",
       "dependencies": {
         "Microsoft.NETCore.App": {
