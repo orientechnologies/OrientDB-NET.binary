@@ -1,2 +1,5 @@
+#:C:\code\OrientDB-NET.binary\src\OrientDB-Net.binary.Innov8tive\OrientDB-Net.binary.Innov8tive.xproj
 #:C:\code\OrientDB-NET.binary\src\Orient.Nunit.Test\Orient.Nunit.Test.xproj
 C:\code\OrientDB-NET.binary\src\Orient.Nunit.Test\Orient.Nunit.Test.xproj|C:\code\OrientDB-NET.binary\src\OrientDB-Net.binary.Innov8tive\OrientDB-Net.binary.Innov8tive.xproj
+#:C:\code\OrientDB-NET.binary\src\Orient.Console\Orient.Console.xproj
+C:\code\OrientDB-NET.binary\src\Orient.Console\Orient.Console.xproj|C:\code\OrientDB-NET.binary\src\OrientDB-Net.binary.Innov8tive\OrientDB-Net.binary.Innov8tive.xproj

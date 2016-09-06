@@ -2420,27 +2420,26 @@
           "lib/netstandard1.3/System.Xml.XPath.XDocument.dll": {}
         }
       },
-      "OrientDB-Net.binary.Innov8tive/0.1.8": {
+      "OrientDB-Net.binary.Innov8tive/0.1.10": {
         "type": "project",
-        "framework": ".NETCoreApp,Version=v1.5",
+        "framework": ".NETStandard,Version=v1.5",
         "dependencies": {
           "Microsoft.CSharp": "4.0.1",
-          "Microsoft.NETCore.App": "1.0.0",
           "NETStandard.Library": "1.6.0",
           "System.Collections": "4.0.11",
           "System.Collections.Concurrent": "4.0.12",
           "System.IO": "4.1.0",
           "System.Linq": "4.1.0",
-          "System.Net.Sockets": "4.1.0",
           "System.Numerics.Vectors": "4.1.1",
           "System.Reflection.Extensions": "4.0.1",
-          "System.Threading": "4.0.11"
+          "System.Threading": "4.0.11",
+          "System.Threading.Thread": "4.0.0"
         },
         "compile": {
-          "netcoreapp1.5/OrientDB-Net.binary.Innov8tive.dll": {}
+          "netstandard1.5/OrientDB-Net.binary.Innov8tive.dll": {}
         },
         "runtime": {
-          "netcoreapp1.5/OrientDB-Net.binary.Innov8tive.dll": {}
+          "netstandard1.5/OrientDB-Net.binary.Innov8tive.dll": {}
         }
       }
     }
@@ -7348,7 +7347,7 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "OrientDB-Net.binary.Innov8tive/0.1.8": {
+    "OrientDB-Net.binary.Innov8tive/0.1.10": {
       "type": "project",
       "path": "../OrientDB-Net.binary.Innov8tive/project.json",
       "msbuildProject": "../OrientDB-Net.binary.Innov8tive/OrientDB-Net.binary.Innov8tive.xproj"
@@ -7356,18 +7355,17 @@
   },
   "projectFileDependencyGroups": {
     "": [
+      "Microsoft.CSharp >= 4.0.1",
       "Microsoft.NETCore.App >= 1.0.0",
       "NUnit >= 3.4.0",
-      "OrientDB-Net.binary.Innov8tive >= 0.1.6-*",
-      "dotnet-test-nunit >= 3.4.0-beta-1"
-    ],
-    ".NETCoreApp,Version=v1.5": [
-      "Microsoft.CSharp >= 4.0.1",
+      "OrientDB-Net.binary.Innov8tive >= 0.1.9-*",
       "System.Collections >= 4.0.11",
       "System.Console >= 4.0.0",
       "System.Linq >= 4.1.0",
-      "System.Threading >= 4.0.11"
-    ]
+      "System.Threading >= 4.0.11",
+      "dotnet-test-nunit >= 3.4.0-beta-1"
+    ],
+    ".NETCoreApp,Version=v1.5": []
   },
   "tools": {},
   "projectFileToolGroups": {}
