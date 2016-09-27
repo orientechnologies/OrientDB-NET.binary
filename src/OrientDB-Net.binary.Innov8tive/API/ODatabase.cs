@@ -59,9 +59,15 @@ namespace Orient.Client
             ClientCache = new ConcurrentDictionary<ORID, ODocument>();
         }
 
+        public ODatabase(string hostName, int port, string databaseName, ODatabaseType type, string userName, string userPassword, string poolAlias)
+        {
+            _connectionPool = new ConnectionPool(hostName, port, databaseName, type, userName, userPassword, poolAlias);
+            ClientCache = new ConcurrentDictionary<ORID, ODocument>();
+        }
+
         public ODatabase(ConnectionOptions options)
         {
-            _connectionPool = new ConnectionPool(options.HostName, options.Port, options.DatabaseName, options.DatabaseType, options.UserName, options.Password);
+            _connectionPool = new ConnectionPool(options.HostName, options.Port, options.DatabaseName, options.DatabaseType, options.UserName, options.Password, options.PoolAlias);
             ClientCache = new ConcurrentDictionary<ORID, ODocument>();
         }
 

@@ -10,5 +10,11 @@ namespace OrientDB_Net.binary.Innov8tive.API
         public int Port { get; set; }
         public string DatabaseName { get; set; }
         public ODatabaseType DatabaseType { get; set; }
+        public string PoolAlias { get; set; }
+
+        public ConnectionOptions()
+        {
+            PoolAlias = "Default";
+        }
     }
 }

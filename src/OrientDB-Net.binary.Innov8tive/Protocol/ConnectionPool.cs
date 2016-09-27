@@ -13,6 +13,7 @@ namespace OrientDB_Net.binary.Innov8tive.Protocol
         private readonly ODatabaseType _type;
         private readonly string _userName;
         private readonly string _userPassword;
+        private readonly string _poolAlias;
 
         public ConnectionPool(string hostName, int port, string databaseName, ODatabaseType type, string userName, string userPassword)
         {
@@ -22,17 +23,29 @@ namespace OrientDB_Net.binary.Innov8tive.Protocol
             _type = type;
             _userName = userName;
             _userPassword = userPassword;
+            _poolAlias = "Default";
         }
 
-        private readonly ConcurrentDictionary<int, Connection> _connectionPool = new ConcurrentDictionary<int, Connection>();
+        public ConnectionPool(string hostName, int port, string databaseName, ODatabaseType type, string userName, string userPassword, string poolAlias)
+        {
+            _hostName = hostName;
+            _port = port;
+            _databaseName = databaseName;
+            _type = type;
+            _userName = userName;
+            _userPassword = userPassword;
+            _poolAlias = poolAlias;
+        }
+
+        private readonly ConcurrentDictionary<string, Connection> _connectionPool = new ConcurrentDictionary<string, Connection>();
 
         public Connection GetConnection()
         {
-            if (_connectionPool.ContainsKey(Thread.CurrentThread.ManagedThreadId))
-                return _connectionPool[Thread.CurrentThread.ManagedThreadId];
+            if (_connectionPool.ContainsKey(_poolAlias))
+                return _connectionPool[_poolAlias];
 
             var connection = new Connection(_hostName, _port, _databaseName, _type, _userName, _userPassword);
-            _connectionPool.AddOrUpdate(Thread.CurrentThread.ManagedThreadId, i => connection,
+            _connectionPool.AddOrUpdate(_poolAlias, i => connection,
                 (i, conn) => _connectionPool[i] = conn);
 
             return connection;
