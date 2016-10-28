@@ -333,7 +333,7 @@ namespace Orient.Client.Protocol.Serializers
                 // " -> \"
                 // \ -> \\
                 // therefore there needs to be a check for valid end of the string which
-                // is quote character that is not preceeded by backslash character \
+                // is quote character that is not preceded by backslash character \
                 if ((recordString[i] == '\\') && (recordString[i + 1] == '\\' || recordString[i + 1] == '"'))
                 {
                     i = i + 2;

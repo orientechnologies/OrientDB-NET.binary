@@ -73,7 +73,7 @@ namespace Orient.Client.Mapping
                     }
                     catch
                     {
-                        // FIX: somtimes collection of embeded documents returned as ORID Collection;
+                        // FIX: sometimes collection of embeded documents returned as ORID Collection;
                     }
                 }
 
