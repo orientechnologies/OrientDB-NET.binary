@@ -1,7 +1,5 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Orient.Client;
-using Orient.Nunit.Test;
 
 namespace Orient.Nunit.Test.Query
 {
@@ -13,7 +11,7 @@ namespace Orient.Nunit.Test.Query
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     short clusterId1 = database
                         .Create.Cluster("TestCluster1", OClusterType.Physical)

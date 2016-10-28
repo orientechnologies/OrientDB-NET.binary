@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Orient.Client;
 
 namespace Orient.Nunit.Test.Query
@@ -12,7 +11,7 @@ namespace Orient.Nunit.Test.Query
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     // prerequisites
                     database
@@ -46,7 +45,7 @@ namespace Orient.Nunit.Test.Query
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     // prerequisites
                     database
@@ -80,7 +79,7 @@ namespace Orient.Nunit.Test.Query
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
             {
-                using (ODatabase database = new ODatabase(TestConnection.GlobalTestDatabaseAlias))
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
                 {
                     // prerequisites
                     database

@@ -682,10 +682,8 @@ namespace Orient.Client.Protocol.Serializers
                         operation.FileId = fileId;
                         operation.PageIndex = pageIndex;
                         operation.PageOffset = pageOffset;
-
-
-                        // Not realy quiete about this
-                        var connection = OClient.ReleaseConnection(_connection.Alias);
+                      
+                        var connection = _connection;
 
                         var entries = new Dictionary<ORID, int>();
                         try
@@ -715,9 +713,9 @@ namespace Orient.Client.Protocol.Serializers
 
                             } while (true);
                         }
-                        finally
+                        catch (Exception e)
                         {
-                            OClient.ReturnConnection(connection);
+                            throw;
                         }
                     }
                 }

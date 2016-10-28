@@ -1,6 +1,4 @@
 {
-  "version": "1.0.0-*",
-  "description": "Orient.Console Console Application",
   "authors": [ "delagr" ],
   "buildOptions": {
     "emitEntryPoint": true
@@ -8,16 +6,18 @@
   "dependencies": {
     "Microsoft.Extensions.Configuration": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
-    "OrientDB-Net.binary.Innov8tive": "0.1.*"
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0"
   },
-
+  "description": "Orient.Console Console Application",
   "frameworks": {
     "dnx451": {
       "dependencies": {
-        "System.Runtime": "4.0.22-beta-22231"
+        "System.Runtime": "4.0.10",
+        "System.Threading": "4.0.0",
+        "OrientDB-Net.binary.Innov8tive": "0.1.10-*"
       }
     },
-    "netcoreapp1.0": {
+    "netcoreapp1.5": {
       "imports": "dnxcore50",
       "dependencies": {
         "Microsoft.NETCore.App": {
@@ -28,9 +28,10 @@
         "System.Collections": "4.0.11",
         "System.Console": "4.0.0",
         "System.Linq": "4.1.0",
-        "System.Threading": "4.0.11"
-       
+        "System.Threading": "4.0.11",
+        "OrientDB-Net.binary.Innov8tive": "0.1.9-*"
       }
     }
-  }
+  },
+  "version": "1.0.0-*"
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,23 +11,26 @@ using Orient.Client.Protocol;
 using Orient.Client.Protocol.Operations;
 using Orient.Client.Protocol.Operations.Command;
 using Orient.Client.Protocol.Serializers;
+using OrientDB_Net.binary.Innov8tive.API;
+using OrientDB_Net.binary.Innov8tive.Protocol;
 
 namespace Orient.Client
 {
     public class ODatabase : IDisposable
     {
         private bool _containsConnection;
-        private Connection _connection;
 
         private ODocument _databaseProperties;
 
         public IDictionary<ORID, ODocument> ClientCache { get; private set; }
 
-        public OCreate Create { get { return new OCreate(_connection); } }
-        public OSqlDelete Delete { get { return new OSqlDelete(_connection); } }
-        public OLoadRecord Load { get { return new OLoadRecord(_connection); } }
-        public ORecordMetadata Metadata { get { return new ORecordMetadata(_connection); } }
-        public OSqlSchema Schema { get { return new OSqlSchema(_connection); } }
+        public OCreate Create => new OCreate(GetConnection());
+        public OSqlDelete Delete => new OSqlDelete(GetConnection());
+        public OLoadRecord Load => new OLoadRecord(GetConnection());
+        public ORecordMetadata Metadata => new ORecordMetadata(GetConnection());
+        public OSqlSchema Schema => new OSqlSchema(GetConnection());
+
+        private readonly ConnectionPool _connectionPool;
 
         public ODocument DatabaseProperties
         {
@@ -40,26 +44,34 @@ namespace Orient.Client
             }
         }
 
-        public OTransaction Transaction { get; private set; }
+        public OTransaction Transaction => _connectionPool.GetConnection().ConnectionTransaction;
 
         internal Connection GetConnection()
         {
-            return _connection;
+            var connection = _connectionPool.GetConnection();
+            connection.Database = this;
+            return connection;
         }
 
-        public ODatabase(string alias)
+        public ODatabase(string hostName, int port, string databaseName, ODatabaseType type, string userName, string userPassword)
         {
-            _connection = OClient.ReleaseConnection(alias);
-            _connection.Database = this;
-            _containsConnection = true;
-            ClientCache = new Dictionary<ORID, ODocument>();
-            Transaction = new OTransaction(_connection);
+            _connectionPool = new ConnectionPool(hostName, port, databaseName, type, userName, userPassword);
+            ClientCache = new ConcurrentDictionary<ORID, ODocument>();
         }
 
-        public int ProtocolVersion
+        public ODatabase(string hostName, int port, string databaseName, ODatabaseType type, string userName, string userPassword, string poolAlias)
         {
-            get { return _connection.ProtocolVersion; }
+            _connectionPool = new ConnectionPool(hostName, port, databaseName, type, userName, userPassword, poolAlias);
+            ClientCache = new ConcurrentDictionary<ORID, ODocument>();
         }
+
+        public ODatabase(ConnectionOptions options)
+        {
+            _connectionPool = new ConnectionPool(options.HostName, options.Port, options.DatabaseName, options.DatabaseType, options.UserName, options.Password, options.PoolAlias);
+            ClientCache = new ConcurrentDictionary<ORID, ODocument>();
+        }
+
+        public int ProtocolVersion => GetConnection().ProtocolVersion;
 
         private Task<ODocument> retrieveDataBaseProperties()
         {
@@ -68,7 +80,7 @@ namespace Orient.Client
                 var document = Load.ORID(new ORID(0, 0)).Run();
 
                 byte[] rawByte = document.GetField<byte[]>("RawBytes");
-                var str = Encoding.UTF8.GetString(rawByte,0,rawByte.Length);
+                var str = Encoding.UTF8.GetString(rawByte, 0, rawByte.Length);
                 var values = str.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
                 var doc = new ODocument();
                 doc.SetField("Version", values[0]);
@@ -85,9 +97,9 @@ namespace Orient.Client
         public List<OCluster> GetClusters(bool reload = false)
         {
             if (!reload)
-                return _connection.Document.GetField<List<OCluster>>("Clusters");
+                return GetConnection().Document.GetField<List<OCluster>>("Clusters");
 
-            _connection.Reload();
+            GetConnection().Reload();
             return GetClusters();
         }
 
@@ -101,7 +113,7 @@ namespace Orient.Client
             OCluster oCluster = GetClusters().FirstOrDefault(x => x.Id == clusterId);
             if (oCluster == null)
             {
-                _connection.Reload();
+                GetConnection().Reload();
                 oCluster = GetClusters().FirstOrDefault(x => x.Id == clusterId);
             }
             return oCluster.Name;
@@ -118,7 +130,7 @@ namespace Orient.Client
 
         internal OCluster AddCluster(OCluster cluster)
         {
-            var clusters = _connection.Document.GetField<List<OCluster>>("Clusters");
+            var clusters = GetConnection().Document.GetField<List<OCluster>>("Clusters");
             if (!clusters.Contains(cluster))
                 clusters.Add(cluster);
             return cluster;
@@ -126,7 +138,7 @@ namespace Orient.Client
 
         internal void RemoveCluster(short clusterid)
         {
-            var clusters = _connection.Document.GetField<List<OCluster>>("Clusters");
+            var clusters = GetConnection().Document.GetField<List<OCluster>>("Clusters");
             var cluster = clusters.SingleOrDefault(c => c.Id == clusterid);
 
             if (cluster != null)
@@ -135,19 +147,19 @@ namespace Orient.Client
 
         public OSqlSelect Select(params string[] projections)
         {
-            return new OSqlSelect(_connection).Select(projections);
+            return new OSqlSelect(GetConnection()).Select(projections);
         }
 
         #region Insert
 
         public IOInsert Insert()
         {
-            return new OSqlInsert(_connection);
+            return new OSqlInsert(GetConnection());
         }
 
         public IOInsert Insert<T>(T obj)
         {
-            return new OSqlInsert(_connection)
+            return new OSqlInsert(GetConnection())
                 .Insert(obj);
         }
 
@@ -157,18 +169,18 @@ namespace Orient.Client
 
         public OSqlUpdate Update()
         {
-            return new OSqlUpdate(_connection);
+            return new OSqlUpdate(GetConnection());
         }
 
         public OSqlUpdate Update(ORID orid)
         {
-            return new OSqlUpdate(_connection)
+            return new OSqlUpdate(GetConnection())
                 .Update(orid);
         }
 
         public OSqlUpdate Update<T>(T obj)
         {
-            return new OSqlUpdate(_connection)
+            return new OSqlUpdate(GetConnection())
                 .Update(obj);
         }
 
@@ -197,18 +209,18 @@ namespace Orient.Client
             payload.NonTextLimit = -1;
             payload.FetchPlan = fetchPlan;
 
-            Command operation = new Command(_connection.Database);
+            Command operation = new Command(GetConnection().Database);
             operation.OperationMode = OperationMode.Asynchronous;
             operation.CommandPayload = payload;
 
-            ODocument document = _connection.ExecuteOperation(operation);
+            ODocument document = GetConnection().ExecuteOperation(operation);
 
             return document.GetField<List<ODocument>>("Content");
         }
 
         public PreparedQuery Query(PreparedQuery query)
         {
-            query.SetConnection(_connection);
+            query.SetConnection(GetConnection());
             return query;
         }
 
@@ -220,7 +232,7 @@ namespace Orient.Client
             payload.Language = "sql";
             payload.Text = batch;
 
-            return new OCommandQuery(_connection, payload);
+            return new OCommandQuery(GetConnection(), payload);
         }
 
         public OCommandResult Gremlin(string query)
@@ -229,11 +241,11 @@ namespace Orient.Client
             payload.Language = "gremlin";
             payload.Text = query;
 
-            Command operation = new Command(_connection.Database);
+            Command operation = new Command(GetConnection().Database);
             operation.OperationMode = OperationMode.Synchronous;
             operation.CommandPayload = payload;
 
-            ODocument document = _connection.ExecuteOperation(operation);
+            ODocument document = GetConnection().ExecuteOperation(operation);
 
             return new OCommandResult(document);
         }
@@ -244,7 +256,7 @@ namespace Orient.Client
             payload.Language = "javascript";
             payload.Text = query;
 
-            return new OCommandQuery(_connection, payload);
+            return new OCommandQuery(GetConnection(), payload);
         }
 
         public OCommandResult Command(string sql)
@@ -252,13 +264,13 @@ namespace Orient.Client
             CommandPayloadCommand payload = new CommandPayloadCommand();
             payload.Text = sql;
 
-            OCommandQuery query = new OCommandQuery(_connection, payload);
+            OCommandQuery query = new OCommandQuery(GetConnection(), payload);
             return query.Run();
         }
 
         public PreparedCommand Command(PreparedCommand command)
         {
-            command.SetConnection(_connection);
+            command.SetConnection(GetConnection());
             return command;
         }
 
@@ -266,8 +278,8 @@ namespace Orient.Client
         {
             get
             {
-                var operation = new DBSize(_connection.Database);
-                var document = _connection.ExecuteOperation(operation);
+                var operation = new DBSize(GetConnection().Database);
+                var document = GetConnection().ExecuteOperation(operation);
                 return document.GetField<long>("size");
             }
         }
@@ -276,8 +288,8 @@ namespace Orient.Client
         {
             get
             {
-                var operation = new DBCountRecords(_connection.Database);
-                var document = _connection.ExecuteOperation(operation);
+                var operation = new DBCountRecords(GetConnection().Database);
+                var document = GetConnection().ExecuteOperation(operation);
                 return document.GetField<long>("count");
             }
         }
@@ -286,16 +298,9 @@ namespace Orient.Client
         {
             if (_containsConnection)
             {
-                _connection.Database = null;
+                GetConnection().Database = null;
 
-                if (_connection.IsReusable)
-                {
-                    OClient.ReturnConnection(_connection);
-                }
-                else
-                {
-                    _connection.Dispose();
-                }
+                GetConnection().Dispose();
 
                 _containsConnection = false;
             }
@@ -313,7 +318,7 @@ namespace Orient.Client
 
         private OClusterQuery Clusters(IEnumerable<OCluster> clusters)
         {
-            var query = new OClusterQuery(_connection);
+            var query = new OClusterQuery(GetConnection());
             foreach (var id in clusters)
             {
                 query.AddClusterId(id);

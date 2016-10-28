@@ -58,7 +58,7 @@ _ReSharper*
 # NCrunch
 *.ncrunch*
 .*crunch*.local.xml
-
+.vscode
 # Installshield output folder
 [Ee]xpress
 
