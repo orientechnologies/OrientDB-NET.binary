@@ -5,6 +5,7 @@ namespace Orient.Client.API.Query.Interfaces
     {
         IOInsert Cluster(string clusterName);
         IOInsert Cluster<T>();
+        IOInsert Content(string json);
         IOInsert Insert(string className);
         IOInsert Insert<T>();
         IOInsert Insert<T>(T obj);

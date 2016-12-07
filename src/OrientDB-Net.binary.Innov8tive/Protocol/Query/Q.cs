@@ -14,6 +14,7 @@ namespace Orient.Client.Protocol
         internal static string Cluster = "CLUSTER";
         internal static string Comma = ",";
         internal static string Contains = "CONTAINS";
+        internal static string Content = "CONTENT";
         internal static string Create = "CREATE";
         internal static string Delete = "DELETE";
         internal static string Descending = "DESC";

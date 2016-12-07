@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using Orient.Client;
+using System.Collections.Generic;
 
 namespace Orient.Nunit.Test.Query
 {
@@ -37,6 +38,28 @@ namespace Orient.Nunit.Test.Query
         }
 
         [Test]
+        public void ShouldInsertDocumentUsingContentKeyword()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestClass")
+                        .Run();
+
+                    ODocument insertedDocument = database
+                        .Insert("TestClass")
+                        .Content(TestConstants.newDocumentJson)
+                        .Run();
+
+                    checkStandardAssertions(insertedDocument);
+                }
+            }
+        }
+
+        [Test]
         public void ShouldInsertObject()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
@@ -54,6 +77,35 @@ namespace Orient.Nunit.Test.Query
 
                     TestProfileClass insertedDocument = database
                         .Insert(profile)
+                        .Run<TestProfileClass>();
+
+                    Assert.IsTrue(insertedDocument.ORID != null);
+                    Assert.AreEqual(insertedDocument.OClassName, typeof(TestProfileClass).Name);
+                    Assert.AreEqual(insertedDocument.Name, profile.Name);
+                    Assert.AreEqual(insertedDocument.Surname, profile.Surname);
+                }
+            }
+        }
+
+        [Test]
+        public void ShouldInsertObjectUsingContentKeyword()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class<TestProfileClass>()
+                        .Run();
+
+                    TestProfileClass profile = new TestProfileClass();
+                    profile.Name = "Johny";
+                    profile.Surname = "Bravo";
+
+                    TestProfileClass insertedDocument = database
+                        .Insert(typeof(TestProfileClass).Name)
+                        .Content("{\"Name\":\"Johny\", \"Surname\":\"Bravo\"}")
                         .Run<TestProfileClass>();
 
                     Assert.IsTrue(insertedDocument.ORID != null);
@@ -94,6 +146,37 @@ namespace Orient.Nunit.Test.Query
                 }
             }
         }
+
+        [Test]
+        public void ShouldInsertObjectIntoUsingContentKeyword()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestClass")
+                        .Run();
+
+                    ODocument document = new ODocument()
+                        .SetField("foo", "foo string value")
+                        .SetField("bar", 12345);
+
+                    ODocument insertedDocument = database
+                        .Insert()
+                        .Into("TestClass")
+                        .Content("{\"bar\": 12345, \"foo\":\"foo string value\"}")
+                        .Run();
+
+                    Assert.IsTrue(insertedDocument.ORID != null);
+                    Assert.AreEqual(insertedDocument.OClassName, "TestClass");
+                    Assert.AreEqual(insertedDocument.GetField<string>("foo"), document.GetField<string>("foo"));
+                    Assert.AreEqual(insertedDocument.GetField<int>("bar"), document.GetField<int>("bar"));
+                }
+            }
+        }
+
 
         [Ignore("Broken Tests as at Github 27594c0114cd9489b69c84fe4896a9d6c6d01b19")]
         [Test]
@@ -162,6 +245,28 @@ namespace Orient.Nunit.Test.Query
          
                 }
             }
+        }
+
+        private void checkStandardAssertions(ODocument insertedDocument)
+        {
+            Assert.IsTrue(insertedDocument.ORID != null);
+            Assert.AreEqual(insertedDocument.OClassName, "TestClass");
+
+            Assert.AreEqual(insertedDocument.GetField<string>("simpleString"), "TestString");
+
+            ODocument embeddedObject = insertedDocument.GetField<ODocument>("embeddedObject");
+
+            Assert.IsNotNull(embeddedObject);
+
+            Assert.IsTrue(embeddedObject.HasField("embeddedArrayOfObjects"));
+
+            List<ODocument> arrayOfObjects = embeddedObject.GetField<List<ODocument>>("embeddedArrayOfObjects");
+
+            Assert.AreEqual(3, arrayOfObjects.Count);
+
+            Assert.AreEqual("ValueA1", arrayOfObjects[0].GetField<string>("stringProperty"));
+            Assert.AreEqual(2, arrayOfObjects[1].GetField<int>("numericProperty"));
+            Assert.AreEqual(true, arrayOfObjects[2].GetField<bool>("booleanProperty"));
         }
     }
 }

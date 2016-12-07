@@ -364,6 +364,15 @@ namespace Orient.Client.Protocol
 
         #endregion
 
+        #region Content
+
+        internal void Content(string jsonContent)
+        {
+            _compiler.Unique(Q.Content, jsonContent);
+        }
+
+        #endregion
+
         #region Where with conditions
 
         internal void Where(string field)
@@ -807,8 +816,18 @@ namespace Orient.Client.Protocol
                 query += string.Join(" ", "", Q.Cluster, _compiler.Value(Q.Cluster));
             }
 
+            if (_compiler.HasKey(Q.Content) && _compiler.HasKey(Q.Set))
+            {
+                throw new OException(OExceptionType.Query, "Cannot have SET and CONTENT keywords in the same query");
+            }
+
+            // [CONTENT {<JSON>}]
+            if (_compiler.HasKey(Q.Content))
+            {
+                query += string.Join(" ", "", Q.Content, _compiler.Value(Q.Content));
+            }
             // [VALUES (<expression>[,]((<field>[,]*))*)]|[<field> = <expression>[,](SET)*]
-            if (_compiler.HasKey(Q.Set))
+            else if (_compiler.HasKey(Q.Set))
             {
                 query += string.Join(" ", "", Q.Set, _compiler.Value(Q.Set));
             }
