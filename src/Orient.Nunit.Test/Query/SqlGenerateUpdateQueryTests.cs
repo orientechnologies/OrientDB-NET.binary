@@ -33,12 +33,28 @@ namespace Orient.Nunit.Test.Query
             string generatedQuery = new OSqlUpdate()
                 .Update("bogusId")
                 .Class("TestVertexClass")
-                .Content(TestConstants.CreateJson)
+                .Content(TestConstants.UpdateJson)
                 .ToString();
 
             string query =
                 "UPDATE TestVertexClass " +
-                "CONTENT " + TestConstants.CreateJson;
+                "CONTENT " + TestConstants.UpdateJson;
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [Test]
+        public void ShouldGenerateUpdateUsingMergeKeyword()
+        {
+            string generatedQuery = new OSqlUpdate()
+                .Update("bogusId")
+                .Class("TestVertexClass")
+                .Merge(TestConstants.MergeJson)
+                .ToString();
+
+            string query =
+                "UPDATE TestVertexClass " +
+                "MERGE " + TestConstants.MergeJson;
 
             Assert.AreEqual(generatedQuery, query);
         }
@@ -148,12 +164,27 @@ namespace Orient.Nunit.Test.Query
         {
             string generatedQuery = new OSqlUpdate()
                 .Update(new ORID(8, 0))                
-                .Content(TestConstants.CreateJson)
+                .Content(TestConstants.UpdateJson)
                 .ToString();
 
             string query =
                 "UPDATE #8:0 " +
-                "CONTENT " + TestConstants.CreateJson;
+                "CONTENT " + TestConstants.UpdateJson;
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [Test]
+        public void ShouldGeneratUpdateRecordFromOridQueryUsingMergeKeyword()
+        {
+            string generatedQuery = new OSqlUpdate()
+                .Update(new ORID(8, 0))
+                .Merge(TestConstants.MergeJson)
+                .ToString();
+
+            string query =
+                "UPDATE #8:0 " +
+                "MERGE " + TestConstants.MergeJson;
 
             Assert.AreEqual(generatedQuery, query);
         }
@@ -290,7 +321,7 @@ namespace Orient.Nunit.Test.Query
             OException ex = Assert.Throws<OException>(new TestDelegate(GenerateInvalidKeywordCombinationUpdateStatement));
 
             Assert.That(ex.Type, Is.EqualTo(OExceptionType.Query));
-            Assert.That(ex.Message, Is.EqualTo("Only one Keyword of SET|ADD|REMOVE|CONTENT is allowed in query"));
+            Assert.That(ex.Message, Is.EqualTo("Only one Keyword of SET|ADD|REMOVE|CONTENT|MERGE is allowed in query"));
         }
 
         void GenerateInvalidKeywordCombinationUpdateStatement()

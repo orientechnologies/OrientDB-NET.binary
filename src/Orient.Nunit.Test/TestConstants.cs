@@ -34,5 +34,14 @@ namespace Orient.Nunit.Test
             }
         }";
 
+        public const string MergeJson = @"{            
+            ""embeddedObject"": {                
+                ""embeddedArrayOfObjects"": [{
+                    ""stringProperty"": ""ValueA1Updated""
+                }],
+                ""newProperty"": ""NewValue""
+            }
+        }";
+
     }
 }

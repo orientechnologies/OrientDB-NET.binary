@@ -35,6 +35,7 @@ namespace Orient.Client.Protocol
         internal static string LinkedType = "LINKEDTYPE";
         internal static string LinkedClass = "LINKEDCLASS";
         internal static string Lucene = "LUCENE";
+        internal static string Merge = "MERGE";
         internal static string NotEquals = "!=";
         internal static string Null = "NULL";
         internal static string Or = "OR";

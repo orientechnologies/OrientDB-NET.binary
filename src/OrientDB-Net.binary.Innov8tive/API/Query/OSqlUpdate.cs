@@ -97,6 +97,17 @@ namespace Orient.Client
 
         #endregion
 
+        #region Merge
+
+        public OSqlUpdate Merge(string json)
+        {
+            _sqlQuery.Merge(json);
+
+            return this;
+        }
+
+        #endregion
+
         #region Record
 
         public OSqlUpdate Record(ORID orid)

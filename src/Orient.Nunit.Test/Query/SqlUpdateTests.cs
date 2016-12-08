@@ -333,6 +333,57 @@ namespace Orient.Nunit.Test.Query
         }
 
         [Test]
+        public void ShouldUpdateRecordUsingMerge()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestClass")
+                        .Run();
+
+                    ODocument record1 = database.Insert("TestClass")
+                        .Content(TestConstants.CreateJson)
+                        .Run();
+
+                    ODocument record2 = database.Insert("TestClass")
+                        .Content(TestConstants.CreateJson)
+                        .Run();
+
+                    var recordsMerged = database.Update(record1.ORID)
+                        .Merge(TestConstants.MergeJson)
+                        .Run();
+
+                    Assert.AreEqual(1, recordsMerged);
+
+                    List<ODocument> documents = database
+                       .Select()
+                       .From("TestClass")
+                       .Where("simpleString").Equals("TestString")
+                       .ToList();
+
+                    Assert.AreEqual(2, documents.Count);
+
+                    documents = database
+                       .Select()
+                       .From("TestClass")
+                       .Where("embeddedObject.newProperty").Equals("NewValue")
+                       .ToList();
+
+                    Assert.AreEqual(1, documents.Count);
+
+                    for (int i = 0; i < documents.Count; i++)
+                    {
+                        checkMergedContentAssertions(documents[i]);
+                    }
+
+                }
+            }
+        }
+
+        [Test]
         public void ShouldUpdateOridSet()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
@@ -730,6 +781,28 @@ namespace Orient.Nunit.Test.Query
             Assert.AreEqual("ValueA1Updated", arrayOfObjects[0].GetField<string>("stringPropertyUpdated"));
             Assert.AreEqual(2, arrayOfObjects[1].GetField<int>("numericPropertyUpdated"));
             Assert.AreEqual(true, arrayOfObjects[2].GetField<bool>("booleanPropertyUpdated"));
+        }
+
+        private void checkMergedContentAssertions(ODocument document)
+        {
+            Assert.IsNotNull(document);
+
+            Assert.IsNotNull(document.ORID);
+            Assert.AreEqual(document.OClassName, "TestClass");
+
+            Assert.AreEqual("TestString", document.GetField<string>("simpleString"));
+            
+            ODocument embeddedObject = document.GetField<ODocument>("embeddedObject");
+
+            Assert.IsNotNull(embeddedObject);
+
+            Assert.IsTrue(embeddedObject.HasField("embeddedArrayOfObjects"));
+
+            List<ODocument> arrayOfObjects = embeddedObject.GetField<List<ODocument>>("embeddedArrayOfObjects");
+
+            Assert.AreEqual(1, arrayOfObjects.Count);
+
+            Assert.AreEqual("ValueA1Updated", arrayOfObjects[0].GetField<string>("stringProperty"));            
         }
     }
 }

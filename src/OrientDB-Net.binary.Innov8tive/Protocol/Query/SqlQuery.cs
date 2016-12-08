@@ -373,6 +373,15 @@ namespace Orient.Client.Protocol
 
         #endregion
 
+        #region Merge
+
+        internal void Merge(string jsonContent)
+        {
+            _compiler.Unique(Q.Merge, jsonContent);
+        }
+
+        #endregion
+
         #region Where with conditions
 
         internal void Where(string field)
@@ -520,7 +529,7 @@ namespace Orient.Client.Protocol
         }
 
         #endregion
-
+        
         #region Upsert
 
         public void Upsert()
@@ -843,7 +852,7 @@ namespace Orient.Client.Protocol
             query += string.Join(" ", Q.Update, _compiler.OrderedValue(Q.Class, Q.Cluster, Q.Record));
 
             var usedKeywords = new List<bool>();
-            var exclusiveKeywords = new List<String> { Q.Set, Q.Add, Q.Remove, Q.Content };
+            var exclusiveKeywords = new List<String> { Q.Set, Q.Add, Q.Remove, Q.Content, Q.Merge };
             exclusiveKeywords.ForEach(keyword => usedKeywords.Add(_compiler.HasKey(keyword)));            
 
             if (usedKeywords.ExceedsThreshold(1))
@@ -869,6 +878,11 @@ namespace Orient.Client.Protocol
             else if (_compiler.HasKey(Q.Content))
             {
                 query += string.Join(" ", "", Q.Content, _compiler.Value(Q.Content));
+            }
+            // [MERGE <JSON>]
+            else if (_compiler.HasKey(Q.Merge))
+            {
+                query += string.Join(" ", "", Q.Merge, _compiler.Value(Q.Merge));
             }
 
             // (UPSERT)
