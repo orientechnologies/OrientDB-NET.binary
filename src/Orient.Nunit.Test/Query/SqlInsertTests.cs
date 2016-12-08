@@ -51,7 +51,7 @@ namespace Orient.Nunit.Test.Query
 
                     ODocument insertedDocument = database
                         .Insert("TestClass")
-                        .Content(TestConstants.newDocumentJson)
+                        .Content(TestConstants.CreateJson)
                         .Run();
 
                     checkStandardAssertions(insertedDocument);
@@ -249,7 +249,7 @@ namespace Orient.Nunit.Test.Query
 
         private void checkStandardAssertions(ODocument insertedDocument)
         {
-            Assert.IsTrue(insertedDocument.ORID != null);
+            Assert.IsNotNull(insertedDocument.ORID);
             Assert.AreEqual(insertedDocument.OClassName, "TestClass");
 
             Assert.AreEqual(insertedDocument.GetField<string>("simpleString"), "TestString");

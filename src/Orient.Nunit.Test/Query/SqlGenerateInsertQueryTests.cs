@@ -112,12 +112,12 @@ namespace Orient.Nunit.Test.Query
         {
             string generatedQuery = new OSqlInsert()
                 .Insert("TestClass")
-                .Content(TestConstants.newDocumentJson)
+                .Content(TestConstants.CreateJson)
                 .ToString();
 
             string query =
                 "INSERT INTO TestClass " +
-                "CONTENT " + TestConstants.newDocumentJson;
+                "CONTENT " + TestConstants.CreateJson;
         }
 
         [Test]
@@ -125,12 +125,12 @@ namespace Orient.Nunit.Test.Query
         {
             string generatedQuery = new OSqlInsert()
                 .Into("TestClass")
-                .Content(TestConstants.newDocumentJson)
+                .Content(TestConstants.CreateJson)
                 .ToString();
 
             string query =
                 "INSERT INTO TestClass " +
-                "CONTENT " + TestConstants.newDocumentJson;
+                "CONTENT " + TestConstants.CreateJson;
         }
 
         [Test]
@@ -139,13 +139,13 @@ namespace Orient.Nunit.Test.Query
             string generatedQuery = new OSqlInsert()
                 .Into("TestClass")
                 .Cluster("TestCluster")
-                .Content(TestConstants.newDocumentJson)
+                .Content(TestConstants.CreateJson)
                 .ToString();
 
             string query =
                 "INSERT INTO TestClass " +
                 "CLUSTER TestCluster " +
-                "CONTENT " + TestConstants.newDocumentJson;
+                "CONTENT " + TestConstants.CreateJson;
         }
 
         [Test]        
@@ -170,7 +170,7 @@ namespace Orient.Nunit.Test.Query
         {
             new OSqlInsert()
                 .Into("TestClass")
-                .Content(TestConstants.newDocumentJson)
+                .Content(TestConstants.CreateJson)
                 .Set("SampleField", "NotAllowed")
                 .ToString();
         }
@@ -183,7 +183,7 @@ namespace Orient.Nunit.Test.Query
 
             new OSqlInsert()
                 .Insert(document)
-                .Content(TestConstants.newDocumentJson)                
+                .Content(TestConstants.CreateJson)                
                 .ToString();
         }
 

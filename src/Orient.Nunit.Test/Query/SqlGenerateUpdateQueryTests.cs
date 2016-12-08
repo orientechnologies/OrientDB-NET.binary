@@ -28,6 +28,22 @@ namespace Orient.Nunit.Test.Query
         }
 
         [Test]
+        public void ShouldGenerateUpdateUsingContentKeyword()
+        {
+            string generatedQuery = new OSqlUpdate()
+                .Update("bogusId")
+                .Class("TestVertexClass")
+                .Content(TestConstants.CreateJson)
+                .ToString();
+
+            string query =
+                "UPDATE TestVertexClass " +
+                "CONTENT " + TestConstants.CreateJson;
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [Test]
         public void ShouldGenerateUpdateClassFromObjectQuery()
         {
             TestProfileClass profile = new TestProfileClass();
@@ -45,7 +61,7 @@ namespace Orient.Nunit.Test.Query
 
             Assert.AreEqual(generatedQuery, query);
         }
-
+        
         [Test]
         public void ShouldGenerateUpdateClassQuery()
         {
@@ -123,6 +139,21 @@ namespace Orient.Nunit.Test.Query
                 "UPDATE #8:0 " +
                 "SET foo = 'foo string value', " +
                 "bar = 12345";
+
+            Assert.AreEqual(generatedQuery, query);
+        }
+
+        [Test]
+        public void ShouldGeneratUpdateRecordFromOridQueryUsingContentKeyword()
+        {
+            string generatedQuery = new OSqlUpdate()
+                .Update(new ORID(8, 0))                
+                .Content(TestConstants.CreateJson)
+                .ToString();
+
+            string query =
+                "UPDATE #8:0 " +
+                "CONTENT " + TestConstants.CreateJson;
 
             Assert.AreEqual(generatedQuery, query);
         }
@@ -252,5 +283,24 @@ namespace Orient.Nunit.Test.Query
 
             Assert.AreEqual(generatedQuery, query);
         }
+
+        [Test]
+        public void ShouldAtemptGenerateUpdateContentAndSetQuery_ThrowsException()
+        {
+            OException ex = Assert.Throws<OException>(new TestDelegate(GenerateInvalidKeywordCombinationUpdateStatement));
+
+            Assert.That(ex.Type, Is.EqualTo(OExceptionType.Query));
+            Assert.That(ex.Message, Is.EqualTo("Only one Keyword of SET|ADD|REMOVE|CONTENT is allowed in query"));
+        }
+
+        void GenerateInvalidKeywordCombinationUpdateStatement()
+        {
+            new OSqlUpdate()
+                .Record(new ORID(8, 0))
+                .Set("foo", "bar")
+                .Content("{\"foo\":\"bar\"}")
+                .ToString();
+        }
+
     }
 }

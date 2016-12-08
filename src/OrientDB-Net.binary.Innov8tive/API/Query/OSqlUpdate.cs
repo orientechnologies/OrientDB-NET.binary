@@ -54,6 +54,17 @@ namespace Orient.Client
 
         #endregion
 
+        #region
+
+        public OSqlUpdate Content(string json)
+        {
+            _sqlQuery.Content(json);
+
+            return this;
+        }
+        
+        #endregion
+
         #region Class
 
         public OSqlUpdate Class(string className)

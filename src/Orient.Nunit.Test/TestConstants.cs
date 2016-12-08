@@ -8,7 +8,7 @@ namespace Orient.Nunit.Test
     public static class TestConstants
     {
 
-        public const string newDocumentJson = @"{
+        public const string CreateJson = @"{
             ""simpleString"": ""TestString"",
             ""embeddedObject"": {                
                 ""embeddedArrayOfObjects"": [{
@@ -17,6 +17,19 @@ namespace Orient.Nunit.Test
                     ""numericProperty"": 2
                 }, {
                     ""booleanProperty"": true
+                }]                
+            }
+        }";
+
+        public const string UpdateJson = @"{
+            ""simpleString"": ""TestStringUpdated"",
+            ""embeddedObjectUpdated"": {                
+                ""embeddedArrayOfObjects"": [{
+                    ""stringPropertyUpdated"": ""ValueA1Updated""
+                }, {
+                    ""numericPropertyUpdated"": 2
+                }, {
+                    ""booleanPropertyUpdated"": true
                 }]                
             }
         }";

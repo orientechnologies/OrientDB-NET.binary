@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using Orient.Client;
 
@@ -61,7 +62,7 @@ namespace Orient.Nunit.Test.Query
                 }
             }
         }
-
+               
         [Test]
         public void ShouldUpdateClassFromObject()
         {
@@ -284,6 +285,49 @@ namespace Orient.Nunit.Test.Query
                         Assert.AreEqual(documents[i].GetField<int>("bar"), document2.GetField<int>("bar"));
                         Assert.AreEqual(documents[i].GetField<string>("baz"), document2.GetField<string>("baz"));
                     }
+                }
+            }
+        }
+
+        [Test]
+        public void ShouldUpdateRecordUsingContent()
+        {
+            using (TestDatabaseContext testContext = new TestDatabaseContext())
+            {
+                using (ODatabase database = new ODatabase(TestConnection.ConnectionOptions))
+                {
+                    // prerequisites
+                    database
+                        .Create.Class("TestClass")
+                        .Run();
+
+                    ODocument record1 = database.Insert("TestClass")
+                        .Content(TestConstants.CreateJson)
+                        .Run();
+
+                    ODocument record2 = database.Insert("TestClass")
+                        .Content(TestConstants.CreateJson)
+                        .Run();
+
+                    var recordsUpdated = database.Update(record1.ORID)
+                        .Content(TestConstants.UpdateJson)
+                        .Run();
+
+                    Assert.AreEqual(1, recordsUpdated);
+
+                    List<ODocument> documents = database
+                       .Select()
+                       .From("TestClass")
+                       .Where("simpleString").Equals("TestStringUpdated")
+                       .ToList();
+
+                    Assert.AreEqual(1, documents.Count);
+
+                    for (int i = 0; i < documents.Count; i++)
+                    {
+                        checkUpdateContentAssertions(documents[i]);                        
+                    }
+
                 }
             }
         }
@@ -660,6 +704,32 @@ namespace Orient.Nunit.Test.Query
                     Assert.IsFalse(documents[0].HasField("bar"));
                 }
             }
+        }
+        
+        private void checkUpdateContentAssertions(ODocument document)
+        {
+            Assert.IsNotNull(document);
+
+            Assert.IsNotNull(document.ORID);
+            Assert.AreEqual(document.OClassName, "TestClass");
+
+            Assert.AreEqual("TestStringUpdated", document.GetField<string>("simpleString"));
+
+            Assert.IsFalse(document.HasField("embeddedObject"));
+
+            ODocument embeddedObject = document.GetField<ODocument>("embeddedObjectUpdated");
+            
+            Assert.IsNotNull(embeddedObject);
+
+            Assert.IsTrue(embeddedObject.HasField("embeddedArrayOfObjects"));
+
+            List<ODocument> arrayOfObjects = embeddedObject.GetField<List<ODocument>>("embeddedArrayOfObjects");
+
+            Assert.AreEqual(3, arrayOfObjects.Count);
+
+            Assert.AreEqual("ValueA1Updated", arrayOfObjects[0].GetField<string>("stringPropertyUpdated"));
+            Assert.AreEqual(2, arrayOfObjects[1].GetField<int>("numericPropertyUpdated"));
+            Assert.AreEqual(true, arrayOfObjects[2].GetField<bool>("booleanPropertyUpdated"));
         }
     }
 }
