@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
 using Orient.Client.API;
 using Orient.Client.API.Query;
 using Orient.Client.API.Query.Interfaces;
@@ -58,7 +59,11 @@ namespace Orient.Client
             _connectionPool = new ConnectionPool(hostName, port, databaseName, type, userName, userPassword);
             ClientCache = new ConcurrentDictionary<ORID, ODocument>();
         }
-
+        public ODatabase(string hostName, int port, string databaseName, ODatabaseType type, string userName, string userPassword, X509Certificate2Collection sslCerts)
+        {
+            _connectionPool = new ConnectionPool(hostName, port, databaseName, type, userName, userPassword, sslCerts);
+            ClientCache = new ConcurrentDictionary<ORID, ODocument>();
+        }
         public ODatabase(string hostName, int port, string databaseName, ODatabaseType type, string userName, string userPassword, string poolAlias)
         {
             _connectionPool = new ConnectionPool(hostName, port, databaseName, type, userName, userPassword, poolAlias);
