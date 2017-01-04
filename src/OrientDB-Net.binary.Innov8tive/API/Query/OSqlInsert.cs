@@ -101,6 +101,17 @@ namespace Orient.Client
 
         #endregion
 
+        #region Content
+
+        public IOInsert Content(string jsonObject)
+        {
+            _sqlQuery.Content(jsonObject);
+
+            return this;
+        }
+
+        #endregion
+
         #region Run
 
         public ODocument Run()

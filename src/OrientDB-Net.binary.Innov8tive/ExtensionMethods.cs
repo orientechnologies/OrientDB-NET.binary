@@ -24,5 +24,10 @@ namespace Orient.Client
             else
                 return (formattable != null) ? formattable.ToString(null, CultureInfo.InvariantCulture) : value.ToString();
         }
+
+        public static bool ExceedsThreshold(this IEnumerable<bool> bools, int threshold)
+        {
+            return bools.Count(b => b) > threshold;
+        }
     }
 }

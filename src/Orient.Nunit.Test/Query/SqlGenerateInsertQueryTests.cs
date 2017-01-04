@@ -106,5 +106,87 @@ namespace Orient.Nunit.Test.Query
 
             Assert.AreEqual(generatedQuery, query);
         }
+
+        [Test]
+        public void ShouldGenerateInsertContentQuery()
+        {
+            string generatedQuery = new OSqlInsert()
+                .Insert("TestClass")
+                .Content(TestConstants.CreateJson)
+                .ToString();
+
+            string query =
+                "INSERT INTO TestClass " +
+                "CONTENT " + TestConstants.CreateJson;
+        }
+
+        [Test]
+        public void ShouldGenerateInsertIntoContentQuery()
+        {
+            string generatedQuery = new OSqlInsert()
+                .Into("TestClass")
+                .Content(TestConstants.CreateJson)
+                .ToString();
+
+            string query =
+                "INSERT INTO TestClass " +
+                "CONTENT " + TestConstants.CreateJson;
+        }
+
+        [Test]
+        public void ShouldGenerateInsertIntoContentClusterQuery()
+        {
+            string generatedQuery = new OSqlInsert()
+                .Into("TestClass")
+                .Cluster("TestCluster")
+                .Content(TestConstants.CreateJson)
+                .ToString();
+
+            string query =
+                "INSERT INTO TestClass " +
+                "CLUSTER TestCluster " +
+                "CONTENT " + TestConstants.CreateJson;
+        }
+
+        [Test]        
+        public void ShouldAtemptGenerateInsertIntoContentAndSetQuery_ThrowsException()
+        {
+            OException ex = Assert.Throws<OException>(new TestDelegate(GenerateInvalidInsertStatement));
+
+            Assert.That(ex.Type, Is.EqualTo(OExceptionType.Query));
+            Assert.That(ex.Message, Is.EqualTo("Cannot have SET and CONTENT keywords in the same query"));
+        }
+
+        [Test]
+        public void ShouldAtemptGenerateInsertDocumentAndContent_ThrowsException()
+        {
+            OException ex = Assert.Throws<OException>(new TestDelegate(GenerateInvalidInsertStatementUsingObject));
+
+            Assert.That(ex.Type, Is.EqualTo(OExceptionType.Query));
+            Assert.That(ex.Message, Is.EqualTo("Cannot have SET and CONTENT keywords in the same query"));
+        }
+
+        void GenerateInvalidInsertStatement()
+        {
+            new OSqlInsert()
+                .Into("TestClass")
+                .Content(TestConstants.CreateJson)
+                .Set("SampleField", "NotAllowed")
+                .ToString();
+        }
+
+        void GenerateInvalidInsertStatementUsingObject()
+        {
+            ODocument document = new ODocument()
+                .SetField("foo", "foo string value")
+                .SetField("bar", 12345);
+
+            new OSqlInsert()
+                .Insert(document)
+                .Content(TestConstants.CreateJson)                
+                .ToString();
+        }
+
+
     }
 }

@@ -162,6 +162,11 @@ namespace Orient.Client
             return new OSqlInsert(GetConnection());
         }
 
+        public IOInsert Insert(string classname)
+        {
+            return new OSqlInsert(GetConnection()).Insert(classname);
+        }
+
         public IOInsert Insert<T>(T obj)
         {
             return new OSqlInsert(GetConnection())

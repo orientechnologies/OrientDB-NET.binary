@@ -54,6 +54,17 @@ namespace Orient.Client
 
         #endregion
 
+        #region
+
+        public OSqlUpdate Content(string json)
+        {
+            _sqlQuery.Content(json);
+
+            return this;
+        }
+        
+        #endregion
+
         #region Class
 
         public OSqlUpdate Class(string className)
@@ -82,6 +93,17 @@ namespace Orient.Client
         public OSqlUpdate Cluster<T>()
         {
             return Cluster(typeof(T).Name);
+        }
+
+        #endregion
+
+        #region Merge
+
+        public OSqlUpdate Merge(string json)
+        {
+            _sqlQuery.Merge(json);
+
+            return this;
         }
 
         #endregion

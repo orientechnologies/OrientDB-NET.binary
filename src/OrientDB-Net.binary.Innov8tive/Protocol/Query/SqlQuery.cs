@@ -364,6 +364,24 @@ namespace Orient.Client.Protocol
 
         #endregion
 
+        #region Content
+
+        internal void Content(string jsonContent)
+        {
+            _compiler.Unique(Q.Content, jsonContent);
+        }
+
+        #endregion
+
+        #region Merge
+
+        internal void Merge(string jsonContent)
+        {
+            _compiler.Unique(Q.Merge, jsonContent);
+        }
+
+        #endregion
+
         #region Where with conditions
 
         internal void Where(string field)
@@ -511,7 +529,7 @@ namespace Orient.Client.Protocol
         }
 
         #endregion
-
+        
         #region Upsert
 
         public void Upsert()
@@ -807,8 +825,18 @@ namespace Orient.Client.Protocol
                 query += string.Join(" ", "", Q.Cluster, _compiler.Value(Q.Cluster));
             }
 
+            if (_compiler.HasKey(Q.Content) && _compiler.HasKey(Q.Set))
+            {
+                throw new OException(OExceptionType.Query, "Cannot have SET and CONTENT keywords in the same query");
+            }
+
+            // [CONTENT {<JSON>}]
+            if (_compiler.HasKey(Q.Content))
+            {
+                query += string.Join(" ", "", Q.Content, _compiler.Value(Q.Content));
+            }
             // [VALUES (<expression>[,]((<field>[,]*))*)]|[<field> = <expression>[,](SET)*]
-            if (_compiler.HasKey(Q.Set))
+            else if (_compiler.HasKey(Q.Set))
             {
                 query += string.Join(" ", "", Q.Set, _compiler.Value(Q.Set));
             }
@@ -823,12 +851,20 @@ namespace Orient.Client.Protocol
             // UPDATE <class>|cluster:<cluster>|<recordID>
             query += string.Join(" ", Q.Update, _compiler.OrderedValue(Q.Class, Q.Cluster, Q.Record));
 
+            var usedKeywords = new List<bool>();
+            var exclusiveKeywords = new List<String> { Q.Set, Q.Add, Q.Remove, Q.Content, Q.Merge };
+            exclusiveKeywords.ForEach(keyword => usedKeywords.Add(_compiler.HasKey(keyword)));            
+
+            if (usedKeywords.ExceedsThreshold(1))
+            {
+                throw new OException(OExceptionType.Query, "Only one Keyword of " + string.Join("|", exclusiveKeywords) + " is allowed in query");
+            }
+
             // [SET|INCREMENT <field-name> = <field-value>](,)*
             if (_compiler.HasKey(Q.Set))
             {
                 query += string.Join(" ", "", Q.Set, _compiler.Value(Q.Set));
             }
-
             // (ADD|REMOVE])[<field-name> = <field-value>](,)*
             if (_compiler.HasKey(Q.Add))
             {
@@ -837,6 +873,16 @@ namespace Orient.Client.Protocol
             else if (_compiler.HasKey(Q.Remove))
             {
                 query += string.Join(" ", "", Q.Remove, _compiler.Value(Q.Remove));
+            }
+            // [CONTENT <JSON>]
+            else if (_compiler.HasKey(Q.Content))
+            {
+                query += string.Join(" ", "", Q.Content, _compiler.Value(Q.Content));
+            }
+            // [MERGE <JSON>]
+            else if (_compiler.HasKey(Q.Merge))
+            {
+                query += string.Join(" ", "", Q.Merge, _compiler.Value(Q.Merge));
             }
 
             // (UPSERT)
