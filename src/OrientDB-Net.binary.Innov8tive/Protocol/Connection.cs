@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Authentication;
 using Orient.Client.Protocol.Operations;
 using Orient.Client.Protocol.Serializers;
 using System.IO;
@@ -34,6 +37,14 @@ namespace Orient.Client.Protocol
 
         private byte[] _serverToken;
         private byte[] _databaseToken;
+        private bool sslConnection { get; set; }
+        private bool clientAuth { get; set; }
+#if NET451
+        private SslStream _sslStream;
+        private X509Certificate2Collection _sslCerts;
+#endif
+
+
 
         internal bool IsActive
         {
@@ -75,7 +86,7 @@ namespace Orient.Client.Protocol
 
         public OTransaction ConnectionTransaction { get; private set; }
 
-        internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword)
+        internal Connection(string hostname, int port, string databaseName, ODatabaseType databaseType, string userName, string userPassword, X509Certificate2Collection sslCerts)
         {
             Hostname = hostname;
             Port = port;
@@ -89,6 +100,31 @@ namespace Orient.Client.Protocol
             UserName = userName;
             UserPassword = userPassword;
             ConnectionTransaction = new OTransaction(this);
+            if (Port >= 2434 && Port <= 2440)
+            {
+#if NET451
+                if (sslCerts != null)
+                {
+                    sslConnection = true;
+                    clientAuth = true;
+                    _sslCerts = sslCerts;
+                }
+                else
+                {
+                    sslConnection = true;
+                    clientAuth = false;
+                }
+#endif
+#if DOTNET5_5
+                sslConnection = false;
+                clientauth = false;
+#endif
+            }
+            else
+            {
+                sslConnection = false;
+                clientAuth = false;
+            }
             InitializeDatabaseConnection(databaseName, databaseType, userName, userPassword);
         }
 
@@ -104,7 +140,20 @@ namespace Orient.Client.Protocol
 
             UserName = userName;
             UserPassword = userPassword;
-
+            if (Port >= 2434 && Port <= 2440)
+            {
+#if NET451
+                sslConnection = true;
+                _sslCerts = null;
+#endif
+#if DOTNET5_5
+                sslConnection = false;
+#endif
+            }
+            else
+            {
+                sslConnection = false;
+            }
             InitializeServerConnection(userName, userPassword);
         }
 
@@ -173,10 +222,10 @@ namespace Orient.Client.Protocol
                                 break;
                         }
                     }
-                    
+
                     Send(stream.ToArray());
                 }
-                
+
                 if (request.OperationMode != OperationMode.Synchronous)
                     return null;
 
@@ -205,6 +254,7 @@ namespace Orient.Client.Protocol
 
         private NetworkStream CreateServerConnection(string userName, string userPassword)
         {
+            NetworkStream stream = null;
             _readBuffer = new byte[OClient.BufferLength];
 
             // initiate socket connection
@@ -220,8 +270,9 @@ namespace Orient.Client.Protocol
                 throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
 
-            NetworkStream stream = socket.GetStream();
+            stream = socket.GetStream();
             stream.Read(_readBuffer, 0, 2);
+
 
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
             if (ProtocolVersion < 27)
@@ -241,28 +292,68 @@ namespace Orient.Client.Protocol
 
             return stream;
         }
-
+        private static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            if (sslPolicyErrors == SslPolicyErrors.None)
+            {
+                return true;
+            }
+            else if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors && certificate.Subject == certificate.Issuer)
+            {
+                return true;
+            }
+            else
+            {
+                // Do not allow this client to communicate with unauthenticated servers.
+                return false;
+            }
+        }
         private NetworkStream CreateDatabaseConnection(string databaseName, ODatabaseType databaseType, string userName, string userPassword)
         {
             _readBuffer = new byte[OClient.BufferLength];
-
-            // initiate socket connection
-            TcpClient socket;
-            try
+            NetworkStream stream = null;
+            if (sslConnection && clientAuth == false)
             {
-                socket = new TcpClient();
-                socket.ReceiveTimeout = RECIVE_TIMEOUT;
-                socket.ConnectAsync(Hostname, Port).GetAwaiter().GetResult();
+#if NET451
+                TcpClient socket;
+                SslStream sslStream;
+                try
+                {
+                    socket = new TcpClient(Hostname, Port);
+                    socket.ReceiveTimeout = RECIVE_TIMEOUT;
+
+                    sslStream = new SslStream(socket.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
+                    //sslStream.AuthenticateAsClient(Hostname,_sslCerts,SslProtocols.Tls12,true);
+                    sslStream.AuthenticateAsClient(Hostname);
+                }
+                catch (Exception ex)
+                {
+                    throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                }
+                stream = socket.GetStream();
+                _sslStream = sslStream;
+                sslStream.Read(_readBuffer, 0, 2);
+#endif
             }
-            catch (SocketException ex)
+            else
             {
-                throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                // initiate socket connection
+                TcpClient socket;
+                try
+                {
+                    socket = new TcpClient();
+                    socket.ReceiveTimeout = RECIVE_TIMEOUT;
+                    socket.ConnectAsync(Hostname, Port).GetAwaiter().GetResult();
+                }
+                catch (SocketException ex)
+                {
+                    throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                }
+
+
+                stream = socket.GetStream();
+                stream.Read(_readBuffer, 0, 2);
             }
-
-            NetworkStream stream;
-
-            stream = socket.GetStream();
-            stream.Read(_readBuffer, 0, 2);
 
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
             if (ProtocolVersion < 27)
@@ -297,8 +388,20 @@ namespace Orient.Client.Protocol
 
         internal Stream GetNetworkStream()
         {
-            return _networkStream;
+            if (sslConnection == false)
+            {
+                return _networkStream;
+            }
+            else
+            {
+#if NET451
+                return _sslStream;
+#else
+                return _networkStream;
+#endif
+            }
         }
+
 
         internal void Destroy()
         {
@@ -310,15 +413,19 @@ namespace Orient.Client.Protocol
             {
                 if ((_networkStream != null) && (Socket != null))
                 {
-                    _networkStream.Dispose();
-
 #if NET451
+                    if (sslConnection == true)
+                    {
+                        _sslStream.Dispose();
+                    }
+                    _networkStream.Dispose();
                     Socket.Close();
 #endif
 
 #if DOTNET5_5
+                    _networkStream.Dispose();
                             // whatever 
-                            Socket.Dispose();
+                    Socket.Dispose();
 #endif
                 }
             }
@@ -364,23 +471,47 @@ namespace Orient.Client.Protocol
         private void InitializeDatabaseConnection(string databaseName, ODatabaseType databaseType, string userName, string userPassword)
         {
             _readBuffer = new byte[OClient.BufferLength];
-
-            // initiate socket connection
-            try
+            if (sslConnection && clientAuth == false)
             {
-                var client = new TcpClient();
+#if NET451
+                SslStream sslStream;
+                try
+                {
+                    Socket = new TcpClient(Hostname, Port);
+                    Socket.ReceiveTimeout = RECIVE_TIMEOUT;
 
-                Socket = new TcpClient();
-                Socket.ReceiveTimeout = RECIVE_TIMEOUT;
-                Socket.ConnectAsync(Hostname, Port).GetAwaiter().GetResult();
+                    sslStream = new SslStream(Socket.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
+                    //sslStream.AuthenticateAsClient(Hostname, _sslCerts, SslProtocols.Tls12, true);
+                    sslStream.AuthenticateAsClient(Hostname);
+                }
+                catch (Exception ex)
+                {
+                    throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                }
+                _networkStream = Socket.GetStream();
+                _sslStream = sslStream;
+                sslStream.Read(_readBuffer, 0, 2);
+#endif
             }
-            catch (SocketException ex)
+            else
             {
-                throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
-            }
+                // initiate socket connection
+                try
+                {
+                    var client = new TcpClient();
 
-            _networkStream = Socket.GetStream();
-            _networkStream.Read(_readBuffer, 0, 2);
+                    Socket = new TcpClient();
+                    Socket.ReceiveTimeout = RECIVE_TIMEOUT;
+                    Socket.ConnectAsync(Hostname, Port).GetAwaiter().GetResult();
+                }
+                catch (SocketException ex)
+                {
+                    throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                }
+
+                _networkStream = Socket.GetStream();
+                _networkStream.Read(_readBuffer, 0, 2);
+            }
 
             OClient.ProtocolVersion = ProtocolVersion = BinarySerializer.ToShort(_readBuffer.Take(2).ToArray());
             if (ProtocolVersion < 27)
@@ -413,7 +544,6 @@ namespace Orient.Client.Protocol
             {
                 throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
             }
-
             _networkStream = Socket.GetStream();
             _networkStream.Read(_readBuffer, 0, 2);
 
@@ -436,32 +566,70 @@ namespace Orient.Client.Protocol
 
         private void Send(NetworkStream stream, byte[] rawData)
         {
-            if ((stream != null) && stream.CanWrite)
+            if (sslConnection == false)
             {
-                try
+                if ((stream != null) && stream.CanWrite)
                 {
-                    stream.Write(rawData, 0, rawData.Length);
+                    try
+                    {
+                        stream.Write(rawData, 0, rawData.Length);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                    }
                 }
-                catch (Exception ex)
+            }
+            else
+            {
+#if NET451
+                if ((_sslStream != null) && _sslStream.CanWrite)
                 {
-                    throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                    try
+                    {
+                        _sslStream.Write(rawData, 0, rawData.Length);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                    }
                 }
+#endif
             }
 
         }
 
         private void Send(byte[] rawData)
         {
-            if ((_networkStream != null) && _networkStream.CanWrite)
+            if (sslConnection == false)
             {
-                try
+                if ((_networkStream != null) && _networkStream.CanWrite)
                 {
-                    _networkStream.Write(rawData, 0, rawData.Length);
+                    try
+                    {
+                        _networkStream.Write(rawData, 0, rawData.Length);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                    }
                 }
-                catch (Exception ex)
+            }
+            else
+            {
+#if NET451
+                if ((_sslStream != null) && _sslStream.CanWrite)
                 {
-                    throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                    try
+                    {
+                        _sslStream.Write(rawData, 0, rawData.Length);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new OException(OExceptionType.Connection, ex.Message, ex.InnerException);
+                    }
                 }
+#endif
             }
 
         }
