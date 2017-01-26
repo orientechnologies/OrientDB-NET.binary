@@ -3,7 +3,7 @@ Coming Soon
 We are in the process of completly redesigning and enhancing the driver from scratch.  The plan is to follow a traditional database driver architecture and practices.  Performance is also a key factor in the redesign.  This should be pre-released in early Q1 2017.
 
 ----------------------------------------------
-OrientDB-NET.binary is C#/.NET driver for [OrientDB](http://www.orientdb.org/) document/graph database which implements network binary protocol.
+OrientDB-NET.binary is C#/.NET driver for [OrientDB](http://www.orientdb.org/) document/graph database which implements network binary protocol. For more information look at the [Documentation](http://orientdb.com/docs/master/NET.html).
 
 Now Contains
 ---------------------------------------------
@@ -31,3 +31,4 @@ For the latest build you can in the driver from [NuGet](https://www.nuget.org/pa
 
 The unit tests should run cleanly and will start and stop OrientDB on the local machine themselves. You will likely need to change the values in the appsettings.json to point correctly to your local OrientDB install.
 
+For more information look at the [Documentation](http://orientdb.com/docs/master/NET.html).
