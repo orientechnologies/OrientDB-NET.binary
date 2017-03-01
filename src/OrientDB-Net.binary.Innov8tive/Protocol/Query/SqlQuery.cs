@@ -852,7 +852,7 @@ namespace Orient.Client.Protocol
             query += string.Join(" ", Q.Update, _compiler.OrderedValue(Q.Class, Q.Cluster, Q.Record));
 
             var usedKeywords = new List<bool>();
-            var exclusiveKeywords = new List<String> { Q.Set, Q.Add, Q.Remove, Q.Content, Q.Merge };
+            var exclusiveKeywords = new List<String> { Q.Add, Q.Remove, Q.Content, Q.Merge };
             exclusiveKeywords.ForEach(keyword => usedKeywords.Add(_compiler.HasKey(keyword)));            
 
             if (usedKeywords.ExceedsThreshold(1))

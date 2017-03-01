@@ -200,9 +200,14 @@ namespace Orient.Nunit.Test.Query
                     var createdVertices = database.Select().From("TestVertexClass").ToList<OVertex>();
                     Assert.AreEqual(2, createdVertices.Count);
 
-                    Assert.AreEqual(createdVertices[1].ORID, createdVertices[0].OutE.First());
-                    Assert.AreEqual(createdVertices[0].ORID, createdVertices[1].InE.First());
+                    var createdVertex1 = createdVertices.FirstOrDefault(x => x.ORID.RID == testVertex1.ORID.RID);
+                    var createdVertex2 = createdVertices.FirstOrDefault(x => x.ORID.RID == testVertex2.ORID.RID);
 
+                    Assert.NotNull(createdVertex1);
+                    Assert.NotNull(createdVertex2);
+
+                    Assert.AreEqual(createdVertex2.ORID, createdVertex1.OutE.First());
+                    Assert.AreEqual(createdVertex1.ORID, createdVertex2.InE.First());
                 }
             }
         }

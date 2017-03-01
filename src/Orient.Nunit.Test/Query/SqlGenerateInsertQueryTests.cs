@@ -118,6 +118,8 @@ namespace Orient.Nunit.Test.Query
             string query =
                 "INSERT INTO TestClass " +
                 "CONTENT " + TestConstants.CreateJson;
+
+            Assert.AreEqual(generatedQuery, query);
         }
 
         [Test]
@@ -131,6 +133,8 @@ namespace Orient.Nunit.Test.Query
             string query =
                 "INSERT INTO TestClass " +
                 "CONTENT " + TestConstants.CreateJson;
+
+            Assert.AreEqual(generatedQuery, query);
         }
 
         [Test]
@@ -146,6 +150,8 @@ namespace Orient.Nunit.Test.Query
                 "INSERT INTO TestClass " +
                 "CLUSTER TestCluster " +
                 "CONTENT " + TestConstants.CreateJson;
+
+            Assert.AreEqual(generatedQuery, query);
         }
 
         [Test]        
