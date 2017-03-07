@@ -202,7 +202,11 @@ namespace Orient.Client
             }
 
             var result = type.GetTypeInfo().IsPrimitive || type == typeof(string) || type.IsArray ? default(T) : (T)Activator.CreateInstance(type);
-            return SaveAndReturnValue<T>(fieldPath, result);
+            // if the key wasn't in the dictionary, then return the default, but don't add the key to the dictionary unless the type is a collection.
+            if (ImplementsIList(type) || type.IsGenericType && type.GetGenericTypeDefinition() == typeof(HashSet<>))
+                return SaveAndReturnValue<T>(fieldPath, result);
+            else
+                return result;
         }
 
         private T SaveAndReturnValue<T>(string fieldPath, Object fieldValue)
