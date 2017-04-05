@@ -1,6 +1,8 @@
-Coming Soon
+Alpha Released of New Driver
 ----------------------------------------------
-We are in the process of completly redesigning and enhancing the driver from scratch.  The plan is to follow a traditional database driver architecture and practices.  Performance is also a key factor in the redesign.  This should be pre-released in early Q1 2017.
+https://github.com/orientechnologies/OrientDB.Net.Core
+
+The .Net Driver has been completly overhauled and rewritten to follow modern standards in database driver patterns.  Please  test and add any issue to the new projects as we work to retire this implementation.
 
 ----------------------------------------------
 OrientDB-NET.binary is C#/.NET driver for [OrientDB](http://www.orientdb.org/) document/graph database which implements network binary protocol. For more information look at the [Documentation](http://orientdb.com/docs/master/NET.html).
