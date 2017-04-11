@@ -321,14 +321,14 @@ namespace Orient.Nunit.Test.Query
             OException ex = Assert.Throws<OException>(new TestDelegate(GenerateInvalidKeywordCombinationUpdateStatement));
 
             Assert.That(ex.Type, Is.EqualTo(OExceptionType.Query));
-            Assert.That(ex.Message, Is.EqualTo("Only one Keyword of SET|ADD|REMOVE|CONTENT|MERGE is allowed in query"));
+            Assert.That(ex.Message, Is.EqualTo("Only one Keyword of ADD|REMOVE|CONTENT|MERGE is allowed in query"));
         }
 
         void GenerateInvalidKeywordCombinationUpdateStatement()
         {
             new OSqlUpdate()
                 .Record(new ORID(8, 0))
-                .Set("foo", "bar")
+                .Add("somelist", "newvalue")
                 .Content("{\"foo\":\"bar\"}")
                 .ToString();
         }

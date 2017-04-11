@@ -1,4 +1,6 @@
-﻿namespace Orient.Nunit.Test
+﻿using Orient.Client;
+
+namespace Orient.Nunit.Test
 {
     public class TestVertexClass
     {

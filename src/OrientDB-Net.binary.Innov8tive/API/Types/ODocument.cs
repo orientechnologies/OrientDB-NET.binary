@@ -82,7 +82,9 @@ namespace Orient.Client
                     var enumerable = (fieldValue as IEnumerable).GetEnumerator();
                     enumerable.MoveNext();
                     if (enumerable.Current != null && enumerable.Current is T)
+                    {
                         return (T)enumerable.Current;
+                    }
                 }
 
                 // if value is list or set type, get element type and enumerate over its elements
@@ -116,7 +118,7 @@ namespace Orient.Client
                         }
                     }
 
-                    return value;
+                    return SaveAndReturnValue<T>(fieldPath, value);
                 }
 
                 if (type.Name == "HashSet`1")
@@ -144,24 +146,27 @@ namespace Orient.Client
                             addMethod.Invoke(value, new object[] { enumerator.Current });
                         }
                     }
-                    return value;
+
+                    return SaveAndReturnValue<T>(fieldPath, value);
                 }
-                else if (type == typeof(DateTime))
+                else if (type == typeof(DateTime) || type == typeof(Nullable<DateTime>))
                 {
+                    if (fieldValue != null && (fieldValue.GetType() == typeof(DateTime) || fieldValue.GetType() == typeof(Nullable<DateTime>)))
+                        return SaveAndReturnValue<T>(fieldPath, fieldValue);
                     DateTime parsedValue;
                     if (DateTime.TryParse((string)fieldValue, out parsedValue))
                     {
-                        return (T)(object)parsedValue;
+                        return SaveAndReturnValue<T>(fieldPath, parsedValue);
                     }
                 }
                 else if (type == typeof(TimeSpan) || type == typeof(Nullable<TimeSpan>))
                 {
                     if (fieldValue != null && (fieldValue.GetType() == typeof(TimeSpan) || fieldValue.GetType() == typeof(Nullable<TimeSpan>)))
-                        return (T)fieldValue;
+                        return SaveAndReturnValue<T>(fieldPath, fieldValue);
                     TimeSpan parsedValue;
                     if (TimeSpan.TryParse((string)fieldValue, out parsedValue))
                     {
-                        return (T)(object)parsedValue;
+                        return SaveAndReturnValue<T>(fieldPath, parsedValue);
                     }
                 }
                 else if (type == typeof(Guid))
@@ -169,18 +174,21 @@ namespace Orient.Client
                     Guid parsedValue;
                     if (Guid.TryParse((string)fieldValue, out parsedValue))
                     {
-                        return (T)(object)parsedValue;
+                        return SaveAndReturnValue<T>(fieldPath, parsedValue);
                     }
                 }
-                else if (type == typeof(Decimal))
-                {
-                    if (fieldValue != null)
-                        return (T)(object)Convert.ChangeType(fieldValue, typeof(T));
-                    else
-                        return (T)(object)null;
-                }
 
-                return (T)fieldValue;
+                if (fieldValue != null)
+                {
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    {
+                        var generic = type.GetGenericArguments().FirstOrDefault();
+                        var gValue = (T)(object)Convert.ChangeType(fieldValue, generic);
+                        return SaveAndReturnValue<T>(fieldPath, gValue);
+                    }
+                }
+                return SaveAndReturnValue<T>(fieldPath, fieldValue);
+
             }
             if (fieldPath.Contains("."))
             {
@@ -194,8 +202,35 @@ namespace Orient.Client
             }
 
             var result = type.GetTypeInfo().IsPrimitive || type == typeof(string) || type.IsArray ? default(T) : (T)Activator.CreateInstance(type);
-            SetField(fieldPath, result);
-            return result;
+            // if the key wasn't in the dictionary, then return the default, but don't add the key to the dictionary unless the type is a collection.
+            if (ImplementsIList(type) || type.IsGenericType && type.GetGenericTypeDefinition() == typeof(HashSet<>))
+                return SaveAndReturnValue<T>(fieldPath, result);
+            else
+                return result;
+        }
+
+        private T SaveAndReturnValue<T>(string fieldPath, Object fieldValue)
+        {
+            // We don't save if the value is null
+            if (fieldValue == null)
+                return (T)(object)null;
+
+            T castedValue = ConvertValue<T>(fieldValue);
+            SetField<T>(fieldPath, castedValue);
+            return castedValue;
+        }
+
+        private T ConvertValue<T>(object value)
+        {
+            if (value.GetType() == typeof(T))
+                return (T)value;
+
+            if (typeof(T).GetInterfaces().Contains(typeof(IConvertible)))
+            {
+                var castedValue = (T)(object)Convert.ChangeType(value, typeof(T));
+                return castedValue;
+            }
+            return (T)value;
         }
 
         private bool ImplementsIList(Type type)
