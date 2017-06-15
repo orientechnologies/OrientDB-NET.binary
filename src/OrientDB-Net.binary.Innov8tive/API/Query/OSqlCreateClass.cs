@@ -122,7 +122,7 @@ namespace Orient.Client
             }
             else
             {
-                cluster = _connection.Database.GetClusters().FirstOrDefault(c => c.Name == _className);
+                cluster = _connection.Database.GetClusters().FirstOrDefault(c => c.Name.Equals(_className, StringComparison.OrdinalIgnoreCase));
             }
 
             if (_autoProperties)
