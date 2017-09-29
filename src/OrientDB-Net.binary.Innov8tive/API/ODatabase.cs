@@ -19,8 +19,6 @@ namespace Orient.Client
 {
     public class ODatabase : IDisposable
     {
-        private bool _containsConnection;
-
         private ODocument _databaseProperties;
 
         public IDictionary<ORID, ODocument> ClientCache { get; private set; }
@@ -306,14 +304,9 @@ namespace Orient.Client
 
         public void Close()
         {
-            if (_containsConnection)
-            {
-                GetConnection().Database = null;
+            GetConnection().Database = null;
 
-                GetConnection().Dispose();
-
-                _containsConnection = false;
-            }
+            GetConnection().Dispose();
         }
 
         public void Dispose()
